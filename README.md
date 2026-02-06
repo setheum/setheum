@@ -18,31 +18,30 @@ Setheum's Blockchain Network node Implementation in Rust, ready for hacking :roc
 
 <div align="center">
 
-[![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/Setheum-Labs/Setheum?color=yellow)](https://github.com/Setheum-Labs/Setheum/tags)
-[![License](https://img.shields.io/github/license/Setheum-Labs/Setheum?color=blue)](https://github.com/Setheum-Labs/Setheum/blob/master/LICENSE.md)
+[![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/setheum/setheum?color=yellow)](https://github.com/setheum/setheum/tags)
+[![License](https://img.shields.io/github/license/setheum/setheum?color=blue)](https://github.com/setheum/setheum/blob/master/LICENSE.md)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](docs/contributor/CONTRIBUTING.md)
 
 <br />
 
-[![Build](https://github.com/Setheum-Labs/Setheum/actions/workflows/rust.yml/badge.svg)](https://github.com/Setheum-Labs/Setheum/actions/workflows/rust.yml)
-[![CodeQL](https://github.com/Setheum-Labs/Setheum/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/Setheum-Labs/Setheum/actions/workflows/github-code-scanning/codeql)
+[![Build](https://github.com/setheum/setheum/actions/workflows/rust.yml/badge.svg)](https://github.com/setheum/setheum/actions/workflows/rust.yml)
+[![CodeQL](https://github.com/setheum/setheum/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/setheum/setheum/actions/workflows/github-code-scanning/codeql)
 
 <br />
 
-[![Website](https://img.shields.io/badge/Website-gray?logo=web)](https://setheum.xyz)
+[![Website](https://img.shields.io/badge/Website-gray?logo=web)](https://setheum.com)
 [![Twitter URL](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Ftwitter.com%2FSetheum)](https://twitter.com/Setheum)
 [![Telegram](https://img.shields.io/badge/Telegram-gray?logo=telegram)](https://t.me/SetheumNetwork)
-[![Medium](https://img.shields.io/badge/Medium-gray?logo=medium)](https://medium.com/setheum-labs)
-[![Lines of Code](https://img.shields.io/badge/LinesOfCode-gray?logo=LinesOfCode)](https://cloc.info/github.com/Setheum-Labs/Setheum)
+[![Lines of Code](https://img.shields.io/badge/LinesOfCode-gray?logo=LinesOfCode)](https://cloc.info/github.com/setheum/setheum)
 </div>
 
-> NOTE: SETHEUM means `Salam Eth`, `Super Eth`, `The house of gifts` and `gifted`. Originally from the name `Seth/Sheeth` mixed with `Ethereum`, it also stands for `Secure, Evergreen, Truthful, Heterogeneous, Economically Unbiased Market`.
+> NOTE: SETHEUM means `The house of Sheyth(also known as Seth the son of Adam)`. Originating from the name `Seth/Sheyth` with the `-eum` suffix whith means `House of`. Thus, The House of `Sheyth` - Our Smart Contract Framework is also called `Sheyth` and its VM is called `SetVM`.
 
 <!-- TOC -->
 - [Setheum - Powering The New Internet](#setheum---powering-the-new-internet)
   - [1.0. Introduction](#10-introduction)
     - [1.1. Setheum Chain](#11-setheum-chain)
-    - [1.2. Ethical DeFi](#12-ethical-defi)
+    - [1.2. DeFi](#12-ethical-defi)
       - [1.2.1. Ethical DeFi Projects](#121-ethical-defi-projects)
   - [2.0. Getting Started](#20-getting-started)
     - [2.1. Build](#21-build)
@@ -72,22 +71,19 @@ Setheum's Blockchain Network node Implementation in Rust, ready for hacking :roc
 
 ### 1.1. Setheum Chain
 
-Founded November 2019,Setheum achieves a high level of equilibrium in the trilemma by leveraging a Directed Acyclic Graph(DAG) to build the blockchain consensus - making it a Blockchain via DAG, achieve instant finality, high throughput and very fast blocktime while preserving network security and having a fairly decentralised network,
+Founded November 2019,Setheum is a light-speed decentralised blockchain network with WASM smart contracts, built from a mixture of what we have seen and considered to be some of the best solutions in the industry, improving on scalability, security, user experience, ethics,decentralisation and democratisation. Setheum intends to be the most complete blockchain network in the world. The AlephBFT Consensus Engine powers the Setheum Chain to have near instant finality, high throughput and high scalability and high security.
 
-Setheum is a light-speed decentralised blockchain network with EVM and WASM smart contracts, built from a mixture of what we have seen and considered to be some of the best solutions in the industry, improving on scalability, security, user experience, ethics,decentralisation and democratisation. Setheum intends to be the most complete blockchain network in the world. The AlephBFT Consensus Engine powers the Setheum Chain to have near instant finality, high throughput and high scalability and high security.
+### 1.2. DeFi
 
-### 1.2. Ethical DeFi
-
-Ethical DeFi Suite is the DeFi powerhouse of the Setheum Network, providing all kinds of top notch DeFi protocols including an AMM DEX (inspired by Uniswap v3), Ethical Zero-interest Halal Stablecoins that gives us the properties of both Fiat and Crypto with SlickUSD (USSD) and the Setter (SETR) using an Ethical Collateralized Debt Position (ECDP) mechanism that is over-Collateralized and multi-Collateralised and stable without compromising decentralisation or economic stability, offering stable cryptocurrencies that have scalable value and reliability, setheum provides just that, backed by crypto assets on an efficient zero-interest debt-based system.
+Setheum has a DeFi powerhouse, which is SEUSD (Setheum USD), Setheum USD is a stablecoin backed by Compute. It supports a DEX, a Liquid Staking Protocol, a launchpad etc. 
 
 #### 1.2.1. Ethical DeFi Projects:
 
-- `Edfis`: Ethical DeFi Suite
-  - `Edfis Swap Exchange`: AMM (Automated Market Maker) DEX Protocol inspired by Uniswap v3 design
-  - `Edfis Launchpad`: Launchpad Crowdsales protocol for bootstrapping pools on Edfis Exchange
-  - `Edfis Launchpool`: Launchpool protocol for bootstrapping pools on Edfis Exchange
-- `Setter`: Unpegged ECDP Stablecoin
-- `SlickUSD`: USD Pegged ECDP Stablecoin
+- The Setheum DeFi Suite
+- `Setheum USD (SEUSD)`: Compute-backed Stablecoin
+- `Staked SEUSD (SSEUSD)`: Liquid Staked SEUSD Stablecoin
+- `Setheum Swap`: AMM (Automated Market Maker) DEX Protocol inspired by Uniswap v3 design
+- `Setheum Launchpad`: Launchpad Crowdsales protocol for bootstrapping pools on Setheum Swap.
 
 ## 2.0. Getting Started
 
@@ -98,7 +94,7 @@ This project contains some configuration files to help get started :hammer_and_w
 Clone this repository:
 
 ```bash
-git clone --recursive https://github.com/Setheum-Labs/Setheum
+git clone --recursive https://github.com/setheum/Setheum
 ```
 
 Install Rust:
