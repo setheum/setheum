@@ -1,0 +1,14 @@
+# IDEs
+/.idea
+/.vscode
+.*.swp
+
+# Rust
+.cargo/config
+*target
+**/*.rs.bk
+
+# Profiler
+*.profdata
+
+/docs/book

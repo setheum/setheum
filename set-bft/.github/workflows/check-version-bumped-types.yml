@@ -1,0 +1,26 @@
+name: Version bump check for code changes in the aleph-bft-types package
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'types/src/**'
+
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  main:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: GIT | Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check if version bumped for 'types'
+        uses: ./.github/actions/check-version-bumped
+        with:
+          cargo-toml-path: types/Cargo.toml

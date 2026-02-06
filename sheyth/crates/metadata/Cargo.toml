@@ -1,0 +1,43 @@
+[package]
+name = "ink_metadata"
+version.workspace = true
+authors = ["Use Ink <ink@use.ink>"]
+edition.workspace = true
+
+license.workspace = true
+readme = "README.md"
+repository.workspace = true
+documentation = "https://docs.rs/ink_metadata/"
+homepage.workspace = true
+description = "[ink!] Metadata definitions for ink! smart contracts."
+keywords.workspace = true
+categories.workspace = true
+include = ["Cargo.toml", "src/**/*.rs", "README.md", "LICENSE"]
+
+[dependencies]
+ink_prelude = { workspace = true }
+ink_primitives = { workspace = true }
+
+serde = { workspace = true, features = ["derive", "alloc"] }
+impl-serde = { workspace = true, default-features = true }
+derive_more = { workspace = true, features = ["from"] }
+linkme = { workspace = true }
+scale = { workspace = true }
+scale-info = { workspace = true, features = ["derive", "serde", "decode", "schema"] }
+schemars = { workspace = true }
+
+[dev-dependencies]
+pretty_assertions = "1"
+serde_json = "1"
+
+[features]
+default = [ "derive", "std" ]
+std = [
+	"ink_prelude/std",
+	"ink_primitives/std",
+	"scale-info/std",
+	"serde/std",
+	"scale/std",
+	"derive_more/std"
+]
+derive = []

@@ -1,0 +1,37 @@
+[package]
+name = "ink_ir"
+version.workspace = true
+authors = ["Use Ink <ink@use.ink>"]
+edition.workspace = true
+
+license.workspace = true
+readme = "README.md"
+repository.workspace = true
+documentation = "https://docs.rs/ink_ir/"
+homepage.workspace = true
+description = "data structures and algorithms for ink! intermediate representation"
+keywords.workspace = true
+categories.workspace = true
+include = ["Cargo.toml", "src/**/*.rs", "README.md", "LICENSE"]
+
+[lib]
+name = "ink_ir"
+
+[dependencies]
+quote = { workspace = true }
+syn = { workspace = true, features = ["parsing", "full", "visit", "extra-traits"] }
+proc-macro2 = { workspace = true }
+itertools = { workspace = true }
+either = { workspace = true }
+blake2 = { workspace = true }
+impl-serde = { workspace = true }
+ink_prelude = { workspace = true }
+
+[features]
+default = [ "std" ]
+std = [
+	"either/use_std",
+	"ink_prelude/std",
+	"itertools/use_std",
+	"impl-serde/std"
+]
