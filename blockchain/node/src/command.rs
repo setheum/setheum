@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Labs.
+// Copyright (C) 2019-Present Setheum Developers.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -43,7 +43,7 @@ impl SubstrateCli for Cli {
 	}
 
 	fn support_url() -> String {
-		"https://github.com/Setheum-Labs/Setheum/issues".into()
+		"https://github.com/setheum/setheum/issues".into()
 	}
 
 	fn copyright_start_year() -> i32 {

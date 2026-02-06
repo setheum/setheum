@@ -1,12 +1,12 @@
 [package]
-authors = ['Setheum Labs <https://setheum.xyz>']
+authors = [ "Afsall Labs", "Setheum Developers", "Setheum Foundation" ]
 build = 'build.rs'
 description = 'Setheum Network Node'
 edition = '2018'
-homepage = 'https://setheum.xyz'
+homepage = 'https://setheum.com'
 license = 'Unlicense'
 name = 'setheum-node'
-repository = 'https://github.com/Setheum-Labs/Setheum'
+repository = 'https://github.com/setheum/setheum'
 version = '1.0.0'
 
 [[bin]]

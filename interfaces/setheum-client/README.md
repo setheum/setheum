@@ -1,4 +1,4 @@
-# API for [Setheum](https://github.com/Setheum-Labs/Setheum) chain.
+# API for [Setheum](https://github.com/setheum/setheum) chain.
 
 This crate provides a Rust application interface for submitting transactions to `setheum-node` chain.
 Most of the [pallets](https://docs.substrate.io/reference/frame-pallets/) are common to any

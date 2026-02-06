@@ -2,7 +2,7 @@
 name = "setheum_client"
 version = "0.1.0"
 edition = "2021"
-authors = ["Setheum Labs", "Open Web3 Foundation"]
+authors = [ "Afsall Labs", "Setheum Developers", "Setheum Foundation" ]
 documentation = "https://docs.rs/setheum_client"
 readme = "README.md"
 authors.workspace = true
@@ -10,8 +10,8 @@ edition.workspace = true
 homepage.workspace = true
 repository.workspace = true
 license = "Apache-2.0"
-homepage = "https://setheum.xyz"
-repository = "https://github.com/Setheum-Labs/Setheum"
+homepage = "https://setheum.com"
+repository = "https://github.com/setheum/setheum"
 description = "This crate provides a Rust application interface for submitting transactions to `setheum` chain."
 
 [dependencies]

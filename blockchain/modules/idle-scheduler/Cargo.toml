@@ -1,7 +1,7 @@
 [package]
 name = "idle-scheduler"
 version = "1.0.0"
-authors = ["Setheum Labs"]
+authors = [ "Afsall Labs", "Setheum Developers", "Setheum Foundation" ]
 edition = "2018"
 
 [dependencies]

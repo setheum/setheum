@@ -56,10 +56,10 @@ codegen-units = 1
 [workspace.package]
 version = "0.9.81+dev"
 license = "GPL-3.0-or-later"
-authors = [ "Open Web3 Foundation", "Setheum Labs", "Slixon Technologies"]
+authors = [ "Afsall Labs", "Setheum Developers", "Setheum Foundation" ]
 edition = "2021"
-homepage = "https://setheum.xyz"
-repository = "https://github.com/Setheum-Labs/Setheum"
+homepage = "https://setheum.com"
+repository = "https://github.com/setheum/setheum"
 
 # The list of dependencies below (which can be both direct and indirect dependencies) are crates
 # that are suspected to be CPU-intensive, and that are unlikely to require debugging (as some of
