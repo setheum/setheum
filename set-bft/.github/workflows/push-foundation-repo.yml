@@ -1,0 +1,19 @@
+name: Sync Cardinal-Cryptography repo with Aleph-Zero-Foundation repo
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sync:
+    runs-on: ubuntu-24.04
+    if: ${{ github.repository == 'Cardinal-Cryptography/AlephBFT'}}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: "main"
+          token: ${{ secrets.SYNCAZF }}
+      - name: Push to Aleph-Zero-Foundation
+        run: git push https://x-access-token:${{ secrets.SYNCAZF }}@github.com/aleph-zero-foundation/AlephBFT.git

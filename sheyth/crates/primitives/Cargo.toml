@@ -1,0 +1,38 @@
+[package]
+name = "ink_primitives"
+version.workspace = true
+authors = ["Use Ink <ink@use.ink>"]
+edition.workspace = true
+
+license.workspace = true
+readme = "README.md"
+repository.workspace = true
+documentation = "https://docs.rs/ink_primitives/"
+homepage.workspace = true
+description = "[ink!] Fundamental primitive types for ink! smart contracts."
+keywords.workspace = true
+categories.workspace = true
+include = ["/Cargo.toml", "src/**/*.rs", "/README.md", "/LICENSE"]
+
+[dependencies]
+derive_more = { workspace = true, features = ["from", "display"] }
+ink_prelude = { workspace = true }
+scale = { workspace = true, features = ["max-encoded-len"] }
+scale-decode = { workspace = true, features = ["derive"], optional = true }
+scale-encode = { workspace = true, features = ["derive"], optional = true }
+scale-info = { workspace = true, features = ["derive"], optional = true }
+xxhash-rust = { workspace = true, features = ["const_xxh32"] }
+
+[features]
+default = [ "std" ]
+std = [
+	"ink_prelude/std",
+	"scale-decode",
+	"scale-encode",
+	"scale-info/std",
+	"scale/std",
+	"scale-decode?/std",
+	"scale-encode?/std",
+	"derive_more/std",
+  "xxhash-rust/std"
+]

@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  merge_group:
+  push:
+  pull_request:
+
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  pr:
+    name: pull_request
+    if: "github.event_name == 'pull_request'"
+    runs-on: ubuntu-24.04
+    needs: lint
+    steps:
+      - name: checkout the source code
+        uses: actions/checkout@v4
+      - name: install rustup
+        uses: ./.github/actions/install-rust-toolchain
+      - name: check
+        uses: actions-rs/cargo@v1
+        with:
+          command: check
+      - name: test
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: '--lib'
+  master:
+    name: push
+    if: "github.event_name == 'push'"
+    runs-on: ubuntu-24.04
+    needs: lint
+    steps:
+      - name: checkout the source code
+        uses: actions/checkout@v4
+      - name: install rustup
+        uses: ./.github/actions/install-rust-toolchain
+      - name: check
+        uses: actions-rs/cargo@v1
+        with:
+          command: check
+      - name: test
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: '--lib'
+  lint:
+    name: lint
+    runs-on: ubuntu-24.04
+    steps:
+      - name: checkout the source code
+        uses: actions/checkout@v4
+      - name: install rustup
+        uses: ./.github/actions/install-rust-toolchain
+        with:
+          components: rustfmt, clippy
+      - name: fmt
+        uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: --all -- --check
+      - name: clippy
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: --all-targets --all-features -- -D warnings

@@ -1,0 +1,25 @@
+[workspace]
+resolver = "2"
+members = [
+    "mandatory",
+    "extra",
+    "utils",
+]
+
+[workspace.package]
+version = "5.1.1"
+authors = ["Use Ink <ink@use.ink>"]
+edition = "2021"
+license = "Apache-2.0"
+repository = "https://github.com/use-ink/ink"
+homepage = "https://use.ink"
+keywords = ["ink", "blockchain", "edsl", "dylint", "linting"]
+
+[workspace.dependencies]
+ink_linting_utils = { version = "=5.1.1", path = "utils" }
+
+[workspace.metadata.dylint]
+libraries = [
+    { path = "mandatory" },
+    { path = "extra" },
+]

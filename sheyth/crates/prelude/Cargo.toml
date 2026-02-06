@@ -1,0 +1,22 @@
+[package]
+name = "ink_prelude"
+version.workspace = true
+authors = ["Use Ink <ink@use.ink>"]
+edition.workspace = true
+
+license.workspace = true
+readme = "README.md"
+repository.workspace = true
+documentation = "https://docs.rs/ink_prelude/"
+homepage.workspace = true
+description = "[ink!] Common API for no_std and std to access alloc crate types."
+keywords.workspace = true
+categories.workspace = true
+include = ["/Cargo.toml", "src/**/*.rs", "/README.md", "/LICENSE"]
+
+[dependencies]
+cfg-if = { workspace = true }
+
+[features]
+default = [ "std" ]
+std = []

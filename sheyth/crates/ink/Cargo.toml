@@ -1,0 +1,60 @@
+[package]
+name = "ink"
+version.workspace = true
+authors = ["Use Ink <ink@use.ink>"]
+edition.workspace = true
+rust-version = "1.63"
+
+license.workspace = true
+readme = "README.md"
+repository.workspace = true
+documentation = "https://docs.rs/ink"
+homepage.workspace = true
+description = "[ink!] Rust based eDSL for writing smart contracts for Substrate"
+keywords.workspace = true
+categories.workspace = true
+include = ["Cargo.toml", "src/**/*.rs", "README.md", "LICENSE"]
+
+[dependencies]
+ink_env = { workspace = true }
+ink_storage = { workspace = true }
+ink_primitives = { workspace = true }
+ink_metadata = { workspace = true, optional = true }
+ink_prelude = { workspace = true }
+ink_macro = { workspace = true }
+pallet-contracts-uapi = { workspace = true }
+scale = { workspace = true }
+scale-info = { workspace = true, default-features = false, features = ["derive"], optional = true }
+derive_more = { workspace = true, features = ["from"] }
+xcm = { workspace = true}
+
+[dev-dependencies]
+ink_ir = { workspace = true, default-features = true }
+ink_metadata = { workspace = true }
+trybuild = { workspace = true, features = ["diff"] }
+
+
+[features]
+default = [ "std" ]
+std = [
+	"ink_env/std",
+	"ink_macro/std",
+	"ink_metadata/std",
+	"ink_prelude/std",
+	"ink_primitives/std",
+	"ink_storage/std",
+	"scale-info/std",
+	"scale/std",
+	"xcm/std",
+	"derive_more/std"
+]
+# Enable contract debug messages via `debug_print!` and `debug_println!`.
+ink-debug = [ "ink_env/ink-debug" ]
+
+show-codegen-docs = []
+
+# Disable the ink! provided global memory allocator.
+no-allocator = [ "ink_env/no-allocator" ]
+
+# Disable the ink! provided panic handler.
+no-panic-handler = ["ink_env/no-panic-handler"]

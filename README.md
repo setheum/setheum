@@ -6,6 +6,8 @@
   <img src="./media/SetheumLabel.jpg" style="width:1300px" />
 </p>
 
+> TODO!: Add `Sheyth` and `SetBFT` to README and docs
+
 * Decentralized
 * Exceptional
 * Secure
