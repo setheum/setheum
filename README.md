@@ -94,7 +94,7 @@ This project contains some configuration files to help get started :hammer_and_w
 Clone this repository:
 
 ```bash
-git clone --recursive https://github.com/setheum/Setheum
+git clone --recursive https://github.com/setheum/setheum
 ```
 
 Install Rust:
