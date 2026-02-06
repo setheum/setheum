@@ -1,0 +1,74 @@
+{
+  "extends": "@open-web3/dev-config/config/tsconfig.json",
+  "exclude": [
+    "build/**/*",
+    "**/build/**/*"
+  ],
+  "compilerOptions": {
+    "target": "es2019",
+    "module": "CommonJS",
+    "baseUrl": ".",
+    "resolveJsonModule": true,
+    "paths": {
+      "@setheum.js/api": [
+        "packages/api/src"
+      ],
+      "@setheum.js/api/*": [
+        "packages/api/src/*"
+      ],
+      "@setheum.js/types": [
+        "packages/types/src"
+      ],
+      "@setheum.js/types/*": [
+        "packages/types/src/*"
+      ],
+      "@setheum.js/api-derive": [
+        "packages/api-derive/src"
+      ],
+      "@setheum.js/api-derive/*": [
+        "packages/api-derive/src/*"
+      ],
+      "@setheum.js/type-definitions": [
+        "packages/type-definitions/src"
+      ],
+      "@setheum.js/type-definitions/*": [
+        "packages/type-definitions/src/*"
+      ],
+      "@setheum.js/sdk-core": [
+        "packages/sdk-core/src"
+      ],
+      "@setheum.js/sdk-core/*": [
+        "packages/sdk-core/src/*"
+      ],
+      "@setheum.js/sdk-wallet": [
+        "packages/sdk-wallet/src"
+      ],
+      "@setheum.js/sdk-wallet/*": [
+        "packages/sdk-wallet/src/*"
+      ],
+      "@setheum.js/sdk-swap": [
+        "packages/sdk-swap/src"
+      ],
+      "@setheum.js/sdk-swap/*": [
+        "packages/sdk-swap/src/*"
+      ],
+      "@setheum.js/sdk-loan": [
+        "packages/sdk-loan/src"
+      ],
+      "@setheum.js/sdk-loan/*": [
+        "packages/sdk-loan/src/*"
+      ],
+      "@setheum.js/sdk": [
+        "packages/sdk/src"
+      ],
+      "@setheum.js/sdk/*": [
+        "packages/sdk/src/*"
+      ],
+    },
+    "skipLibCheck": true,
+    "typeRoots": [
+      "./node_modules/@polkadot/ts",
+      "./node_modules/@types"
+    ]
+  }
+}

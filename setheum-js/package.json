@@ -1,0 +1,44 @@
+{
+  "repository": "https://github.com/setheum-js/setheum.js",
+  "author": "Setheum Labs",
+  "maintainers": [
+    "Muhammad-Jibril B.A. <jbashir52@gmail.com>",
+    "HuangLeiWan. <setheumjs@gmail.com>"
+  ],
+  "license": "Apache-2",
+  "version": "3.4.0",
+  "private": true,
+  "engines": {
+    "yarn": "^1.22.10"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "resolutions": {
+    "@polkadot/api": "^7.1.1",
+    "@polkadot/types": "^7.1.1",
+    "typescript": "4.3.5"
+  },
+  "scripts": {
+    "build": "yarn build:interfaces && polkadot-dev-build-ts",
+    "build:release": "polkadot-ci-ghact-build",
+    "build:interfaces": "node -r ts-node/register -r tsconfig-paths/register packages/types/scripts/generate.ts && node -r ts-node/register -r tsconfig-paths/register packages/type-definitions/scripts/generate.ts",
+    "lint": "polkadot-dev-run-lint",
+    "clean": "polkadot-dev-clean-build",
+    "postinstall": "polkadot-dev-yarn-only",
+    "test": "polkadot-dev-run-test --coverage",
+    "check-deps": "./node_modules/@open-web3/util/scripts/check-deps.js yarn.lock @polkadot/ @open-web3/",
+    "update-metadata": "ts-node --project ./tsconfig.json packages/types/scripts/updateMetadata.ts"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.14.3",
+    "@babel/register": "^7.13.6",
+    "@babel/runtime": "^7.14.0",
+    "@open-web3/dev-config": "^0.1.13",
+    "@open-web3/util": "^1.0.2-0",
+    "@types/jest": "^25.2.3",
+    "ts-node": "^8.6.1",
+    "tsconfig-paths": "^3.9.0",
+    "typescript": "^4.3.5"
+  }
+}
