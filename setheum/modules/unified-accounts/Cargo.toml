@@ -1,0 +1,57 @@
+[package]
+name = "module-unified-accounts"
+version = "0.9.81-dev"
+authors.workspace = true
+edition.workspace = true
+homepage.workspace = true
+repository.workspace = true
+
+[dependencies]
+parity-scale-codec = { workspace = true }
+libsecp256k1 = { workspace = true, features = ["hmac", "static-context"], optional = true }
+scale-info = { workspace = true }
+
+frame-support = { workspace = true }
+frame-system = { workspace = true }
+sp-core = { workspace = true }
+sp-io = { workspace = true }
+sp-runtime = { workspace = true }
+sp-std = { workspace = true }
+
+orml-traits = { workspace = true }
+primitives = { workspace = true }
+module-support = { workspace = true }
+module-evm-utility-macro = { workspace = true }
+
+[dev-dependencies]
+pallet-balances = { workspace = true, features = ["std"] }
+orml-currencies = { workspace = true, features = ["std"] }
+orml-tokens = { workspace = true, features = ["std"] }
+
+[features]
+default = ["std"]
+std = [
+	"parity-scale-codec/std",
+	"libsecp256k1",
+	"libsecp256k1/std",
+	"scale-info/std",
+	"sp-core/std",
+	"sp-runtime/std",
+	"sp-io/std",
+	"sp-std/std",
+	"frame-support/std",
+	"frame-system/std",
+	"primitives/std",
+	"orml-traits/std",
+	"module-support/std",
+]
+runtime-benchmarks = [
+	"libsecp256k1/hmac",
+	"frame-support/runtime-benchmarks",
+	"frame-system/runtime-benchmarks",
+	"sp-runtime/runtime-benchmarks",
+]
+try-runtime = [
+	"frame-support/try-runtime",
+	"frame-system/try-runtime",
+]

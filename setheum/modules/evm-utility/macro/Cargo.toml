@@ -1,0 +1,16 @@
+[package]
+name = "module-evm-utility-macro"
+version = "0.9.81-dev"
+authors.workspace = true
+edition.workspace = true
+homepage.workspace = true
+repository.workspace = true
+
+[lib]
+proc-macro = true
+
+[dependencies]
+quote = { workspace = true }
+syn = { workspace = true, features = ["full", "fold", "extra-traits", "visit"] }
+proc-macro2 = { workspace = true }
+module-evm-utility = { workspace = true, features = ["std"] }

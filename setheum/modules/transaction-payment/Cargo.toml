@@ -1,0 +1,54 @@
+[package]
+name = "module-transaction-payment"
+version = "0.9.81-dev"
+authors.workspace = true
+edition.workspace = true
+homepage.workspace = true
+repository.workspace = true
+
+[dependencies]
+log = { workspace = true }
+parity-scale-codec = { workspace = true }
+scale-info = { workspace = true }
+sp-runtime = { workspace = true }
+frame-support = { workspace = true }
+frame-system = { workspace = true }
+sp-std = { workspace = true }
+sp-io= { workspace = true }
+pallet-transaction-payment = { workspace = true }
+pallet-transaction-payment-rpc-runtime-api = { workspace = true }
+primitives = { workspace = true }
+module-support = { workspace = true }
+orml-traits = { workspace = true }
+xcm = { workspace = true }
+
+[dev-dependencies]
+sp-core = { workspace = true, features = ["std"] }
+pallet-balances = { workspace = true, features = ["std"] }
+orml-tokens = { workspace = true, features = ["std"] }
+module-currencies = { workspace = true, features = ["std"] }
+module-edfis_swap_legacy = { workspace = true, features = ["std"] }
+smallvec = { workspace = true }
+
+[features]
+default = ["std"]
+std = [
+	"parity-scale-codec/std",
+	"frame-support/std",
+	"frame-system/std",
+	"orml-traits/std",
+	"pallet-transaction-payment-rpc-runtime-api/std",
+	"pallet-transaction-payment/std",
+	"primitives/std",
+	"scale-info/std",
+	"sp-io/std",
+	"sp-runtime/std",
+	"sp-std/std",
+	"module-support/std",
+	"xcm/std",
+]
+try-runtime = [
+	"frame-support/try-runtime",
+	"frame-system/try-runtime",
+	"pallet-transaction-payment/try-runtime",
+]
