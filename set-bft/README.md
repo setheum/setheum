@@ -2,8 +2,8 @@
 [![Docs][docs-image]][docs-link]
 [![Build Status][build-image]][build-link]
 [![CodeQL][codeql-image]][codeql-link]
-[![Apache 2.0 Licensed][license-apache-image]][license-apache-link]
-[![MIT Licensed][license-mit-image]][license-mit-link]
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue?logo=apache&style=flat-square)](./LICENSE-APACHE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green?logo=mit&style=flat-square)](./LICENSE-MIT)
 [![cargo-audit][cargo-audit-image]][cargo-audit-link]
 
 <p align="center">
@@ -184,10 +184,6 @@ The implementation in this repository is funded by [Aleph Zero Foundation][webpa
 [build-link]: https://github.com/setheum/setheum/actions/workflows/ci.yml
 [codeql-image]: https://github.com/setheum/setheum/actions/workflows/github-code-scanning/codeql/badge.svg?style=flat-square
 [codeql-link]: https://github.com/setheum/setheum/actions/workflows/github-code-scanning/codeql
-[license-apache-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
-[license-apache-link]: ./LICENSE-APACHE
-[license-mit-image]: https://img.shields.io/badge/license-MIT-green.svg
-[license-mit-link]: ./LICENSE-MIT
 [rustc-image]: https://img.shields.io/badge/rustc-stable-blue.svg
 [cargo-audit-image]: https://github.com/Cardinal-Cryptography/AlephBFT/actions/workflows/cargo-audit.yml/badge.svg
 [cargo-audit-link]: https://github.com/Cardinal-Cryptography/AlephBFT/actions/workflows/cargo-audit.yml

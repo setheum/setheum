@@ -4,7 +4,7 @@
     Polkadot's ink! for writing smart contracts
 </h1>
 
-[![linux][a1]][a2] [![CodeQL][cq1]][cq2] [![codecov][c1]][c2] [![coveralls][d1]][d2] [![loc][e1]][e2] [![stack-exchange][s1]][s2]
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue?logo=apache&style=flat-square)](./LICENSE-APACHE) [![License: MIT](https://img.shields.io/badge/License-MIT-green?logo=mit&style=flat-square)](./LICENSE-MIT) [![linux][a1]][a2] [![CodeQL][cq1]][cq2] [![codecov][c1]][c2] [![coveralls][d1]][d2] [![loc][e1]][e2] [![stack-exchange][s1]][s2]
 
 [a1]: https://github.com/setheum/setheum/actions/workflows/ci.yml/badge.svg
 [a2]: https://github.com/setheum/setheum/actions/workflows/ci.yml

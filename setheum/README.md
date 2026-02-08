@@ -4,10 +4,13 @@
   <img src="./media/SetheumLabel.jpg" style="width:1300px" />
 </p>
 
-# Setheum Blockchain
+# Setheum
 
 [![Build](https://github.com/setheum/setheum/actions/workflows/ci.yml/badge.svg)](https://github.com/setheum/setheum/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/setheum/setheum/actions/workflows/github-code-scanning/codeql/badge.svg?style=flat-square)](https://github.com/setheum/setheum/actions/workflows/github-code-scanning/codeql)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg?style=flat-square)](./LICENSE-GPL3)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue?logo=apache&style=flat-square)](./LICENSE-APACHE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green?logo=mit&style=flat-square)](./LICENSE-MIT)
 
 Core implementation of the Setheum Network, a Substrate-based blockchain.
 
