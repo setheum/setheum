@@ -41,27 +41,49 @@ def get_header(file_path):
 
 def apply_header(file_path, header_path):
     with open(header_path, 'r') as hf:
-        header_lines = hf.readlines()
+        header_text = hf.read().strip()
     
     with open(file_path, 'r') as f:
-        content_lines = f.readlines()
+        content = f.read()
     
-    # Check if header already exists (simplistic check)
-    if content_lines and 'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم' in content_lines[0]:
-        # Header might already exist, check if it matches the intended one
-        # For simplicity, we'll replace the existing header if it exists
-        # Find where the old header ends (first empty line or non-comment line)
-        end_idx = 0
-        for i, line in enumerate(content_lines):
-            if not line.strip().startswith('//') and line.strip() != '':
-                end_idx = i
-                break
-        content_lines = content_lines[end_idx:]
+    # If the file already starts with the exact header, do nothing
+    if content.strip().startswith(header_text):
+        return False
 
-    new_content = header_lines + ['\n'] + content_lines
+    content_lines = content.splitlines(keepends=True)
+    
+    # Check if a header (comment block) already exists at the top
+    if content_lines and content_lines[0].strip().startswith('//'):
+        end_idx = 0
+        is_doc_comment = False
+        for i, line in enumerate(content_lines):
+            stripped = line.strip()
+            # Documentation comments start with /// or //!
+            if stripped.startswith('///') or stripped.startswith('//!'):
+                is_doc_comment = True
+                break
+            # Regular comments start with //
+            if stripped.startswith('//') or stripped == '':
+                end_idx = i + 1
+            else:
+                break
+        
+        if not is_doc_comment and end_idx > 0:
+            # We found a regular comment block at the top. 
+            # Check if it looks like a license header.
+            header_candidate = "".join(content_lines[:end_idx])
+            if any(indicator in header_candidate for indicator in ['Copyright', 'License', 'SPDX', 'بِسْمِ اللَّهِ']):
+                content_lines = content_lines[end_idx:]
+
+    # Clean up leading empty lines
+    while content_lines and content_lines[0].strip() == '':
+        content_lines.pop(0)
+
+    new_content = header_text + '\n\n' + "".join(content_lines)
     
     with open(file_path, 'w') as f:
-        f.writelines(new_content)
+        f.write(new_content)
+    return True
 
 def main():
     for root, dirs, files in os.walk(ROOT_DIR):
@@ -77,8 +99,8 @@ def main():
             if file.endswith(('.rs', '.js', '.ts', '.tsx')):
                 file_path = os.path.join(root, file)
                 header_path = get_header(file_path)
-                apply_header(file_path, header_path)
-                print(f"Applied {os.path.basename(header_path)} to {os.path.relpath(file_path, ROOT_DIR)}")
+                if apply_header(file_path, header_path):
+                    print(f"Applied {os.path.basename(header_path)} to {os.path.relpath(file_path, ROOT_DIR)}")
             elif file == 'Cargo.toml':
                 file_path = os.path.join(root, file)
                 header_path = get_header(file_path)
