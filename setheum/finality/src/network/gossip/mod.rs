@@ -18,7 +18,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-//! A P2P-based gossip network, for now only for sending broadcasts.
 use std::{
     collections::HashSet,
     fmt::{Debug, Display},

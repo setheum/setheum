@@ -18,14 +18,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-//! # ECDP USSD Engine Module
-//!
-//! ## Overview
-//!
-//! The core module of Slick USD ECDP Protocol. ECDP USSD Engine is responsible for handling
-//! internal processes about ECDPs, including liquidation, settlement and risk
-//! management.
-
 #![cfg_attr(not(feature = "std"), no_std)]
 #![allow(clippy::unused_unit)]
 #![allow(clippy::upper_case_acronyms)]

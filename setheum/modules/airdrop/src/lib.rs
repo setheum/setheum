@@ -18,15 +18,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-//! # Airdrop Module
-//!
-//! ## Overview
-//!
-//! This module creates airdrops and distributes airdrops to the -
-//! acccounts in the airdrops from an update origin. 
-//! The module for distributing Setheum Airdrops,
-//! it will be used for the Setheum IAE (Initial Airdrop Event).
-
 #![cfg_attr(not(feature = "std"), no_std)]
 #![allow(clippy::unused_unit)]
 #![allow(clippy::type_complexity)]

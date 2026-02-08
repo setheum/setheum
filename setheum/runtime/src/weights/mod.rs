@@ -18,7 +18,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-//! A list of the different weight modules for our runtime.
 #![allow(clippy::unnecessary_cast)]
 
 // pub mod dex_oracle;

@@ -18,8 +18,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-//! An orml_authority trait implementation.
-
 use crate::{
 	AccountId, AccountIdConversion, AuthoritysOriginId, BadOrigin, BlockNumber, DispatchResult, EnsureRoot,
 	EnsureRootOrHalfShuraCouncil, EnsureRootOrThreeFourthsShuraCouncil, EnsureRootOrHalfFinancialCouncil,

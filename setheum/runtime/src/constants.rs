@@ -18,9 +18,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-//! A set of constant values used in dev runtime.
-
-/// Time and blocks.
 pub mod time {
 	use primitives::{MILLISECS_PER_BLOCK, Balance, BlockNumber, Moment};
 // use runtime_common::{dollar, millicent, SEE};

@@ -18,13 +18,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-//! # Transaction Payment Module
-//!
-//! ## Overview
-//!
-//! Transaction payment module is responsible for charge fee and tip in
-//! different currencies
-
 #![cfg_attr(not(feature = "std"), no_std)]
 #![allow(clippy::unused_unit)]
 #![allow(clippy::boxed_local)]

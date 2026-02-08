@@ -1,7 +1,8 @@
 [![Crate][crate-image]][crate-link]
 [![Docs][docs-image]][docs-link]
 [![Build Status][build-image]][build-link]
-[![Apache 2.0 Licensed][license-image]][license-link]
+[![Apache 2.0 Licensed][license-apache-image]][license-apache-link]
+[![MIT Licensed][license-mit-image]][license-mit-link]
 [![cargo-audit][cargo-audit-image]][cargo-audit-link]
 
 <p align="center">
@@ -161,7 +162,10 @@ tools with `install_cov_tools.sh`.
 
 ### License
 
-AlephBFT is licensed under the terms of the Apache License 2.0.
+This project is licensed under either the [Apache License 2.0](./LICENSE-APACHE) or the [MIT License](./LICENSE-MIT) at your option.
+
+Unless you explicitly state otherwise, any contribution that you submit to this repo shall be licensed as above, without any additional terms or conditions.
+
 
 ### Funding
 
@@ -177,8 +181,10 @@ The implementation in this repository is funded by [Aleph Zero Foundation][webpa
 [docs-link]: https://docs.rs/aleph-bft
 [build-image]: https://github.com/Cardinal-Cryptography/AlephBFT/workflows/CI/badge.svg
 [build-link]: https://github.com/Cardinal-Cryptography/AlephBFT/actions?query=workflow%3ACI
-[license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
-[license-link]: https://github.com/Cardinal-Cryptography/AlephBFT/blob/main/LICENSE
+[license-apache-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
+[license-apache-link]: ./LICENSE-APACHE
+[license-mit-image]: https://img.shields.io/badge/license-MIT-green.svg
+[license-mit-link]: ./LICENSE-MIT
 [rustc-image]: https://img.shields.io/badge/rustc-stable-blue.svg
 [cargo-audit-image]: https://github.com/Cardinal-Cryptography/AlephBFT/actions/workflows/cargo-audit.yml/badge.svg
 [cargo-audit-link]: https://github.com/Cardinal-Cryptography/AlephBFT/actions/workflows/cargo-audit.yml

@@ -18,9 +18,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-//! EVM stack-based runner.
-// Synchronize with https://github.com/paritytech/frontier/blob/bcae569524/frame/evm/src/runner/stack.rs
-
 use crate::{
 	runner::{
 		state::{Accessed, StackExecutor, StackState as StackStateT, StackSubstateMetadata},

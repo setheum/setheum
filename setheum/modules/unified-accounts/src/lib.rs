@@ -18,13 +18,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-//! # Unified Accounts Module
-//!
-//! ## Overview
-//!
-//! Unified Accounts module provide a two way mapping between Substrate accounts and
-//! EVM Accounts so the user only has to deal with one account // private key.
-
 #![cfg_attr(not(feature = "std"), no_std)]
 #![allow(clippy::unused_unit)]
 

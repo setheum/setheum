@@ -18,9 +18,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-//! The precompiles for EVM, includes standard Ethereum precompiles, and more:
-//! - MultiCurrency at address `H160::from_low_u64_be(1024)`.
-
 #![allow(clippy::upper_case_acronyms)]
 
 mod mock;

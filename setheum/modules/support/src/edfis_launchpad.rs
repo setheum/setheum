@@ -18,8 +18,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-//! Traits for the Launchpad Crowdsales Pallet.
-
 use codec::{Decode, Encode};
 use sp_runtime::{
 	DispatchError, DispatchResult,

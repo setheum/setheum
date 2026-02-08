@@ -18,8 +18,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-//! Implementations and definitions of traits used in legacy & current abft
-
 use std::{cmp::Ordering, fmt::Debug, hash::Hash as StdHash, marker::PhantomData, pin::Pin};
 
 use futures::{channel::oneshot, Future, TryFutureExt};

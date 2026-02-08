@@ -18,8 +18,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-//! Module to glue legacy and current version of the aggregator;
-
 use std::marker::PhantomData;
 
 use current_aleph_aggregator::NetworkError as CurrentNetworkError;

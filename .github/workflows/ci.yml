@@ -1,0 +1,54 @@
+name: Monorepo CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  fmt:
+    name: Rustfmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - name: Check formatting
+        run: cargo fmt --all -- --check
+
+  headers:
+    name: License Headers
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      - name: Verify Headers
+        run: |
+          python3 scripts/apply_headers.py
+          git diff --exit-code || (echo "Headers are missing or incorrect. Run 'python3 scripts/apply_headers.py' to fix." && exit 1)
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Run Tests
+        run: cargo test --workspace --exclude setheum-js
+      # For setheum-js (Node.js/Yarn)
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'yarn'
+          cache-dependency-path: setheum-js/yarn.lock
+      - name: Test setheum-js
+        working-directory: setheum-js
+        run: |
+          yarn install
+          yarn test

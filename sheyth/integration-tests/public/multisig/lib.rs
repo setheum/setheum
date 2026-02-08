@@ -1,57 +1,39 @@
-//! # Multisig Wallet
-//!
-//! This implements a plain multi owner wallet.
-//!
-//! ## Warning
-//!
-//! This contract is an *example*. It is neither audited nor endorsed for production use.
-//! Do **not** rely on it to keep anything of value secure.
-//!
-//! ## Overview
-//!
-//! Each instantiation of this contract has a set of `owners` and a `requirement` of
-//! how many of them need to agree on a `Transaction` for it to be able to be executed.
-//! Every owner can submit a transaction and when enough of the other owners confirm
-//! it will be able to be executed. The following invariant is enforced by the contract:
-//!
-//! ```ignore
-//! 0 < requirement && requirement <= owners && owners <= MAX_OWNERS
-//! ```
-//!
-//! ## Error Handling
-//!
-//! With the exception of `execute_transaction` no error conditions are signalled
-//! through return types. Any error or invariant violation triggers a panic and therefore
-//! rolls back the transaction.
-//!
-//! ## Interface
-//!
-//! The interface is modelled after the popular Gnosis multisig wallet. However, there
-//! are subtle variations from the interface. For example the `confirm_transaction`
-//! will never trigger the execution of a `Transaction` even if the threshold is reached.
-//! A call of `execute_transaction` is always required. This can be called by anyone.
-//!
-//! All the messages that are declared as only callable by the wallet must go through
-//! the usual submit, confirm, execute cycle as any other transaction that should be
-//! called by the wallet. For example, to add an owner you would submit a transaction
-//! that calls the wallets own `add_owner` message through `submit_transaction`.
-//!
-//! ### Owner Management
-//!
-//! The messages `add_owner`, `remove_owner`, and `replace_owner` can be used to manage
-//! the owner set after instantiation.
-//!
-//! ### Changing the Requirement
-//!
-//! `change_requirement` can be used to tighten or relax the `requirement` of how many
-//! owner signatures are needed to execute a `Transaction`.
-//!
-//! ### Transaction Management
-//!
-//! `submit_transaction`, `cancel_transaction`, `confirm_transaction`,
-//! `revoke_confirmation` and `execute_transaction` are the bread and butter messages
-//! of this contract. Use them to dispatch arbitrary messages to other contracts
-//! with the wallet as a sender.
+// بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
+// This file is part of Setheum.
+
+// Copyright (C) 2019-Present Setheum Developers.
+// SPDX-License-Identifier: Apache-2.0 OR MIT
+
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// 	http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+// Alternatively, this file is available under the MIT License:
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 #![cfg_attr(not(feature = "std"), no_std, no_main)]
 

@@ -18,14 +18,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-//! Tests to make sure that weights and fees match what we
-//! expect from Substrate or ORML.
-//!
-//! These test are not meant to be exhaustive, as it is inevitable that
-//! weights in Substrate will change. Instead they are supposed to provide
-//! some sort of indicator that calls we consider important (e.g
-//! Balances::transfer) have not suddenly changed from under us.
-
 use frame_support::weights::constants::*;
 
 #[test]

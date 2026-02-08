@@ -18,16 +18,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-//! # Ecdp Module
-//!
-//! ## Overview
-//!
-//! The entry of the Ecdp protocol for users, user can manipulate their ECDP
-//! position to loan/payback, and can also authorize others to manage the their
-//! ECDP under specific collateral type.
-//!
-//! After system shutdown, some operations will be restricted.
-
 #![cfg_attr(not(feature = "std"), no_std)]
 #![allow(clippy::unused_unit)]
 

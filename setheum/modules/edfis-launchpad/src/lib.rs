@@ -18,13 +18,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-//! # Launchpad Crowdsales Pallet
-//!
-//! ## Overview
-//!
-//! Edfis Launchpad is a platform for projects to offer crowdsales (IDO) of their tokens
-//! and raise funds on Edfis while listing their liquidity pool on the exchange.
-
 #![cfg_attr(not(feature = "std"), no_std)]
 // Disable the following two lints since they originate from an external macro (namely decl_storage)
 #![allow(clippy::string_lit_as_bytes)]

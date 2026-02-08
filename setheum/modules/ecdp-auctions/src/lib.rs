@@ -18,15 +18,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-//! # Auction Manager Module
-//!
-//! ## Overview
-//!
-//! Auctions the assets of the system to maintain the normal operation of the
-//! business. Auction types include:
-//!   - `collateral auction`: sell collateral assets for stablecoin to eliminate the
-//!     system's bad debit by auction
-
 #![cfg_attr(not(feature = "std"), no_std)]
 #![allow(clippy::unused_unit)]
 #![allow(clippy::upper_case_acronyms)]

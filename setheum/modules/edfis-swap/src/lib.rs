@@ -18,15 +18,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-//! # DEX Module
-//!
-//! ## Overview
-//!
-//! Ethical DeFi's Built-in decentralized exchange module, the swap
-//! mechanism refers to the design of `Uniswap V3` with additional features and functionalities
-//! that makes Edfis unique. In addition to being used for trading, DEX also participates 
-//! in `ECDP liquidation`, which is faster than Liquidation By Auction when the liquidity is sufficient.
-
 #![cfg_attr(not(feature = "std"), no_std)]
 #![allow(clippy::too_many_arguments)]
 #![allow(clippy::type_complexity)]

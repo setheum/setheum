@@ -1,30 +1,39 @@
-//! # Custom Allocator
-//!
-//! This example demonstrates how to opt-out of the ink! provided global memory allocator.
-//!
-//! We will use [`dlmalloc`](https://github.com/alexcrichton/dlmalloc-rs) instead.
-//!
-//! ## Warning!
-//!
-//! We **do not** recommend you opt-out of the provided allocator for production contract
-//! deployments!
-//!
-//! If you don't handle allocations correctly you can introduce security vulnerabilities
-//! to your contracts.
-//!
-//! You may also introduce performance issues. This is because the code of your allocator
-//! will be included in the final contract binary, potentially increasing gas usage
-//! significantly.
-//!
-//! ## Why Change the Allocator?
-//!
-//! The default memory allocator was designed to have a tiny size footprint, and made some
-//! compromises to achieve that, e.g it does not free/deallocate memory.
-//!
-//! You may have a use case where you want to deallocate memory, or allocate it using a
-//! different strategy.
-//!
-//! Providing your own allocator lets you choose the right tradeoffs for your use case.
+// بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
+// This file is part of Setheum.
+
+// Copyright (C) 2019-Present Setheum Developers.
+// SPDX-License-Identifier: Apache-2.0 OR MIT
+
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// 	http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+// Alternatively, this file is available under the MIT License:
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 #![cfg_attr(not(feature = "std"), no_std, no_main)]
 

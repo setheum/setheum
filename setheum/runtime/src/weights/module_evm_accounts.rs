@@ -18,22 +18,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-
-// Executed Command:
-// target/release/setheum-node
-// benchmark
-// --chain=dev
-// --steps=50
-// --repeat=20
-// --pallet=*
-// --extrinsic=*
-// --execution=wasm
-// --wasm-execution=compiled
-// --heap-pages=4096
-// --template=.maintain/runtime-weight-template.hbs
-// --output=./runtime/setheum/src/weights/
-
-
 #![cfg_attr(rustfmt, rustfmt_skip)]
 #![allow(unused_parens)]
 #![allow(unused_imports)]

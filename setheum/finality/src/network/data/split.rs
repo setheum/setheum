@@ -18,8 +18,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-// WARNING: if you plan to substitute the `ComponentNetwork` with SimpleNetwork (or something similar),
-// you might find that it will require you to leak all private types declared here.
 use std::{marker::PhantomData, sync::Arc};
 
 use futures::channel::mpsc;

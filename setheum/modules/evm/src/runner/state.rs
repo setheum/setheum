@@ -18,8 +18,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-// Synchronize with https://github.com/rust-evm/blob/d543f10/src/executor/stack/executor.rs
-
 use crate::{
 	encode_revert_message,
 	runner::tagged_runtime::{RuntimeKind, TaggedRuntime},

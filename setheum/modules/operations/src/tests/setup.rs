@@ -18,8 +18,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-//! Mocks for the Operations Module.
-
 use frame_support::{
     construct_runtime,
     pallet_prelude::ConstU32,

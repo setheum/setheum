@@ -18,8 +18,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-//! Traits for the Operations Module.
-
 use frame_support::{traits::StoredMap, WeakBoundedVec};
 use pallet_balances::BalanceLock;
 use sp_runtime::traits::Zero;

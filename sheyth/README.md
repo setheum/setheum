@@ -288,5 +288,8 @@ Use the scripts provided under `scripts/check-*` directory in order to run check
 
 ## License
 
-The entire code within this repository is licensed under the [Apache License 2.0](LICENSE).
+This project is licensed under either the [Apache License 2.0](./LICENSE-APACHE) or the [MIT License](./LICENSE-MIT) at your option.
+
+Unless you explicitly state otherwise, any contribution that you submit to this repo shall be licensed as above, without any additional terms or conditions.
+
 

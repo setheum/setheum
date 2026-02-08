@@ -32,6 +32,16 @@ cargo build --release
 
 ## License
 
-The code in this repository is licensed under the [GNU GPL Version 3 License](./LICENSE)
+The projects in the Setheum blockchain are licensed as follows:
 
-Unless you explicitly state otherwise, any contribution that you submit to this repo shall be licensed as above (as defined in the [GNU GPL-3 Version 3.0 or later WITH Classpath-exception-2.0](./LICENSE)), without any additional terms or conditions.
+- **Core Blockchain & Runtime**: Licensed under the [GNU GPL Version 3](./LICENSE-GPL3) (GPL-3.0-or-later WITH Classpath-exception-2.0).
+- **Client & Tooling**: Certain components are dual-licensed under [Apache License 2.0](./LICENSE-APACHE) or [MIT License](./LICENSE-MIT) at your option:
+
+  - `clique/`
+  - `setheum-client/`
+  - `aggregator/`
+  - `tests/flooder/`
+  - `rate-limiter/`
+
+Unless you explicitly state otherwise, any contribution that you submit to this repo shall be licensed as above, without any additional terms or conditions.
+

@@ -1,4 +1,5 @@
 ![license](https://img.shields.io/badge/License-Apache%202.0-blue?logo=apache&style=flat-square)
+![license](https://img.shields.io/badge/License-MIT-green?logo=mit&style=flat-square)
 [![npm](https://img.shields.io/npm/v/@setheum.js/api?logo=npm&style=flat-square)](https://www.npmjs.com/package/@setheum.js/api)
 
 # @setheum.js
@@ -74,3 +75,10 @@ Derived results that are injected into the API, allowing for combinations of var
   3. **All modifications** must be made in **pull-request** to solicit feedback from other contributors.
   4. A pull-request **must not be merged until CI** has finished successfully.
   5. Contributors should adhere to the [Google Typescript Style Guide](https://github.com/google/gts).
+
+## License
+
+This project is licensed under either the [Apache License 2.0](./LICENSE-APACHE) or the [MIT License](./LICENSE-MIT) at your option.
+
+Unless you explicitly state otherwise, any contribution that you submit to this repo shall be licensed as above, without any additional terms or conditions.
+

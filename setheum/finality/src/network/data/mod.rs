@@ -18,7 +18,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-//! Abstraction over an abstract network sending data to a set of nodes.
 use crate::{abft::Recipient, network::Data};
 
 pub mod component;

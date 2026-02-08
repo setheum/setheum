@@ -18,13 +18,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-//! # ECDP Loans Module
-//!
-//! ## Overview
-//!
-//! ECDP Loans module manages ECDP's collateral assets and the debits backed by these
-//! assets.
-
 #![cfg_attr(not(feature = "std"), no_std)]
 #![allow(clippy::unused_unit)]
 #![allow(clippy::collapsible_if)]

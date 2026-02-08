@@ -18,8 +18,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-//! Unit tests for the Edfis Launchpad module.
-
 #![cfg(test)]
 
 use super::*;

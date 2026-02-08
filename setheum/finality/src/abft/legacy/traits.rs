@@ -18,7 +18,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-//! Implementations and definitions of traits used in legacy abft
 use crate::data_io::{
     legacy::{AlephData, DataProvider, OrderedDataInterpreter},
     ChainInfoProvider,

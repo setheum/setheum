@@ -18,8 +18,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-//! Primitives for the Edfis Launchpad module.
-
 use codec::{Decode, Encode};
 use sp_runtime::{
 	DispatchError, DispatchResult, RuntimeDebug,

@@ -18,14 +18,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-//! Main purpose of this module is to be able to use two different versions of the abft crate.
-//! Older version is referred to as 'Legacy' while newer as 'Current'.
-//! We achieve this by hiding types & traits from abft crates behind our owns. In case of traits we
-//! implement both current and legacy ones. In case of types we implement trait `From` to be able
-//! convert them at the 'glueing' spot to the abft library. Current and legacy versions are marked
-//! by numbers. Whenever we upgrade to next version of abft we need to increment and mark each version
-//! version accordingly.
-
 mod common;
 mod crypto;
 mod current;

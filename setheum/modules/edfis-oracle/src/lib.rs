@@ -18,11 +18,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-//! # DEX Oracle Module
-//!
-//! Ethical DeFi's Built-in DEX-based Oracle module built on `Edfis` Exchange, 
-//! it provides pricing based on Liquidity Pools liquidity on Edfis Exchange.
-
 #![cfg_attr(not(feature = "std"), no_std)]
 #![allow(clippy::unused_unit)]
 #![allow(clippy::type_complexity)]

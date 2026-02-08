@@ -17,6 +17,7 @@
 
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
+
 use frame_support::weights::Weight;
 use parity_scale_codec::{Decode, Encode};
 use scale_info::TypeInfo;

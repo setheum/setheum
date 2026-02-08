@@ -18,8 +18,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-//! Synchronize with [Finality Aleph](https://github.com/Cardinal-Cryptography/aleph-node/tree/main/finality-aleph)
-
 use std::{
     fmt::{Debug, Display},
     hash::Hash,

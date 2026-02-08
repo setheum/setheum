@@ -1,10 +1,14 @@
-// Copyright (C) Use Ink (UK) Ltd.
-//
+// بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
+// This file is part of Setheum.
+
+// Copyright (C) 2019-Present Setheum Developers.
+// SPDX-License-Identifier: Apache-2.0 OR MIT
+
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+// 	http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,114 +16,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// Stores information for every ink! trait message of an ink! trait definition.
-///
-/// This information includes if the ink! trait message is payable
-/// as well as its derived or manually specified selector.
-///
-/// In the future this info trait might be extended to contain
-/// more information about a single ink! trait message.
-///
-/// The information provided through this trait can be used on the
-/// implementer side of an ink! trait to check and guard certain
-/// properties on a Rust type system level. This is important since
-/// ink! cannot be guaranteed to have both the ink! trait definition
-/// and all of its implementers under its scope and radar.
-///
-/// # Note
-///
-/// - The `TraitMessageInfo<LOCAL_ID>` is implemented by the automatically generated ink!
-///   trait definition information object associated to the ink! trait definition at hand.
-/// - For every ink! trait message defined by the ink! trait definition the associated
-///   ink! trait definition information object implements this trait given the
-///   `TRAIT_LOCAL_MESSAGE_ID` of each ink! trait message respectively.
-/// - The local IDs uniquely identifying all the ink! trait messages of the ink! trait
-///   definition are computed solely using the Rust identifier of the ink! trait message
-///   which can be derived from ink! implementation blocks in order to query the
-///   information stored by this ink! trait information object trait implementation.
-///
-/// # Usage
-///
-/// ```
-/// #[ink::trait_definition]
-/// pub trait InkTrait {
-///     #[ink(message)]
-///     fn trait_message_1(&self);
-///
-///     #[ink(message, payable, selector = 0xC0DECAFE)]
-///     fn trait_message_2(&mut self);
-/// }
-///
-/// #[ink::trait_definition(namespace = "foo")]
-/// pub trait InkTrait2 {
-///     #[ink(message)]
-///     fn trait_message(&self);
-/// }
-///
-/// #[ink::contract]
-/// pub mod contract {
-///     use super::{InkTrait, InkTrait2};
-///
-///     #[ink(storage)]
-///     pub struct Contract {}
-///
-///     impl Contract {
-///         #[ink(constructor)]
-///         pub fn constructor() -> Self { Contract {} }
-///     }
-///
-///     impl InkTrait for Contract {
-///         #[ink(message)]
-///         fn trait_message_1(&self) {}
-///
-///         #[ink(message)]
-///         fn trait_message_2(&mut self) {}
-///     }
-///
-///     impl InkTrait2 for Contract {
-///         #[ink(message)]
-///         fn trait_message(&self) {}
-///     }
-/// }
-///
-/// # use ink::reflect::TraitDefinitionRegistry;
-/// # use ink::reflect::TraitMessageInfo;
-/// # use ink_env::DefaultEnvironment;
-/// # use ink::{selector_id, selector_bytes};
-///
-/// fn main() {
-///     assert_eq!(
-///         <<TraitDefinitionRegistry<DefaultEnvironment> as InkTrait>::__ink_TraitInfo
-///             as TraitMessageInfo<{selector_id!("trait_message_1")}>>::PAYABLE,
-///         false,
-///     );
-///     assert_eq!(
-///         <<TraitDefinitionRegistry<DefaultEnvironment> as InkTrait>::__ink_TraitInfo
-///             as TraitMessageInfo<{selector_id!("trait_message_2")}>>::PAYABLE,
-///         true,
-///     );
-///     assert_eq!(
-///         <<TraitDefinitionRegistry<DefaultEnvironment> as InkTrait2>::__ink_TraitInfo
-///             as TraitMessageInfo<{selector_id!("trait_message")}>>::PAYABLE,
-///         false,
-///     );
-///     assert_eq!(
-///         <<TraitDefinitionRegistry<DefaultEnvironment> as InkTrait>::__ink_TraitInfo
-///             as TraitMessageInfo<{selector_id!("trait_message_1")}>>::SELECTOR,
-///         selector_bytes!("InkTrait::trait_message_1")
-///     );
-///     assert_eq!(
-///         <<TraitDefinitionRegistry<DefaultEnvironment> as InkTrait>::__ink_TraitInfo
-///             as TraitMessageInfo<{selector_id!("trait_message_2")}>>::SELECTOR,
-///         [0xC0, 0xDE, 0xCA, 0xFE]
-///     );
-///     assert_eq!(
-///         <<TraitDefinitionRegistry<DefaultEnvironment> as InkTrait2>::__ink_TraitInfo
-///             as TraitMessageInfo<{selector_id!("trait_message")}>>::SELECTOR,
-///         selector_bytes!("foo::InkTrait2::trait_message")
-///     );
-/// }
-/// ```
+// Alternatively, this file is available under the MIT License:
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 pub trait TraitMessageInfo<const TRAIT_LOCAL_MESSAGE_ID: u32> {
     /// Is `true` if the ink! trait message has been annotated with `#[ink(payable)]`.
     const PAYABLE: bool;

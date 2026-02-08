@@ -18,7 +18,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-//! Managing the validator connections in sessions using the gossip network.
 use std::fmt::Display;
 
 use futures::channel::mpsc;

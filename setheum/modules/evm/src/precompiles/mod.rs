@@ -18,8 +18,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-//! Builtin precompiles.
-
 use crate::{PrecompileFailure, PrecompileHandle, PrecompileOutput, PrecompileResult};
 use module_evm_utility::evm::{ExitError, ExitSucceed};
 use sp_std::vec::Vec;
