@@ -4,8 +4,9 @@ import sys
 
 # Define the paths to the header templates
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-HEADER_GPL3 = os.path.join(ROOT_DIR, 'HEADER-GPL3')
-HEADER_MIT_APACHE = os.path.join(ROOT_DIR, 'HEADER-MIT-APACHE')
+HEADER_DIR = os.path.join(ROOT_DIR, '.licenseheaders')
+HEADER_GPL3 = os.path.join(HEADER_DIR, 'HEADER-GPL3')
+HEADER_MIT_APACHE = os.path.join(HEADER_DIR, 'HEADER-MIT-APACHE')
 
 # Map directories to their respective license headers
 # Apache2.0/MIT for setheum-js, sheyth, set-bft, clique, setheum-client, aggregator, flooder and rate-limiter

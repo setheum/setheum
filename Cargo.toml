@@ -3,5 +3,6 @@ members = [
     "setheum",
     "sheyth",
     "set-bft",
+    "setheum-js",
 ]
 resolver = "2"
