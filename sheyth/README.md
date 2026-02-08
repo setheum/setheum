@@ -4,10 +4,12 @@
     Polkadot's ink! for writing smart contracts
 </h1>
 
-[![linux][a1]][a2] [![codecov][c1]][c2] [![coveralls][d1]][d2] [![loc][e1]][e2] [![stack-exchange][s1]][s2]
+[![linux][a1]][a2] [![CodeQL][cq1]][cq2] [![codecov][c1]][c2] [![coveralls][d1]][d2] [![loc][e1]][e2] [![stack-exchange][s1]][s2]
 
-[a1]: https://github.com/use-ink/ink/workflows/continuous-integration/badge.svg
-[a2]: https://github.com/use-ink/ink/actions?query=workflow%3Acontinuous-integration+branch%3Amaster
+[a1]: https://github.com/setheum/setheum/actions/workflows/ci.yml/badge.svg
+[a2]: https://github.com/setheum/setheum/actions/workflows/ci.yml
+[cq1]: https://github.com/setheum/setheum/actions/workflows/github-code-scanning/codeql/badge.svg?style=flat-square
+[cq2]: https://github.com/setheum/setheum/actions/workflows/github-code-scanning/codeql
 [c1]: https://codecov.io/gh/use-ink/ink/branch/master/graph/badge.svg
 [c2]: https://codecov.io/gh/use-ink/ink/branch/master
 [d1]: https://coveralls.io/repos/github/use-ink/ink/badge.svg?branch=master

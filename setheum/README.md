@@ -6,6 +6,9 @@
 
 # Setheum Blockchain
 
+[![Build](https://github.com/setheum/setheum/actions/workflows/ci.yml/badge.svg)](https://github.com/setheum/setheum/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/setheum/setheum/actions/workflows/github-code-scanning/codeql/badge.svg?style=flat-square)](https://github.com/setheum/setheum/actions/workflows/github-code-scanning/codeql)
+
 Core implementation of the Setheum Network, a Substrate-based blockchain.
 
 ## Directory Structure

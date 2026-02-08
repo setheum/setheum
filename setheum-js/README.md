@@ -1,5 +1,7 @@
 ![license](https://img.shields.io/badge/License-Apache%202.0-blue?logo=apache&style=flat-square)
 ![license](https://img.shields.io/badge/License-MIT-green?logo=mit&style=flat-square)
+[![Build](https://github.com/setheum/setheum/actions/workflows/ci.yml/badge.svg?style=flat-square)](https://github.com/setheum/setheum/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/setheum/setheum/actions/workflows/github-code-scanning/codeql/badge.svg?style=flat-square)](https://github.com/setheum/setheum/actions/workflows/github-code-scanning/codeql)
 [![npm](https://img.shields.io/npm/v/@setheum.js/api?logo=npm&style=flat-square)](https://www.npmjs.com/package/@setheum.js/api)
 
 # @setheum.js

@@ -1,6 +1,7 @@
 [![Crate][crate-image]][crate-link]
 [![Docs][docs-image]][docs-link]
 [![Build Status][build-image]][build-link]
+[![CodeQL][codeql-image]][codeql-link]
 [![Apache 2.0 Licensed][license-apache-image]][license-apache-link]
 [![MIT Licensed][license-mit-image]][license-mit-link]
 [![cargo-audit][cargo-audit-image]][cargo-audit-link]
@@ -179,8 +180,10 @@ The implementation in this repository is funded by [Aleph Zero Foundation][webpa
 [crate-link]: https://crates.io/crates/aleph-bft
 [docs-image]: https://docs.rs/aleph-bft/badge.svg
 [docs-link]: https://docs.rs/aleph-bft
-[build-image]: https://github.com/Cardinal-Cryptography/AlephBFT/workflows/CI/badge.svg
-[build-link]: https://github.com/Cardinal-Cryptography/AlephBFT/actions?query=workflow%3ACI
+[build-image]: https://github.com/setheum/setheum/actions/workflows/ci.yml/badge.svg
+[build-link]: https://github.com/setheum/setheum/actions/workflows/ci.yml
+[codeql-image]: https://github.com/setheum/setheum/actions/workflows/github-code-scanning/codeql/badge.svg?style=flat-square
+[codeql-link]: https://github.com/setheum/setheum/actions/workflows/github-code-scanning/codeql
 [license-apache-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
 [license-apache-link]: ./LICENSE-APACHE
 [license-mit-image]: https://img.shields.io/badge/license-MIT-green.svg
