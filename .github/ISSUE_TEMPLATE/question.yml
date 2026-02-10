@@ -1,0 +1,27 @@
+name: Ask a Question
+description: Ask a question about Setheum
+title: "[Question]: "
+labels: ["question"]
+body:
+  - type: dropdown
+    id: project
+    attributes:
+      label: Project/Component
+      description: Which project or component is your question about?
+      options:
+        - "setheum (Core Blockchain)"
+        - "setheum-js (JS/TS SDK)"
+        - "sheyth (Smart Contract Framework)"
+        - "set-bft (Consensus Engine)"
+        - "monorepo (General/Infrastructure)"
+    validations:
+      required: true
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+      description: What are you trying to accomplish? Where have you looked for answers?
+      placeholder: |
+        Ask your question here...
+    validations:
+      required: true

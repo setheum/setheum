@@ -6,7 +6,7 @@ authors = ["Use Ink <ink@use.ink>"]
 edition = "2021"
 homepage = "https://use.ink"
 keywords = ["wasm", "ink", "webassembly", "blockchain", "edsl"]
-license = "Apache-2.0"
+license = "Apache-2.0 OR MIT"
 repository = "https://github.com/use-ink/ink"
 
 [workspace.dependencies]

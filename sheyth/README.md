@@ -4,10 +4,12 @@
     Polkadot's ink! for writing smart contracts
 </h1>
 
-[![linux][a1]][a2] [![codecov][c1]][c2] [![coveralls][d1]][d2] [![loc][e1]][e2] [![stack-exchange][s1]][s2]
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue?logo=apache&style=flat-square)](./LICENSE-APACHE) [![License: MIT](https://img.shields.io/badge/License-MIT-green?logo=mit&style=flat-square)](./LICENSE-MIT) [![linux][a1]][a2] [![CodeQL][cq1]][cq2] [![codecov][c1]][c2] [![coveralls][d1]][d2] [![loc][e1]][e2] [![stack-exchange][s1]][s2]
 
-[a1]: https://github.com/use-ink/ink/workflows/continuous-integration/badge.svg
-[a2]: https://github.com/use-ink/ink/actions?query=workflow%3Acontinuous-integration+branch%3Amaster
+[a1]: https://github.com/setheum/setheum/actions/workflows/ci.yml/badge.svg
+[a2]: https://github.com/setheum/setheum/actions/workflows/ci.yml
+[cq1]: https://github.com/setheum/setheum/actions/workflows/github-code-scanning/codeql/badge.svg?style=flat-square
+[cq2]: https://github.com/setheum/setheum/actions/workflows/github-code-scanning/codeql
 [c1]: https://codecov.io/gh/use-ink/ink/branch/master/graph/badge.svg
 [c2]: https://codecov.io/gh/use-ink/ink/branch/master
 [d1]: https://coveralls.io/repos/github/use-ink/ink/badge.svg?branch=master
@@ -288,5 +290,8 @@ Use the scripts provided under `scripts/check-*` directory in order to run check
 
 ## License
 
-The entire code within this repository is licensed under the [Apache License 2.0](LICENSE).
+This project is licensed under either the [Apache License 2.0](./LICENSE-APACHE) or the [MIT License](./LICENSE-MIT) at your option.
+
+Unless you explicitly state otherwise, any contribution that you submit to this repo shall be licensed as above, without any additional terms or conditions.
+
 

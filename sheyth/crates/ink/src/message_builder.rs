@@ -1,10 +1,14 @@
-// Copyright (C) Use Ink (UK) Ltd.
-//
+// بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
+// This file is part of Setheum.
+
+// Copyright (C) 2019-Present Setheum Developers.
+// SPDX-License-Identifier: Apache-2.0 OR MIT
+
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+// 	http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,125 +16,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// Creates an instance of a message builder for an `#[ink::trait_definition]`.
-///
-/// This is done by creating a wrapper around the trait defined with the
-/// [`ink::trait_definition`](crate::trait_definition) macro.
-///
-/// The macro returns an instance of the generated message builder type which implements
-/// the trait, allowing the user to create and invoke messages on the trait.
-///
-/// This is similar to the call builder syntax accessible via the [`crate::contract_ref!`]
-/// macro, except that it is decoupled from the callee account id, as well as the
-/// underlying execution environment. This allows it to be used in execution contexts
-/// other than cross-contract calls.
-///
-/// # Usage
-///
-/// The macro expects two arguments:
-/// - The first argument is the path to the trait, e.g. `Erc20` or `erc20::Erc20`.
-/// - The second argument is the type of the [`ink_env::Environment`].
-///
-/// If the second argument is not specified, the macro uses the
-/// [`ink_env::DefaultEnvironment`].
-///
-/// ```rust
-/// use ink::message_builder;
-/// use ink_env::{
-///     call::{
-///         ExecutionInput,
-///         Executor,
-///     },
-///     DefaultEnvironment,
-/// };
-/// use ink_primitives::{
-///     AccountId,
-///     MessageResult,
-/// };
-/// use scale::{
-///     Decode,
-///     Encode,
-/// };
-///
-/// #[ink::trait_definition]
-/// pub trait Erc20 {
-///     /// Returns the total supply of the ERC-20 smart contract.
-///     #[ink(message)]
-///     fn total_supply(&self) -> u128;
-///
-///     /// Transfers balance from the caller to the given address.
-///     #[ink(message)]
-///     fn transfer(&mut self, amount: u128, to: AccountId) -> bool;
-/// }
-///
-/// #[derive(Clone)]
-/// pub struct CustomEnv;
-///
-/// impl ink_env::Environment for CustomEnv {
-///     const MAX_EVENT_TOPICS: usize = 3;
-///     type AccountId = [u8; 32];
-///     type Balance = u64;
-///     type Hash = [u8; 32];
-///     type Timestamp = u64;
-///     type BlockNumber = u64;
-///     type ChainExtension = ();
-/// }
-///
-/// /// To demonstrate implementing an execution environment agnostic executor
-/// pub struct ExampleExecutor<E> {
-///     marker: core::marker::PhantomData<E>,
-/// }
-///
-/// impl<E> ExampleExecutor<E> {
-///     pub fn new() -> Self {
-///         Self {
-///             marker: core::marker::PhantomData,
-///         }
-///     }
-/// }
-///
-/// impl<E> Executor<E> for ExampleExecutor<E>
-/// where
-///     E: ink_env::Environment,
-/// {
-///     type Error = ();
-///     fn exec<Args, Output>(
-///         &self,
-///         input: &ExecutionInput<Args>,
-///     ) -> Result<MessageResult<Output>, Self::Error>
-///     where
-///         Args: Encode,
-///         Output: Decode,
-///     {
-///         println!("Executing contract with input: {:?}", Encode::encode(input));
-///         unimplemented!("Decode contract execution output")
-///     }
-/// }
-///
-/// fn default(to: AccountId) {
-///     let executor = ExampleExecutor::<DefaultEnvironment>::new();
-///     let mut contract = message_builder!(Erc20);
-///     let total_supply = contract.total_supply().exec(&executor).unwrap().unwrap();
-///     contract.transfer(total_supply, to).exec(&executor).unwrap();
-/// }
-///
-/// fn custom(to: AccountId) {
-///     let executor = ExampleExecutor::<CustomEnv>::new();
-///     let mut contract = message_builder!(Erc20, CustomEnv);
-///     let total_supply = contract.total_supply().exec(&executor).unwrap().unwrap();
-///     contract.transfer(total_supply, to).exec(&executor).unwrap();
-/// }
-///
-/// fn generic<E>(to: AccountId)
-/// where
-///     E: ink_env::Environment,
-/// {
-///     let executor = ExampleExecutor::<E>::new();
-///     let mut contract = message_builder!(Erc20, E);
-///     let total_supply = contract.total_supply().exec(&executor).unwrap().unwrap();
-///     contract.transfer(total_supply, to).exec(&executor).unwrap();
-/// }
-/// ```
+// Alternatively, this file is available under the MIT License:
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 #[macro_export]
 macro_rules! message_builder {
     // The case of the default `Environment`

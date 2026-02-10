@@ -1,0 +1,52 @@
+name: Feature Request
+description: Suggest an idea for Setheum
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have a great idea for Setheum? We'd love to hear it!
+  - type: dropdown
+    id: project
+    attributes:
+      label: Project/Component
+      description: Which project or component is this feature for?
+      options:
+        - "setheum (Core Blockchain)"
+        - "setheum-js (JS/TS SDK)"
+        - "sheyth (Smart Contract Framework)"
+        - "set-bft (Consensus Engine)"
+        - "monorepo (General/Infrastructure)"
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: Describe the need or frustration that motivated you to make this suggestion.
+      placeholder: |
+        Why do we need this?
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Suggested Solution
+      description: Describe your suggested solution to the need or frustration that you are experiencing.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives
+      description: Describe any alternative solutions or features you considered.
+    validations:
+      required: false
+  - type: textarea
+    id: additional-info
+    attributes:
+      label: Additional Information
+      description: Provide any additional information that you believe may help us evaluate your suggestion.
+    validations:
+      required: false

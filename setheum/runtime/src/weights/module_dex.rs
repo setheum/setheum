@@ -1,0 +1,104 @@
+// بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
+
+// This file is part of Setheum.
+
+// Copyright (C) 2019-Present Setheum Developers.
+// SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+#![cfg_attr(rustfmt, rustfmt_skip)]
+#![allow(unused_parens)]
+#![allow(unused_imports)]
+
+use frame_support::{traits::Get, weights::Weight};
+use sp_std::marker::PhantomData;
+
+/// Weight functions for edfis_swap_legacy_module.
+pub struct WeightInfo<T>(PhantomData<T>);
+impl<T: frame_system::Config> edfis_swap_legacy_module::WeightInfo for WeightInfo<T> {
+	fn enable_trading_pair() -> Weight {
+		(25_878_000 as Weight)
+			.saturating_add(T::DbWeight::get().reads(1 as Weight))
+			.saturating_add(T::DbWeight::get().writes(1 as Weight))
+	}
+	fn disable_trading_pair() -> Weight {
+		(25_740_000 as Weight)
+			.saturating_add(T::DbWeight::get().reads(1 as Weight))
+			.saturating_add(T::DbWeight::get().writes(1 as Weight))
+	}
+	fn list_provisioning() -> Weight {
+		(39_243_000 as Weight)
+			.saturating_add(T::DbWeight::get().reads(3 as Weight))
+			.saturating_add(T::DbWeight::get().writes(1 as Weight))
+	}
+	fn update_provisioning_parameters() -> Weight {
+		(12_764_000 as Weight)
+			.saturating_add(T::DbWeight::get().reads(1 as Weight))
+			.saturating_add(T::DbWeight::get().writes(1 as Weight))
+	}
+	fn end_provisioning() -> Weight {
+		(80_534_000 as Weight)
+			.saturating_add(T::DbWeight::get().reads(5 as Weight))
+			.saturating_add(T::DbWeight::get().writes(6 as Weight))
+	}
+	fn add_provision() -> Weight {
+		(132_773_000 as Weight)
+			.saturating_add(T::DbWeight::get().reads(5 as Weight))
+			.saturating_add(T::DbWeight::get().writes(5 as Weight))
+	}
+	fn claim_dex_share() -> Weight {
+		(109_807_000 as Weight)
+			.saturating_add(T::DbWeight::get().reads(7 as Weight))
+			.saturating_add(T::DbWeight::get().writes(5 as Weight))
+	}
+	fn add_liquidity() -> Weight {
+		(191_996_000 as Weight)
+			.saturating_add(T::DbWeight::get().reads(9 as Weight))
+			.saturating_add(T::DbWeight::get().writes(7 as Weight))
+	}
+	fn add_liquidity_and_stake() -> Weight {
+		(268_295_000 as Weight)
+			.saturating_add(T::DbWeight::get().reads(12 as Weight))
+			.saturating_add(T::DbWeight::get().writes(10 as Weight))
+	}
+	fn remove_liquidity() -> Weight {
+		(164_184_000 as Weight)
+			.saturating_add(T::DbWeight::get().reads(6 as Weight))
+			.saturating_add(T::DbWeight::get().writes(6 as Weight))
+	}
+	fn remove_liquidity_by_unstake() -> Weight {
+		(288_275_000 as Weight)
+			.saturating_add(T::DbWeight::get().reads(12 as Weight))
+			.saturating_add(T::DbWeight::get().writes(10 as Weight))
+	}
+	fn swap_with_exact_supply(u: u32, ) -> Weight {
+		(97_602_000 as Weight)
+// Standard Error: 130_000
+			.saturating_add((16_421_000 as Weight).saturating_mul(u as Weight))
+			.saturating_add(T::DbWeight::get().reads(1 as Weight))
+			.saturating_add(T::DbWeight::get().reads((2 as Weight).saturating_mul(u as Weight)))
+			.saturating_add(T::DbWeight::get().writes(2 as Weight))
+			.saturating_add(T::DbWeight::get().writes((1 as Weight).saturating_mul(u as Weight)))
+	}
+	fn swap_with_exact_target(u: u32, ) -> Weight {
+		(99_807_000 as Weight)
+// Standard Error: 837_000
+			.saturating_add((16_033_000 as Weight).saturating_mul(u as Weight))
+			.saturating_add(T::DbWeight::get().reads(1 as Weight))
+			.saturating_add(T::DbWeight::get().reads((2 as Weight).saturating_mul(u as Weight)))
+			.saturating_add(T::DbWeight::get().writes(2 as Weight))
+			.saturating_add(T::DbWeight::get().writes((1 as Weight).saturating_mul(u as Weight)))
+	}
+}

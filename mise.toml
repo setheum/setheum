@@ -1,0 +1,41 @@
+[tools]
+rust = "stable"
+node = "lts"
+python = "latest"
+yarn = "1.22.19"
+
+[tasks.default]
+alias = "build"
+
+[tasks.build]
+description = "Build the project"
+run = "cargo build --release"
+
+[tasks.test]
+description = "Run all tests"
+run = [
+    "cargo test --workspace --exclude setheum-js",
+    "cd setheum-js && yarn install && yarn test"
+]
+
+[tasks.fmt]
+description = "Format the codebase"
+run = [
+    "cargo fmt --all",
+    "python3 scripts/apply_headers.py"
+]
+
+[tasks.headers]
+description = "Apply headers"
+run = "python3 scripts/apply_headers.py"
+
+[tasks.clean]
+description = "Clean build artifacts"
+run = [
+    "cargo clean",
+    "rm -rf target/"
+]
+
+[tasks.all]
+description = "Default build task"
+depends_on = ["build"]

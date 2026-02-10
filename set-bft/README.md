@@ -1,7 +1,9 @@
 [![Crate][crate-image]][crate-link]
 [![Docs][docs-image]][docs-link]
 [![Build Status][build-image]][build-link]
-[![Apache 2.0 Licensed][license-image]][license-link]
+[![CodeQL][codeql-image]][codeql-link]
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue?logo=apache&style=flat-square)](./LICENSE-APACHE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green?logo=mit&style=flat-square)](./LICENSE-MIT)
 [![cargo-audit][cargo-audit-image]][cargo-audit-link]
 
 <p align="center">
@@ -161,7 +163,10 @@ tools with `install_cov_tools.sh`.
 
 ### License
 
-AlephBFT is licensed under the terms of the Apache License 2.0.
+This project is licensed under either the [Apache License 2.0](./LICENSE-APACHE) or the [MIT License](./LICENSE-MIT) at your option.
+
+Unless you explicitly state otherwise, any contribution that you submit to this repo shall be licensed as above, without any additional terms or conditions.
+
 
 ### Funding
 
@@ -175,10 +180,10 @@ The implementation in this repository is funded by [Aleph Zero Foundation][webpa
 [crate-link]: https://crates.io/crates/aleph-bft
 [docs-image]: https://docs.rs/aleph-bft/badge.svg
 [docs-link]: https://docs.rs/aleph-bft
-[build-image]: https://github.com/Cardinal-Cryptography/AlephBFT/workflows/CI/badge.svg
-[build-link]: https://github.com/Cardinal-Cryptography/AlephBFT/actions?query=workflow%3ACI
-[license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
-[license-link]: https://github.com/Cardinal-Cryptography/AlephBFT/blob/main/LICENSE
+[build-image]: https://github.com/setheum/setheum/actions/workflows/ci.yml/badge.svg
+[build-link]: https://github.com/setheum/setheum/actions/workflows/ci.yml
+[codeql-image]: https://github.com/setheum/setheum/actions/workflows/github-code-scanning/codeql/badge.svg?style=flat-square
+[codeql-link]: https://github.com/setheum/setheum/actions/workflows/github-code-scanning/codeql
 [rustc-image]: https://img.shields.io/badge/rustc-stable-blue.svg
 [cargo-audit-image]: https://github.com/Cardinal-Cryptography/AlephBFT/actions/workflows/cargo-audit.yml/badge.svg
 [cargo-audit-link]: https://github.com/Cardinal-Cryptography/AlephBFT/actions/workflows/cargo-audit.yml

@@ -1,0 +1,76 @@
+name: Bug Report
+description: Create a report to help us improve Setheum
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: dropdown
+    id: project
+    attributes:
+      label: Project/Component
+      description: Which project or component is this bug related to?
+      options:
+        - "setheum (Core Blockchain)"
+        - "setheum-js (JS/TS SDK)"
+        - "sheyth (Smart Contract Framework)"
+        - "set-bft (Consensus Engine)"
+        - "monorepo (General/Infrastructure)"
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A clear and concise description of what the bug is.
+      placeholder: |
+        Tell us what happened...
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Steps to reproduce the behavior.
+      placeholder: |
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+        4. See error
+    validations:
+      required: true
+  - type: textarea
+    id: expected-actual
+    attributes:
+      label: Expected vs. Actual Behavior
+      description: A clear and concise description of what you expected to happen, and what actually happened.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: |
+        Describe the environment in which you encountered this bug.
+      placeholder: |
+        - Operating system:
+        - Rust version (if applicable):
+        - Node/Yarn version (if applicable):
+    validations:
+      required: false
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs, Errors or Screenshots
+      description: Please provide the text of any logs or errors that you experienced; if applicable, provide screenshots to help illustrate the problem.
+    validations:
+      required: false
+  - type: textarea
+    id: additional-info
+    attributes:
+      label: Additional Information
+      description: Please add any other details that you think may help us solve your problem.
+    validations:
+      required: false

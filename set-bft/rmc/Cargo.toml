@@ -8,7 +8,7 @@ documentation = "https://docs.rs/?"
 homepage = "https://alephzero.org"
 repository = "https://github.com/Cardinal-Cryptography/AlephBFT"
 keywords = ["asynchronous", "consensus", "bft", "distributed-systems"]
-license = "Apache-2.0"
+license = "Apache-2.0 OR MIT"
 readme = "./README.md"
 description = "Reliable MultiCast - a primitive for Reliable Broadcast protocol."
 

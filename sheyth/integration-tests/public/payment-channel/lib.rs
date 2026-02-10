@@ -1,41 +1,39 @@
-//! # Payment Channel
-//!
-//! This implements a payment channel between two parties.
-//!
-//! ## Warning
-//!
-//! This contract is an *example*. It is neither audited nor endorsed for production use.
-//! Do **not** rely on it to keep anything of value secure.
-//!
-//! ## Overview
-//!
-//! Each instantiation of this contract creates a payment channel between a `sender` and a
-//! `recipient`. It uses ECDSA signatures to ensure that the `recipient` can only claim
-//! the funds if it is signed by the `sender`.
-//!
-//! ## Error Handling
-//!
-//! The only panic in the contract is when the signature is invalid. For all other
-//! error cases an error is returned. Possible errors are defined in the `Error` enum.
-//!
-//! ## Interface
-//!
-//! The interface is modelled after [this blog post](https://programtheblockchain.com/posts/2018/03/02/building-long-lived-payment-channels)
-//!
-//! ### Deposits
-//!
-//! The creator of the contract, i.e the `sender`, can deposit funds to the payment
-//! channel while creating the payment channel. Any subsequent deposits can be made by
-//! transferring funds to the contract's address.
-//!
-//! ### Withdrawals
-//!
-//! The `recipient` can `withdraw` from the payment channel anytime by submitting the last
-//! `signature` received from the `sender`.
-//!
-//! The `sender` can only `withdraw` by terminating the payment channel. This is
-//! done by calling `start_sender_close` to set an expiration with a subsequent call
-//! of `claim_timeout` to claim the funds. This will terminate the payment channel.
+// بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
+// This file is part of Setheum.
+
+// Copyright (C) 2019-Present Setheum Developers.
+// SPDX-License-Identifier: Apache-2.0 OR MIT
+
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// 	http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+// Alternatively, this file is available under the MIT License:
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 #![cfg_attr(not(feature = "std"), no_std, no_main)]
 
