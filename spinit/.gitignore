@@ -1,0 +1,12 @@
+# Cargo generated files
+**/debug/
+**/target/
+**/*.rs.bk
+*.pdb
+
+# Contracts' cargo locks
+examples/**/Cargo.lock
+
+# IDEs
+.idea/
+.vscode/

@@ -1,0 +1,39 @@
+[package]
+name = "drink"
+authors.workspace = true
+edition.workspace = true
+homepage.workspace = true
+license.workspace = true
+readme.workspace = true
+repository.workspace = true
+version.workspace = true
+description = "Minimal sufficient architecture that allows for a fully functional ink! contract development"
+
+[dependencies]
+contract-metadata = { workspace = true, optional = true }
+contract-transcode = { workspace = true, optional = true }
+frame-support = { workspace = true }
+frame-system = { workspace = true }
+parity-scale-codec = { workspace = true }
+parity-scale-codec-derive = { workspace = true }
+sp-runtime-interface = { workspace = true }
+ink_sandbox = { workspace = true }
+ink_primitives = { workspace = true }
+
+scale-info = { workspace = true }
+serde_json = { workspace = true, optional = true }
+thiserror = { workspace = true }
+wat = { workspace = true }
+
+drink-test-macro = { workspace = true }
+
+[features]
+default = [
+    # This is required for the runtime-interface to work properly in the std env.
+    "std",
+    "session",
+    "macros",
+]
+session = ["contract-metadata", "contract-transcode", "serde_json"]
+macros = ["contract-metadata", "contract-transcode", "serde_json"]
+std = []

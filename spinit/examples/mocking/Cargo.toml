@@ -1,0 +1,21 @@
+[package]
+name = "mocking"
+authors = ["Cardinal", "Aleph Zero Foundation", "Use Ink <ink@use.ink>"]
+edition = "2021"
+homepage = "https://alephzero.org"
+repository = "https://github.com/use-ink/drink"
+version = "0.1.0"
+
+[dependencies]
+ink = { version = "6.0.0-alpha", default-features = false }
+
+[dev-dependencies]
+drink = { path = "../../drink" }
+
+[lib]
+path = "lib.rs"
+
+[features]
+default = ["std"]
+std = ["ink/std"]
+ink-as-dependency = []

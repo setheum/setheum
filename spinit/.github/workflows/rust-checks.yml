@@ -1,0 +1,60 @@
+---
+name: Rust checks
+
+on:
+  push:
+    branches:
+      - main
+      - release-*
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  main:
+    name: Run check, test and lints
+    runs-on: ubuntu-latest
+    env:
+      CARGO_INCREMENTAL: 0
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          default: true
+          components: clippy, rustfmt
+
+      - name: Add rust-src
+        shell: bash
+        run: rustup component add rust-src
+
+      - name: Run format checks
+        uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: --all
+
+      - name: Run linter
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: --all-targets -- --no-deps -D warnings
+
+      - name: Run unit test suite
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+
+      - name: Run tests for examples
+        env:
+          CARGO_TARGET_DIR: ${{ github.workspace }}/target
+        shell: bash
+        run: |
+          for dir in examples/*; do (echo "Running example: $dir" && cargo test --manifest-path $dir/Cargo.toml); done
