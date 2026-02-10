@@ -3,8 +3,28 @@ name: Monorepo CI
 on:
   push:
     branches: [ main, master ]
+    paths-ignore:
+      - '**/*.md'
+      - 'CODEOWNERS'
+      - 'LICENSE'
+      - 'LICENSE-APACHE'
+      - 'LICENSE-GPL3'
+      - 'LICENSE-MIT'
+      - 'HEADER-APACHE'
+      - 'HEADER-GPL3'
+      - 'HEADER-MIT-APACHE'
   pull_request:
     branches: [ main, master ]
+    paths-ignore:
+      - '**/*.md'
+      - 'CODEOWNERS'
+      - 'LICENSE'
+      - 'LICENSE-APACHE'
+      - 'LICENSE-GPL3'
+      - 'LICENSE-MIT'
+      - 'HEADER-APACHE'
+      - 'HEADER-GPL3'
+      - 'HEADER-MIT-APACHE'
 
 jobs:
   fmt:

@@ -32,10 +32,11 @@ Welcome to the Setheum ecosystem. This repository contains all core components o
 
 ## Projects
 
+- **[cargo-sheyth](./cargo-sheyth)**: The CLI tool for Setheum smart contract development.
+- **[set-bft](./set-bft)**: The Set-BFT Consensus Engine.
 - **[setheum](./setheum)**: The core Setheum blockchain.
 - **[setheum-js](./setheum-js)**: JavaScript/TypeScript SDK for interacting with Setheum.
 - **[sheyth](./sheyth)**: The Setheum Smart Contract Framework.
-- **[set-bft](./set-bft)**: The Set-BFT Consensus Engine.
 
 ## Development
 
@@ -57,6 +58,7 @@ The projects in this monorepo are licensed as follows:
 - **Frameworks & Tools**: Licensed under either [Apache License 2.0](./LICENSE-APACHE.md) or [MIT License](./LICENSE-MIT.md) at your option. This includes:
   - `setheum-js`
   - `sheyth`
+  - `cargo-sheyth`
   - `set-bft`
   - `setheum/clique`
   - `setheum/setheum-client`
