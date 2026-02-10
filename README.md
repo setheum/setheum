@@ -40,15 +40,27 @@ Welcome to the Setheum ecosystem. This repository contains all core components o
 
 ## Development
 
-To build all Rust-based components:
+This project uses [mise](https://mise.jdx.dev/) for managing development tools and tasks.
+
+### 1. Install Mise
+Follow the [mise installation guide](https://mise.jdx.dev/getting-started.html).
+
+### 2. Setup Tools
+Install all required tool versions (Rust, Node.js, Python, Yarn) automatically:
 ```bash
-cargo build --release
+mise install
 ```
 
-For the JS SDK:
-```bash
-cd setheum-js && yarn install && yarn build
-```
+### 3. Run Tasks
+Mise handles all common development tasks:
+
+- **Build everything**: `mise run build`
+- **Run tests**: `mise run test`
+- **Format code**: `mise run fmt`
+- **Apply headers**: `mise run headers`
+- **Clean artifacts**: `mise run clean`
+
+A [Makefile](./Makefile) is also provided as a proxy for these commands, so you can still use `make build`, `make test`, etc.
 
 ## License
 
