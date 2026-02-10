@@ -1,0 +1,23 @@
+# Enforce LF for all text files
+* text eol=lf
+
+# Explicitly handle certain file types
+*.rs text eol=lf
+*.js text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.md text eol=lf
+*.toml text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+.editorconfig text eol=lf
+.gitignore text eol=lf
+.rustfmt.toml text eol=lf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.svg text eol=lf

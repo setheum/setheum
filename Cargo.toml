@@ -4,5 +4,6 @@ members = [
     "sheyth",
     "set-bft",
     "setheum-js",
+    "cargo-sheyth",
 ]
 resolver = "2"
