@@ -36,6 +36,18 @@ run = [
     "rm -rf target/"
 ]
 
+[tasks."prdoc:scaffold"]
+description = "Generate draft PRDocs from git history"
+run = "python3 scripts/prdoc.py scaffold {{args}}"
+
+[tasks."prdoc:validate"]
+description = "Validate all .prdoc files"
+run = "python3 scripts/prdoc.py validate"
+
+[tasks."prdoc:generate"]
+description = "Generate CHANGELOG entries from PRDocs"
+run = "python3 scripts/prdoc.py generate"
+
 [tasks.all]
 description = "Default build task"
 depends = ["build"]

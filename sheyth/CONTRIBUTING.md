@@ -78,6 +78,8 @@ Verify the following locally, otherwise the CI will fail:
     - `cargo test --all-features --workspace`
 1. Are all the tests for the integration tests/examples passing?
     - `cargo test --manifest-path ./integration-tests/.../Cargo.toml`
+1. If you made user-visible changes, add a PRDoc entry
+    - See [PRDocs](../docs/contributor/prdoc.md)
 
 ### Backwards Compatibility
 
@@ -141,6 +143,11 @@ If you've already opened a pull request, avoid force-pushing any new changes.
 If your pull request is a work-in-progress, create it as a Draft pull request.
 
 For a nice list of hints visit this [link][GitHub Perfect Pull Reqest].
+
+### PRDocs
+
+User-visible changes should include a PRDoc entry so we can keep crate-level changelog entries up to date.
+See [docs/contributor/prdoc.md](../docs/contributor/prdoc.md) for the format and commands.
 
 ### Reviews
 

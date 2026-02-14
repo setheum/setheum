@@ -1,0 +1,40 @@
+name: PRDoc Publish
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'prdoc/**/*.prdoc'
+
+jobs:
+  publish:
+    name: Update CHANGELOG
+    runs-on: ubuntu-latest
+    # Only run on the main repository, not forks
+    if: github.repository == 'setheum/setheum'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          python3 -m pip install PyYAML
+
+      - name: Generate CHANGELOG
+        run: |
+          python3 scripts/prdoc.py generate
+
+      - name: Commit and Push
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add CHANGELOG.md
+          git commit -m "chore: update CHANGELOG.md from PRDocs [skip ci]" || echo "No changes to commit"
+          git push origin ${{ github.ref_name }}

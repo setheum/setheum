@@ -58,6 +58,9 @@ Mise handles all common development tasks:
 - **Run tests**: `mise run test`
 - **Format code**: `mise run fmt`
 - **Apply headers**: `mise run headers`
+- **PRDoc Scaffolding**: `mise run prdoc:scaffold`
+- **PRDoc Validation**: `mise run prdoc:validate`
+- **PRDoc Generation**: `mise run prdoc:generate`
 - **Clean artifacts**: `mise run clean`
 
 A [Makefile](./Makefile) is also provided as a proxy for these commands, so you can still use `make build`, `make test`, etc.

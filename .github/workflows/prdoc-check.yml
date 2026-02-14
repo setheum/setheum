@@ -1,0 +1,53 @@
+name: PRDoc Check
+
+on:
+  pull_request:
+    branches: [ main, master ]
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+jobs:
+  validate:
+    name: Validate PRDocs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          python3 -m pip install PyYAML
+
+      - name: Run Validation
+        run: |
+          python3 scripts/prdoc.py validate
+
+      - name: Check for PRDoc existence
+        # This step ensures that if the PR touches code, it must include a .prdoc file
+        # unless it has a 'no-changelog' label.
+        if: "!contains(github.event.pull_request.labels.*.name, 'no-changelog')"
+        run: |
+          # Get list of changed files
+          CHANGES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+          
+          # Check if any .prdoc files were added/modified in the prdoc/ directory
+          PRDOC_CHANGES=$(echo "$CHANGES" | grep "^prdoc/.*\.prdoc$" || true)
+          
+          if [ -z "$PRDOC_CHANGES" ]; then
+            # Check if any actual code or config was changed (excluding docs, etc)
+            CODE_CHANGES=$(echo "$CHANGES" | grep -vE "(\.md$|CODEOWNERS|LICENSE|^\.github/)" || true)
+            
+            if [ -n "$CODE_CHANGES" ]; then
+              echo "Error: This PR modifies code but does not include a .prdoc file."
+              echo "Please add a .prdoc file in the 'prdoc/' directory or add the 'no-changelog' label to the PR."
+              echo "Affected code/config files:"
+              echo "$CODE_CHANGES"
+              exit 1
+            fi
+          fi
+          echo "PRDoc check passed."
