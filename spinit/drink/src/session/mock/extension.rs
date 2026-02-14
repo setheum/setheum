@@ -1,72 +1,37 @@
-// TODO: No longer used due to pallet-revive removed `type Debug` for intercepting contract calls. Need to be fixed when we figure out the alternative approach. (#144)
+// بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
+// This file is part of Setheum.
+
+// Copyright (C) 2019-Present Setheum Developers.
+// SPDX-License-Identifier: Apache-2.0 OR MIT
+
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
 //
-// use std::sync::{Arc, Mutex};
+// 	http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
-// use ink_sandbox::pallet_revive::ExecReturnValue;
-// use parity_scale_codec::{Decode, Encode};
+// Alternatively, this file is available under the MIT License:
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
-// use crate::{
-//     errors::MessageResult,
-//     pallet_revive::chain_extension::ReturnFlags,
-//     session::mock::{MockRegistry, Selector},
-// };
-
-// /// Runtime extension enabling contract call interception.
-// pub(crate) struct MockingExtension {
-//     /// Mock registry, shared with the sandbox.
-//     ///
-//     /// Potentially the runtime is executed in parallel and thus we need to wrap the registry in
-//     /// `Arc<Mutex>` instead of `Rc<RefCell>`.
-//     pub mock_registry: Arc<Mutex<MockRegistry>>,
-// }
-
-// impl MockingExtension {
-//     fn intercept_call(
-//         &self,
-//         contract_address: Vec<u8>,
-//         _is_call: bool,
-//         input_data: Vec<u8>,
-//     ) -> Vec<u8> {
-//         let contract_address = Decode::decode(&mut &contract_address[..])
-//             .expect("Contract address should be decodable");
-
-//         match self
-//             .mock_registry
-//             .lock()
-//             .expect("Should be able to acquire registry")
-//             .get(&contract_address)
-//         {
-//             // There is no mock registered for this address, so we return `None` to indicate that
-//             // the call should be executed normally.
-//             None => None::<()>.encode(),
-//             // We intercept the call and return the result of the mock.
-//             Some(mock) => {
-//                 let (selector, call_data) = input_data.split_at(4);
-//                 let selector: Selector = selector
-//                     .try_into()
-//                     .expect("Input data should contain at least selector bytes");
-
-//                 let result = mock
-//                     .call(selector, call_data.to_vec())
-//                     .expect("TODO: let the user define the fallback mechanism");
-
-//                 // Although we don't know the exact type, thanks to the SCALE encoding we know
-//                 // that `()` will always succeed (we only care about the `Ok`/`Err` distinction).
-//                 let decoded_result: MessageResult<()> =
-//                     Decode::decode(&mut &result[..]).expect("Mock result should be decodable");
-
-//                 let flags = match decoded_result {
-//                     Ok(_) => ReturnFlags::empty(),
-//                     Err(_) => ReturnFlags::REVERT,
-//                 };
-
-//                 let result = ExecReturnValue {
-//                     flags,
-//                     data: result,
-//                 };
-
-//                 Some(result).encode()
-//             }
-//         }
-//     }
-// }

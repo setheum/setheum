@@ -16,6 +16,7 @@ MIT_APACHE_PROJECTS = [
     'sheyth',
     'set-bft',
     'cargo-sheyth',
+    'spinit',
     'setheum/clique',
     'setheum/setheum-client',
     'setheum/aggregator',
