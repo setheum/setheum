@@ -38,4 +38,4 @@ run = [
 
 [tasks.all]
 description = "Default build task"
-depends_on = ["build"]
+depends = ["build"]
