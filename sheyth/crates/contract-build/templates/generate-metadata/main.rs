@@ -35,38 +35,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#![doc(
-    html_logo_url = "https://use.ink/img/crate-docs/logo.png",
-    html_favicon_url = "https://use.ink/crate-docs/favicon.png"
-)]
-#![cfg_attr(not(feature = "std"), no_std)]
-#![deny(
-    bad_style,
-    bare_trait_objects,
-    improper_ctypes,
-    non_shorthand_field_patterns,
-    no_mangle_generic_items,
-    overflowing_literals,
-    path_statements,
-    patterns_in_fns_without_body,
-    unconditional_recursion,
-    unused_allocation,
-    unused_comparisons,
-    unused_parens,
-    while_true,
-    trivial_casts,
-    trivial_numeric_casts,
-    unused_extern_crates
-)]
+extern crate contract;
 
-pub use ink_storage_traits as traits;
+extern "Rust" {
+    // Note: The ink! metdata codegen generates an implementation for this function,
+    // which is what we end up linking to here.
+    fn __ink_generate_metadata() -> ink::metadata::InkProject;
+}
 
-#[allow(dead_code)]
-pub(crate) mod lazy;
-
-#[doc(inline)]
-pub use self::lazy::{
-    Lazy,
-    Mapping,
-    StorageVec,
-};
+fn main() -> Result<(), std::io::Error> {
+    let metadata = unsafe { __ink_generate_metadata() };
+    let contents = serde_json::to_string_pretty(&metadata)?;
+    print!("{contents}");
+    Ok(())
+}

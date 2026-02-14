@@ -1,0 +1,23 @@
+[package]
+name = "contract-analyze"
+version = "5.0.3"
+authors = ["Use Ink <ink@use.ink>"]
+edition = "2021"
+
+license = "Apache-2.0 OR MIT"
+readme = "README.md"
+repository = "https://github.com/use-ink/cargo-contract"
+documentation = "https://docs.rs/contract-analyze"
+homepage = "https://www.substrate.io/"
+description = "Library determining source language for smart contracts on substrate"
+keywords = ["wasm", "ink", "webassembly", "blockchain", "edsl"]
+include = ["Cargo.toml", "*.rs", "LICENSE"]
+
+[dependencies]
+contract-metadata = { version = "5.0.3", path = "../contract-metadata" }
+wasmparser = "0.220.0"
+anyhow = "1.0.94"
+
+[dev-dependencies]
+wat = "1.221.2"
+

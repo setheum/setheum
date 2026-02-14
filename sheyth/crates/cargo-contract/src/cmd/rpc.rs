@@ -35,38 +35,59 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#![doc(
-    html_logo_url = "https://use.ink/img/crate-docs/logo.png",
-    html_favicon_url = "https://use.ink/crate-docs/favicon.png"
-)]
-#![cfg_attr(not(feature = "std"), no_std)]
-#![deny(
-    bad_style,
-    bare_trait_objects,
-    improper_ctypes,
-    non_shorthand_field_patterns,
-    no_mangle_generic_items,
-    overflowing_literals,
-    path_statements,
-    patterns_in_fns_without_body,
-    unconditional_recursion,
-    unused_allocation,
-    unused_comparisons,
-    unused_parens,
-    while_true,
-    trivial_casts,
-    trivial_numeric_casts,
-    unused_extern_crates
-)]
-
-pub use ink_storage_traits as traits;
-
-#[allow(dead_code)]
-pub(crate) mod lazy;
-
-#[doc(inline)]
-pub use self::lazy::{
-    Lazy,
-    Mapping,
-    StorageVec,
+use contract_build::name_value_println;
+use contract_extrinsics::{
+    ErrorVariant,
+    RawParams,
+    RpcRequest,
 };
+use subxt::ext::scale_value;
+
+use super::{
+    CLIChainOpts,
+    MAX_KEY_COL_WIDTH,
+};
+
+#[derive(Debug, clap::Args)]
+#[clap(name = "rpc", about = "Make a raw RPC call")]
+pub struct RpcCommand {
+    /// The name of the method to call.
+    method: String,
+    /// The arguments of the method to call.
+    #[clap(num_args = 0..)]
+    params: Vec<String>,
+    /// Export the call output in JSON format.
+    #[clap(long)]
+    output_json: bool,
+    /// Arguments required for communicating with a Substrate node.
+    #[clap(flatten)]
+    chain_cli_opts: CLIChainOpts,
+}
+
+impl RpcCommand {
+    pub async fn run(&self) -> Result<(), ErrorVariant> {
+        let request = RpcRequest::new(&self.chain_cli_opts.chain().url()).await?;
+        let params = RawParams::new(&self.params)?;
+
+        let result = request.raw_call(&self.method, params).await;
+
+        match (result, self.output_json) {
+            (Err(err), false) => Err(anyhow::anyhow!("Method call failed: {}", err))?,
+            (Err(err), true) => {
+                Err(anyhow::anyhow!(serde_json::to_string_pretty(
+                    &ErrorVariant::from(err)
+                )?))?
+            }
+            (Ok(res), false) => {
+                let output: scale_value::Value = serde_json::from_str(res.get())?;
+                name_value_println!("Result", output, MAX_KEY_COL_WIDTH);
+                Ok(())
+            }
+            (Ok(res), true) => {
+                let json: serde_json::Value = serde_json::from_str(res.get())?;
+                println!("{}", serde_json::to_string_pretty(&json)?);
+                Ok(())
+            }
+        }
+    }
+}

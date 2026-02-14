@@ -16,6 +16,12 @@ members = [
     "crates/primitives",
     "crates/storage",
     "crates/storage/traits",
+    "crates/contract-analyze",
+    "crates/contract-build",
+    "crates/cargo-contract",
+    "crates/contract-extrinsics",
+    "crates/contract-metadata",
+    "crates/contract-transcode",
 ]
 exclude = [
     "integration-tests",

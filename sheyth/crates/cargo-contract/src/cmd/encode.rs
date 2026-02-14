@@ -35,38 +35,52 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#![doc(
-    html_logo_url = "https://use.ink/img/crate-docs/logo.png",
-    html_favicon_url = "https://use.ink/crate-docs/favicon.png"
+use std::path::PathBuf;
+
+use crate::DEFAULT_KEY_COL_WIDTH;
+use anyhow::Result;
+use colored::Colorize as _;
+use contract_extrinsics::ContractArtifacts;
+
+#[derive(Debug, Clone, clap::Args)]
+#[clap(
+    name = "encode",
+    about = "Encodes a contracts input calls and their arguments"
 )]
-#![cfg_attr(not(feature = "std"), no_std)]
-#![deny(
-    bad_style,
-    bare_trait_objects,
-    improper_ctypes,
-    non_shorthand_field_patterns,
-    no_mangle_generic_items,
-    overflowing_literals,
-    path_statements,
-    patterns_in_fns_without_body,
-    unconditional_recursion,
-    unused_allocation,
-    unused_comparisons,
-    unused_parens,
-    while_true,
-    trivial_casts,
-    trivial_numeric_casts,
-    unused_extern_crates
-)]
+pub struct EncodeCommand {
+    /// Path to a contract build artifact file: a raw `.wasm` file, a `.contract` bundle,
+    /// or a `.json` metadata file.
+    #[clap(value_parser, conflicts_with = "manifest_path")]
+    file: Option<PathBuf>,
+    /// Path to the `Cargo.toml` of the contract.
+    #[clap(long, value_parser)]
+    manifest_path: Option<PathBuf>,
+    /// The name of the contract message to encode.
+    #[clap(long, short)]
+    message: String,
+    /// The arguments to encode
+    #[clap(long, num_args = 0..)]
+    args: Vec<String>,
+}
 
-pub use ink_storage_traits as traits;
+impl EncodeCommand {
+    pub fn run(&self) -> Result<()> {
+        let artifacts = ContractArtifacts::from_manifest_or_file(
+            self.manifest_path.as_ref(),
+            self.file.as_ref(),
+        )?;
+        let transcoder = artifacts.contract_transcoder()?;
 
-#[allow(dead_code)]
-pub(crate) mod lazy;
+        let call_data = transcoder.encode(&self.message, &self.args)?;
+        let call_data_encoded = hex::encode_upper(call_data);
 
-#[doc(inline)]
-pub use self::lazy::{
-    Lazy,
-    Mapping,
-    StorageVec,
-};
+        println!(
+            "{:>width$} {}",
+            "Encoded data:".bright_green().bold(),
+            call_data_encoded,
+            width = DEFAULT_KEY_COL_WIDTH
+        );
+
+        Ok(())
+    }
+}

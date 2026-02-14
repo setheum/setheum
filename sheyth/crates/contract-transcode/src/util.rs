@@ -35,38 +35,43 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#![doc(
-    html_logo_url = "https://use.ink/img/crate-docs/logo.png",
-    html_favicon_url = "https://use.ink/crate-docs/favicon.png"
-)]
-#![cfg_attr(not(feature = "std"), no_std)]
-#![deny(
-    bad_style,
-    bare_trait_objects,
-    improper_ctypes,
-    non_shorthand_field_patterns,
-    no_mangle_generic_items,
-    overflowing_literals,
-    path_statements,
-    patterns_in_fns_without_body,
-    unconditional_recursion,
-    unused_allocation,
-    unused_comparisons,
-    unused_parens,
-    while_true,
-    trivial_casts,
-    trivial_numeric_casts,
-    unused_extern_crates
-)]
+// بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 
-pub use ink_storage_traits as traits;
+// This file is part of Setheum.
 
-#[allow(dead_code)]
-pub(crate) mod lazy;
+// Copyright (C) 2019-Present Setheum Developers.
+// SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
-#[doc(inline)]
-pub use self::lazy::{
-    Lazy,
-    Mapping,
-    StorageVec,
-};
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+// Copyright (C) Use Ink (UK) Ltd.
+// This file is part of cargo-contract.
+//
+// cargo-contract is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// cargo-contract is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with cargo-contract.  If not, see <http://www.gnu.org/licenses/>.
+
+/// Decode hex string with or without 0x prefix
+pub fn decode_hex(input: &str) -> Result<Vec<u8>, hex::FromHexError> {
+    hex::decode(input.trim_start_matches("0x"))
+}

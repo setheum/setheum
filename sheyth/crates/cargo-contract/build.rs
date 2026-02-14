@@ -35,38 +35,53 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#![doc(
-    html_logo_url = "https://use.ink/img/crate-docs/logo.png",
-    html_favicon_url = "https://use.ink/crate-docs/favicon.png"
-)]
-#![cfg_attr(not(feature = "std"), no_std)]
-#![deny(
-    bad_style,
-    bare_trait_objects,
-    improper_ctypes,
-    non_shorthand_field_patterns,
-    no_mangle_generic_items,
-    overflowing_literals,
-    path_statements,
-    patterns_in_fns_without_body,
-    unconditional_recursion,
-    unused_allocation,
-    unused_comparisons,
-    unused_parens,
-    while_true,
-    trivial_casts,
-    trivial_numeric_casts,
-    unused_extern_crates
-)]
-
-pub use ink_storage_traits as traits;
-
-#[allow(dead_code)]
-pub(crate) mod lazy;
-
-#[doc(inline)]
-pub use self::lazy::{
-    Lazy,
-    Mapping,
-    StorageVec,
+use std::{
+    borrow::Cow,
+    process::Command,
 };
+
+use substrate_build_script_utils::rerun_if_git_head_changed;
+
+fn main() {
+    generate_cargo_keys();
+    rerun_if_git_head_changed();
+}
+
+/// Generate the `cargo:` key output
+fn generate_cargo_keys() {
+    let output = Command::new("git")
+        .args(["rev-parse", "--short", "HEAD"])
+        .output();
+
+    let commit = match output {
+        Ok(o) if o.status.success() => {
+            let sha = String::from_utf8_lossy(&o.stdout).trim().to_owned();
+            Cow::from(sha)
+        }
+        Ok(o) => {
+            println!("cargo:warning=Git command failed with status: {}", o.status);
+            Cow::from("unknown")
+        }
+        Err(err) => {
+            println!("cargo:warning=Failed to execute git command: {err}");
+            Cow::from("unknown")
+        }
+    };
+
+    println!(
+        "cargo:rustc-env=CARGO_CONTRACT_CLI_IMPL_VERSION={}",
+        get_version(&commit)
+    )
+}
+
+fn get_version(impl_commit: &str) -> String {
+    let commit_dash = if impl_commit.is_empty() { "" } else { "-" };
+
+    format!(
+        "{}{}{}-{}",
+        std::env::var("CARGO_PKG_VERSION").unwrap_or_default(),
+        commit_dash,
+        impl_commit,
+        current_platform::CURRENT_PLATFORM,
+    )
+}
