@@ -147,6 +147,8 @@ hex-literal = { version = "0.4.1" }
 impl-trait-for-tuples = { version = "0.2.2" }
 ink = { version = "5.0.0-rc" }
 ip_network = { version = "0.4" }
+jsonrpc-core = { version = "15.1.0" }
+jsonrpc-derive = { version = "15.1.0" }
 jsonrpsee = { version = "0.16.3" }
 k256 = { version = "0.11.5", default-features = false }
 libp2p = { version = "0.51" }
@@ -154,6 +156,7 @@ libsecp256k1 = { version = "0.7", default-features = false }
 log = { version = "0.4.20", default-features = false }
 lru = { version = "0.10" }
 num = { version = "0.4", default-features = false }
+num-traits = { version = "0.2", default-features = false }
 num_enum = { version = "0.5.1", default-features = false }
 parity-scale-codec = { version = "3.6.5", default-features = false }
 parking_lot = { version = "0.12" }
@@ -212,12 +215,34 @@ primitives = { package = "setheum-primitives", path = "primitives", default-feat
 runtime-common = { path = "runtime/common", default-features = false }
 setheum-runtime = { path = "runtime", default-features = false }
 
+module-evm-utility = { path = "modules/evm-utility", default-features = false }
+module-evm = { path = "modules/evm", default-features = false }
+module-currencies = { path = "modules/currencies", default-features = false }
+module-evm-bridge = { path = "modules/evm-bridge", default-features = false }
+module-support = { path = "modules/support", default-features = false }
+module-transaction-payment = { path = "modules/transaction-payment", default-features = false }
+module-idle-scheduler = { path = "modules/idle-scheduler", default-features = false }
+module-edfis_swap_legacy = { path = "modules/edfis-swap-legacy", default-features = false }
+module-ecdp-loans = { path = "modules/ecdp-loans", default-features = false }
+module-ecdp-ussd-engine = { path = "modules/ecdp-ussd-engine", default-features = false }
+module-ecdp-ussd-treasury = { path = "modules/ecdp-ussd-treasury", default-features = false }
+module-evm-accounts = { package = "module-unified-accounts", path = "modules/unified-accounts", default-features = false }
+module-evm-manager = { path = "modules/evm-manager", default-features = false }
+module-edfis-legacy = { package = "module-edfis-swap-legacy", path = "modules/edfis-swap-legacy", default-features = false }
+module-unified-accounts = { path = "modules/unified-accounts", default-features = false }
+rate-limiter = { path = "rate-limiter", default-features = false }
+network-clique = { path = "clique" }
+
+
+
+
 # Setheum & ORML (client)
 setheum-node = { path = "node" }
 module-evm-utility-macro = { path = "modules/evm-utility/macro" }
 
 # Substrate Pallets (WASM)
 frame-benchmarking = { version = "25.0.0", default-features = false }
+frame-election-provider-support = { version = "25.0.0", default-features = false }
 frame-executive = { version = "25.0.0", default-features = false }
 frame-support = { version = "25.0.0", default-features = false }
 frame-system = { version = "25.0.0", default-features = false }
@@ -232,6 +257,7 @@ pallet-contracts = { git = "https://github.com/Cardinal-Cryptography/polkadot-sd
 pallet-contracts-primitives = { git = "https://github.com/Cardinal-Cryptography/polkadot-sdk.git", branch = "aleph-v1.3.0", default-features = false }
 pallet-collective = { version = "25.0.0", default-features = false }
 pallet-democracy = { version = "25.0.0", default-features = false }
+pallet-elections-phragmen = { version = "25.0.0", default-features = false }
 pallet-identity = { git = "https://github.com/Cardinal-Cryptography/polkadot-sdk.git", branch = "aleph-v1.3.0", default-features = false }
 pallet-indices = { version = "25.0.0", default-features = false }
 pallet-insecure-randomness-collective-flip = { git = "https://github.com/Cardinal-Cryptography/polkadot-sdk.git", branch = "aleph-v1.3.0", default-features = false }
@@ -292,6 +318,8 @@ xcm-executor = { package = "staging-xcm-executor", version = "4.0.0", default-fe
 
 frame-benchmarking-cli = { version = "29.0.0" }
 sc-basic-authorship = { version = "0.31.0" }
+sc-block-builder = { version = "0.30.0" }
+
 sc-chain-spec = { version = "24.0.0" }
 sc-cli = { version = "0.33.0" }
 sc-client-api = { version = "25.0.0" }

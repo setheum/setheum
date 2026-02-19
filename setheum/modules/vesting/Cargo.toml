@@ -17,7 +17,7 @@ sp-std = { workspace = true }
 frame-support = { workspace = true }
 frame-system = { workspace = true }
 
-primitives = { package = "setheum-primitives", path = "../primitives", default-features = false }
+primitives = { package = "setheum-primitives", path = "../../primitives", default-features = false }
 support = { package = "module-support", path = "../support", default-features = false }
 orml-traits = { path = "../../orml/traits", default-features = false }
 

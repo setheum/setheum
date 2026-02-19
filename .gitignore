@@ -15,3 +15,5 @@
 
 **/fork/data/
 **/fork/node_modules/
+
+.REFERENCES
