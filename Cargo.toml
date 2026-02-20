@@ -1,9 +1,8 @@
 [workspace]
 members = [
-    "setheum",
-    "sheyth",
-    "set-bft",
-    "setheum-js",
-    "cargo-sheyth",
+    "repos/setheum",
+    "repos/sheyth",
+    "repos/set-bft",
+    "repos/cargo-sheyth",
 ]
 resolver = "2"

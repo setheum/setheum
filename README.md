@@ -30,13 +30,15 @@
 
 Welcome to the Setheum ecosystem. This repository contains all core components organized for clarity and development efficiency.
 
+[![Repobeats](https://repobeats.axiom.co/api/embed/2ffa1b05a9f2b984e18a7b86355b4d444e5ba2a6.svg)](https://github.com/setheum/setheum/pulse)
+
 ## Projects
 
-- **[cargo-sheyth](./cargo-sheyth)**: The CLI tool for Setheum smart contract development.
-- **[set-bft](./set-bft)**: The Set-BFT Consensus Engine.
-- **[setheum](./setheum)**: The core Setheum blockchain.
-- **[setheum-js](./setheum-js)**: JavaScript/TypeScript SDK for interacting with Setheum.
-- **[sheyth](./sheyth)**: The Setheum Smart Contract Framework.
+- **[cargo-sheyth](./repos/cargo-sheyth)**: The CLI tool for Setheum smart contract development.
+- **[set-bft](./repos/set-bft)**: The Set-BFT Consensus Engine.
+- **[setheum](./repos/setheum)**: The core Setheum blockchain.
+- **[setheum-js](./repos/setheum-js)**: JavaScript/TypeScript SDK for interacting with Setheum.
+- **[sheyth](./repos/sheyth)**: The Setheum Smart Contract Framework.
 
 ## Development
 
@@ -58,6 +60,9 @@ Mise handles all common development tasks:
 - **Run tests**: `mise run test`
 - **Format code**: `mise run fmt`
 - **Apply headers**: `mise run headers`
+- **PRDoc Scaffolding**: `mise run prdoc:scaffold`
+- **PRDoc Validation**: `mise run prdoc:validate`
+- **PRDoc Generation**: `mise run prdoc:generate`
 - **Clean artifacts**: `mise run clean`
 
 A [Makefile](./Makefile) is also provided as a proxy for these commands, so you can still use `make build`, `make test`, etc.

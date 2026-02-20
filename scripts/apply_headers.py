@@ -12,15 +12,16 @@ HEADER_MIT_APACHE = os.path.join(HEADER_DIR, 'HEADER-MIT-APACHE')
 # Apache2.0/MIT for setheum-js, sheyth, set-bft, clique, setheum-client, aggregator, flooder and rate-limiter
 # The rest is all GPL3
 MIT_APACHE_PROJECTS = [
-    'setheum-js',
-    'sheyth',
-    'set-bft',
-    'cargo-sheyth',
-    'setheum/clique',
-    'setheum/setheum-client',
-    'setheum/aggregator',
-    'setheum/tests/flooder',
-    'setheum/rate-limiter'
+    'repos/setheum-js',
+    'repos/sheyth',
+    'repos/set-bft',
+    'repos/cargo-sheyth',
+    'repos/spinit',
+    'repos/setheum/clique',
+    'repos/setheum/setheum-client',
+    'repos/setheum/aggregator',
+    'repos/setheum/tests/flooder',
+    'repos/setheum/rate-limiter'
 ]
 
 def get_header(file_path):

@@ -1,3 +1,0 @@
-[submodule "orml"]
-	path = setheum/orml
-	url = https://github.com/balqaasem/open-runtime-module-library.git
