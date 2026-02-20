@@ -20,8 +20,8 @@ log = { version = "0.4.14", default-features = false }
 pallet-collective = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.10", default-features = false }
 pallet-membership = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.10", default-features = false }
 
-orml-oracle = { path = "../../orml/oracle", default-features = false }
-orml-traits = { path = "../../orml/traits", default-features = false }
+orml-oracle = { path = "../../runtime-modules/oracle", default-features = false }
+orml-traits = { path = "../../runtime-modules/traits", default-features = false }
 
 module-evm = { path = "../../runtime-modules/evm", default-features = false }
 module-support = { path = "../../runtime-modules/support", default-features = false }
@@ -38,8 +38,8 @@ pallet-balances = { git = "https://github.com/paritytech/substrate", branch = "p
 pallet-proxy = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.10" }
 pallet-utility = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.10" }
 
-orml-tokens = { path = "../../orml/tokens" }
-orml-nft = { path = "../../orml/nft" }
+orml-tokens = { path = "../../runtime-modules/tokens" }
+orml-nft = { path = "../../runtime-modules/orml-nft" }
 
 module-currencies = { path = "../../runtime-modules/currencies" }
 module-evm-bridge = { path = "../../runtime-modules/evm-bridge" }
