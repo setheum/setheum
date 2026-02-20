@@ -4,9 +4,9 @@ cargo-features = ["resolver"]
 members = [
 	"node",
 
-	"modules/*",
-	"modules/currencies/runtime-api",
-	"modules/evm-utility/macro",
+	"runtime-modules/*",
+	"runtime-modules/currencies/runtime-api",
+	"runtime-modules/evm-utility/macro",
 	"primitives",
 	"clisee",
 	"setheum-client",

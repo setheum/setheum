@@ -89,22 +89,22 @@ orml-tokens = { path = "../orml/tokens", default-features = false }
 orml-traits = { path = "../orml/traits", default-features = false }
 orml-nft= { path = "../orml/nft", default-features = false }
 
-module-transaction-pause = { path = "../modules/transaction-pause", default-features = false }
-module-transaction-payment = { path = "../modules/transaction-payment", default-features = false }
-module-airdrop = { path = "../modules/airdrop", default-features = false }
+module-transaction-pause = { path = "../runtime-modules/transaction-pause", default-features = false }
+module-transaction-payment = { path = "../runtime-modules/transaction-payment", default-features = false }
+module-airdrop = { path = "../runtime-modules/airdrop", default-features = false }
 
-module-currencies = { path = "../modules/currencies", default-features = false }
-module-evm = { path = "../modules/evm", default-features = false }
-module-unified-accounts = { path = "../modules/unified-accounts", default-features = false }
-module-evm-bridge = { path = "../modules/evm-bridge", default-features = false }
-module-evm-rpc-runtime-api = { path = "../modules/evm/rpc/runtime_api",  default-features = false }
-module-evm-manager = { path = "../modules/evm-manager", default-features = false }
+module-currencies = { path = "../runtime-modules/currencies", default-features = false }
+module-evm = { path = "../runtime-modules/evm", default-features = false }
+module-unified-accounts = { path = "../runtime-modules/unified-accounts", default-features = false }
+module-evm-bridge = { path = "../runtime-modules/evm-bridge", default-features = false }
+module-evm-rpc-runtime-api = { path = "../runtime-modules/evm/rpc/runtime_api",  default-features = false }
+module-evm-manager = { path = "../runtime-modules/evm-manager", default-features = false }
 
-module-nft = { path = "../modules/nft", default-features = false }
-module-prices = { path = "../modules/prices", default-features = false }
+module-nft = { path = "../runtime-modules/nft", default-features = false }
+module-prices = { path = "../runtime-modules/prices", default-features = false }
 
-module-support = { path = "../modules/support", default-features = false }
-module-vesting = { path = "../modules/vesting", default-features = false }
+module-support = { path = "../runtime-modules/support", default-features = false }
+module-vesting = { path = "../runtime-modules/vesting", default-features = false }
 
 primitives = { package = "setheum-primitives", path = "../primitives", default-features = false }
 runtime-common = { path = "common", default-features = false }
