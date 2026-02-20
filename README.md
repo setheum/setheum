@@ -34,11 +34,11 @@ Welcome to the Setheum ecosystem. This repository contains all core components o
 
 ## Projects
 
-- **[cargo-sheyth](./cargo-sheyth)**: The CLI tool for Setheum smart contract development.
-- **[set-bft](./set-bft)**: The Set-BFT Consensus Engine.
-- **[setheum](./setheum)**: The core Setheum blockchain.
-- **[setheum-js](./setheum-js)**: JavaScript/TypeScript SDK for interacting with Setheum.
-- **[sheyth](./sheyth)**: The Setheum Smart Contract Framework.
+- **[cargo-sheyth](./repos/cargo-sheyth)**: The CLI tool for Setheum smart contract development.
+- **[set-bft](./repos/set-bft)**: The Set-BFT Consensus Engine.
+- **[setheum](./repos/setheum)**: The core Setheum blockchain.
+- **[setheum-js](./repos/setheum-js)**: JavaScript/TypeScript SDK for interacting with Setheum.
+- **[sheyth](./repos/sheyth)**: The Setheum Smart Contract Framework.
 
 ## Development
 
