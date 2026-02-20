@@ -28,10 +28,10 @@ wasm:
 .PHONY: genesis
 genesis:
 	make build
-	./target/release/setheum-node build-spec --chain testnet-new > bin/resources/chain_spec_testnet.json
-	./target/release/setheum-node build-spec --chain mainnet-new > bin/resources/chain_spec_mainnet.json
-	./target/release/setheum-node build-spec --chain testnet-new --raw > bin/resources/chain_spec_testnet_raw.json
-	./target/release/setheum-node build-spec --chain mainnet-new --raw > bin/resources/chain_spec_mainnet_raw.json
+	./target/release/setheum-node build-spec --chain testnet-new > chain-specs/testnet.json
+	./target/release/setheum-node build-spec --chain mainnet-new > chain-specs/mainnet.json
+	./target/release/setheum-node build-spec --chain testnet-new --raw > chain-specs/testnet_raw.json
+	./target/release/setheum-node build-spec --chain mainnet-new --raw > chain-specs/mainnet_raw.json
 
 .PHONY: check
 check:
