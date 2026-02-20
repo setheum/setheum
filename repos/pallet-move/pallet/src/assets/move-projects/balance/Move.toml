@@ -1,0 +1,11 @@
+[package]
+name = "balance"
+version = "0.0.0"
+
+[dependencies]
+MoveStdlib = { git = "https://github.com/eigerco/move-stdlib", rev = "main" }
+SubstrateStdlib = { git = "https://github.com/eigerco/substrate-stdlib.git", rev = "main" }
+
+[addresses]
+std = "0x1"
+substrate = "0x1"

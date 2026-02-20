@@ -1,0 +1,10 @@
+[package]
+name = "base58_smove_build"
+version = "0.0.0"
+
+[dependencies]
+MoveStdlib = { git = "https://github.com/eigerco/move-stdlib", rev = "main" }
+
+[addresses]
+std =  "0x1"
+Bob = "AbygL37RheNZv327cMvZPqKYLLkZ6wqWYexRxgNiZyeP"

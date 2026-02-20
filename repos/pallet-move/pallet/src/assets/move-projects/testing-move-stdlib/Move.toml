@@ -1,0 +1,8 @@
+[package]
+name = "testing-move-stdlib"
+version = "0.0.0"
+
+[dependencies]
+
+[addresses]
+std =  "0x1"

@@ -1,0 +1,7 @@
+# https://github.com/rust-lang/rustfmt/blob/master/Configurations.md
+
+edition = "2021"
+
+# Available only for nightly:
+#imports_granularity= "Crate"
+#group_imports = "StdExternalCrate"

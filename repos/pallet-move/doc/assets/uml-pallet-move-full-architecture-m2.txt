@@ -1,0 +1,48 @@
+@startuml
+
+left to right direction
+skinparam nodesep 10
+skinparam ranksep 20
+
+component "VM backend layer" {
+    agent "move-vm-backend" #line.bold
+    agent "move-vm-backend-common"
+    agent "move-vm-support"
+}
+
+component pallet-move {
+  agent "RPC API" #line.bold
+  agent "extrinsics" #line.bold
+}
+
+"pallet-move" -->> "move-vm-backend"
+
+component "Move layer" {
+    agent "move-vm-runtime" #line.bold
+    rectangle "Move internals" #line.dashed {
+      agent "move-bytecode-verifier"
+      agent "move-core-types"
+      agent "move-vm-types"
+      agent "move-binary-format"
+      agent "move-borrow-graph"
+      agent "bcs"
+  }
+  agent "move-stdlib" #line.bold
+}
+
+"Move layer" -[#000000,dotted]->> "move-vm-support" : modifications use
+"VM backend layer" -d->> "move-vm-runtime"
+"VM backend layer" -d->> "move-stdlib"
+
+
+"move-vm-runtime" -->> "Move internals"
+"move-stdlib" -d->> "Move internals"
+
+component "CLI tool smove" {
+  agent "smove" #line.bold
+}
+
+"CLI tool smove" -u->> "Move layer"
+"smove" -u->> "move-vm-backend-common"
+
+@enduml
