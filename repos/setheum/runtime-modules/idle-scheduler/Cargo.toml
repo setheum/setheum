@@ -1,4 +1,5 @@
 [package]
+license = "Apache-2.0 OR MIT"
 name = "idle-scheduler"
 version = "1.0.0"
 authors = [ "Afsall Labs", "Setheum Developers", "Setheum Foundation" ]

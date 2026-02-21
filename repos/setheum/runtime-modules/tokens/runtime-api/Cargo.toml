@@ -3,7 +3,7 @@ name = "orml-tokens-runtime-api"
 version = "1.5.0"
 authors = ["Laminar Developers <hello@laminar.one>"]
 edition = "2021"
-license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
+license = "Apache-2.0 OR MIT"
 description = "Runtime API module for orml-tokens."
 repository = "https://github.com/open-web3-stack/open-runtime-module-library"
 

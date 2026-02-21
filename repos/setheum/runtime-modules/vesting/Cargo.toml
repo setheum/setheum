@@ -1,4 +1,5 @@
 [package]
+license = "Apache-2.0 OR MIT"
 name = "module-vesting"
 description = "Provides scheduled balance locking mechanism, in a *graded vesting* way."
 version = "0.9.81-dev"

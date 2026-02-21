@@ -4,7 +4,7 @@ version.workspace = true
 authors = ["Use Ink <ink@use.ink>"]
 edition.workspace = true
 
-license.workspace = true
+license = "Apache-2.0 OR MIT"
 readme = "README.md"
 repository.workspace = true
 documentation = "https://docs.rs/ink_primitives/"

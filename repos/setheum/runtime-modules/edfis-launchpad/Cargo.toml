@@ -1,4 +1,5 @@
 [package]
+license = "Apache-2.0 OR MIT"
 name = "module-edfis-launchpad"
 description = "Provides a launchpad crowdsales platform on Edfis."
 version = "0.9.81-dev"
