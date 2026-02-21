@@ -6,6 +6,8 @@ members = [
 
 	"runtime-modules/*",
 	"runtime-modules/currencies/runtime-api",
+	"runtime-modules/oracle/runtime-api",
+	"runtime-modules/tokens/runtime-api",
 	"runtime-modules/evm-utility/macro",
 	"primitives",
 	"clisee",
@@ -19,24 +21,10 @@ members = [
 	"runtime",
 	"runtime/common",
 
-	"orml/asset-registry",
-	"orml/auction",
 	"orml/authority",
-	"orml/benchmarking",
-	"orml/currencies",
 	"orml/gradually-update",
-	"orml/nft",
-	"orml/oracle",
-	"orml/oracle/runtime-api",
-	"orml/parameters",
 	"orml/payments",
-	"orml/rewards",
-	"orml/tokens",
-	"orml/tokens/runtime-api",
-	"orml/traits",
 	"orml/unknown-tokens",
-	"orml/utilities",
-	"orml/vesting",
 	"orml/xcm-support",
 	"orml/xcm",
 	"orml/xtokens",
@@ -215,21 +203,21 @@ primitives = { package = "setheum-primitives", path = "primitives", default-feat
 runtime-common = { path = "runtime/common", default-features = false }
 setheum-runtime = { path = "runtime", default-features = false }
 
-module-evm-utility = { path = "modules/evm-utility", default-features = false }
-module-evm = { path = "modules/evm", default-features = false }
-module-currencies = { path = "modules/currencies", default-features = false }
-module-evm-bridge = { path = "modules/evm-bridge", default-features = false }
-module-support = { path = "modules/support", default-features = false }
-module-transaction-payment = { path = "modules/transaction-payment", default-features = false }
-module-idle-scheduler = { path = "modules/idle-scheduler", default-features = false }
-module-edfis_swap_legacy = { path = "modules/edfis-swap-legacy", default-features = false }
-module-ecdp-loans = { path = "modules/ecdp-loans", default-features = false }
-module-ecdp-ussd-engine = { path = "modules/ecdp-ussd-engine", default-features = false }
-module-ecdp-ussd-treasury = { path = "modules/ecdp-ussd-treasury", default-features = false }
-module-evm-accounts = { package = "module-unified-accounts", path = "modules/unified-accounts", default-features = false }
-module-evm-manager = { path = "modules/evm-manager", default-features = false }
-module-edfis-legacy = { package = "module-edfis-swap-legacy", path = "modules/edfis-swap-legacy", default-features = false }
-module-unified-accounts = { path = "modules/unified-accounts", default-features = false }
+module-evm-utility = { path = "runtime-modules/evm-utility", default-features = false }
+module-evm = { path = "runtime-modules/evm", default-features = false }
+module-currencies = { path = "runtime-modules/currencies", default-features = false }
+module-evm-bridge = { path = "runtime-modules/evm-bridge", default-features = false }
+module-support = { path = "runtime-modules/support", default-features = false }
+module-transaction-payment = { path = "runtime-modules/transaction-payment", default-features = false }
+module-idle-scheduler = { path = "runtime-modules/idle-scheduler", default-features = false }
+module-edfis_swap_legacy = { path = "runtime-modules/edfis-swap-legacy", default-features = false }
+module-ecdp-loans = { path = "runtime-modules/ecdp-loans", default-features = false }
+module-ecdp-ussd-engine = { path = "runtime-modules/ecdp-ussd-engine", default-features = false }
+module-ecdp-ussd-treasury = { path = "runtime-modules/ecdp-ussd-treasury", default-features = false }
+module-evm-accounts = { package = "module-unified-accounts", path = "runtime-modules/unified-accounts", default-features = false }
+module-evm-manager = { path = "runtime-modules/evm-manager", default-features = false }
+module-edfis-legacy = { package = "module-edfis-swap-legacy", path = "runtime-modules/edfis-swap-legacy", default-features = false }
+module-unified-accounts = { path = "runtime-modules/unified-accounts", default-features = false }
 rate-limiter = { path = "rate-limiter", default-features = false }
 network-clique = { path = "clique" }
 
@@ -238,7 +226,7 @@ network-clique = { path = "clique" }
 
 # Setheum & ORML (client)
 setheum-node = { path = "node" }
-module-evm-utility-macro = { path = "modules/evm-utility/macro" }
+module-evm-utility-macro = { path = "runtime-modules/evm-utility/macro" }
 
 # Substrate Pallets (WASM)
 frame-benchmarking = { version = "25.0.0", default-features = false }
@@ -352,3 +340,14 @@ try-runtime-cli = { version = "0.35.0" }
 xcm-simulator = { version = "4.0.0" }
 
 halo2_proofs = { git = "https://github.com/Cardinal-Cryptography/pse-halo2", branch = "aleph", default-features = false }
+
+substrate-test-client = { git = "https://github.com/Cardinal-Cryptography/polkadot-sdk.git", branch = "aleph-v1.3.0" }
+substrate-test-runtime = { git = "https://github.com/Cardinal-Cryptography/polkadot-sdk.git", branch = "aleph-v1.3.0" }
+substrate-test-runtime-client = { git = "https://github.com/Cardinal-Cryptography/polkadot-sdk.git", branch = "aleph-v1.3.0" }
+
+polkadot-runtime-common = { git = "https://github.com/Cardinal-Cryptography/polkadot-sdk.git", branch = "aleph-v1.3.0", default-features = false }
+polkadot-runtime-parachains = { git = "https://github.com/Cardinal-Cryptography/polkadot-sdk.git", branch = "aleph-v1.3.0", default-features = false }
+polkadot-parachain-primitives = { git = "https://github.com/Cardinal-Cryptography/polkadot-sdk.git", branch = "aleph-v1.3.0", default-features = false }
+cumulus-primitives-core = { git = "https://github.com/Cardinal-Cryptography/polkadot-sdk.git", branch = "aleph-v1.3.0", default-features = false }
+cumulus-pallet-xcm = { git = "https://github.com/Cardinal-Cryptography/polkadot-sdk.git", branch = "aleph-v1.3.0", default-features = false }
+pallet-message-queue = { git = "https://github.com/Cardinal-Cryptography/polkadot-sdk.git", branch = "aleph-v1.3.0", default-features = false }

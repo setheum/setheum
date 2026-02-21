@@ -1,0 +1,26 @@
+@startuml
+agent "move-vm-runtime" #line.bold
+agent "move-bytecode-verifier"
+agent "move-core-types" #palegreen
+agent "move-vm-types"
+agent "move-binary-format"
+agent "move-borrow-graph"
+agent "bcs"             #palegreen
+
+"move-vm-runtime" -->> "move-bytecode-verifier"
+"move-vm-runtime" -->> "move-core-types"
+"move-vm-runtime" -->> "move-vm-types"
+"move-vm-runtime" -->> "move-binary-format"
+
+"move-bytecode-verifier" -->> "move-borrow-graph"
+"move-bytecode-verifier" -->> "move-binary-format"
+"move-bytecode-verifier" -->> "move-core-types"
+
+"move-core-types" -->> "bcs"
+
+"move-vm-types" -->> "move-core-types"
+"move-vm-types" -->> "move-binary-format"
+"move-vm-types" -->> "bcs"
+
+"move-binary-format" -->> "move-core-types"
+@enduml

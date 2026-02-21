@@ -1,4 +1,5 @@
 [package]
+license = "Apache-2.0 OR MIT"
 name = "module-vesting"
 description = "Provides scheduled balance locking mechanism, in a *graded vesting* way."
 version = "0.9.81-dev"
@@ -19,7 +20,7 @@ frame-system = { workspace = true }
 
 primitives = { package = "setheum-primitives", path = "../../primitives", default-features = false }
 support = { package = "module-support", path = "../support", default-features = false }
-orml-traits = { path = "../../orml/traits", default-features = false }
+orml-traits = { path = "../../runtime-modules/traits", default-features = false }
 
 [dev-dependencies]
 sp-core = { workspace = true, features = ["std"] }

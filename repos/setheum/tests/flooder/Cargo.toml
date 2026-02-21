@@ -1,4 +1,5 @@
 [package]
+license = "Apache-2.0 OR MIT"
 name = "flooder"
 version = "0.3.0"
 authors = [ "Afsall Labs", "Setheum Developers", "Setheum Foundation" ]

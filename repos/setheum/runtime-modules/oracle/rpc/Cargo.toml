@@ -1,0 +1,22 @@
+[package]
+name = "orml-oracle-rpc"
+version = "1.5.0"
+authors = ["Laminar Developers <hello@laminar.one>"]
+edition = "2021"
+license = "Apache-2.0 OR MIT"
+
+[dependencies]
+jsonrpc-core = { workspace = true }
+jsonrpc-derive = { workspace = true }
+sp-api = { workspace = true }
+sp-blockchain = { workspace = true }
+sp-runtime = { workspace = true }
+orml-oracle-runtime-api = { path = "../runtime-api" }
+
+[features]
+default = ["std"]
+std = [
+    "sp-api/std",
+    "sp-runtime/std",
+    "orml-oracle-runtime-api/std",
+]

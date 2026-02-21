@@ -1,0 +1,37 @@
+[package]
+license = "Apache-2.0 OR MIT"
+name = "module-nft"
+version = "0.9.81-dev"
+authors.workspace = true
+edition.workspace = true
+homepage.workspace = true
+repository.workspace = true
+
+[dependencies]
+parity-scale-codec = { workspace = true }
+scale-info = { workspace = true }
+serde = { workspace = true, optional = true }
+
+frame-support = { workspace = true }
+frame-system = { workspace = true }
+sp-runtime = { workspace = true }
+sp-std = { workspace = true }
+
+orml-traits = { path = "../traits", default-features = false }
+
+[dev-dependencies]
+sp-core = { workspace = true, features = ["std"] }
+sp-io = { workspace = true, features = ["std"] }
+
+[features]
+default = [ "std" ]
+std = [
+	"frame-support/std",
+	"frame-system/std",
+	"orml-traits/std",
+	"parity-scale-codec/std",
+	"scale-info/std",
+	"serde",
+	"sp-runtime/std",
+	"sp-std/std",
+]

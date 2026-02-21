@@ -1,0 +1,13 @@
+[package]
+name = "gas-costs"
+version = "0.0.0"
+
+[dependencies]
+MoveStdlib = { git = "https://github.com/eigerco/move-stdlib", rev = "main" }
+car-wash-example = { local = "../car-wash-example/" }
+basic_coin = { local = "../basic_coin" }
+
+[addresses]
+std =  "0x1"
+DeveloperBob = "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty"
+CafeAccount = "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty"

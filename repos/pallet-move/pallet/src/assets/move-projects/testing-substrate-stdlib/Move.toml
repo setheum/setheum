@@ -1,0 +1,8 @@
+[package]
+name = "testing-substrate-stdlib"
+version = "0.0.0"
+
+[dependencies]
+
+[addresses]
+substrate =  "0x1"

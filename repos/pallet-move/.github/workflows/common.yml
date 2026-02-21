@@ -1,0 +1,53 @@
+name: Common jobs (fmt, clippy, test)
+
+on:
+  pull_request:
+    paths:
+      - pallet/**
+      - Cargo.toml
+      - rpc/**
+      - .github/workflows/common.yml
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  common:
+    name: Run fmt and clippy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          components: rustfmt, clippy
+          override: true
+
+      - name: Get smove
+        uses: robinraju/release-downloader@v1.8
+        with:
+          repository: "eigerco/smove"
+          fileName: "smove.zip"
+          latest: true
+          extract: true
+      - name: Setup smove
+        shell: bash
+        run: |
+          echo "$GITHUB_WORKSPACE" >> $GITHUB_PATH
+          chmod +x "$GITHUB_WORKSPACE/smove"
+
+      - name: fmt
+        run: cargo fmt --all -- --check
+
+      - name: clippy
+        shell: bash
+        run: cargo clippy --all-targets -- -D warnings
+
+      - name: test
+        shell: bash
+        run: cargo test --verbose --features build-move-projects-for-test

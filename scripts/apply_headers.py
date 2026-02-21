@@ -12,16 +12,16 @@ HEADER_MIT_APACHE = os.path.join(HEADER_DIR, 'HEADER-MIT-APACHE')
 # Apache2.0/MIT for setheum-js, sheyth, set-bft, clique, setheum-client, aggregator, flooder and rate-limiter
 # The rest is all GPL3
 MIT_APACHE_PROJECTS = [
+    'repos/set-bft',
     'repos/setheum-js',
     'repos/sheyth',
-    'repos/set-bft',
-    'repos/cargo-sheyth',
     'repos/spinit',
-    'repos/setheum/clique',
-    'repos/setheum/setheum-client',
     'repos/setheum/aggregator',
+    'repos/setheum/clique',
+    'repos/setheum/rate-limiter',
+    'repos/setheum/runtime-modules'
+    'repos/setheum/setheum-client',
     'repos/setheum/tests/flooder',
-    'repos/setheum/rate-limiter'
 ]
 
 def get_header(file_path):
@@ -49,44 +49,102 @@ def apply_header(file_path, header_path):
     with open(file_path, 'r') as f:
         content = f.read()
     
-    # If the file already starts with the exact header, do nothing
-    if content.strip().startswith(header_text):
-        return False
-
     content_lines = content.splitlines(keepends=True)
     
-    # Check if a header (comment block) already exists at the top
-    if content_lines and content_lines[0].strip().startswith('//'):
-        end_idx = 0
-        is_doc_comment = False
+    if file_path.endswith('.rs'):
+        # Robust logic for Rust files to handle duplicates
+        content_start_index = 0
         for i, line in enumerate(content_lines):
             stripped = line.strip()
-            # Documentation comments start with /// or //!
-            if stripped.startswith('///') or stripped.startswith('//!'):
-                is_doc_comment = True
+            
+            # Stop at module docs
+            if stripped.startswith('//!'):
+                content_start_index = i
                 break
-            # Regular comments start with //
-            if stripped.startswith('//') or stripped == '':
-                end_idx = i + 1
-            else:
+            
+            # Stop at item docs
+            if stripped.startswith('///'):
+                content_start_index = i
                 break
+            
+            # Stop at attributes
+            if stripped.startswith('#[') or stripped.startswith('#!['):
+                content_start_index = i
+                break
+            
+            # Stop at code keywords
+            if (stripped.startswith('use ') or 
+                stripped.startswith('mod ') or 
+                stripped.startswith('pub ') or 
+                stripped.startswith('fn ') or 
+                stripped.startswith('struct ') or 
+                stripped.startswith('enum ') or 
+                stripped.startswith('type ') or 
+                stripped.startswith('impl ') or 
+                stripped.startswith('trait ') or 
+                stripped.startswith('const ') or 
+                stripped.startswith('static ') or 
+                stripped.startswith('macro_rules!')):
+                content_start_index = i
+                break
+                
+            # Continue consuming standard comments and empty lines
+            if stripped.startswith('//') or not stripped:
+                continue
+                
+            # If we hit anything else (that isn't a comment or empty), assume it's code
+            content_start_index = i
+            break
+        else:
+             content_start_index = len(content_lines)
+
+        remaining_content = content_lines[content_start_index:]
         
-        if not is_doc_comment and end_idx > 0:
-            # We found a regular comment block at the top. 
-            # Check if it looks like a license header.
-            header_candidate = "".join(content_lines[:end_idx])
-            if any(indicator in header_candidate for indicator in ['Copyright', 'License', 'SPDX', 'بِسْمِ اللَّهِ']):
-                content_lines = content_lines[end_idx:]
+        # Strip leading blank lines from the remaining content
+        while remaining_content and not remaining_content[0].strip():
+            remaining_content.pop(0)
+            
+        new_content = header_text + '\n\n' + "".join(remaining_content)
+        
+    else:
+        # If the file already starts with the exact header, do nothing
+        if content.strip().startswith(header_text):
+            return False
 
-    # Clean up leading empty lines
-    while content_lines and content_lines[0].strip() == '':
-        content_lines.pop(0)
+        # Check if a header (comment block) already exists at the top
+        if content_lines and content_lines[0].strip().startswith('//'):
+            end_idx = 0
+            is_doc_comment = False
+            for i, line in enumerate(content_lines):
+                stripped = line.strip()
+                # Documentation comments start with /// or //!
+                if stripped.startswith('///') or stripped.startswith('//!'):
+                    is_doc_comment = True
+                    break
+                # Regular comments start with //
+                if stripped.startswith('//') or stripped == '':
+                    end_idx = i + 1
+                else:
+                    break
+            
+            if not is_doc_comment and end_idx > 0:
+                # We found a regular comment block at the top. 
+                # Check if it looks like a license header.
+                header_candidate = "".join(content_lines[:end_idx])
+                if any(indicator in header_candidate for indicator in ['Copyright', 'License', 'SPDX', 'بِسْمِ اللَّهِ']):
+                    content_lines = content_lines[end_idx:]
 
-    new_content = header_text + '\n\n' + "".join(content_lines)
+        # Clean up leading empty lines
+        while content_lines and content_lines[0].strip() == '':
+            content_lines.pop(0)
+
+        new_content = header_text + '\n\n' + "".join(content_lines)
     
-    with open(file_path, 'w') as f:
-        f.write(new_content)
-    return True
+    if new_content != content:
+        with open(file_path, 'w') as f:
+            f.write(new_content)
+        return True
+    return False
 
 def main():
     for root, dirs, files in os.walk(ROOT_DIR):
@@ -116,15 +174,27 @@ def main():
                     lines = f.readlines()
                 
                 new_lines = []
+                found_license = False
                 for line in lines:
-                    if line.strip().startswith('license ='):
+                    stripped = line.strip()
+                    if stripped.startswith('license =') or stripped.startswith('license.workspace ='):
                         new_lines.append(f'license = "{license_str}"\n')
+                        found_license = True
                     else:
                         new_lines.append(line)
                 
-                with open(file_path, 'w') as f:
-                    f.writelines(new_lines)
-                print(f"Updated license in {os.path.relpath(file_path, ROOT_DIR)} to {license_str}")
+                if not found_license:
+                    # Insert after [package] section header
+                    for i, line in enumerate(new_lines):
+                        if line.strip() == '[package]':
+                            new_lines.insert(i + 1, f'license = "{license_str}"\n')
+                            found_license = True
+                            break
+                
+                if found_license:
+                    with open(file_path, 'w') as f:
+                        f.writelines(new_lines)
+                    print(f"Updated license in {os.path.relpath(file_path, ROOT_DIR)} to {license_str}")
 
 if __name__ == "__main__":
     main()
