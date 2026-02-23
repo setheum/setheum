@@ -41,7 +41,7 @@ use jsonrpc_derive::rpc;
 use sp_api::ProvideRuntimeApi;
 use sp_blockchain::HeaderBackend;
 use sp_runtime::{generic::BlockId, traits::Block as BlockT};
-pub use orml_oracle_runtime_api::OracleApi as OracleRuntimeApi;
+pub use module_oracle_runtime_api::OracleApi as OracleRuntimeApi;
 
 #[rpc]
 pub trait OracleApi<BlockHash, DataProviderId, CurrencyId, TimeStampedPrice> {

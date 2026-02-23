@@ -43,7 +43,7 @@ use frame_support::{
 	traits::{ConstU128, ConstU32, ConstU64, Everything, Nothing},
 };
 use frame_system::EnsureSignedBy;
-use orml_traits::parameter_type_with_key;
+use module_traits::parameter_type_with_key;
 use primitives::{Amount, Balance, CurrencyId, TokenSymbol};
 use sp_core::H256;
 use sp_runtime::{traits::IdentityLookup, BuildStorage};
@@ -105,7 +105,7 @@ parameter_type_with_key! {
 	};
 }
 
-impl orml_tokens::Config for Runtime {
+impl module_tokens::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type Balance = Balance;
 	type Amount = Amount;
@@ -136,7 +136,7 @@ construct_runtime!(
 		System: frame_system,
 		TransactionPause: transaction_pause,
 		Balances: pallet_balances,
-		Tokens: orml_tokens,
+		Tokens: module_tokens,
 	}
 );
 

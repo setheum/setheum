@@ -20,7 +20,7 @@ sp-arithmetic = { workspace = true }
 sp-runtime = { workspace = true }
 sp-std = { workspace = true }
 
-orml-traits = { path = "../traits", default-features = false }
+module-traits = { package = "module-traits", path = "../traits", default-features = false }
 
 [dev-dependencies]
 pallet-elections-phragmen = { workspace = true, features = ["std"] }
@@ -36,7 +36,7 @@ std = [
 	"frame-support/std",
 	"frame-system/std",
 	"log/std",
-	"orml-traits/std",
+	"module-traits/std",
 	"parity-scale-codec/std",
 	"scale-info/std",
 	"serde",

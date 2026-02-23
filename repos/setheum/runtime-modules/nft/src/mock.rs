@@ -46,7 +46,7 @@ use frame_support::{
 };
 use frame_system::EnsureSignedBy;
 use module_support::mocks::MockAddressMapping;
-use orml_traits::parameter_type_with_key;
+use module_traits::parameter_type_with_key;
 use parity_scale_codec::{Decode, Encode};
 use primitives::{Amount, Balance, CurrencyId, ReserveIdentifier, TokenSymbol};
 use sp_core::{crypto::AccountId32, H160, H256};
@@ -171,7 +171,7 @@ ord_parameter_types! {
 	pub const One: AccountId = ALICE;
 }
 
-impl orml_tokens::Config for Runtime {
+impl module_tokens::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type Balance = Balance;
 	type Amount = Amount;
@@ -207,7 +207,7 @@ impl module_currencies::Config for Runtime {
 }
 
 parameter_types! {
-	pub const NftPalletId: PalletId = PalletId(*b"set/sNFT");
+	pub const ModuleNFTPalletId: PalletId = PalletId(*b"set/sNFT");
 }
 pub const CREATE_CLASS_DEPOSIT: u128 = 200;
 pub const CREATE_TOKEN_DEPOSIT: u128 = 100;
@@ -219,12 +219,12 @@ impl Config for Runtime {
 	type CreateClassDeposit = ConstU128<CREATE_CLASS_DEPOSIT>;
 	type CreateTokenDeposit = ConstU128<CREATE_TOKEN_DEPOSIT>;
 	type DataDepositPerByte = ConstU128<DATA_DEPOSIT_PER_BYTE>;
-	type PalletId = NftPalletId;
+	type PalletId = ModuleNFTPalletId;
 	type MaxAttributesBytes = ConstU32<MAX_ATTRIBUTES_BYTES>;
 	type WeightInfo = ();
 }
 
-impl orml_nft::Config for Runtime {
+impl crate::Config for Runtime {
 	type ClassId = u32;
 	type TokenId = u64;
 	type ClassData = ClassData<Balance>;
@@ -240,22 +240,21 @@ type Block = frame_system::mocking::MockBlock<Runtime>;
 construct_runtime!(
 	pub enum Runtime {
 		System: frame_system,
-		NFTModule: nft,
-		OrmlNFT: orml_nft,
+		ModuleNFT: nft,
 		Balances: pallet_balances,
 		Proxy: pallet_proxy,
 		Utility: pallet_utility,
-		Tokens: orml_tokens,
+		Tokens: module_tokens,
 		Currency: module_currencies,
 	}
 );
 
 pub const ALICE: AccountId = AccountId::new([1u8; 32]);
 pub const BOB: AccountId = AccountId::new([2u8; 32]);
-pub const CLASS_ID: <Runtime as orml_nft::Config>::ClassId = 0;
-pub const CLASS_ID_NOT_EXIST: <Runtime as orml_nft::Config>::ClassId = 1;
-pub const TOKEN_ID: <Runtime as orml_nft::Config>::TokenId = 0;
-pub const TOKEN_ID_NOT_EXIST: <Runtime as orml_nft::Config>::TokenId = 1;
+pub const CLASS_ID: <Runtime as module_nft::Config>::ClassId = 0;
+pub const CLASS_ID_NOT_EXIST: <Runtime as module_nft::Config>::ClassId = 1;
+pub const TOKEN_ID: <Runtime as module_nft::Config>::TokenId = 0;
+pub const TOKEN_ID_NOT_EXIST: <Runtime as module_nft::Config>::TokenId = 1;
 
 pub struct ExtBuilder;
 impl Default for ExtBuilder {

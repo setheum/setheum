@@ -42,7 +42,7 @@
 use frame_support::{pallet_prelude::*, transactional, PalletId};
 use frame_system::pallet_prelude::*;
 use module_support::{EcdpAuctionsManager, EcdpUssdTreasury, EcdpUssdTreasuryExtended, SwapManager, Ratio, Swap, SwapLimit};
-use orml_traits::{MultiCurrency, MultiCurrencyExtended};
+use module_traits::{MultiCurrency, MultiCurrencyExtended};
 use primitives::{Balance, CurrencyId};
 use sp_runtime::{
 	traits::{AccountIdConversion, One, Zero},

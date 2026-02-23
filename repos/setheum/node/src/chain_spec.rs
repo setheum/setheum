@@ -40,7 +40,7 @@ use setheum_runtime::{
 
 //
 	DexConfig, EnabledTradingPairs,
-	TokensConfig, OrmlNFTConfig,
+	TokensConfig,
 	NativeTokenExistentialDeposit, MaxNativeTokenExistentialDeposit,
 //
 	SEE, SERP, DNAR, HELP, SETR, SETUSD,
@@ -63,6 +63,7 @@ use sp_core::{crypto::UncheckedInto, bytes::from_hex};
 
 use setheum_primitives::{AccountPublic, Balance, Nonce, currency::TokenInfo, TradingPair};
 use setheum_runtime::BABE_GENESIS_EPOCH_CONFIG;
+use module_nft::GenesisConfig as NFTConfig;
 
 // The URL for the telemetry server.
 const TELEMETRY_URL: &str = "wss://telemetry.polkadot.io/submit/";
@@ -604,7 +605,7 @@ fn dev_genesis(
 // 	initial_enabled_trading_pairs: EnabledTradingPairs::get(),
 // 	initial_added_liquidity_pools: vec![],
 // },
-		orml_nft: OrmlNFTConfig { tokens: vec![] }
+		module_nft: ModuleNFTConfig { tokens: vec![] }
 	}
 }
 
@@ -851,7 +852,7 @@ fn testnet_genesis(
 // 	initial_enabled_trading_pairs: EnabledTradingPairs::get(),
 // 	initial_added_liquidity_pools: vec![],
 // },
-		orml_nft: OrmlNFTConfig { tokens: vec![] },
+		module_nft: ModuleNFTConfig { tokens: vec![] },
 	}
 }
 
@@ -1145,7 +1146,7 @@ fn mainnet_genesis(
 // 	initial_enabled_trading_pairs: EnabledTradingPairs::get(),
 // 	initial_added_liquidity_pools: vec![],
 // },
-		orml_nft: OrmlNFTConfig { tokens: vec![] },
+		module_nft: ModuleNFTConfig { tokens: vec![] },
 	}
 }
 

@@ -18,11 +18,10 @@ Core implementation of the Setheum Network, a Substrate-based blockchain.
 
 - `node/`: The node implementation.
 - `runtime/`: The blockchain runtime.
-- `modules/`: Custom pallets (modules) for Setheum.
+- `runtime-modules/`: Custom pallets (modules) for Setheum.
 - `primitives/`: Shared types and utilities.
 - `clisee/`: Command-line interface for Setheum.
 - `setheum-client/`: Client-side libraries.
-- `orml/`: Open Runtime Module Library components.
 
 ## Building
 

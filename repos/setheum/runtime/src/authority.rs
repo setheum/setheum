@@ -26,10 +26,10 @@ use crate::{
 };
 pub use frame_support::traits::{schedule::Priority, EnsureOrigin, OriginTrait};
 use frame_system::ensure_root;
-use orml_authority::EnsureDelayed;
+use module_authority::EnsureDelayed;
 
 pub struct AuthorityConfigImpl;
-impl orml_authority::AuthorityConfig<Origin, OriginCaller, BlockNumber> for AuthorityConfigImpl {
+impl module_authority::AuthorityConfig<Origin, OriginCaller, BlockNumber> for AuthorityConfigImpl {
 	fn check_schedule_dispatch(origin: Origin, _priority: Priority) -> DispatchResult {
 		EnsureRoot::<AccountId>::try_origin(origin)
 			.or_else(|o| EnsureRootOrHalfShuraCouncil::try_origin(o).map(|_| ()))
@@ -72,7 +72,7 @@ impl orml_authority::AuthorityConfig<Origin, OriginCaller, BlockNumber> for Auth
 	}
 }
 
-impl orml_authority::AsOriginId<Origin, OriginCaller> for AuthoritysOriginId {
+impl module_authority::AsOriginId<Origin, OriginCaller> for AuthoritysOriginId {
 	fn into_origin(self) -> OriginCaller {
 		match self {
 			AuthoritysOriginId::Root => Origin::root().caller().clone(),

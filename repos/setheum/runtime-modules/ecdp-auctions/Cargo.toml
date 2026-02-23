@@ -16,18 +16,18 @@ frame-system = { workspace = true }
 sp-io = { workspace = true }
 sp-runtime = { workspace = true }
 sp-std = { workspace = true }
-orml-traits = { workspace = true }
-orml-utilities = { workspace = true }
+module-traits = { workspace = true }
+module-utilities = { workspace = true }
 module-support = { workspace = true }
 primitives = { workspace = true }
 
 [dev-dependencies]
 sp-core = { workspace = true, features = ["std"] }
 pallet-balances = { workspace = true, features = ["std"] }
-orml-auction = { workspace = true, features = ["std"] }
+module-auction = { workspace = true, features = ["std"] }
 module-ecdp-ussd-treasury = { workspace = true, features = ["std"] }
 module-edfis-legacy = { workspace = true, features = ["std"] }
-orml-tokens = { workspace = true, features = ["std"] }
+module-tokens = { workspace = true, features = ["std"] }
 
 [features]
 default = ["std"]
@@ -35,8 +35,8 @@ std = [
 	"parity-scale-codec/std",
 	"frame-support/std",
 	"frame-system/std",
-	"orml-traits/std",
-	"orml-utilities/std",
+	"module-traits/std",
+	"module-utilities/std",
 	"primitives/std",
 	"scale-info/std",
 	"sp-io/std",

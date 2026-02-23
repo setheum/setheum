@@ -37,9 +37,9 @@ use sp_runtime::{
 pub use sp_staking::{EraIndex, SessionIndex};
 use sp_std::vec::Vec;
 
-use crate::{AuthorityId, BlockNumber, SessionCount};
+use crate::{AccountId, BlockNumber, SessionCount, Version};
 
-pub const KEY_TYPE: KeyTypeId = KeyTypeId(*b"set");
+pub const KEY_TYPE: KeyTypeId = KeyTypeId(*b"seth");
 
 // Same as GRANDPA_ENGINE_ID because as of right now substrate sends only
 // grandpa justifications over the network.
@@ -48,7 +48,7 @@ pub const ALEPH_ENGINE_ID: ConsensusEngineId = *b"FRNK";
 
 mod app {
     use sp_application_crypto::{app_crypto, ed25519};
-    app_crypto!(ed25519, crate::KEY_TYPE);
+    app_crypto!(ed25519, super::KEY_TYPE);
 }
 
 sp_application_crypto::with_pair! {
@@ -338,7 +338,7 @@ pub trait EraManager {
 pub mod staking {
     use sp_runtime::Perbill;
 
-    use super::Balance;
+    use crate::Balance;
     use crate::TOKEN;
 
     pub const MIN_VALIDATOR_BOND: u128 = 25_000 * TOKEN;
@@ -349,7 +349,7 @@ pub mod staking {
 
     pub fn era_payout(miliseconds_per_era: u64) -> (Balance, Balance) {
 // Milliseconds per year for the Julian year (365.25 days).
-        const MILLISECONDS_PER_YEAR: u64 = 1000 * 3600 * 24 * 36525 // 100;
+        const MILLISECONDS_PER_YEAR: u64 = 1000 * 3600 * 24 * 36525 / 100;
 
         let portion = Perbill::from_rational(miliseconds_per_era, MILLISECONDS_PER_YEAR);
         let total_payout = portion * YEARLY_INFLATION;
@@ -359,7 +359,7 @@ pub mod staking {
         (validators_payout, rest)
     }
 
-//**
+/**
      * Macro for making a default implementation of non-self methods from given class.
      * As an input it expects list of tuples of form
      * `(method_name(arg1: type1, arg2: type2, ...), class_name, return_type)`

@@ -28,7 +28,7 @@ use frame_benchmarking::{account, whitelisted_caller};
 use frame_support::traits::OnFinalize;
 use frame_system::RawOrigin;
 use module_support::{AuctionManager as AuctionManagerTrait, CDPTreasury};
-use orml_benchmarking::runtime_benchmarks;
+use module_benchmarking::runtime_benchmarks;
 use sp_std::prelude::*;
 
 const SEED: u32 = 0;
@@ -39,7 +39,7 @@ const STABLECOIN: CurrencyId = GetSetUSDId::get();
 const STAKING: CurrencyId = GetDinarCurrencyId::get();
 
 runtime_benchmarks! {
-	{ Runtime, orml_auction }
+	{ Runtime, module_auction }
 
 // `bid` a collateral auction, best cases:
 // there's no bidder before and bid price doesn't exceed target amount
@@ -106,7 +106,7 @@ runtime_benchmarks! {
 mod tests {
 	use super::*;
 	use crate::benchmarking::utils::tests::new_test_ext;
-	use orml_benchmarking::impl_benchmark_test_suite;
+	use module_benchmarking::impl_benchmark_test_suite;
 
 	impl_benchmark_test_suite!(new_test_ext(),);
 }

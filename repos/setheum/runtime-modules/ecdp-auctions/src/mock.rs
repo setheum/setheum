@@ -46,7 +46,7 @@ use frame_support::{
 use frame_system::EnsureSignedBy;
 pub use module_support::Price;
 use module_support::SpecificJointsSwap;
-use orml_traits::parameter_type_with_key;
+use module_traits::parameter_type_with_key;
 use primitives::{TokenSymbol, TradingPair};
 use sp_runtime::{
 	testing::{Header, TestXt},
@@ -85,7 +85,7 @@ parameter_type_with_key! {
 	};
 }
 
-impl orml_tokens::Config for Runtime {
+impl module_tokens::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type Balance = Balance;
 	type Amount = Amount;
@@ -99,7 +99,7 @@ impl orml_tokens::Config for Runtime {
 	type DustRemovalWhitelist = Nothing;
 }
 
-impl orml_auction::Config for Runtime {
+impl module_auction::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type Balance = Balance;
 	type AuctionId = AuctionId;
@@ -220,8 +220,8 @@ construct_runtime!(
 	pub enum Runtime {
 		System: frame_system,
 		EcdpAuctionsManagerModule: auction_manager,
-		Tokens: orml_tokens,
-		AuctionModule: orml_auction,
+		Tokens: module_tokens,
+		AuctionModule: module_auction,
 		EcdpUssdTreasuryModule: module_ecdp_ussd_treasury,
 		EdfisSwapModule: module_edfis_swap_legacy,
 	}
@@ -265,7 +265,7 @@ impl ExtBuilder {
 			.build_storage()
 			.unwrap();
 
-		orml_tokens::GenesisConfig::<Runtime> {
+		module_tokens::GenesisConfig::<Runtime> {
 			balances: self.balances,
 		}
 		.assimilate_storage(&mut t)

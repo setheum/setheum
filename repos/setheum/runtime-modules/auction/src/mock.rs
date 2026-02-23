@@ -41,7 +41,7 @@
 
 use super::*;
 use frame_support::{construct_runtime, derive_impl};
-use orml_traits::OnNewBidResult;
+use module_traits::OnNewBidResult;
 use sp_runtime::{traits::IdentityLookup, BuildStorage};
 
 use crate as auction;

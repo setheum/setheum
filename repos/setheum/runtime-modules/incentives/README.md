@@ -4,7 +4,7 @@ Provides Incentive mechanisms for Ethical DeFi Protocols.
 
 ## Overview
 
-Edfis Exchange needs to support multiple open liquidity reward mechanisms. Each Pool has  its own multi currencies rewards and reward accumulation mechanism. ORML rewards module records the total shares, total multi currencies rewards and user shares of specific pool.  Incentives module provides hooks to other protocals to manage shares, accumulates rewards and distributes rewards to users based on their shares.
+Edfis Exchange needs to support multiple open liquidity reward mechanisms. Each Pool has  its own multi currencies rewards and reward accumulation mechanism. module rewards records the total shares, total multi currencies rewards and user shares of specific pool.  Incentives module provides hooks to other protocals to manage shares, accumulates rewards and distributes rewards to users based on their shares.
 
 ## Pool types:
 

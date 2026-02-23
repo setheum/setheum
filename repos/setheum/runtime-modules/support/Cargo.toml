@@ -21,7 +21,7 @@ sp-core = { workspace = true }
 sp-io = { workspace = true }
 xcm = { workspace = true }
 
-orml-tokens = { workspace = true }
+module-tokens = { workspace = true }
 primitives = { workspace = true }
 
 [dev-dependencies]
@@ -33,7 +33,7 @@ std = [
 	"parity-scale-codec/std",
 	"frame-support/std",
 	"frame-system/std",
-	"orml-tokens/std",
+	"module-tokens/std",
 	"primitives/std",
 	"scale-info/std",
 	"serde",

@@ -44,7 +44,7 @@ use frame_support::{
 };
 use frame_system::EnsureSignedBy;
 use module_support::{mocks::MockErc20InfoMapping, SpecificJointsSwap};
-use orml_traits::{parameter_type_with_key, MultiReservableCurrency};
+use module_traits::{parameter_type_with_key, MultiReservableCurrency};
 use primitives::{Amount, TokenSymbol};
 use sp_runtime::{traits::IdentityLookup, BuildStorage};
 use sp_std::cell::RefCell;
@@ -85,7 +85,7 @@ parameter_type_with_key! {
 	};
 }
 
-impl orml_tokens::Config for Runtime {
+impl module_tokens::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type Balance = Balance;
 	type Amount = Amount;
@@ -165,7 +165,7 @@ construct_runtime!(
 	pub enum Runtime {
 		System: frame_system,
 		EdfisSwapModule: edfis_swap,
-		Tokens: orml_tokens,
+		Tokens: module_tokens,
 	}
 );
 
@@ -219,7 +219,7 @@ impl ExtBuilder {
 			.build_storage()
 			.unwrap();
 
-		orml_tokens::GenesisConfig::<Runtime> {
+		module_tokens::GenesisConfig::<Runtime> {
 			balances: self.balances,
 		}
 		.assimilate_storage(&mut t)

@@ -30,8 +30,8 @@ use frame_benchmarking::{account, whitelisted_caller};
 use frame_system::RawOrigin;
 use sp_runtime::traits::{AccountIdConversion, UniqueSaturatedInto};
 
-use orml_benchmarking::runtime_benchmarks;
-use orml_traits::MultiCurrency;
+use module_benchmarking::runtime_benchmarks;
+use module_traits::MultiCurrency;
 
 const SEED: u32 = 0;
 
@@ -128,7 +128,7 @@ runtime_benchmarks! {
 		let treasury: AccountId = TreasuryPalletId::get().into_account();
 		let accounts: Vec<AccountId> = vec!["alice", "bob", "charlie"].into_iter().map(|x| account(x, 0, SEED)).collect();
 		accounts.iter().for_each(|account| {
-			orml_tokens::Accounts::<Runtime>::insert(account, DNAR, orml_tokens::AccountData {
+			module_tokens::Accounts::<Runtime>::insert(account, DNAR, module_tokens::AccountData {
 				free: 100,
 				frozen: 0,
 				reserved: 0
@@ -138,7 +138,7 @@ runtime_benchmarks! {
 	}: _(RawOrigin::Root, DNAR, (&accounts[..c as usize]).to_vec())
 	verify {
 		(&accounts[..c as usize]).iter().for_each(|account| {
-			assert_eq!(orml_tokens::Accounts::<Runtime>::contains_key(account, DNAR), false);
+			assert_eq!(module_tokens::Accounts::<Runtime>::contains_key(account, DNAR), false);
 		});
 		assert_eq!(Tokens::free_balance(DNAR, &treasury), dollar(DNAR) + (100 * c) as Balance);
 	}
@@ -148,7 +148,7 @@ runtime_benchmarks! {
 mod tests {
 	use super::*;
 	use crate::benchmarking::utils::tests::new_test_ext;
-	use orml_benchmarking::impl_benchmark_test_suite;
+	use module_benchmarking::impl_benchmark_test_suite;
 
 	impl_benchmark_test_suite!(new_test_ext(),);
 }

@@ -25,9 +25,9 @@
 use frame_support::{traits::Get, weights::Weight};
 use sp_std::marker::PhantomData;
 
-/// Weight functions for orml_authority.
+/// Weight functions for module_authority.
 pub struct WeightInfo<T>(PhantomData<T>);
-impl<T: frame_system::Config> orml_authority::WeightInfo for WeightInfo<T> {
+impl<T: frame_system::Config> module_authority::WeightInfo for WeightInfo<T> {
 	fn dispatch_as() -> Weight {
 		(20_989_000 as Weight)
 	}

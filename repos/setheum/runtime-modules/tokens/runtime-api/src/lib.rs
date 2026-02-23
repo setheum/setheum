@@ -35,7 +35,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-//! Runtime API definition for orml tokens pallet.
+//! Runtime API definition for module tokens pallet.
 
 #![cfg_attr(not(feature = "std"), no_std)]
 // The `too_many_arguments` warning originates from `decl_runtime_apis` macro.

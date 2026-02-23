@@ -25,9 +25,9 @@
 use frame_support::{traits::Get, weights::Weight};
 use sp_std::marker::PhantomData;
 
-/// Weight functions for orml_auction.
+/// Weight functions for module_auction.
 pub struct WeightInfo<T>(PhantomData<T>);
-impl<T: frame_system::Config> orml_auction::WeightInfo for WeightInfo<T> {
+impl<T: frame_system::Config> module_auction::WeightInfo for WeightInfo<T> {
 	fn bid_collateral_auction() -> Weight {
 		(207_830_000 as Weight)
 			.saturating_add(T::DbWeight::get().reads(8 as Weight))

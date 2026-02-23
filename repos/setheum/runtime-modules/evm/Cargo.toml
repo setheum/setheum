@@ -8,7 +8,7 @@ homepage.workspace = true
 repository.workspace = true
 
 [[bench]]
-name = "orml_benches"
+name = "module_benches"
 harness = false
 required-features = ["wasm-bench"]
 
@@ -36,10 +36,10 @@ sp-core = { workspace = true }
 sp-io = { workspace = true }
 sp-runtime = { workspace = true }
 sp-std = { workspace = true }
-orml-traits = { workspace = true }
-wasm-bencher = { workspace = true, optional = true }
-orml-currencies = { workspace = true, optional = true }
-orml-tokens = { workspace = true, optional = true }
+module-traits = { workspace = true }
+# wasm-bencher = { workspace = true, optional = true }
+module-currencies = { workspace = true, optional = true }
+module-tokens = { workspace = true, optional = true }
 
 module-support = { workspace = true }
 module-evm-utility = { workspace = true }
@@ -73,10 +73,10 @@ std = [
 	"module-support/std",
 	"module-transaction-payment/std",
 	"num/std",
-	"wasm-bencher/std",
-	"orml-currencies/std",
-	"orml-tokens/std",
-	"orml-traits/std",
+	# "wasm-bencher/std",
+	"module-currencies/std",
+	"module-tokens/std",
+	"module-traits/std",
 	"pallet-balances/std",
 	"pallet-timestamp/std",
 	"primitives/std",
@@ -98,19 +98,19 @@ try-runtime = [
 	"module-edfis_swap_legacy/try-runtime",
 	"module-idle-scheduler/try-runtime",
 	"module-transaction-payment/try-runtime",
-	"orml-currencies/try-runtime",
-	"orml-tokens/try-runtime",
+	"module-currencies/try-runtime",
+	"module-tokens/try-runtime",
 	"pallet-balances/try-runtime",
 	"pallet-timestamp/try-runtime",
 ]
 tracing = ["module-evm-utility/tracing"]
 wasm-bench = [
-	"wasm-bencher/wasm-bench",
+	# "wasm-bencher/wasm-bench",
 	"hex",
 	"module-edfis_swap_legacy",
 	"module-idle-scheduler",
-	"orml-currencies",
-	"orml-tokens",
+	"module-currencies",
+	"module-tokens",
 	"pallet-balances",
 	"serde_json",
 	"sp-runtime/runtime-benchmarks",

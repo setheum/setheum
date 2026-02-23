@@ -101,7 +101,7 @@ use sp_runtime::{
 };
 use sp_std::{cmp, convert::Infallible, marker, prelude::*, vec::Vec};
 
-use orml_traits::{
+use module_traits::{
 	arithmetic::{self, Signed},
 	currency::{MutationHooks, OnDeposit, OnDust, OnSlash, OnTransfer, TransferAll},
 	BalanceStatus, GetByKey, Happened, LockIdentifier, MultiCurrency, MultiCurrencyExtended, MultiLockableCurrency,
@@ -216,7 +216,7 @@ pub use module::*;
 
 #[frame_support::pallet]
 pub mod module {
-	use orml_traits::currency::MutationHooks;
+	use module_traits::currency::MutationHooks;
 
 	use super::*;
 
@@ -246,7 +246,7 @@ pub mod module {
 		/// The minimum amount required to keep an account.
 		/// It's deprecated to config 0 as ED for any currency_id,
 		/// zero ED will retain account even if its total is zero.
-		/// Since accounts of orml_tokens are also used as providers of
+		/// Since accounts of module_tokens are also used as providers of
 		/// System::AccountInfo, zero ED may cause some problems.
 		type ExistentialDeposits: GetByKey<Self::CurrencyId, Self::Balance>;
 
@@ -2410,28 +2410,28 @@ where
 	}
 }
 
-impl<T, GetCurrencyId> PalletNamedReservableCurrency<T::AccountId> for CurrencyAdapter<T, GetCurrencyId>
+impl<T, GetCurrencyId> PalletNamedReservableCurrency<<T as frame_system::Config>::AccountId> for CurrencyAdapter<T, GetCurrencyId>
 where
 	T: Config,
 	GetCurrencyId: Get<T::CurrencyId>,
 {
 	type ReserveIdentifier = T::ReserveIdentifier;
 
-	fn reserved_balance_named(id: &Self::ReserveIdentifier, who: &T::AccountId) -> Self::Balance {
+	fn reserved_balance_named(id: &Self::ReserveIdentifier, who: &<T as frame_system::Config>::AccountId) -> Self::Balance {
 		<Pallet<T> as NamedMultiReservableCurrency<_>>::reserved_balance_named(id, GetCurrencyId::get(), who)
 	}
 
-	fn reserve_named(id: &Self::ReserveIdentifier, who: &T::AccountId, value: Self::Balance) -> DispatchResult {
+	fn reserve_named(id: &Self::ReserveIdentifier, who: &<T as frame_system::Config>::AccountId, value: Self::Balance) -> DispatchResult {
 		<Pallet<T> as NamedMultiReservableCurrency<_>>::reserve_named(id, GetCurrencyId::get(), who, value)
 	}
 
-	fn unreserve_named(id: &Self::ReserveIdentifier, who: &T::AccountId, value: Self::Balance) -> Self::Balance {
+	fn unreserve_named(id: &Self::ReserveIdentifier, who: &<T as frame_system::Config>::AccountId, value: Self::Balance) -> Self::Balance {
 		<Pallet<T> as NamedMultiReservableCurrency<_>>::unreserve_named(id, GetCurrencyId::get(), who, value)
 	}
 
 	fn slash_reserved_named(
 		id: &Self::ReserveIdentifier,
-		who: &T::AccountId,
+		who: &<T as frame_system::Config>::AccountId,
 		value: Self::Balance,
 	) -> (Self::NegativeImbalance, Self::Balance) {
 		let actual =
@@ -2441,8 +2441,8 @@ where
 
 	fn repatriate_reserved_named(
 		id: &Self::ReserveIdentifier,
-		slashed: &T::AccountId,
-		beneficiary: &T::AccountId,
+		slashed: &<T as frame_system::Config>::AccountId,
+		beneficiary: &<T as frame_system::Config>::AccountId,
 		value: Self::Balance,
 		status: Status,
 	) -> sp_std::result::Result<Self::Balance, DispatchError> {
@@ -2457,7 +2457,7 @@ where
 	}
 }
 
-impl<T, GetCurrencyId> PalletLockableCurrency<T::AccountId> for CurrencyAdapter<T, GetCurrencyId>
+impl<T, GetCurrencyId> PalletLockableCurrency<<T as frame_system::Config>::AccountId> for CurrencyAdapter<T, GetCurrencyId>
 where
 	T: Config,
 	GetCurrencyId: Get<T::CurrencyId>,
@@ -2465,22 +2465,22 @@ where
 	type Moment = BlockNumberFor<T>;
 	type MaxLocks = ();
 
-	fn set_lock(id: LockIdentifier, who: &T::AccountId, amount: Self::Balance, _reasons: WithdrawReasons) {
+	fn set_lock(id: LockIdentifier, who: &<T as frame_system::Config>::AccountId, amount: Self::Balance, _reasons: WithdrawReasons) {
 		let _ = <Pallet<T> as MultiLockableCurrency<_>>::set_lock(id, GetCurrencyId::get(), who, amount);
 	}
 
-	fn extend_lock(id: LockIdentifier, who: &T::AccountId, amount: Self::Balance, _reasons: WithdrawReasons) {
+	fn extend_lock(id: LockIdentifier, who: &<T as frame_system::Config>::AccountId, amount: Self::Balance, _reasons: WithdrawReasons) {
 		let _ = <Pallet<T> as MultiLockableCurrency<_>>::extend_lock(id, GetCurrencyId::get(), who, amount);
 	}
 
-	fn remove_lock(id: LockIdentifier, who: &T::AccountId) {
+	fn remove_lock(id: LockIdentifier, who: &<T as frame_system::Config>::AccountId) {
 		let _ = <Pallet<T> as MultiLockableCurrency<_>>::remove_lock(id, GetCurrencyId::get(), who);
 	}
 }
 
-impl<T: Config> TransferAll<T::AccountId> for Pallet<T> {
+impl<T: Config> TransferAll<<T as frame_system::Config>::AccountId> for Pallet<T> {
 	#[transactional]
-	fn transfer_all(source: &T::AccountId, dest: &T::AccountId) -> DispatchResult {
+	fn transfer_all(source: &<T as frame_system::Config>::AccountId, dest: &<T as frame_system::Config>::AccountId) -> DispatchResult {
 		Accounts::<T>::iter_prefix(source).try_for_each(|(currency_id, account_data)| -> DispatchResult {
 			// allow death
 			Self::do_transfer(
@@ -2494,12 +2494,12 @@ impl<T: Config> TransferAll<T::AccountId> for Pallet<T> {
 	}
 }
 
-impl<T, GetCurrencyId> fungible::Inspect<T::AccountId> for CurrencyAdapter<T, GetCurrencyId>
+impl<T, GetCurrencyId> fungible::Inspect<<T as frame_system::Config>::AccountId> for CurrencyAdapter<T, GetCurrencyId>
 where
 	T: Config,
 	GetCurrencyId: Get<T::CurrencyId>,
 {
-	type Balance = T::Balance;
+	type Balance = <T as Config>::Balance;
 
 	fn total_issuance() -> Self::Balance {
 		<Pallet<T> as fungibles::Inspect<_>>::total_issuance(GetCurrencyId::get())
@@ -2507,33 +2507,33 @@ where
 	fn minimum_balance() -> Self::Balance {
 		<Pallet<T> as fungibles::Inspect<_>>::minimum_balance(GetCurrencyId::get())
 	}
-	fn balance(who: &T::AccountId) -> Self::Balance {
+	fn balance(who: &<T as frame_system::Config>::AccountId) -> Self::Balance {
 		<Pallet<T> as fungibles::Inspect<_>>::balance(GetCurrencyId::get(), who)
 	}
-	fn total_balance(who: &T::AccountId) -> Self::Balance {
+	fn total_balance(who: &<T as frame_system::Config>::AccountId) -> Self::Balance {
 		<Pallet<T> as fungibles::Inspect<_>>::total_balance(GetCurrencyId::get(), who)
 	}
-	fn reducible_balance(who: &T::AccountId, preservation: Preservation, fortitude: Fortitude) -> Self::Balance {
+	fn reducible_balance(who: &<T as frame_system::Config>::AccountId, preservation: Preservation, fortitude: Fortitude) -> Self::Balance {
 		<Pallet<T> as fungibles::Inspect<_>>::reducible_balance(GetCurrencyId::get(), who, preservation, fortitude)
 	}
-	fn can_deposit(who: &T::AccountId, amount: Self::Balance, provenance: Provenance) -> DepositConsequence {
+	fn can_deposit(who: &<T as frame_system::Config>::AccountId, amount: Self::Balance, provenance: Provenance) -> DepositConsequence {
 		<Pallet<T> as fungibles::Inspect<_>>::can_deposit(GetCurrencyId::get(), who, amount, provenance)
 	}
-	fn can_withdraw(who: &T::AccountId, amount: Self::Balance) -> WithdrawConsequence<Self::Balance> {
+	fn can_withdraw(who: &<T as frame_system::Config>::AccountId, amount: Self::Balance) -> WithdrawConsequence<Self::Balance> {
 		<Pallet<T> as fungibles::Inspect<_>>::can_withdraw(GetCurrencyId::get(), who, amount)
 	}
 }
 
-impl<T, GetCurrencyId> fungible::Mutate<T::AccountId> for CurrencyAdapter<T, GetCurrencyId>
+impl<T, GetCurrencyId> fungible::Mutate<<T as frame_system::Config>::AccountId> for CurrencyAdapter<T, GetCurrencyId>
 where
 	T: Config,
 	GetCurrencyId: Get<T::CurrencyId>,
 {
-	fn mint_into(who: &T::AccountId, amount: Self::Balance) -> Result<Self::Balance, DispatchError> {
+	fn mint_into(who: &<T as frame_system::Config>::AccountId, amount: Self::Balance) -> Result<Self::Balance, DispatchError> {
 		<Pallet<T> as fungibles::Mutate<_>>::mint_into(GetCurrencyId::get(), who, amount)
 	}
 	fn burn_from(
-		who: &T::AccountId,
+		who: &<T as frame_system::Config>::AccountId,
 		amount: Self::Balance,
 		preservation: Preservation,
 		precision: Precision,
@@ -2550,25 +2550,25 @@ where
 	}
 
 	fn transfer(
-		source: &T::AccountId,
-		dest: &T::AccountId,
-		amount: T::Balance,
+		source: &<T as frame_system::Config>::AccountId,
+		dest: &<T as frame_system::Config>::AccountId,
+		amount: <T as Config>::Balance,
 		preservation: Preservation,
-	) -> Result<T::Balance, DispatchError> {
+	) -> Result<<T as Config>::Balance, DispatchError> {
 		<Pallet<T> as fungibles::Mutate<_>>::transfer(GetCurrencyId::get(), source, dest, amount, preservation)
 	}
 }
 
-impl<T, GetCurrencyId> fungible::Unbalanced<T::AccountId> for CurrencyAdapter<T, GetCurrencyId>
+impl<T, GetCurrencyId> fungible::Unbalanced<<T as frame_system::Config>::AccountId> for CurrencyAdapter<T, GetCurrencyId>
 where
 	T: Config,
 	GetCurrencyId: Get<T::CurrencyId>,
 {
-	fn handle_dust(_dust: fungible::Dust<T::AccountId, Self>) {
+	fn handle_dust(_dust: fungible::Dust<<T as frame_system::Config>::AccountId, Self>) {
 		// Dust is handled in account mutate method
 	}
 
-	fn write_balance(who: &T::AccountId, amount: Self::Balance) -> Result<Option<Self::Balance>, DispatchError> {
+	fn write_balance(who: &<T as frame_system::Config>::AccountId, amount: Self::Balance) -> Result<Option<Self::Balance>, DispatchError> {
 		<Pallet<T> as fungibles::Unbalanced<_>>::write_balance(GetCurrencyId::get(), who, amount)
 	}
 	fn set_total_issuance(amount: Self::Balance) {
@@ -2577,50 +2577,50 @@ where
 }
 
 type ReasonOfFungible<P, T> = <P as fungible::InspectHold<<T as frame_system::Config>::AccountId>>::Reason;
-impl<T, GetCurrencyId> fungible::InspectHold<T::AccountId> for CurrencyAdapter<T, GetCurrencyId>
+impl<T, GetCurrencyId> fungible::InspectHold<<T as frame_system::Config>::AccountId> for CurrencyAdapter<T, GetCurrencyId>
 where
 	T: Config,
 	GetCurrencyId: Get<T::CurrencyId>,
 {
-	type Reason = <Pallet<T> as fungibles::InspectHold<T::AccountId>>::Reason;
+	type Reason = <Pallet<T> as fungibles::InspectHold<<T as frame_system::Config>::AccountId>>::Reason;
 
-	fn balance_on_hold(reason: &Self::Reason, who: &T::AccountId) -> T::Balance {
+	fn balance_on_hold(reason: &Self::Reason, who: &<T as frame_system::Config>::AccountId) -> <T as Config>::Balance {
 		<Pallet<T> as fungibles::InspectHold<_>>::balance_on_hold(GetCurrencyId::get(), reason, who)
 	}
-	fn total_balance_on_hold(who: &T::AccountId) -> Self::Balance {
+	fn total_balance_on_hold(who: &<T as frame_system::Config>::AccountId) -> Self::Balance {
 		<Pallet<T> as fungibles::InspectHold<_>>::total_balance_on_hold(GetCurrencyId::get(), who)
 	}
-	fn reducible_total_balance_on_hold(who: &T::AccountId, force: Fortitude) -> Self::Balance {
+	fn reducible_total_balance_on_hold(who: &<T as frame_system::Config>::AccountId, force: Fortitude) -> Self::Balance {
 		<Pallet<T> as fungibles::InspectHold<_>>::reducible_total_balance_on_hold(GetCurrencyId::get(), who, force)
 	}
-	fn hold_available(reason: &Self::Reason, who: &T::AccountId) -> bool {
+	fn hold_available(reason: &Self::Reason, who: &<T as frame_system::Config>::AccountId) -> bool {
 		<Pallet<T> as fungibles::InspectHold<_>>::hold_available(GetCurrencyId::get(), reason, who)
 	}
-	fn can_hold(reason: &Self::Reason, who: &T::AccountId, amount: T::Balance) -> bool {
+	fn can_hold(reason: &Self::Reason, who: &<T as frame_system::Config>::AccountId, amount: <T as Config>::Balance) -> bool {
 		<Pallet<T> as fungibles::InspectHold<_>>::can_hold(GetCurrencyId::get(), reason, who, amount)
 	}
 }
 
-impl<T, GetCurrencyId> fungible::MutateHold<T::AccountId> for CurrencyAdapter<T, GetCurrencyId>
+impl<T, GetCurrencyId> fungible::MutateHold<<T as frame_system::Config>::AccountId> for CurrencyAdapter<T, GetCurrencyId>
 where
 	T: Config,
 	GetCurrencyId: Get<T::CurrencyId>,
 {
-	fn hold(reason: &ReasonOfFungible<Self, T>, who: &T::AccountId, amount: Self::Balance) -> DispatchResult {
+	fn hold(reason: &ReasonOfFungible<Self, T>, who: &<T as frame_system::Config>::AccountId, amount: Self::Balance) -> DispatchResult {
 		<Pallet<T> as fungibles::MutateHold<_>>::hold(GetCurrencyId::get(), reason, who, amount)
 	}
 	fn release(
 		reason: &ReasonOfFungible<Self, T>,
-		who: &T::AccountId,
+		who: &<T as frame_system::Config>::AccountId,
 		amount: Self::Balance,
 		precision: Precision,
-	) -> Result<T::Balance, DispatchError> {
+	) -> Result<<T as Config>::Balance, DispatchError> {
 		<Pallet<T> as fungibles::MutateHold<_>>::release(GetCurrencyId::get(), reason, who, amount, precision)
 	}
 	fn transfer_on_hold(
 		reason: &ReasonOfFungible<Self, T>,
-		source: &T::AccountId,
-		dest: &T::AccountId,
+		source: &<T as frame_system::Config>::AccountId,
+		dest: &<T as frame_system::Config>::AccountId,
 		amount: Self::Balance,
 		precision: Precision,
 		restriction: Restriction,
@@ -2639,12 +2639,12 @@ where
 	}
 }
 
-impl<T, GetCurrencyId> fungible::UnbalancedHold<T::AccountId> for CurrencyAdapter<T, GetCurrencyId>
+impl<T, GetCurrencyId> fungible::UnbalancedHold<<T as frame_system::Config>::AccountId> for CurrencyAdapter<T, GetCurrencyId>
 where
 	T: Config,
 	GetCurrencyId: Get<T::CurrencyId>,
 {
-	fn set_balance_on_hold(reason: &Self::Reason, who: &T::AccountId, amount: Self::Balance) -> DispatchResult {
+	fn set_balance_on_hold(reason: &Self::Reason, who: &<T as frame_system::Config>::AccountId, amount: Self::Balance) -> DispatchResult {
 		<Pallet<T> as fungibles::UnbalancedHold<_>>::set_balance_on_hold(GetCurrencyId::get(), reason, who, amount)
 	}
 }

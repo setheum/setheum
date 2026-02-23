@@ -41,7 +41,7 @@ use super::*;
 use frame_support::{assert_err, assert_noop, assert_ok};
 use mock::{RuntimeCall as MockCall, RuntimeEvent, *};
 use module_support::{SwapManager, SwapError};
-use orml_traits::MultiCurrency;
+use module_traits::MultiCurrency;
 use sp_core::offchain::{testing, OffchainDbExt, OffchainWorkerExt, TransactionPoolExt};
 use sp_io::offchain;
 use sp_runtime::{

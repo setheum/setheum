@@ -42,7 +42,7 @@ use crate::{
 	Payment as PaymentStore, PaymentHandler, ScheduledTask, ScheduledTasks, Task,
 };
 use frame_support::{assert_noop, assert_ok, storage::with_transaction, traits::OnIdle, weights::Weight};
-use orml_traits::MultiCurrency;
+use module_traits::MultiCurrency;
 use sp_runtime::{Percent, TransactionOutcome};
 
 type Error = crate::Error<Test>;

@@ -21,7 +21,7 @@
 use crate::{Origin, Runtime, TransactionPause};
 
 use frame_system::RawOrigin;
-use orml_benchmarking::runtime_benchmarks;
+use module_benchmarking::runtime_benchmarks;
 
 runtime_benchmarks! {
 	{ Runtime, module_transaction_pause }
@@ -38,7 +38,7 @@ runtime_benchmarks! {
 mod tests {
 	use super::*;
 	use crate::benchmarking::utils::tests::new_test_ext;
-	use orml_benchmarking::impl_benchmark_test_suite;
+	use module_benchmarking::impl_benchmark_test_suite;
 
 	impl_benchmark_test_suite!(new_test_ext(),);
 }

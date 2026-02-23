@@ -44,7 +44,7 @@ use frame_support::{
 };
 use frame_system::{EnsureRoot, EnsureSignedBy};
 use module_support::SpecificJointsSwap;
-use orml_traits::parameter_type_with_key;
+use module_traits::parameter_type_with_key;
 use primitives::{DexShare, TokenSymbol, TradingPair};
 use sp_runtime::{traits::IdentityLookup, BuildStorage};
 use sp_std::cell::RefCell;
@@ -82,7 +82,7 @@ parameter_type_with_key! {
 	};
 }
 
-impl orml_tokens::Config for Runtime {
+impl module_tokens::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type Balance = Balance;
 	type Amount = Amount;
@@ -112,13 +112,13 @@ impl pallet_balances::Config for Runtime {
 	type MaxHolds = ();
 	type MaxFreezes = ();
 }
-pub type AdaptedBasicCurrency = orml_currencies::BasicCurrencyAdapter<Runtime, PalletBalances, Amount, BlockNumber>;
+pub type AdaptedBasicCurrency = module_currencies::BasicCurrencyAdapter<Runtime, PalletBalances, Amount, BlockNumber>;
 
 parameter_types! {
 	pub const GetNativeCurrencyId: CurrencyId = SEE;
 }
 
-impl orml_currencies::Config for Runtime {
+impl module_currencies::Config for Runtime {
 	type MultiCurrency = Tokens;
 	type NativeCurrency = AdaptedBasicCurrency;
 	type GetNativeCurrencyId = GetNativeCurrencyId;
@@ -221,8 +221,8 @@ construct_runtime!(
 	pub enum Runtime {
 		System: frame_system,
 		EcdpUssdTreasuryModule: ecdp_ussd_treasury,
-		Currencies: orml_currencies,
-		Tokens: orml_tokens,
+		Currencies: module_currencies,
+		Tokens: module_tokens,
 		PalletBalances: pallet_balances,
 		EdfisSwapModule: module_edfis_swap_legacy,
 	}
@@ -255,7 +255,7 @@ impl ExtBuilder {
 			.build_storage()
 			.unwrap();
 
-		orml_tokens::GenesisConfig::<Runtime> {
+		module_tokens::GenesisConfig::<Runtime> {
 			balances: self.balances,
 		}
 		.assimilate_storage(&mut t)

@@ -45,7 +45,7 @@ use frame_support::{
 };
 use frame_system::EnsureSignedBy;
 use module_support::{EcdpAuctionsManager, EcdpUssdRiskManager, SpecificJointsSwap};
-use orml_traits::parameter_type_with_key;
+use module_traits::parameter_type_with_key;
 use primitives::TokenSymbol;
 use sp_runtime::{
 	traits::{AccountIdConversion, IdentityLookup},
@@ -83,7 +83,7 @@ parameter_type_with_key! {
 	};
 }
 
-impl orml_tokens::Config for Runtime {
+impl module_tokens::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type Balance = Balance;
 	type Amount = Amount;
@@ -118,13 +118,13 @@ parameter_types! {
 	pub const GetNativeCurrencyId: CurrencyId = SEE;
 }
 
-impl orml_currencies::Config for Runtime {
+impl module_currencies::Config for Runtime {
 	type MultiCurrency = Tokens;
 	type NativeCurrency = AdaptedBasicCurrency;
 	type GetNativeCurrencyId = GetNativeCurrencyId;
 	type WeightInfo = ();
 }
-pub type AdaptedBasicCurrency = orml_currencies::BasicCurrencyAdapter<Runtime, PalletBalances, Amount, BlockNumber>;
+pub type AdaptedBasicCurrency = module_currencies::BasicCurrencyAdapter<Runtime, PalletBalances, Amount, BlockNumber>;
 
 pub struct MockEcdpAuctionsManager;
 impl EcdpAuctionsManager<AccountId> for MockEcdpAuctionsManager {
@@ -260,9 +260,9 @@ construct_runtime!(
 	pub enum Runtime {
 		System: frame_system,
 		EcdpLoansModule: ecdp_loans,
-		Tokens: orml_tokens,
+		Tokens: module_tokens,
 		PalletBalances: pallet_balances,
-		Currencies: orml_currencies,
+		Currencies: module_currencies,
 		EcdpUssdTreasuryModule: module_ecdp_ussd_treasury,
 	}
 );
@@ -289,7 +289,7 @@ impl ExtBuilder {
 		let mut t = frame_system::GenesisConfig::<Runtime>::default()
 			.build_storage()
 			.unwrap();
-		orml_tokens::GenesisConfig::<Runtime> {
+		module_tokens::GenesisConfig::<Runtime> {
 			balances: self.balances,
 		}
 		.assimilate_storage(&mut t)

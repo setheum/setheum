@@ -45,7 +45,7 @@ use frame_support::{
 	traits::{ConstU32, ConstU64, EnsureOrigin, Everything, Nothing},
 };
 use frame_system::RawOrigin;
-use orml_traits::parameter_type_with_key;
+use module_traits::parameter_type_with_key;
 use primitives::{Amount, TokenSymbol};
 use sp_core::H256;
 use sp_runtime::{traits::IdentityLookup, BuildStorage};
@@ -90,7 +90,7 @@ parameter_type_with_key! {
 	};
 }
 
-impl orml_tokens::Config for Runtime {
+impl module_tokens::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type Balance = Balance;
 	type Amount = Amount;
@@ -151,7 +151,7 @@ construct_runtime!(
 	pub enum Runtime {
 		System: frame_system,
 		Vesting: vesting,
-		Tokens: orml_tokens,
+		Tokens: module_tokens,
 	}
 );
 
@@ -183,7 +183,7 @@ impl ExtBuilder {
 			.build_storage()
 			.unwrap();
 
-		orml_tokens::GenesisConfig::<Runtime> {
+		module_tokens::GenesisConfig::<Runtime> {
 			balances: self.balances,
 		}
 		.assimilate_storage(&mut t)

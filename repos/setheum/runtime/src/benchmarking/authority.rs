@@ -26,10 +26,10 @@ use sp_std::prelude::*;
 use frame_support::traits::{schedule::DispatchTime, OriginTrait};
 use frame_system::RawOrigin;
 use frame_benchmarking::Box;
-use orml_benchmarking::runtime_benchmarks;
+use module_benchmarking::runtime_benchmarks;
 
 runtime_benchmarks! {
-	{ Runtime, orml_authority }
+	{ Runtime, module_authority }
 
 // dispatch a dispatchable as other origin
 	dispatch_as {
@@ -39,7 +39,7 @@ runtime_benchmarks! {
 // schdule a dispatchable to be dispatched at later block.
 	schedule_dispatch_without_delay {
 		let ensure_root_call = Call::System(frame_system::Call::fill_block(Perbill::from_percent(1)));
-		let call = Call::Authority(orml_authority::Call::dispatch_as(
+		let call = Call::Authority(module_authority::Call::dispatch_as(
 			AuthoritysOriginId::Root,
 			Box::new(ensure_root_call.clone()),
 		));
@@ -49,7 +49,7 @@ runtime_benchmarks! {
 // ensure that the delay is reached when scheduling
 	schedule_dispatch_with_delay {
 		let ensure_root_call = Call::System(frame_system::Call::fill_block(Perbill::from_percent(1)));
-		let call = Call::Authority(orml_authority::Call::dispatch_as(
+		let call = Call::Authority(module_authority::Call::dispatch_as(
 			AuthoritysOriginId::Root,
 			Box::new(ensure_root_call.clone()),
 		));
@@ -58,7 +58,7 @@ runtime_benchmarks! {
 // fast track a scheduled dispatchable.
 	fast_track_scheduled_dispatch {
 		let ensure_root_call = Call::System(frame_system::Call::fill_block(Perbill::from_percent(1)));
-		let call = Call::Authority(orml_authority::Call::dispatch_as(
+		let call = Call::Authority(module_authority::Call::dispatch_as(
 			AuthoritysOriginId::Root,
 			Box::new(ensure_root_call.clone()),
 		));
@@ -73,7 +73,7 @@ runtime_benchmarks! {
 		let schedule_origin = {
 			let origin: <Runtime as frame_system::Config>::Origin = From::from(Origin::root());
 			let origin: <Runtime as frame_system::Config>::Origin =
-				From::from(orml_authority::DelayedOrigin::<BlockNumber, <Runtime as orml_authority::Config>::PalletsOrigin> {
+				From::from(module_authority::DelayedOrigin::<BlockNumber, <Runtime as module_authority::Config>::PalletsOrigin> {
 					delay: 1,
 					origin: Box::new(origin.caller().clone()),
 				});
@@ -86,7 +86,7 @@ runtime_benchmarks! {
 // delay a scheduled dispatchable.
 	delay_scheduled_dispatch {
 		let ensure_root_call = Call::System(frame_system::Call::fill_block(Perbill::from_percent(1)));
-		let call = Call::Authority(orml_authority::Call::dispatch_as(
+		let call = Call::Authority(module_authority::Call::dispatch_as(
 			AuthoritysOriginId::Root,
 			Box::new(ensure_root_call.clone()),
 		));
@@ -101,7 +101,7 @@ runtime_benchmarks! {
 		let schedule_origin = {
 			let origin: <Runtime as frame_system::Config>::Origin = From::from(Origin::root());
 			let origin: <Runtime as frame_system::Config>::Origin =
-				From::from(orml_authority::DelayedOrigin::<BlockNumber, <Runtime as orml_authority::Config>::PalletsOrigin> {
+				From::from(module_authority::DelayedOrigin::<BlockNumber, <Runtime as module_authority::Config>::PalletsOrigin> {
 					delay: 1,
 					origin: Box::new(origin.caller().clone()),
 				});
@@ -114,7 +114,7 @@ runtime_benchmarks! {
 // cancel a scheduled dispatchable
 	cancel_scheduled_dispatch {
 		let ensure_root_call = Call::System(frame_system::Call::fill_block(Perbill::from_percent(1)));
-		let call = Call::Authority(orml_authority::Call::dispatch_as(
+		let call = Call::Authority(module_authority::Call::dispatch_as(
 			AuthoritysOriginId::Root,
 			Box::new(ensure_root_call.clone()),
 		));
@@ -129,7 +129,7 @@ runtime_benchmarks! {
 		let schedule_origin = {
 			let origin: <Runtime as frame_system::Config>::Origin = From::from(Origin::root());
 			let origin: <Runtime as frame_system::Config>::Origin =
-				From::from(orml_authority::DelayedOrigin::<BlockNumber, <Runtime as orml_authority::Config>::PalletsOrigin> {
+				From::from(module_authority::DelayedOrigin::<BlockNumber, <Runtime as module_authority::Config>::PalletsOrigin> {
 					delay: 1,
 					origin: Box::new(origin.caller().clone()),
 				});

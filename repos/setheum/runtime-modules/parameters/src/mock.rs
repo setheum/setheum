@@ -39,7 +39,7 @@
 
 use frame_support::traits::EnsureOriginWithArg;
 use frame_support::{construct_runtime, derive_impl};
-use orml_traits::define_aggregrated_parameters;
+use module_traits::define_aggregrated_parameters;
 use sp_runtime::{traits::IdentityLookup, BuildStorage};
 
 use super::*;
@@ -56,7 +56,7 @@ impl frame_system::Config for Runtime {
 }
 
 pub mod pallet1 {
-	orml_traits::define_parameters! {
+	module_traits::define_parameters! {
 		pub Parameters = {
 			Key1: u64 = 0,
 			Key2(u32): u32 = 1,
@@ -65,7 +65,7 @@ pub mod pallet1 {
 	}
 }
 pub mod pallet2 {
-	orml_traits::define_parameters! {
+	module_traits::define_parameters! {
 		pub Parameters = {
 			Key1: u64 = 0,
 			Key2(u32): u32 = 2,

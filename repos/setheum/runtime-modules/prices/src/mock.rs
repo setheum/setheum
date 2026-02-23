@@ -44,7 +44,7 @@ use frame_support::{
 };
 use frame_system::EnsureSignedBy;
 use module_support::{mocks::MockErc20InfoMapping, ExchangeRate, SwapLimit};
-use orml_traits::{parameter_type_with_key, DataFeeder};
+use module_traits::{parameter_type_with_key, DataFeeder};
 use primitives::{currency::DexShare, Amount, TokenSymbol};
 use sp_core::{H160, H256};
 use sp_runtime::{
@@ -193,7 +193,7 @@ parameter_type_with_key! {
 	};
 }
 
-impl orml_tokens::Config for Runtime {
+impl module_tokens::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type Balance = Balance;
 	type Amount = Amount;
@@ -237,7 +237,7 @@ construct_runtime!(
 	pub enum Runtime {
 		System: frame_system,
 		PricesModule: prices,
-		Tokens: orml_tokens,
+		Tokens: module_tokens,
 	}
 );
 

@@ -68,7 +68,7 @@ fn collateral_auction_methods() {
 		assert_ok!(EcdpAuctionsManagerModule::new_collateral_auction(&ALICE, BTC, 10, 100));
 		assert_eq!(
 			AuctionModule::auctions(0),
-			Some(orml_traits::AuctionInfo {
+			Some(module_traits::AuctionInfo {
 				bid: None,
 				start: 0,
 				end: Some(2000)

@@ -46,7 +46,7 @@ use frame_support::{
 use frame_system::{ensure_signed, pallet_prelude::*};
 use module_evm_utility_macro::keccak256;
 use module_support::{AddressMapping, UnifiedAccountsManager};
-use orml_traits::currency::TransferAll;
+use module_traits::currency::TransferAll;
 use parity_scale_codec::Encode;
 use primitives::{evm::EvmAddress, to_bytes, AccountIndex};
 use sp_core::crypto::AccountId32;

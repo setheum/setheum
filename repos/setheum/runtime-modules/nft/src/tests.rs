@@ -41,7 +41,7 @@ use super::*;
 use frame_support::traits::Currency;
 use frame_support::{assert_noop, assert_ok};
 use mock::{RuntimeEvent, *};
-use orml_nft::TokenInfo;
+use module_nft::TokenInfo;
 use primitives::Balance;
 use sp_runtime::{traits::BlakeTwo256, ArithmeticError, TokenError};
 use sp_std::collections::btree_map::BTreeMap;
@@ -91,7 +91,7 @@ fn create_class_should_work() {
 		);
 
 		assert_eq!(
-			orml_nft::Pallet::<Runtime>::classes(0).unwrap().data,
+			module_nft::Pallet::<Runtime>::classes(0).unwrap().data,
 			ClassData {
 				deposit: cls_deposit,
 				properties: Default::default(),
@@ -177,7 +177,7 @@ fn mint_should_work() {
 			2 * (CREATE_TOKEN_DEPOSIT + DATA_DEPOSIT_PER_BYTE * (metadata_2.len() as u128 + TEST_ATTR_LEN))
 		);
 		assert_eq!(
-			orml_nft::Pallet::<Runtime>::tokens(0, 0).unwrap(),
+			NFTModule::tokens(0, 0).unwrap(),
 			TokenInfo {
 				metadata: metadata_2.clone().try_into().unwrap(),
 				owner: BOB,
@@ -188,7 +188,7 @@ fn mint_should_work() {
 			}
 		);
 		assert_eq!(
-			orml_nft::Pallet::<Runtime>::tokens(0, 1).unwrap(),
+			module_nft::Pallet::<Runtime>::tokens(0, 1).unwrap(),
 			TokenInfo {
 				metadata: metadata_2.clone().try_into().unwrap(),
 				owner: BOB,
@@ -199,7 +199,7 @@ fn mint_should_work() {
 			}
 		);
 		assert_eq!(
-			orml_nft::TokensByOwner::<Runtime>::iter_prefix((BOB,)).collect::<Vec<_>>(),
+			module_nft::TokensByOwner::<Runtime>::iter_prefix((BOB,)).collect::<Vec<_>>(),
 			vec![((0, 1), ()), ((0, 0), ())]
 		);
 	});
@@ -251,8 +251,8 @@ fn mint_should_fail() {
 			Error::<Runtime>::NoPermission
 		);
 
-		orml_nft::NextTokenId::<Runtime>::mutate(CLASS_ID, |id| {
-			*id = <Runtime as orml_nft::Config>::TokenId::max_value()
+		module_nft::NextTokenId::<Runtime>::mutate(CLASS_ID, |id| {
+			*id = <Runtime as module_nft::Config>::TokenId::max_value()
 		});
 		assert_ok!(Balances::deposit_into_existing(
 			&class_id_account(),
@@ -267,7 +267,7 @@ fn mint_should_fail() {
 				Default::default(),
 				2
 			),
-			orml_nft::Error::<Runtime>::NoAvailableTokenId
+			module_nft::Error::<Runtime>::NoAvailableTokenId
 		);
 	});
 }
@@ -396,7 +396,7 @@ fn transfer_should_fail() {
 		);
 		assert_noop!(
 			NFTModule::transfer(RuntimeOrigin::signed(ALICE), BOB, (CLASS_ID, TOKEN_ID)),
-			orml_nft::Error::<Runtime>::NoPermission
+			module_nft::Error::<Runtime>::NoPermission
 		);
 	});
 
@@ -494,7 +494,7 @@ fn burn_should_fail() {
 			Error::<Runtime>::NoPermission
 		);
 
-		orml_nft::Classes::<Runtime>::mutate(CLASS_ID, |class_info| {
+		module_nft::Classes::<Runtime>::mutate(CLASS_ID, |class_info| {
 			class_info.as_mut().unwrap().total_issuance = 0;
 		});
 		assert_noop!(

@@ -54,8 +54,8 @@
 
 use frame_support::{pallet_prelude::*, traits::UnixTime, transactional, BoundedVec};
 use frame_system::pallet_prelude::*;
-use orml_traits::{RateLimiter, RateLimiterError};
-use orml_utilities::OrderedSet;
+use module_traits::{RateLimiter, RateLimiterError};
+use module_utilities::OrderedSet;
 use parity_scale_codec::MaxEncodedLen;
 use scale_info::TypeInfo;
 use sp_runtime::traits::{BlockNumberProvider, SaturatedConversion, Zero};

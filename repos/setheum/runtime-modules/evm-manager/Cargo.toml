@@ -18,9 +18,9 @@ sp-runtime = { workspace = true }
 sp-std = { workspace = true }
 module-support = { workspace = true }
 primitives = { workspace = true }
-orml-traits = { workspace = true }
-orml-currencies = { workspace = true }
-orml-tokens = { workspace = true }
+module-traits = { workspace = true }
+module-currencies = { workspace = true }
+module-tokens = { workspace = true }
 
 [features]
 default = ["std"]
@@ -35,7 +35,7 @@ std = [
     "sp-std/std",
     "module-support/std",
     "primitives/std",
-    "orml-traits/std",
-    "orml-currencies/std",
-    "orml-tokens/std",
+    "module-traits/std",
+    "module-currencies/std",
+    "module-tokens/std",
 ]

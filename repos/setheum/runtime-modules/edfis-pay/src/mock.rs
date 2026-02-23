@@ -44,7 +44,7 @@ use frame_support::{
 	traits::{ConstU32, Contains, Hooks, OnFinalize},
 };
 use frame_system as system;
-use orml_traits::parameter_type_with_key;
+use module_traits::parameter_type_with_key;
 use sp_runtime::{traits::IdentityLookup, BuildStorage, Percent};
 
 type Block = frame_system::mocking::MockBlock<Test>;
@@ -66,7 +66,7 @@ pub const CANCEL_BLOCK_BUFFER: u64 = 600;
 frame_support::construct_runtime!(
 	pub enum Test {
 		System: frame_system,
-		Tokens: orml_tokens,
+		Tokens: module_tokens,
 		Payment: pay,
 	}
 );
@@ -100,7 +100,7 @@ impl Contains<AccountId> for MockDustRemovalWhitelist {
 	}
 }
 
-impl orml_tokens::Config for Test {
+impl module_tokens::Config for Test {
 	type Amount = i64;
 	type Balance = Balance;
 	type CurrencyId = u32;
@@ -159,7 +159,7 @@ impl pay::Config for Test {
 pub fn new_test_ext() -> sp_io::TestExternalities {
 	let mut t = system::GenesisConfig::<Test>::default().build_storage().unwrap();
 
-	orml_tokens::GenesisConfig::<Test> {
+	module_tokens::GenesisConfig::<Test> {
 		balances: vec![
 			(PAYMENT_CREATOR, CURRENCY_ID, 100),
 			(PAYMENT_CREATOR_TWO, CURRENCY_ID, 100),

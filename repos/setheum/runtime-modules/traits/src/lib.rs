@@ -45,6 +45,7 @@ use sp_std::{
 	prelude::Vec,
 };
 
+#[cfg(feature = "xcm")]
 pub use asset_registry::{FixedConversionRateProvider, WeightToFeeConverter};
 pub use auction::{Auction, AuctionHandler, AuctionInfo, OnNewBidResult};
 pub use currency::{
@@ -54,6 +55,7 @@ pub use currency::{
 };
 pub use data_provider::{DataFeeder, DataProvider, DataProviderExtended};
 pub use get_by_key::GetByKey;
+#[cfg(feature = "xcm")]
 pub use multi_asset::ConcreteFungibleAsset;
 pub use nft::InspectExtended;
 pub use price::{DefaultPriceProvider, PriceProvider};
@@ -62,21 +64,26 @@ pub use rewards::RewardHandler;
 use scale_info::TypeInfo;
 #[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};
+#[cfg(feature = "xcm")]
 pub use xcm_transfer::{XcmTransfer, XtokensWeightInfo};
 
 pub mod arithmetic;
+#[cfg(feature = "xcm")]
 pub mod asset_registry;
 pub mod auction;
 pub mod currency;
 pub mod data_provider;
 pub mod get_by_key;
+#[cfg(feature = "xcm")]
 pub mod location;
+#[cfg(feature = "xcm")]
 pub mod multi_asset;
 pub mod nft;
 pub mod parameters;
 pub mod price;
 pub mod rate_limit;
 pub mod rewards;
+#[cfg(feature = "xcm")]
 pub mod xcm_transfer;
 
 /// New data handler

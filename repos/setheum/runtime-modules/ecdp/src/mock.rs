@@ -48,7 +48,7 @@ use module_cdp_engine::CollateralCurrencyIds;
 use module_support::{
 	EcdpAuctionsManager, ExchangeRate, FractionalRate, Price, PriceProvider, Rate, Ratio, SpecificJointsSwap,
 };
-use orml_traits::parameter_type_with_key;
+use module_traits::parameter_type_with_key;
 use primitives::{
 	evm::{convert_decimals_to_evm, EvmAddress},
 	Balance, Moment, ReserveIdentifier, TokenSymbol,
@@ -91,7 +91,7 @@ parameter_type_with_key! {
 	};
 }
 
-impl orml_tokens::Config for Runtime {
+impl module_tokens::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type Balance = Balance;
 	type Amount = Amount;
@@ -121,13 +121,13 @@ impl pallet_balances::Config for Runtime {
 	type MaxHolds = ();
 	type MaxFreezes = ();
 }
-pub type AdaptedBasicCurrency = orml_currencies::BasicCurrencyAdapter<Runtime, PalletBalances, Amount, BlockNumber>;
+pub type AdaptedBasicCurrency = module_currencies::BasicCurrencyAdapter<Runtime, PalletBalances, Amount, BlockNumber>;
 
 parameter_types! {
 	pub const GetNativeCurrencyId: CurrencyId = SEE;
 }
 
-impl orml_currencies::Config for Runtime {
+impl module_currencies::Config for Runtime {
 	type MultiCurrency = Tokens;
 	type NativeCurrency = AdaptedBasicCurrency;
 	type GetNativeCurrencyId = GetNativeCurrencyId;
@@ -342,9 +342,9 @@ construct_runtime!(
 	pub enum Runtime {
 		System: frame_system,
 		EcdpModule: ecdp,
-		Tokens: orml_tokens,
+		Tokens: module_tokens,
 		PalletBalances: pallet_balances,
-		Currencies: orml_currencies,
+		Currencies: module_currencies,
 		EcdpLoansModule: module_ecdp_loans,
 		EcdpUssdTreasuryModule: module_ecdp_ussd_treasury,
 		EcdpUssdEngineModule: module_cdp_engine,
@@ -397,7 +397,7 @@ impl ExtBuilder {
 		.assimilate_storage(&mut t)
 		.unwrap();
 
-		orml_tokens::GenesisConfig::<Runtime> {
+		module_tokens::GenesisConfig::<Runtime> {
 			balances: self.balances,
 		}
 		.assimilate_storage(&mut t)

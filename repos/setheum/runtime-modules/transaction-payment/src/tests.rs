@@ -49,7 +49,7 @@ use mock::{
 	SEE, USSD, EDF,
 };
 use module_support::{BuyWeightRate, SwapManager, Price, TransactionPayment as TransactionPaymentT};
-use orml_traits::{MultiCurrency, MultiLockableCurrency};
+use module_traits::{MultiCurrency, MultiLockableCurrency};
 use pallet_balances::ReserveData;
 use primitives::currency::*;
 use sp_io::TestExternalities;
@@ -407,7 +407,7 @@ fn pre_post_dispatch_and_refund_with_fee_currency_call(token: CurrencyId, surplu
 		);
 
 		let token_transfer = token_rate.saturating_mul_int(fee_surplus);
-		System::assert_has_event(crate::mock::RuntimeEvent::Tokens(orml_tokens::Event::Transfer {
+		System::assert_has_event(crate::mock::RuntimeEvent::Tokens(module_tokens::Event::Transfer {
 			currency_id: token,
 			from: ALICE,
 			to: token_subacc.clone(),
@@ -488,7 +488,7 @@ fn pre_post_dispatch_and_refund_with_fee_currency_call(token: CurrencyId, surplu
 			Some(ChargeFeeMethod::FeeCurrency(token))
 		);
 
-		System::assert_has_event(crate::mock::RuntimeEvent::Tokens(orml_tokens::Event::Transfer {
+		System::assert_has_event(crate::mock::RuntimeEvent::Tokens(module_tokens::Event::Transfer {
 			currency_id: token,
 			from: CHARLIE,
 			to: token_subacc.clone(),
@@ -852,7 +852,7 @@ fn charges_fee_when_validate_with_fee_currency_call_use_pool() {
 		));
 		assert_eq!(10, Currencies::free_balance(SEE, &BOB)); // ED
 		assert_eq!(7370, Currencies::free_balance(USSD, &BOB));
-		System::assert_has_event(crate::mock::RuntimeEvent::Tokens(orml_tokens::Event::Transfer {
+		System::assert_has_event(crate::mock::RuntimeEvent::Tokens(module_tokens::Event::Transfer {
 			currency_id: USSD,
 			from: BOB,
 			to: ussd_acc.clone(),

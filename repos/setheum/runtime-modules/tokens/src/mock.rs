@@ -48,7 +48,7 @@ use frame_support::{
 	},
 	PalletId,
 };
-use orml_traits::parameter_type_with_key;
+use module_traits::parameter_type_with_key;
 use sp_runtime::{
 	traits::{AccountIdConversion, BlockNumberProvider, IdentityLookup},
 	AccountId32, BuildStorage, Permill,
@@ -393,7 +393,7 @@ impl<T: Config> PostTransfer<T> {
 }
 
 parameter_types! {
-	pub DustReceiver: AccountId = PalletId(*b"orml/dst").into_account_truncating();
+	pub DustReceiver: AccountId = PalletId(*b"module/dst").into_account_truncating();
 }
 
 pub struct CurrencyHooks<T>(marker::PhantomData<T>);

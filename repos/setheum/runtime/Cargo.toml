@@ -82,13 +82,13 @@ pallet-identity = { git = "https://github.com/paritytech/substrate", default-fea
 
 # local dependencies
 
-orml-authority = { path = "../orml/authority", default-features = false }
-orml-benchmarking = { path = "../runtime-modules/benchmarking", default-features = false, optional = true }
-orml-oracle = { path = "../runtime-modules/oracle", default-features = false }
-orml-oracle-rpc-runtime-api = { package = "orml-oracle-runtime-api", path = "../runtime-modules/oracle/runtime-api", default-features = false }
-orml-tokens = { path = "../runtime-modules/tokens", default-features = false }
-orml-traits = { path = "../runtime-modules/traits", default-features = false }
-orml-nft= { path = "../runtime-modules/orml-nft", default-features = false }
+module-authority = { package = "module-authority", path = "../runtime-modules/authority", default-features = false }
+module-benchmarking = { package = "module-benchmarking", path = "../runtime-modules/benchmarking", default-features = false, optional = true }
+module-oracle = { package = "module-oracle", path = "../runtime-modules/oracle", default-features = false }
+module-oracle-rpc-runtime-api = { package = "module-oracle-runtime-api", path = "../runtime-modules/oracle/runtime-api", default-features = false }
+module-tokens = { package = "module-tokens", path = "../runtime-modules/tokens", default-features = false }
+module-traits = { package = "module-traits", path = "../runtime-modules/traits", default-features = false }
+
 
 module-transaction-pause = { path = "../runtime-modules/transaction-pause", default-features = false }
 module-transaction-payment = { path = "../runtime-modules/transaction-payment", default-features = false }
@@ -172,12 +172,12 @@ std = [
 	"sp-transaction-pool/std",
 	"sp-version/std",
 
-	"orml-traits/std",
-	"orml-tokens/std",
-	"orml-authority/std",
-	"orml-benchmarking/std",
-	"orml-oracle-rpc-runtime-api/std",
-	"orml-oracle/std",
+	"module-traits/std",
+	"module-tokens/std",
+	"module-authority/std",
+	"module-benchmarking/std",
+	"module-oracle-rpc-runtime-api/std",
+	"module-oracle/std",
 
 	"module-airdrop/std",
 	"module-currencies/std",
@@ -218,7 +218,7 @@ runtime-benchmarks = [
 	"module-nft/runtime-benchmarks",
 	"module-vesting/runtime-benchmarks",
 
-	"orml-benchmarking",
-	"orml-authority/runtime-benchmarks",
-	"orml-tokens/runtime-benchmarks",
+	"module-benchmarking",
+	"module-authority/runtime-benchmarks",
+	"module-tokens/runtime-benchmarks",
 ]

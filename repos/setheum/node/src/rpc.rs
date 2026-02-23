@@ -95,7 +95,7 @@ pub fn create_full<C, P, SC, B>(
 	C: Send + Sync + 'static,
 	C::Api: substrate_frame_rpc_system::AccountNonceApi<Block, AccountId, Nonce>,
 	C::Api: pallet_transaction_payment_rpc::TransactionPaymentRuntimeApi<Block, Balance>,
-	C::Api: orml_oracle_rpc::OracleRuntimeApi<Block, DataProviderId, CurrencyId, TimeStampedPrice>,
+	C::Api: module_oracle_rpc::OracleRuntimeApi<Block, DataProviderId, CurrencyId, TimeStampedPrice>,
 	C::Api: EVMRuntimeRPCApi<Block, Balance>,
 	C::Api: sp_consensus_babe::BabeApi<Block>,
 	C::Api: BlockBuilder<Block>,
@@ -105,7 +105,7 @@ pub fn create_full<C, P, SC, B>(
 	B::State: sc_client_api::StateBackend<sp_runtime::traits::HashFor<Block>>,
 {
 	use substrate_frame_rpc_system::{FullSystem, SystemApi};
-	use orml_oracle_rpc::{Oracle, OracleApi};
+	use module_oracle_rpc::{Oracle, OracleApi};
 	use pallet_transaction_payment_rpc::{TransactionPayment, TransactionPaymentApi};
 
 	use sc_consensus_babe_rpc::BabeRpcHandler;

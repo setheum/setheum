@@ -38,7 +38,7 @@
 use sp_runtime::DispatchError;
 use sp_std::vec::Vec;
 use xcm::{
-	v5::{prelude::*, Weight},
+	v4::{prelude::*, Weight},
 	VersionedAsset, VersionedAssets, VersionedLocation,
 };
 pub struct Transferred<AccountId> {

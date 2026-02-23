@@ -8,6 +8,8 @@ homepage.workspace = true
 repository.workspace = true
 
 [dependencies]
+num-traits = { workspace = true }
+paste = { workspace = true }
 parity-scale-codec = { workspace = true }
 scale-info = { workspace = true }
 serde = { workspace = true, optional = true }

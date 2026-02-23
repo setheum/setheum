@@ -22,8 +22,8 @@ module-support = { workspace = true }
 [dev-dependencies]
 sp-io = { workspace = true, features = ["std"] }
 pallet-balances = { workspace = true, features = ["std"] }
-orml-tokens = { workspace = true, features = ["std"] }
-orml-traits = { workspace = true, features = ["std"] }
+module-tokens = { workspace = true, features = ["std"] }
+module-traits = { workspace = true, features = ["std"] }
 primitives = { workspace = true, features = ["std"] }
 smallvec = { workspace = true }
 

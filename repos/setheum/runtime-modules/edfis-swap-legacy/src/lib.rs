@@ -44,7 +44,7 @@
 use frame_support::{pallet_prelude::*, transactional, PalletId};
 use frame_system::pallet_prelude::*;
 use module_support::{Incentives, SwapManager, Erc20InfoMapping, ExchangeRate, Ratio, SwapLimit};
-use orml_traits::{Happened, MultiCurrency, MultiCurrencyExtended};
+use module_traits::{Happened, MultiCurrency, MultiCurrencyExtended};
 use parity_scale_codec::MaxEncodedLen;
 use primitives::{Balance, CurrencyId, TradingPair};
 use scale_info::TypeInfo;

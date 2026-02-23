@@ -43,7 +43,7 @@ mod mock;
 mod tests;
 
 use frame_support::pallet_prelude::*;
-use orml_traits::{GetByKey, RewardHandler};
+use module_traits::{GetByKey, RewardHandler};
 use parity_scale_codec::{FullCodec, HasCompact};
 use scale_info::TypeInfo;
 use sp_core::U256;

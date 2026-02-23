@@ -41,7 +41,7 @@ use super::*;
 use frame_support::{assert_noop, assert_ok};
 use mock::{RuntimeEvent, *};
 use module_support::{Rate, Ratio};
-use orml_traits::{Change, MultiCurrency};
+use module_traits::{Change, MultiCurrency};
 use sp_runtime::FixedPointNumber;
 
 #[test]

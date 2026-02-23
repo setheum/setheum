@@ -41,7 +41,7 @@ pub mod transaction_pause;
 pub mod transaction_payment;
 pub mod vesting;
 
-// orml benchmarking
+// module benchmarking
 pub mod auction;
 pub mod authority;
 pub mod oracle;

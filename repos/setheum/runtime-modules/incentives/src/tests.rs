@@ -40,8 +40,8 @@
 use super::*;
 use frame_support::{assert_noop, assert_ok};
 use mock::{RuntimeEvent, *};
-use orml_rewards::PoolInfo;
-use orml_traits::MultiCurrency;
+use module_rewards::PoolInfo;
+use module_traits::MultiCurrency;
 use sp_runtime::{traits::BadOrigin, FixedPointNumber};
 
 #[test]

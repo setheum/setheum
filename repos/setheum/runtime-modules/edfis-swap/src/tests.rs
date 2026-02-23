@@ -44,7 +44,7 @@ use mock::{
 	RuntimeEvent, RuntimeOrigin, System, Tokens, SEE, ALICE, USSD, USSD_EDF_POOL_RECORD, BOB, WBTC, CAROL, EDF,
 };
 use module_support::{Swap, SwapError};
-use orml_traits::MultiReservableCurrency;
+use module_traits::MultiReservableCurrency;
 use sp_core::H160;
 use sp_runtime::traits::BadOrigin;
 use std::str::FromStr;
@@ -1988,7 +1988,7 @@ fn specific_joint_swap_work() {
 
 			assert_noop!(
 				USSDJointSwap::swap(&CAROL, WBTC, EDF, SwapLimit::ExactSupply(10000, 0)),
-				orml_tokens::Error::<Runtime>::BalanceTooLow,
+				module_tokens::Error::<Runtime>::BalanceTooLow,
 			);
 			assert_noop!(
 				USSDJointSwap::swap(&BOB, WBTC, EDF, SwapLimit::ExactSupply(10000, 9801)),

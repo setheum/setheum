@@ -50,7 +50,7 @@ use module_support::{
 	mocks::{MockAddressMapping, MockErc20InfoMapping},
 	Incentives, Price, PriceProvider, SpecificJointsSwap,
 };
-use orml_traits::{parameter_type_with_key, MultiReservableCurrency};
+use module_traits::{parameter_type_with_key, MultiReservableCurrency};
 pub use primitives::{Address, Amount, BlockNumber, CurrencyId, Header, Multiplier, ReserveIdentifier, Signature,
 	TokenSymbol,
 };
@@ -108,7 +108,7 @@ parameter_type_with_key! {
 	};
 }
 
-impl orml_tokens::Config for Runtime {
+impl module_tokens::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type Balance = Balance;
 	type Amount = Amount;
@@ -126,13 +126,13 @@ parameter_types! {
 	pub const GetNativeCurrencyId: CurrencyId = CurrencyId::Token(TokenSymbol::SEE);
 }
 
-impl orml_currencies::Config for Runtime {
+impl module_currencies::Config for Runtime {
 	type MultiCurrency = Tokens;
 	type NativeCurrency = AdaptedBasicCurrency;
 	type GetNativeCurrencyId = GetNativeCurrencyId;
 	type WeightInfo = ();
 }
-pub type AdaptedBasicCurrency = orml_currencies::BasicCurrencyAdapter<Runtime, Balances, Amount, BlockNumber>;
+pub type AdaptedBasicCurrency = module_currencies::BasicCurrencyAdapter<Runtime, Balances, Amount, BlockNumber>;
 
 pub struct GasToWeight;
 impl Convert<u64, Weight> for GasToWeight {
@@ -281,9 +281,9 @@ construct_runtime!(
 		System: frame_system,
 		Dex: edfis_swap_legacy_module,
 		EVM: evm_module,
-		Tokens: orml_tokens,
+		Tokens: module_tokens,
 		Balances: pallet_balances,
-		Currencies: orml_currencies,
+		Currencies: module_currencies,
 		TransactionPayment: module_transaction_payment,
 	}
 );

@@ -37,7 +37,7 @@ pub mod module_transaction_pause;
 pub mod module_transaction_payment;
 pub mod module_vesting;
 
-pub mod orml_auction;
-pub mod orml_authority;
-pub mod orml_oracle;
-pub mod orml_tokens;
+pub mod module_auction;
+pub mod module_authority;
+pub mod module_oracle;
+pub mod module_tokens;

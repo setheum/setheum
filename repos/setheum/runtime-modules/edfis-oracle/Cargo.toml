@@ -16,7 +16,7 @@ frame-benchmarking = { workspace = true, optional = true }
 frame-support = { workspace = true }
 frame-system = { workspace = true }
 sp-std = { workspace = true }
-orml-traits = { workspace = true }
+module-traits = { workspace = true }
 module-support = { workspace = true }
 primitives = { workspace = true }
 
@@ -32,7 +32,7 @@ std = [
 	"frame-benchmarking/std",
 	"frame-support/std",
 	"frame-system/std",
-	"orml-traits/std",
+	"module-traits/std",
 	"primitives/std",
 	"scale-info/std",
 	"sp-runtime/std",

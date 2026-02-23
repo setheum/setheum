@@ -26,15 +26,15 @@ use sp_std::prelude::*;
 use frame_benchmarking::{account, whitelisted_caller};
 use frame_system::RawOrigin;
 
-use orml_benchmarking::runtime_benchmarks;
-use orml_traits::MultiCurrency;
+use module_benchmarking::runtime_benchmarks;
+use module_traits::MultiCurrency;
 
 const SEED: u32 = 0;
 
 const STABLECOIN: CurrencyId = GetSetUSDId::get();
 
 runtime_benchmarks! {
-	{ Runtime, orml_tokens }
+	{ Runtime, module_tokens }
 
 	transfer {
 		let amount: Balance = dollar(STABLECOIN);
@@ -99,7 +99,7 @@ runtime_benchmarks! {
 mod tests {
 	use super::*;
 	use crate::benchmarking::utils::tests::new_test_ext;
-	use orml_benchmarking::impl_benchmark_test_suite;
+	use module_benchmarking::impl_benchmark_test_suite;
 
 	impl_benchmark_test_suite!(new_test_ext(),);
 }

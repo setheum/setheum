@@ -56,6 +56,15 @@ pub trait AssetProcessor<AssetId, Metadata> {
 	}
 }
 
+impl<AssetId, Metadata> AssetProcessor<AssetId, Metadata> for () {
+	fn pre_register(id: Option<AssetId>, metadata: Metadata) -> Result<(AssetId, Metadata), DispatchError> {
+		match id {
+			Some(id) => Ok((id, metadata)),
+			None => Err(DispatchError::Other("AssetId required")),
+		}
+	}
+}
+
 /// Data describing the asset properties.
 #[derive(
 	TypeInfo,

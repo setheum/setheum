@@ -70,7 +70,7 @@ fn create_token_class<T: Config>(caller: T::AccountId) -> Result<T::AccountId, D
 	<T as module::Config>::Currency::make_free_balance_be(&caller, base_currency_amount.unique_saturated_into());
 
 	let module_account: T::AccountId =
-		T::PalletId::get().into_sub_account_truncating(orml_nft::Pallet::<T>::next_class_id());
+		T::PalletId::get().into_sub_account_truncating(crate::Pallet::<T>::next_class_id());
 	crate::Pallet::<T>::create_class(
 		RawOrigin::Signed(caller).into(),
 		vec![1],
@@ -300,7 +300,7 @@ mod mock {
 		type WeightInfo = ();
 	}
 
-	impl orml_nft::Config for Runtime {
+	impl module_nft::Config for Runtime {
 		type ClassId = u32;
 		type TokenId = u64;
 		type ClassData = ClassData<Balance>;
@@ -317,7 +317,7 @@ mod mock {
 			Utility: pallet_utility,
 			Balances: pallet_balances,
 			Proxy: pallet_proxy,
-			OrmlNFT: orml_nft,
+			ModuleNFT: module_nft,
 			NFT: nft,
 		}
 	);

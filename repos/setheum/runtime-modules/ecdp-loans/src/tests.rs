@@ -79,7 +79,7 @@ fn adjust_position_should_work() {
 // balance too low
 		assert_noop!(
 			EcdpLoansModule::adjust_position(&ALICE, BTC, 2000, 0),
-			orml_tokens::Error::<Runtime>::BalanceTooLow
+			module_tokens::Error::<Runtime>::BalanceTooLow
 		);
 
 // mock can't pass liquidation ratio check
@@ -103,7 +103,7 @@ fn adjust_position_should_work() {
 // failed because ED of collateral
 		assert_noop!(
 			EcdpLoansModule::adjust_position(&ALICE, BTC, 99, 0),
-			orml_tokens::Error::<Runtime>::ExistentialDeposit,
+			module_tokens::Error::<Runtime>::ExistentialDeposit,
 		);
 
 		assert_eq!(Currencies::free_balance(BTC, &ALICE), 1000);
@@ -213,7 +213,7 @@ fn confiscate_collateral_and_debit_work() {
 // have no sufficient balance
 		assert_noop!(
 			EcdpLoansModule::confiscate_collateral_and_debit(&BOB, BTC, 5000, 1000),
-			orml_tokens::Error::<Runtime>::BalanceTooLow
+			module_tokens::Error::<Runtime>::BalanceTooLow
 		);
 
 		assert_ok!(EcdpLoansModule::adjust_position(&ALICE, BTC, 500, 300));

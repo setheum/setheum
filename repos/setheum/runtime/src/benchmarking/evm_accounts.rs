@@ -24,7 +24,7 @@ use super::utils::set_balance;
 use codec::Encode;
 use frame_benchmarking::{account, whitelisted_caller};
 use frame_system::RawOrigin;
-use orml_benchmarking::runtime_benchmarks;
+use module_benchmarking::runtime_benchmarks;
 use sp_io::hashing::keccak_256;
 
 const SEED: u32 = 0;
@@ -65,7 +65,7 @@ runtime_benchmarks! {
 mod tests {
 	use super::*;
 	use crate::benchmarking::utils::tests::new_test_ext;
-	use orml_benchmarking::impl_benchmark_test_suite;
+	use module_benchmarking::impl_benchmark_test_suite;
 
 	impl_benchmark_test_suite!(new_test_ext(),);
 }

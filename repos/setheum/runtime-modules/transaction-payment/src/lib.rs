@@ -53,7 +53,7 @@ use frame_support::{
 };
 use frame_system::pallet_prelude::*;
 use module_support::{BuyWeightRate, PriceProvider, Ratio, Swap, SwapLimit, TransactionPayment};
-use orml_traits::MultiCurrency;
+use module_traits::MultiCurrency;
 use pallet_transaction_payment_rpc_runtime_api::RuntimeDispatchInfo;
 use pallet_transaction_payment_rpc_runtime_api::{FeeDetails, InclusionFee};
 use primitives::{Balance, CurrencyId, Multiplier, ReserveIdentifier};

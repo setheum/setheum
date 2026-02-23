@@ -40,7 +40,7 @@
 use super::*;
 use frame_support::{construct_runtime, ord_parameter_types, parameter_types, PalletId};
 use frame_system::EnsureSignedBy;
-use orml_traits::parameter_type_with_key;
+use module_traits::parameter_type_with_key;
 use sp_core::H256;
 use sp_runtime::{
 	testing::Header,
@@ -102,7 +102,7 @@ parameter_type_with_key! {
 	};
 }
 
-impl orml_tokens::Config for Runtime {
+impl module_tokens::Config for Runtime {
 	type Event = Event;
 	type Balance = Balance;
 	type Amount = Amount;
@@ -182,7 +182,7 @@ construct_runtime!(
 	{
 		System: frame_system::{Pallet, Call, Storage, Config, Event<T>},
 		LaunchPad: launchpad_crowdsales::{Pallet, Storage, Call, Event<T>},
-		Tokens: orml_tokens::{Pallet, Storage, Call, Event<T>},
+		Tokens: module_tokens::{Pallet, Storage, Call, Event<T>},
 	}
 );
 
@@ -224,7 +224,7 @@ impl ExtBuilder {
 			.build_storage::<Runtime>()
 			.unwrap();
 
-		orml_tokens::GenesisConfig::<Runtime> {
+		module_tokens::GenesisConfig::<Runtime> {
 			balances: self
 				.balances
 				.into_iter()

@@ -50,7 +50,7 @@ use module_support::{
 	mocks::MockAddressMapping,
 	Price, SpecificJointsSwap,
 };
-use orml_traits::parameter_type_with_key;
+use module_traits::parameter_type_with_key;
 use primitives::{Amount, ReserveIdentifier, TokenSymbol, TradingPair};
 use smallvec::smallvec;
 use sp_core::{crypto::AccountId32, H160};
@@ -111,7 +111,7 @@ parameter_type_with_key! {
 	};
 }
 
-impl orml_tokens::Config for Runtime {
+impl module_tokens::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type Balance = Balance;
 	type Amount = Amount;
@@ -323,7 +323,7 @@ construct_runtime!(
 		System: frame_system,
 		TransactionPayment: transaction_payment,
 		PalletBalances: pallet_balances,
-		Tokens: orml_tokens,
+		Tokens: module_tokens,
 		Currencies: module_currencies,
 		EdfisSwapLegacyModule: edfis_swap_legacy_module,
 	}
@@ -394,7 +394,7 @@ impl ExtBuilder {
 		.assimilate_storage(&mut t)
 		.unwrap();
 
-		orml_tokens::GenesisConfig::<Runtime> {
+		module_tokens::GenesisConfig::<Runtime> {
 			balances: self.balances,
 		}
 		.assimilate_storage(&mut t)

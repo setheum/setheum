@@ -42,7 +42,7 @@ use frame_support::{
 	construct_runtime, parameter_types,
 	traits::{ConstU128, ConstU64, Everything, Nothing},
 };
-use orml_traits::parameter_type_with_key;
+use module_traits::parameter_type_with_key;
 use primitives::{Amount, Balance, CurrencyId, TokenSymbol};
 use sp_core::{crypto::AccountId32, H256};
 use sp_io::hashing::keccak_256;
@@ -106,7 +106,7 @@ parameter_type_with_key! {
 	};
 }
 
-impl orml_tokens::Config for Runtime {
+impl module_tokens::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type Balance = Balance;
 	type Amount = Amount;
@@ -124,13 +124,13 @@ parameter_types! {
 	pub const GetNativeCurrencyId: CurrencyId = CurrencyId::Token(TokenSymbol::SEE);
 }
 
-impl orml_currencies::Config for Runtime {
+impl module_currencies::Config for Runtime {
 	type MultiCurrency = Tokens;
 	type NativeCurrency = AdaptedBasicCurrency;
 	type GetNativeCurrencyId = GetNativeCurrencyId;
 	type WeightInfo = ();
 }
-pub type AdaptedBasicCurrency = orml_currencies::BasicCurrencyAdapter<Runtime, Balances, Amount, BlockNumber>;
+pub type AdaptedBasicCurrency = module_currencies::BasicCurrencyAdapter<Runtime, Balances, Amount, BlockNumber>;
 
 impl Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
@@ -147,9 +147,9 @@ construct_runtime!(
 	pub enum Runtime {
 		System: frame_system,
 		EvmAccountsModule: unified_accounts,
-		Tokens: orml_tokens,
+		Tokens: module_tokens,
 		Balances: pallet_balances,
-		Currencies: orml_currencies,
+		Currencies: module_currencies,
 	}
 );
 

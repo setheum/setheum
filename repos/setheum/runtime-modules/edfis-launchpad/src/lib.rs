@@ -45,7 +45,7 @@ use frame_support::{
 };
 use frame_system::{pallet_prelude::*, ensure_signed};
 
-use orml_traits::{GetByKey, MultiCurrency, MultiLockableCurrency, LockIdentifier};
+use module_traits::{GetByKey, MultiCurrency, MultiLockableCurrency, LockIdentifier};
 use primitives::{Balance, CampaignId, CampaignInfo, CurrencyId};
 use support::{CampaignManager, Proposal};
 

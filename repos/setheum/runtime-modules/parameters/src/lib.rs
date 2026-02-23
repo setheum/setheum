@@ -45,7 +45,7 @@ use frame_support::pallet_prelude::*;
 use frame_system::pallet_prelude::*;
 
 use frame_support::traits::EnsureOriginWithArg;
-use orml_traits::parameters::{AggregratedKeyValue, Into2, Key, RuntimeParameterStore, TryInto2};
+use module_traits::parameters::{AggregratedKeyValue, Into2, Key, RuntimeParameterStore, TryInto2};
 
 mod mock;
 mod tests;
@@ -61,7 +61,7 @@ pub mod module {
 	#[pallet::config]
 	pub trait Config: frame_system::Config {
 		/// The key value type for parameters. Usually created by
-		/// orml_traits::parameters::define_aggregrated_parameters
+		/// module_traits::parameters::define_aggregrated_parameters
 		type AggregratedKeyValue: AggregratedKeyValue;
 
 		/// The origin which may update the parameter.

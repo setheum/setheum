@@ -26,7 +26,7 @@ use sp_core::H160;
 use sp_runtime::RuntimeDebug;
 use sp_std::{borrow::Cow, fmt::Debug, marker::PhantomData, prelude::*, result};
 
-use orml_traits::NFT as NFTT;
+use module_traits::NFT as NFTT;
 
 use super::input::{Input, InputT, Output};
 use num_enum::{IntoPrimitive, TryFromPrimitive};

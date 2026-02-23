@@ -48,8 +48,8 @@ use frame_system::{
 use module_support::{
 	EcdpAuctionsManager, EcdpUssdTreasury, EcdpUssdTreasuryExtended, EcdpEmergencyShutdown, PriceProvider, Rate, SwapLimit,
 };
-use orml_traits::{Auction, AuctionHandler, Change, MultiCurrency, OnNewBidResult};
-use orml_utilities::OffchainErr;
+use module_traits::{Auction, AuctionHandler, Change, MultiCurrency, OnNewBidResult};
+use module_utilities::OffchainErr;
 use parity_scale_codec::{Decode, Encode, MaxEncodedLen};
 use primitives::{AuctionId, Balance, CurrencyId};
 use scale_info::TypeInfo;

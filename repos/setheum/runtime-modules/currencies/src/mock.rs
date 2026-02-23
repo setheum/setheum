@@ -47,7 +47,7 @@ use frame_support::{
 };
 use frame_system::EnsureSignedBy;
 use module_support::{mocks::MockAddressMapping, AddressMapping};
-use orml_traits::{currency::MutationHooks, parameter_type_with_key};
+use module_traits::{currency::MutationHooks, parameter_type_with_key};
 use primitives::{evm::convert_decimals_to_evm, CurrencyId, ReserveIdentifier, TokenSymbol};
 use sp_core::H256;
 use sp_core::{H160, U256};
@@ -100,15 +100,15 @@ parameter_type_with_key! {
 }
 
 parameter_types! {
-	pub DustAccount: AccountId = PalletId(*b"orml/dst").into_account_truncating();
+	pub DustAccount: AccountId = PalletId(*b"module/dst").into_account_truncating();
 }
 
 pub struct CurrencyHooks<T>(marker::PhantomData<T>);
-impl<T: orml_tokens::Config> MutationHooks<T::AccountId, T::CurrencyId, T::Balance> for CurrencyHooks<T>
+impl<T: module_tokens::Config> MutationHooks<T::AccountId, T::CurrencyId, T::Balance> for CurrencyHooks<T>
 where
 	T::AccountId: From<AccountId>,
 {
-	type OnDust = orml_tokens::TransferDust<T, DustAccount>;
+	type OnDust = module_tokens::TransferDust<T, DustAccount>;
 	type OnSlash = ();
 	type PreDeposit = ();
 	type PostDeposit = ();
@@ -118,7 +118,7 @@ where
 	type OnKilledTokenAccount = ();
 }
 
-impl orml_tokens::Config for Runtime {
+impl module_tokens::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type Balance = Balance;
 	type Amount = i64;
@@ -246,7 +246,7 @@ frame_support::construct_runtime!(
 	pub enum Runtime {
 		System: frame_system,
 		Balances: pallet_balances,
-		Tokens: orml_tokens,
+		Tokens: module_tokens,
 		Currencies: currencies,
 		EVM: module_evm,
 		EVMBridge: module_evm_bridge,
@@ -370,7 +370,7 @@ impl ExtBuilder {
 		.assimilate_storage(&mut t)
 		.unwrap();
 
-		orml_tokens::GenesisConfig::<Runtime> {
+		module_tokens::GenesisConfig::<Runtime> {
 			balances: self
 				.balances
 				.into_iter()

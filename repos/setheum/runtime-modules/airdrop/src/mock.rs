@@ -40,7 +40,7 @@
 use super::*;
 use frame_support::{construct_runtime, ord_parameter_types, parameter_types};
 use frame_system::EnsureSignedBy;
-use orml_traits::parameter_type_with_key;
+use module_traits::parameter_type_with_key;
 use primitives::{Amount, AccountId as AccId, TokenSymbol};
 use sp_core::H256;
 use sp_runtime::{
@@ -100,7 +100,7 @@ parameter_type_with_key! {
 	};
 }
 
-impl orml_tokens::Config for Runtime {
+impl module_tokens::Config for Runtime {
 	type Event = Event;
 	type Balance = Balance;
 	type Amount = Amount;
@@ -150,7 +150,7 @@ construct_runtime!(
 	{
 		System: frame_system::{Pallet, Storage, Call, Config, Event<T>},
 		AirDrop: airdrop::{Pallet, Storage, Call, Event<T>},
-		Tokens: orml_tokens::{Pallet, Storage, Call, Event<T>},
+		Tokens: module_tokens::{Pallet, Storage, Call, Event<T>},
 	}
 );
 

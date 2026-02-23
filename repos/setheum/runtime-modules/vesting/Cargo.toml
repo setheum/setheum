@@ -20,12 +20,12 @@ frame-system = { workspace = true }
 
 primitives = { package = "setheum-primitives", path = "../../primitives", default-features = false }
 support = { package = "module-support", path = "../support", default-features = false }
-orml-traits = { path = "../../runtime-modules/traits", default-features = false }
+module-traits = { package = "module-traits", path = "../traits", default-features = false }
 
 [dev-dependencies]
 sp-core = { workspace = true, features = ["std"] }
 pallet-balances = { workspace = true }
-orml-tokens = { workspace = true }
+module-tokens = { workspace = true }
 
 [features]
 default = ["std"]
@@ -40,7 +40,7 @@ std = [
 	"frame-system/std",
 	"primitives/std",
 	"support/std",
-	"orml-traits/std",
+	"module-traits/std",
 ]
 runtime-benchmarks = [
 	"frame-support/runtime-benchmarks",

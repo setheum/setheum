@@ -41,7 +41,7 @@
 
 use frame_support::{pallet_prelude::*, transactional, PalletId, traits::Get};
 use frame_system::pallet_prelude::*;
-use orml_traits::{MultiCurrency, MultiCurrencyExtended};
+use module_traits::{MultiCurrency, MultiCurrencyExtended};
 use primitives::{AccountId, Balance, CurrencyId};
 use module_support::AirdropList;
 use sp_std::vec::Vec;

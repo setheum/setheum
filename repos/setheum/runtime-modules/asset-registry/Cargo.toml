@@ -20,6 +20,7 @@ primitives = { workspace = true }
 xcm = { workspace = true }
 
 module-support = { workspace = true }
+module-traits = { workspace = true }
 
 [dev-dependencies]
 serde_json = { workspace = true, features = ["std"] }
@@ -45,6 +46,7 @@ std = [
 	"primitives/std",
 	"xcm/std",
 	"module-support/std",
+	"module-traits/std",
 ]
 try-runtime = [
 	"frame-support/try-runtime",

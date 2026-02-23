@@ -153,7 +153,7 @@ pub use workaround::*;
 ///
 /// ```
 /// # #[macro_use]
-/// # extern crate orml_traits;
+/// # extern crate module_traits;
 /// # fn main() {}
 /// define_parameters! {
 ///     pub Pallet = {
@@ -328,7 +328,7 @@ macro_rules! define_parameters {
 /// Example:
 /// ```
 /// # #[macro_use]
-/// # extern crate orml_traits;
+/// # extern crate module_traits;
 /// # fn main() {}
 /// mod pallet1 {
 ///     define_parameters! {

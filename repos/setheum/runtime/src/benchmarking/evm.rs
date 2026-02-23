@@ -24,7 +24,7 @@ use super::utils::set_balance;
 use frame_support::dispatch::DispatchError;
 use frame_system::RawOrigin;
 use module_support::AddressMapping;
-use orml_benchmarking::{runtime_benchmarks, whitelist_account};
+use module_benchmarking::{runtime_benchmarks, whitelist_account};
 use sp_core::H160;
 use sp_io::hashing::keccak_256;
 use sp_std::{str::FromStr, vec};
@@ -160,7 +160,7 @@ runtime_benchmarks! {
 mod tests {
 	use super::*;
 	use crate::benchmarking::utils::tests::new_test_ext;
-	use orml_benchmarking::impl_benchmark_test_suite;
+	use module_benchmarking::impl_benchmark_test_suite;
 
 	impl_benchmark_test_suite!(new_test_ext(),);
 }

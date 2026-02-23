@@ -58,7 +58,7 @@ pub mod pallet {
 		storage::bounded_btree_map::BoundedBTreeMap, traits::tokens::BalanceStatus,
 	};
 	use frame_system::pallet_prelude::*;
-	use orml_traits::{MultiCurrency, MultiReservableCurrency};
+	use module_traits::{MultiCurrency, MultiReservableCurrency};
 	use sp_runtime::{
 		traits::{CheckedAdd, Saturating},
 		Percent,

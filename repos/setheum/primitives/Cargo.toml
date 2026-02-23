@@ -8,7 +8,7 @@ homepage.workspace = true
 repository.workspace = true
 
 [dependencies]
-bstringify = { workspace = true }
+# bstringify = { workspace = true }
 enumflags2 = { workspace = true, features = ["serde"] }
 hex-literal = { workspace = true }
 log = { workspace = true }
@@ -29,10 +29,10 @@ sp-consensus-aura = { workspace = true }
 
 frame-support = { workspace = true }
 
-orml-traits = { workspace = true }
+module-traits = { workspace = true }
 
-module-evm-utility = { workspace = true }
-module-evm-utility-macro = { workspace = true }
+# module-evm-utility = { workspace = true }
+# module-evm-utility-macro = { workspace = true }
 
 [dev-dependencies]
 serde_json = { workspace = true, features = ["std"] }
@@ -52,12 +52,13 @@ std = [
 	"sp-io/std",
 	"sp-runtime/std",
 	"sp-std/std",
+        "sp-consensus-aura/std",
 
 	"frame-support/std",
 
-	"orml-traits/std",
+	"module-traits/std",
 
-	"module-evm-utility/std",
+	# "module-evm-utility/std",
 ]
 evm-tests = []
 short_session = []

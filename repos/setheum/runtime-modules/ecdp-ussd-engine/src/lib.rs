@@ -49,8 +49,8 @@ use module_support::{
 	FractionalRate, InvokeContext, LiquidateCollateral, LiquidationEvmBridge, Price, PriceProvider, Rate, Ratio,
 	EcdpUssdRiskManager, Swap, SwapLimit,
 };
-use orml_traits::{Change, GetByKey, MultiCurrency};
-use orml_utilities::OffchainErr;
+use module_traits::{Change, GetByKey, MultiCurrency};
+use module_utilities::OffchainErr;
 use parity_scale_codec::MaxEncodedLen;
 use primitives::{evm::EvmAddress, Amount, Balance, CurrencyId, EcdpPosition};
 use rand_chacha::{

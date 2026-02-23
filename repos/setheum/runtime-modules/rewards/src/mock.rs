@@ -41,7 +41,7 @@
 
 use super::*;
 use frame_support::{construct_runtime, derive_impl};
-use orml_traits::parameter_type_with_key;
+use module_traits::parameter_type_with_key;
 use sp_runtime::{traits::IdentityLookup, BuildStorage};
 use sp_std::cell::RefCell;
 use std::collections::HashMap;

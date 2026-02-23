@@ -30,8 +30,8 @@ use frame_benchmarking::account;
 use frame_support::traits::OnInitialize;
 use frame_system::RawOrigin;
 use module_support::SwapManager;
-use orml_benchmarking::runtime_benchmarks;
-use orml_traits::{Change, GetByKey};
+use module_benchmarking::runtime_benchmarks;
+use module_traits::{Change, GetByKey};
 use sp_runtime::{
 	traits::{AccountIdLookup, One, StaticLookup, UniqueSaturatedInto},
 	FixedPointNumber,
@@ -217,7 +217,7 @@ runtime_benchmarks! {
 mod tests {
 	use super::*;
 	use crate::benchmarking::utils::tests::new_test_ext;
-	use orml_benchmarking::impl_benchmark_test_suite;
+	use module_benchmarking::impl_benchmark_test_suite;
 
 	impl_benchmark_test_suite!(new_test_ext(),);
 }

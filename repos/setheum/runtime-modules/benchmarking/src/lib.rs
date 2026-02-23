@@ -134,7 +134,7 @@ macro_rules! whitelist_account {
 /// use path_to_node_runtime::MyRuntime;
 /// use path_to_account_id::AccountId;
 /// use frame_benchmarking::account;
-/// use orml_benchmarking::runtime_benchmarks;
+/// use module_benchmarking::runtime_benchmarks;
 ///
 /// runtime_benchmarks! {
 ///   // The constructed runtime struct, and the pallet to benchmark.

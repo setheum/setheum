@@ -42,7 +42,7 @@
 use frame_support::{pallet_prelude::*, transactional, PalletId};
 use frame_system::pallet_prelude::*;
 use module_support::{Incentives, EmergencyShutdown, FractionalRate, IncentivesManager, PoolId, Rate};
-use orml_traits::{Happened, MultiCurrency, RewardHandler};
+use module_traits::{Happened, MultiCurrency, RewardHandler};
 use primitives::{Amount, Balance, CurrencyId};
 use sp_runtime::{
 	traits::{AccountIdConversion, UniqueSaturatedInto, Zero},
@@ -64,7 +64,7 @@ pub mod module {
 	#[pallet::config]
 	pub trait Config:
 		frame_system::Config
-		+ orml_rewards::Config<Share = Balance, Balance = Balance, PoolId = PoolId, CurrencyId = CurrencyId>
+		+ module_rewards::Config<Share = Balance, Balance = Balance, PoolId = PoolId, CurrencyId = CurrencyId>
 	{
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 
@@ -190,7 +190,7 @@ pub mod module {
 			if now % T::AccumulatePeriod::get() == Zero::zero() {
 				let mut count: u32 = 0;
 
-				for (pool_id, pool_info) in orml_rewards::PoolInfos::<T>::iter() {
+				for (pool_id, pool_info) in module_rewards::PoolInfos::<T>::iter() {
 					if !pool_info.total_shares.is_zero() {
 						match pool_id {
 // TODO:[src/lib.rs:0] - Update to support `EcdpSetrLiquidityRewards` and `EcdpUssdLiquidityRewards`
@@ -403,13 +403,13 @@ impl<T: Config> Pallet<T> {
 			&Self::account_id(),
 			reward_amount,
 		)?;
-		<orml_rewards::Pallet<T>>::accumulate_reward(&pool_id, reward_currency_id, reward_amount)?;
+		<module_rewards::Pallet<T>>::accumulate_reward(&pool_id, reward_currency_id, reward_amount)?;
 		Ok(())
 	}
 
 	fn do_claim_rewards(who: T::AccountId, pool_id: PoolId) -> DispatchResult {
-// orml_rewards will claim rewards for all currencies rewards
-		<orml_rewards::Pallet<T>>::claim_rewards(&who, &pool_id);
+// module_rewards will claim rewards for all currencies rewards
+		<module_rewards::Pallet<T>>::claim_rewards(&who, &pool_id);
 
 		PendingMultiRewards::<T>::mutate_exists(pool_id, &who, |maybe_pending_multi_rewards| {
 			if let Some(pending_multi_rewards) = maybe_pending_multi_rewards {
@@ -494,7 +494,7 @@ impl<T: Config> Pallet<T> {
 		reaccumulate_amount: Balance,
 	) -> DispatchResult {
 		if !reaccumulate_amount.is_zero() {
-			<orml_rewards::Pallet<T>>::accumulate_reward(&pool_id, reward_currency_id, reaccumulate_amount)?;
+			<module_rewards::Pallet<T>>::accumulate_reward(&pool_id, reward_currency_id, reaccumulate_amount)?;
 		}
 		T::Currency::transfer(reward_currency_id, &Self::account_id(), who, payout_amount)?;
 		Ok(())
@@ -506,7 +506,7 @@ impl<T: Config> Incentives<T::AccountId, CurrencyId, Balance> for Pallet<T> {
 		ensure!(lp_currency_id.is_dex_share_currency_id(), Error::<T>::InvalidCurrencyId);
 
 		T::Currency::transfer(lp_currency_id, who, &Self::account_id(), amount)?;
-		<orml_rewards::Pallet<T>>::add_share(who, &PoolId::EdfisLiquidityRewards(lp_currency_id), amount.unique_saturated_into());
+		<module_rewards::Pallet<T>>::add_share(who, &PoolId::EdfisLiquidityRewards(lp_currency_id), amount.unique_saturated_into());
 
 		Self::deposit_event(Event::DepositDexShare {
 			who: who.clone(),
@@ -519,12 +519,12 @@ impl<T: Config> Incentives<T::AccountId, CurrencyId, Balance> for Pallet<T> {
 	fn do_withdraw_dex_share(who: &T::AccountId, lp_currency_id: CurrencyId, amount: Balance) -> DispatchResult {
 		ensure!(lp_currency_id.is_dex_share_currency_id(), Error::<T>::InvalidCurrencyId);
 		ensure!(
-			<orml_rewards::Pallet<T>>::shares_and_withdrawn_rewards(&PoolId::EdfisLiquidityRewards(lp_currency_id), &who).0 >= amount,
+			<module_rewards::Pallet<T>>::shares_and_withdrawn_rewards(&PoolId::EdfisLiquidityRewards(lp_currency_id), &who).0 >= amount,
 			Error::<T>::NotEnough,
 		);
 
 		T::Currency::transfer(lp_currency_id, &Self::account_id(), who, amount)?;
-		<orml_rewards::Pallet<T>>::remove_share(who, &PoolId::EdfisLiquidityRewards(lp_currency_id), amount.unique_saturated_into());
+		<module_rewards::Pallet<T>>::remove_share(who, &PoolId::EdfisLiquidityRewards(lp_currency_id), amount.unique_saturated_into());
 
 		Self::deposit_event(Event::WithdrawDexShare {
 			who: who.clone(),
@@ -587,13 +587,13 @@ impl<T: Config> RewardHandler<T::AccountId, CurrencyId> for Pallet<T> {
 pub struct OnMoyaEarnBonded<T>(sp_std::marker::PhantomData<T>);
 impl<T: Config> Happened<(T::AccountId, Balance)> for OnMoyaEarnBonded<T> {
 	fn happened((who, amount): &(T::AccountId, Balance)) {
-		<orml_rewards::Pallet<T>>::add_share(who, &PoolId::MoyaEarnRewards(T::NativeCurrencyId::get()), *amount);
+		<module_rewards::Pallet<T>>::add_share(who, &PoolId::MoyaEarnRewards(T::NativeCurrencyId::get()), *amount);
 	}
 }
 
 pub struct OnMoyaEarnUnbonded<T>(sp_std::marker::PhantomData<T>);
 impl<T: Config> Happened<(T::AccountId, Balance)> for OnMoyaEarnUnbonded<T> {
 	fn happened((who, amount): &(T::AccountId, Balance)) {
-		<orml_rewards::Pallet<T>>::remove_share(who, &PoolId::MoyaEarnRewards(T::NativeCurrencyId::get()), *amount);
+		<module_rewards::Pallet<T>>::remove_share(who, &PoolId::MoyaEarnRewards(T::NativeCurrencyId::get()), *amount);
 	}
 }

@@ -27,8 +27,8 @@ use super::utils::feed_price;
 use frame_benchmarking::account;
 use frame_system::RawOrigin;
 use module_support::{AuctionManager as AuctionManagerTrait, CDPTreasury};
-use orml_benchmarking::runtime_benchmarks;
-use orml_traits::MultiCurrency;
+use module_benchmarking::runtime_benchmarks;
+use module_traits::MultiCurrency;
 use sp_runtime::FixedPointNumber;
 use sp_std::vec;
 
@@ -70,7 +70,7 @@ runtime_benchmarks! {
 mod tests {
 	use super::*;
 	use crate::benchmarking::utils::tests::new_test_ext;
-	use orml_benchmarking::impl_benchmark_test_suite;
+	use module_benchmarking::impl_benchmark_test_suite;
 
 	impl_benchmark_test_suite!(new_test_ext(),);
 }

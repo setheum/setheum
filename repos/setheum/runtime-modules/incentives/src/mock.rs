@@ -44,7 +44,7 @@ use frame_support::{
 };
 use frame_system::EnsureSignedBy;
 pub use module_support::{Price, Ratio, SwapLimit};
-use orml_traits::parameter_type_with_key;
+use module_traits::parameter_type_with_key;
 use primitives::{DexShare, TokenSymbol};
 use sp_runtime::{traits::IdentityLookup, AccountId32, BuildStorage};
 use sp_std::cell::RefCell;
@@ -90,7 +90,7 @@ parameter_type_with_key! {
 	};
 }
 
-impl orml_tokens::Config for Runtime {
+impl module_tokens::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type Balance = Balance;
 	type Amount = Amount;
@@ -119,7 +119,7 @@ impl EmergencyShutdown for MockEmergencyShutdown {
 	}
 }
 
-impl orml_rewards::Config for Runtime {
+impl module_rewards::Config for Runtime {
 	type Share = Balance;
 	type Balance = Balance;
 	type PoolId = PoolId;
@@ -154,8 +154,8 @@ construct_runtime!(
 	pub enum Runtime {
 		System: frame_system,
 		IncentivesModule: incentives,
-		TokensModule: orml_tokens,
-		RewardsModule: orml_rewards,
+		TokensModule: module_tokens,
+		RewardsModule: module_rewards,
 	}
 );
 
@@ -174,7 +174,7 @@ impl ExtBuilder {
 		let mut t = frame_system::GenesisConfig::<Runtime>::default()
 			.build_storage()
 			.unwrap();
-		orml_tokens::GenesisConfig::<Runtime> {
+		module_tokens::GenesisConfig::<Runtime> {
 			balances: self.balances,
 		}
 		.assimilate_storage(&mut t)

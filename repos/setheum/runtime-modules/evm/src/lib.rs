@@ -76,7 +76,7 @@ pub use module_support::{
 	AddressMapping, EVMManager, ExecutionMode, InvokeContext, TransactionPayment,
 	EVM as EVMTrait,
 };
-pub use orml_traits::{currency::TransferAll, MultiCurrency};
+pub use module_traits::{currency::TransferAll, MultiCurrency};
 use parity_scale_codec::{Decode, Encode, FullCodec, MaxEncodedLen};
 pub use primitives::{
 	evm::{

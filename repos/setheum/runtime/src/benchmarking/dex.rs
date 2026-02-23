@@ -26,8 +26,8 @@ use crate::{
 use frame_benchmarking::{account, whitelisted_caller};
 use frame_system::RawOrigin;
 use edfis_swap_legacy_module::TradingPairStatus;
-use orml_benchmarking::runtime_benchmarks;
-use orml_traits::{MultiCurrency, MultiCurrencyExtended};
+use module_benchmarking::runtime_benchmarks;
+use module_traits::{MultiCurrency, MultiCurrencyExtended};
 use primitives::TradingPair;
 use sp_runtime::traits::UniqueSaturatedInto;
 use sp_std::prelude::*;
@@ -329,7 +329,7 @@ runtime_benchmarks! {
 mod tests {
 	use super::*;
 	use crate::benchmarking::utils::tests::new_test_ext;
-	use orml_benchmarking::impl_benchmark_test_suite;
+	use module_benchmarking::impl_benchmark_test_suite;
 
 	impl_benchmark_test_suite!(new_test_ext(),);
 }

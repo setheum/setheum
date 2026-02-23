@@ -46,6 +46,7 @@ use frame_support::{
 };
 use frame_system::pallet_prelude::*;
 use module_support::{AssetIdMapping, BuyWeightRate, EVMBridge, Erc20InfoMapping, InvokeContext, Ratio};
+use module_traits::asset_registry::AssetProcessor;
 use primitives::{
 	currency::{
 		AssetIds, AssetMetadata, CurrencyIdType, DexShare, DexShareType, Erc20Id, ForeignAssetId, TokenInfo,
@@ -328,6 +329,8 @@ impl<T: Config> Pallet<T> {
 		metadata: &AssetMetadata<BalanceOf<T>>,
 	) -> Result<ForeignAssetId, DispatchError> {
 		let foreign_asset_id = Self::get_next_foreign_asset_id()?;
+		let (_, metadata) = T::AssetProcessor::pre_register(Some(AssetIds::ForeignAssetId(foreign_asset_id)), metadata.clone())?;
+
 		LocationToCurrencyIds::<T>::try_mutate(location, |maybe_currency_ids| -> DispatchResult {
 			ensure!(maybe_currency_ids.is_none(), Error::<T>::MultiLocationExisted);
 			*maybe_currency_ids = Some(CurrencyId::ForeignAsset(foreign_asset_id));
@@ -347,6 +350,8 @@ impl<T: Config> Pallet<T> {
 				)
 			})
 		})?;
+
+		T::AssetProcessor::post_register(AssetIds::ForeignAssetId(foreign_asset_id), metadata)?;
 
 		Ok(foreign_asset_id)
 	}
@@ -397,7 +402,9 @@ impl<T: Config> Pallet<T> {
 			decimals: T::EVMBridge::decimals(invoke_context)?,
 			minimal_balance,
 		};
-
+		
+		let (_, metadata) = T::AssetProcessor::pre_register(Some(AssetIds::Erc20(contract)), metadata)?;
+		
 		let erc20_id = Into::<Erc20Id>::into(DexShare::Erc20(contract));
 
 		AssetMetadatas::<T>::try_mutate(AssetIds::Erc20(contract), |maybe_asset_metadatas| -> DispatchResult {
@@ -414,6 +421,8 @@ impl<T: Config> Pallet<T> {
 			Ok(())
 		})?;
 
+		T::AssetProcessor::post_register(AssetIds::Erc20(contract), metadata.clone())?;
+
 		Ok(metadata)
 	}
 
@@ -427,6 +436,8 @@ impl<T: Config> Pallet<T> {
 	}
 
 	fn do_register_native_asset(asset: CurrencyId, metadata: &AssetMetadata<BalanceOf<T>>) -> DispatchResult {
+		let (_, metadata) = T::AssetProcessor::pre_register(Some(AssetIds::NativeAssetId(asset)), metadata.clone())?;
+
 		AssetMetadatas::<T>::try_mutate(
 			AssetIds::NativeAssetId(asset),
 			|maybe_asset_metadatas| -> DispatchResult {
@@ -436,6 +447,8 @@ impl<T: Config> Pallet<T> {
 				Ok(())
 			},
 		)?;
+
+		T::AssetProcessor::post_register(AssetIds::NativeAssetId(asset), metadata)?;
 
 		Ok(())
 	}

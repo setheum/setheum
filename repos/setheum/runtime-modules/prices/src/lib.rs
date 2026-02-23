@@ -41,7 +41,7 @@
 use frame_support::pallet_prelude::*;
 use frame_system::pallet_prelude::*;
 use module_support::{SwapManager, Erc20InfoMapping, ExchangeRateProvider, LockablePrice, Price, PriceProvider, Rate};
-use orml_traits::{DataFeeder, DataProvider, GetByKey, MultiCurrency};
+use module_traits::{DataFeeder, DataProvider, GetByKey, MultiCurrency};
 use primitives::{Balance, CurrencyId, Lease};
 use sp_core::U256;
 use sp_runtime::{

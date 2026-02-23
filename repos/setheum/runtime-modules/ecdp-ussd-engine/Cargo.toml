@@ -15,8 +15,8 @@ scale-info = { workspace = true }
 frame-support = { workspace = true }
 frame-system = { workspace = true }
 sp-application-crypto = {workspace = true }
-orml-traits = { workspace = true }
-orml-utilities = { workspace = true }
+module-traits = { workspace = true }
+module-utilities = { workspace = true }
 sp-io = {workspace = true }
 sp-runtime = {workspace = true }
 sp-std = {workspace = true }
@@ -28,11 +28,11 @@ primitives = { workspace = true }
 sp-core = { workspace = true, features = ["std"] }
 pallet-balances = { workspace = true, features = ["std"] }
 pallet-timestamp = { workspace = true, features = ["std"] }
-orml-currencies = { workspace = true, features = ["std"] }
+module-currencies = { workspace = true, features = ["std"] }
 module-edfis_swap_legacy = { workspace = true, features = ["std"] }
 module-ecdp-ussd-treasury = { workspace = true, features = ["std"] }
 module-evm-accounts = { workspace = true, features = ["std"] }
-orml-tokens = { workspace = true, features = ["std"] }
+module-tokens = { workspace = true, features = ["std"] }
 module-evm = { workspace = true, features = ["std"] }
 module-evm-bridge = { workspace = true, features = ["std"] }
 
@@ -43,8 +43,8 @@ std = [
 	"frame-support/std",
 	"frame-system/std",
 	"module-ecdp-loans/std",
-	"orml-traits/std",
-	"orml-utilities/std",
+	"module-traits/std",
+	"module-utilities/std",
 	"primitives/std",
 	"rand_chacha/std",
 	"scale-info/std",

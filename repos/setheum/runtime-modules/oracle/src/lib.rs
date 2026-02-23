@@ -71,8 +71,8 @@ use frame_support::{
 	Parameter,
 };
 use frame_system::{ensure_root, ensure_signed, pallet_prelude::*};
-pub use orml_traits::{CombineData, DataFeeder, DataProvider, DataProviderExtended, OnNewData};
-use orml_utilities::OrderedSet;
+pub use module_traits::{CombineData, DataFeeder, DataProvider, DataProviderExtended, OnNewData};
+use module_utilities::OrderedSet;
 use scale_info::TypeInfo;
 use sp_runtime::{traits::Member, DispatchResult, RuntimeDebug};
 use sp_std::{prelude::*, vec};

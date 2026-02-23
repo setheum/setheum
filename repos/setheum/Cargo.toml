@@ -2,32 +2,64 @@ cargo-features = ["resolver"]
 
 [workspace]
 members = [
-	"node",
+	# "node",
 
-	"runtime-modules/*",
+	"runtime-modules/airdrop",
+	"runtime-modules/aleph",
+	"runtime-modules/asset-registry",
+	# "runtime-modules/committee-management",
+	"runtime-modules/currencies",
+	"runtime-modules/ecdp-loans",
+	"runtime-modules/ecdp-ussd-engine",
+	"runtime-modules/ecdp-ussd-treasury",
+	"runtime-modules/edfis-swap-legacy",
+	# "runtime-modules/elections",
+	"runtime-modules/evm",
+	"runtime-modules/evm-bridge",
+	"runtime-modules/evm-manager",
+	"runtime-modules/evm-utility",
+	"runtime-modules/idle-scheduler",
+	"runtime-modules/incentives",
+	# "runtime-modules/operations",
+	"runtime-modules/oracle",
+	"runtime-modules/parameters",
+	"runtime-modules/prices",
+	"runtime-modules/rate-limit",
+	"runtime-modules/rewards",
+	"runtime-modules/support",
+	"runtime-modules/tokens",
+	"runtime-modules/traits",
+	"runtime-modules/transaction-pause",
+	"runtime-modules/transaction-payment",
+	"runtime-modules/unified-accounts",
+	"runtime-modules/utilities",
+	"runtime-modules/vesting",
+
 	"runtime-modules/currencies/runtime-api",
 	"runtime-modules/oracle/runtime-api",
 	"runtime-modules/tokens/runtime-api",
 	"runtime-modules/evm-utility/macro",
 	"primitives",
-	"clisee",
+	# "clisee",
 	"setheum-client",
 	"rate-limiter",
-	"aggregator",
-	"clique",
-	"finality",
-	"finalizer",
+	# "aggregator",
+	# "clique",
+	# "finality",
+	# "finalizer",
 
 	"runtime",
 	"runtime/common",
 
-	"orml/authority",
-	"orml/gradually-update",
-	"orml/payments",
-	"orml/unknown-tokens",
-	"orml/xcm-support",
-	"orml/xcm",
-	"orml/xtokens",
+	"runtime-modules/authority",
+	"runtime-modules/gradually-update",
+	"runtime-modules/payments",
+	"runtime-modules/unknown-tokens",
+	"runtime-modules/xcm-support",
+	"runtime-modules/xcm",
+	"runtime-modules/xtokens",
+	"runtime-modules/xcm-mock-message-queue",
+
 ]
 
 resolver = "2"
@@ -174,27 +206,26 @@ tokio = { version = "1.36" }
 #   there if it exists.
 # - "Client" dependencies are only used in the client, and thus don't need to be no_std compatible.
 
-# ORML (WASM)
-orml-auction = { path = "orml/auction", default-features = false }
-orml-authority = { path = "orml/authority", default-features = false }
-orml-benchmarking = { path = "orml/benchmarking", default-features = false }
-orml-build-script-utils = { path = "orml/build-script-utils" }
-orml-currencies = { path = "orml/currencies", default-features = false }
-orml-nft = { path = "orml/nft", default-features = false }
-orml-oracle = { path = "orml/oracle", default-features = false }
-orml-oracle-runtime-api = { path = "orml/oracle/runtime-api", default-features = false }
-orml-parameters = { path = "orml/parameters", default-features = false }
-orml-payments = { path = "orml/payments", default-features = false }
-orml-rewards = { path = "orml/rewards", default-features = false }
-orml-tokens = { path = "orml/tokens", default-features = false }
-orml-tokens-runtime-api = { path = "orml/tokens/runtime-api", default-features = false }
-orml-traits = { path = "orml/traits", default-features = false }
-orml-unknown-tokens = { path = "orml/unknown-tokens", default-features = false }
-orml-utilities = { path = "orml/utilities", default-features = false }
-orml-vesting = { path = "orml/vesting", default-features = false }
-orml-xcm = { path = "orml/xcm", default-features = false }
-orml-xcm-support = { path = "orml/xcm-support", default-features = false }
-orml-xtokens = { path = "orml/xtokens", default-features = false }
+# MODULE (WASM)
+module-auction = { package = "module-auction", path = "runtime-modules/auction", default-features = false }
+module-asset-registry = { path = "runtime-modules/module-asset-registry", default-features = false }
+module-authority = { path = "runtime-modules/authority", default-features = false }
+module-benchmarking = { package = "module-benchmarking", path = "runtime-modules/benchmarking", default-features = false }
+module-build-script-utils = { path = "module/build-script-utils" }
+module-oracle = { package = "module-oracle", path = "runtime-modules/oracle", default-features = false }
+module-oracle-runtime-api = { package = "module-oracle-runtime-api", path = "runtime-modules/oracle/runtime-api", default-features = false }
+module-parameters = { package = "module-parameters", path = "runtime-modules/parameters", default-features = false }
+module-payments = { path = "runtime-modules/payments", default-features = false }
+module-rewards = { package = "module-rewards", path = "runtime-modules/rewards", default-features = false }
+module-tokens = { package = "module-tokens", path = "runtime-modules/tokens", default-features = false }
+module-tokens-runtime-api = { path = "runtime-modules/tokens/runtime-api", default-features = false }
+module-traits = { package = "module-traits", path = "runtime-modules/traits", default-features = false }
+module-unknown-tokens = { path = "runtime-modules/unknown-tokens", default-features = false }
+module-utilities = { package = "module-utilities", path = "runtime-modules/utilities", default-features = false }
+module-vesting = { package = "module-vesting", path = "runtime-modules/vesting", default-features = false }
+module-xcm = { package = "module-xcm", path = "runtime-modules/xcm", default-features = false }
+module-xcm-support = { package = "module-xcm-support", path = "runtime-modules/xcm-support", default-features = false }
+module-xtokens = { package = "module-xtokens", path = "runtime-modules/xtokens", default-features = false }
 
 wasm-bencher = { git = "https://github.com/open-web3-stack/wasm-bencher", branch = "polkadot-v1.3.0", default-features = false }
 
@@ -210,7 +241,7 @@ module-evm-bridge = { path = "runtime-modules/evm-bridge", default-features = fa
 module-support = { path = "runtime-modules/support", default-features = false }
 module-transaction-payment = { path = "runtime-modules/transaction-payment", default-features = false }
 module-idle-scheduler = { path = "runtime-modules/idle-scheduler", default-features = false }
-module-edfis_swap_legacy = { path = "runtime-modules/edfis-swap-legacy", default-features = false }
+module-edfis_swap_legacy = { package = "module-edfis-swap-legacy", path = "runtime-modules/edfis-swap-legacy", default-features = false }
 module-ecdp-loans = { path = "runtime-modules/ecdp-loans", default-features = false }
 module-ecdp-ussd-engine = { path = "runtime-modules/ecdp-ussd-engine", default-features = false }
 module-ecdp-ussd-treasury = { path = "runtime-modules/ecdp-ussd-treasury", default-features = false }
@@ -224,7 +255,7 @@ network-clique = { path = "clique" }
 
 
 
-# Setheum & ORML (client)
+# Setheum & MODULE (client)
 setheum-node = { path = "node" }
 module-evm-utility-macro = { path = "runtime-modules/evm-utility/macro" }
 
@@ -348,6 +379,7 @@ substrate-test-runtime-client = { git = "https://github.com/Cardinal-Cryptograph
 polkadot-runtime-common = { git = "https://github.com/Cardinal-Cryptography/polkadot-sdk.git", branch = "aleph-v1.3.0", default-features = false }
 polkadot-runtime-parachains = { git = "https://github.com/Cardinal-Cryptography/polkadot-sdk.git", branch = "aleph-v1.3.0", default-features = false }
 polkadot-parachain-primitives = { git = "https://github.com/Cardinal-Cryptography/polkadot-sdk.git", branch = "aleph-v1.3.0", default-features = false }
+parachains-common = { git = "https://github.com/Cardinal-Cryptography/polkadot-sdk.git", branch = "aleph-v1.3.0", default-features = false }
 cumulus-primitives-core = { git = "https://github.com/Cardinal-Cryptography/polkadot-sdk.git", branch = "aleph-v1.3.0", default-features = false }
 cumulus-pallet-xcm = { git = "https://github.com/Cardinal-Cryptography/polkadot-sdk.git", branch = "aleph-v1.3.0", default-features = false }
 pallet-message-queue = { git = "https://github.com/Cardinal-Cryptography/polkadot-sdk.git", branch = "aleph-v1.3.0", default-features = false }

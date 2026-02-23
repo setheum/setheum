@@ -41,7 +41,7 @@
 
 use frame_support::{pallet_prelude::*, transactional, PalletId};
 use module_support::{EcdpUssdTreasury, EcdpUssdRiskManager};
-use orml_traits::{Happened, MultiCurrency, MultiCurrencyExtended};
+use module_traits::{Happened, MultiCurrency, MultiCurrencyExtended};
 use primitives::{Amount, Balance, CurrencyId, EcdpPosition};
 use sp_runtime::{
 	traits::{AccountIdConversion, Zero},

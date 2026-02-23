@@ -32,9 +32,9 @@ use crate::{
 use super::utils::set_balance;
 use frame_benchmarking::whitelisted_caller;
 use frame_system::RawOrigin;
-use orml_benchmarking::runtime_benchmarks;
+use module_benchmarking::runtime_benchmarks;
 use frame_support::traits::OnInitialize;
-use orml_traits::MultiCurrency;
+use module_traits::MultiCurrency;
 use sp_runtime::traits::Zero;
 use sp_std::prelude::*;
 use module_support::{SwapManager, SerpTreasury as SerpTreasurySupport, SerpTreasuryExtended, SwapLimit};
@@ -244,7 +244,7 @@ runtime_benchmarks! {
 mod tests {
 	use super::*;
 	use crate::benchmarking::utils::tests::new_test_ext;
-	use orml_benchmarking::impl_benchmark_test_suite;
+	use module_benchmarking::impl_benchmark_test_suite;
 
 	impl_benchmark_test_suite!(new_test_ext(),);
 }
