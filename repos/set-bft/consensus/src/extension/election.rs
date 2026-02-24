@@ -263,7 +263,7 @@ mod test {
         },
         NodeCount,
     };
-    use aleph_bft_mock::Keychain;
+    use set_bft_mock::Keychain;
 
     #[test]
     fn refuses_to_elect_without_units() {

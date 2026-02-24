@@ -40,7 +40,7 @@ use crate::{
     Data, Hasher, Index, Keychain, MultiKeychain, Multisigned, NodeIndex, PartialMultisignature,
     Signable, Signature, UncheckedSigned,
 };
-use aleph_bft_rmc::Message as RmcMessage;
+use set_bft_rmc::Message as RmcMessage;
 use codec::{Decode, Encode};
 use derivative::Derivative;
 use parking_lot::RwLock;

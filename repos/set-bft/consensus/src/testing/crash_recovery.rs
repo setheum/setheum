@@ -40,7 +40,7 @@ use crate::{
     units::{UncheckedSignedUnit, Unit, UnitCoord},
     NodeCount, NodeIndex, SpawnHandle, TaskHandle,
 };
-use aleph_bft_mock::{Data, DataProvider, Hasher64, Router, Signature, Spawner};
+use set_bft_mock::{Data, DataProvider, Hasher64, Router, Signature, Spawner};
 use codec::Decode;
 use futures::{
     channel::{mpsc, oneshot},

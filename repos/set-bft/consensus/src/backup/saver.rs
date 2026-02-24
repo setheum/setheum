@@ -46,7 +46,7 @@ use codec::Encode;
 use futures::{AsyncWrite, AsyncWriteExt, FutureExt, StreamExt};
 use log::{debug, error};
 
-const LOG_TARGET: &str = "AlephBFT-backup-saver";
+const LOG_TARGET: &str = "SetBFT-backup-saver";
 
 /// Component responsible for saving units into backup.
 /// It waits for items to appear on its receivers, and writes them to backup.
@@ -119,7 +119,7 @@ mod tests {
         StreamExt,
     };
 
-    use aleph_bft_mock::{Data, Hasher64, Keychain, Saver};
+    use set_bft_mock::{Data, Hasher64, Keychain, Saver};
 
     use crate::{
         backup::BackupSaver,

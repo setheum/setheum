@@ -35,7 +35,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use aleph_bft_types::{
+use set_bft_types::{
     DataProvider as DataProviderT, FinalizationHandler as FinalizationHandlerT, NodeIndex,
 };
 use async_trait::async_trait;

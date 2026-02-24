@@ -16,7 +16,7 @@ function trim_version() {
 
 function check_versions() {
   if [ "$1" != "$2" ]; then
-    echo "aleph-bft Cargo's toml $3 version $1 different than README.md's $3 version $2!"
+    echo "set-bft Cargo's toml $3 version $1 different than README.md's $3 version $2!"
     exit 1
   fi
 }
@@ -25,7 +25,7 @@ cargo_toml_version=$(trim_version '^version =' "consensus/Cargo.toml")
 cargo_toml_major_version=$(get_major_version "${cargo_toml_version}")
 cargo_toml_minor_version=$(get_minor_version "${cargo_toml_version}")
 
-readme_version=$(trim_version '\s*aleph-bft =' "README.md")
+readme_version=$(trim_version '\s*set-bft =' "README.md")
 readme_major_version=$(get_major_version "${readme_version}")
 readme_minor_version=$(get_minor_version "${readme_version}")
 

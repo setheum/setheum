@@ -48,7 +48,7 @@ use crate::{
     },
     NodeCount, NodeIndex, NodeMap, NodeSubset, OrderedUnit, Round, Signed, UnitFinalizationHandler,
 };
-use aleph_bft_mock::{Data, Hash64, Hasher64, Keychain};
+use set_bft_mock::{Data, Hash64, Hasher64, Keychain};
 use log::debug;
 use parking_lot::Mutex;
 use rand::{distributions::Open01, prelude::*};

@@ -36,7 +36,7 @@
 // SOFTWARE.
 
 use crate::crypto::{PartialMultisignature, Signature};
-use aleph_bft_types::{
+use set_bft_types::{
     Index, Keychain as KeychainT, MultiKeychain as MultiKeychainT, NodeCount, NodeIndex,
 };
 use codec::{Decode, Encode};

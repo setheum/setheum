@@ -163,7 +163,7 @@ mod test {
         },
         NodeCount, NodeIndex,
     };
-    use aleph_bft_mock::{Data, Hasher64, Keychain};
+    use set_bft_mock::{Data, Hasher64, Keychain};
     use std::iter::zip;
 
     const NODE_ID: NodeIndex = NodeIndex(0);

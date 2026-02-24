@@ -47,8 +47,8 @@ use futures::{channel::oneshot, StreamExt};
 use log::{debug, error, info};
 use time::{macros::format_description, OffsetDateTime};
 
-use aleph_bft::{run_session, NodeIndex, Terminator};
-use aleph_bft_mock::{FinalizationHandler, Keychain, Loader, Saver, Spawner};
+use set_bft::{run_session, NodeIndex, Terminator};
+use set_bft_mock::{FinalizationHandler, Keychain, Loader, Saver, Spawner};
 use chain::{run_blockchain, Block, BlockNum, ChainConfig};
 use data::{Data, DataProvider, DataStore};
 use network::{Address, NetworkData, NetworkManager};
@@ -162,10 +162,10 @@ async fn main() {
         .await
     });
 
-    let member_terminator = terminator.add_offspring_connection("AlephBFT-member");
+    let member_terminator = terminator.add_offspring_connection("SetBFT-member");
     let member_handle = tokio::spawn(async move {
         let keychain = Keychain::new(args.n_members.into(), args.my_id.into());
-        let config = aleph_bft::default_config(
+        let config = set_bft::default_config(
             args.n_members.into(),
             args.my_id.into(),
             0,
@@ -175,7 +175,7 @@ async fn main() {
         .expect("Should always succeed with Duration::ZERO");
         let backup_loader = Loader::new(vec![]);
         let backup_saver = Saver::new();
-        let local_io = aleph_bft::LocalIO::new(
+        let local_io = set_bft::LocalIO::new(
             data_provider,
             finalization_handler,
             backup_saver,

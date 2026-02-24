@@ -4,14 +4,14 @@
 
 ### Overview
 
-This package is a part of the AlephBFT toolset. For more information, see the README
+This package is a part of the SetBFT toolset. For more information, see the README
 in the top-level directory.
 
 Utilities for node addressing and message signing.
 
-[crate-image]: https://img.shields.io/crates/v/aleph-bft-crypto.svg
-[crate-link]: https://crates.io/crates/aleph-bft-crypto
-[docs-image]: https://docs.rs/aleph-bft-crypto/badge.svg
-[docs-link]: https://docs.rs/aleph-bft-crypto
+[crate-image]: https://img.shields.io/crates/v/set-bft-crypto.svg
+[crate-link]: https://crates.io/crates/set-bft-crypto
+[docs-image]: https://docs.rs/set-bft-crypto/badge.svg
+[docs-link]: https://docs.rs/set-bft-crypto
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
-[license-link]: https://github.com/Cardinal-Cryptography/AlephBFT/blob/main/LICENSE
+[license-link]: https://github.com/Cardinal-Cryptography/SetBFT/blob/main/LICENSE

@@ -49,7 +49,7 @@ mod task;
 pub use responder::Responder;
 pub use task::{Manager as TaskManager, ManagerStatus as TaskManagerStatus};
 
-const LOG_TARGET: &str = "AlephBFT-dissemination";
+const LOG_TARGET: &str = "SetBFT-dissemination";
 
 /// Some form of message with the intended recipients.
 #[derive(Eq, PartialEq, Debug, Clone)]

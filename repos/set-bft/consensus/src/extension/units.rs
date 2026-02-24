@@ -123,7 +123,7 @@ mod test {
         units::{random_full_parent_reconstrusted_units_up_to, TestingDagUnit, Unit},
         NodeCount,
     };
-    use aleph_bft_mock::Keychain;
+    use set_bft_mock::Keychain;
 
     #[test]
     fn initially_empty() {

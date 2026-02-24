@@ -115,7 +115,7 @@ mod tests {
         units::{random_full_parent_units_up_to, Unit},
         NodeCount, NodeIndex,
     };
-    use aleph_bft_mock::Hasher64;
+    use set_bft_mock::Hasher64;
 
     #[test]
     fn initial_fails_without_parents() {

@@ -40,7 +40,7 @@ use crate::{
     units::{ControlHash, HashFor, Unit, UnitCoord},
     NodeIndex, NodeMap,
 };
-use aleph_bft_types::Round;
+use set_bft_types::Round;
 use std::collections::{hash_map::Entry, HashMap};
 
 /// A unit in the process of reconstructing its parents.

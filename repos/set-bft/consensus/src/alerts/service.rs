@@ -42,14 +42,14 @@ use crate::{
     },
     Data, Hasher, MultiKeychain, Multisigned, NodeIndex, Receiver, Recipient, Sender, Terminator,
 };
-use aleph_bft_rmc::{DoublingDelayScheduler, Message as RmcMessage};
+use set_bft_rmc::{DoublingDelayScheduler, Message as RmcMessage};
 use futures::{FutureExt, StreamExt};
 use log::{debug, error, trace, warn};
 use std::time::Duration;
 
-const LOG_TARGET: &str = "AlephBFT-alerter";
+const LOG_TARGET: &str = "SetBFT-alerter";
 type RmcService<H, MK, S, M> =
-    aleph_bft_rmc::Service<H, MK, DoublingDelayScheduler<RmcMessage<H, S, M>>>;
+    set_bft_rmc::Service<H, MK, DoublingDelayScheduler<RmcMessage<H, S, M>>>;
 
 pub struct Service<H: Hasher, D: Data, MK: MultiKeychain> {
     messages_for_network: Sender<(NetworkMessage<H, D, MK>, Recipient)>,
@@ -79,8 +79,8 @@ impl<H: Hasher, D: Data, MK: MultiKeychain> Service<H, D, MK> {
         } = io;
 
         let node_index = keychain.index();
-        let rmc_handler = aleph_bft_rmc::Handler::new(keychain);
-        let rmc_service = aleph_bft_rmc::Service::new(
+        let rmc_handler = set_bft_rmc::Handler::new(keychain);
+        let rmc_service = set_bft_rmc::Service::new(
             DoublingDelayScheduler::new(Duration::from_millis(500)),
             rmc_handler,
         );

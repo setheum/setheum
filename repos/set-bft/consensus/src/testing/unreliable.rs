@@ -42,7 +42,7 @@ use crate::{
     units::Unit,
     Index, NodeCount, NodeIndex, Round, Signed, SpawnHandle,
 };
-use aleph_bft_mock::{BadSigning, DataProvider, Keychain, NetworkHook, Router, Spawner};
+use set_bft_mock::{BadSigning, DataProvider, Keychain, NetworkHook, Router, Spawner};
 use futures::StreamExt;
 use parking_lot::Mutex;
 use std::sync::Arc;

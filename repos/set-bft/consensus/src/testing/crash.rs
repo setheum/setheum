@@ -39,7 +39,7 @@ use crate::{
     testing::{init_log, spawn_honest_member, HonestMember},
     NodeCount, SpawnHandle,
 };
-use aleph_bft_mock::{DataProvider, Router, Spawner, UnreliableHook};
+use set_bft_mock::{DataProvider, Router, Spawner, UnreliableHook};
 use futures::StreamExt;
 use serial_test::serial;
 

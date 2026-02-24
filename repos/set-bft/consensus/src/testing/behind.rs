@@ -44,7 +44,7 @@ use crate::{
     testing::{init_log, spawn_honest_member, HonestMember, NetworkData},
     NodeCount, NodeIndex, SpawnHandle,
 };
-use aleph_bft_mock::{DataProvider, NetworkHook, Router, Spawner};
+use set_bft_mock::{DataProvider, NetworkHook, Router, Spawner};
 use futures::StreamExt;
 use log::info;
 

@@ -160,7 +160,7 @@ pub struct DataProvider {
 }
 
 #[async_trait]
-impl aleph_bft::DataProvider for DataProvider {
+impl set_bft::DataProvider for DataProvider {
     type Output = Data;
 
     async fn get_data(&mut self) -> Option<Data> {

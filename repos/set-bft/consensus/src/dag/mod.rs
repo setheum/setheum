@@ -55,7 +55,7 @@ use reconstruction::{Reconstruction, ReconstructionResult};
 pub use validation::ValidatorStatus as DagStatus;
 use validation::{Error as ValidationError, Validator};
 
-const LOG_TARGET: &str = "AlephBFT-dag";
+const LOG_TARGET: &str = "SetBFT-dag";
 
 pub type DagUnit<H, D, MK> = ReconstructedUnit<SignedUnit<H, D, MK>>;
 
@@ -266,7 +266,7 @@ mod test {
         },
         NodeCount, NodeIndex, Signed,
     };
-    use aleph_bft_mock::Keychain;
+    use set_bft_mock::Keychain;
 
     #[test]
     fn accepts_initial_units() {

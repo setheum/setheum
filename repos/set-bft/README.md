@@ -7,30 +7,30 @@
 [![cargo-audit][cargo-audit-image]][cargo-audit-link]
 
 <p align="center">
-  <a href="https://alephzero.org" target="_blank">
-  <img src="https://alephzero.org/wp-content/uploads/A0_logotype_bft_dark.jpg" />
+  <a href="https://setzero.org" target="_blank">
+  <img src="https://setzero.org/wp-content/uploads/A0_logotype_bft_dark.jpg" />
   </a>
 </p>
 
 ### Overview
 
-AlephBFT is an asynchronous and Byzantine fault-tolerant consensus protocol aimed
+SetBFT is an asynchronous and Byzantine fault-tolerant consensus protocol aimed
 at ordering arbitrary messages (transactions). It has been designed to operate
 continuously under conditions where there is no bound on message-delivery delay
 and under the assumption that there is a significant probability of malicious
 behavior, making it an excellent fit for blockchain-related applications.
 For more information, check [the white paper][paper-link].
 
-This repository contains a Rust implementation of AlephBFT that offers a convenient
+This repository contains a Rust implementation of SetBFT that offers a convenient
 API enabling seamless application to various problems. The prime application of
 the repository is the consensus engine (sometimes called the "finality gadget")
-of the [Aleph Zero blockchain][aleph-node-link].
+of the [Set Zero blockchain][set-node-link].
 
 The code is split into several Rust packages, each having its own directory -
 see the `Cargo.toml` file, which defines the layout of the whole workspace.
-The main package, `aleph-bft`, is located in the `consensus` directory.
+The main package, `set-bft`, is located in the `consensus` directory.
 Additionally, every other package has a short README describing its role
-in the AlephBFT toolset.
+in the SetBFT toolset.
 
 ### Documentation
 
@@ -59,10 +59,10 @@ More details are available [in the book][reference-link-implementation-details].
 
 ### Using the crate
 
-- Import AlephBFT in your crate
+- Import SetBFT in your crate
   ```toml
   [dependencies]
-  aleph-bft = "^0.45"
+  set-bft = "^0.45"
   ```
 - The main entry point is the `run_session` function, which returns a Future that runs the
   consensus algorithm.
@@ -73,7 +73,7 @@ More details are available [in the book][reference-link-implementation-details].
 
 ### Examples
 
-We provide two basic examples of running AlephBFT, both of which are not cryptographically secure, and assume honest, but possibly malfunctioning, participants.
+We provide two basic examples of running SetBFT, both of which are not cryptographically secure, and assume honest, but possibly malfunctioning, participants.
 
 The first one, `ordering`, implements a simple node that produces data items, and then waits for them to be finalized. It can also perform a simulated crash after creating a specified number of items.
 
@@ -98,10 +98,10 @@ Note that if the number of properly working nodes is less or equal than two time
 The script will try to start nodes at predefined IP addresses, `127.0.0.1:100XX`, where `XX` denotes the node id. If the port is unavailable, the node will log an error and keep trying to acquire it, waiting 10 seconds between consecutive attempts.
 
 Running this script will result in generating log files `node0.log, node1.log, ...` corresponding to subsequent nodes.
-A directory called `aleph-bft-examples-ordering-backup` will be created to store data required by the crash recovery mechanism, and the logs from subsequent runs will be appended to existing log files.
+A directory called `set-bft-examples-ordering-backup` will be created to store data required by the crash recovery mechanism, and the logs from subsequent runs will be appended to existing log files.
 The cache and logs will be automatically cleared when launching the script again.
 
-The second example, `blockchain`, is meant for benchmarking AlephBFT in the blockchain setting.
+The second example, `blockchain`, is meant for benchmarking SetBFT in the blockchain setting.
 It implements a simple round-robin blockchain assuming honest participation.
 The easiest way to run it is to use the provided script as follows (assuming we start in the root directory):
 ```
@@ -149,10 +149,10 @@ tools with `install_cov_tools.sh`.
 ### Future work
 
 - Asynchronous liveness is an important theoretical property and there is a lot of technical
-  sophistication that comes in the design of AlephBFT in order to achieve it, however on the practical
+  sophistication that comes in the design of SetBFT in order to achieve it, however on the practical
   side there is still little evidence that performing such attacks against liveness in real-world
   scenarios is possible. Still, no matter how unlikely such attacks might be, we take them very
-  seriously and plan to add randomness to AlephBFT in one of the future releases. We decided to go
+  seriously and plan to add randomness to SetBFT in one of the future releases. We decided to go
   for a version without randomness first, as it gives an incredibly simple and at the same time
   secure and robust BFT consensus protocol. Adding randomness introduces some complexity into the
   protocol, so it makes sense to add it on top of a well-tested, working product. The API of the
@@ -170,28 +170,28 @@ Unless you explicitly state otherwise, any contribution that you submit to this 
 
 ### Funding
 
-The implementation in this repository is funded by [Aleph Zero Foundation][webpage-link].
+The implementation in this repository is funded by [Set Zero Foundation][webpage-link].
 
 [//]: ### "badges"
-[dataio-link]: https://cardinal-cryptography.github.io/AlephBFT/aleph_bft_api.html#311-dataio
-[network-link]: https://cardinal-cryptography.github.io/AlephBFT/aleph_bft_api.html#312-network
-[keychain-link]: https://cardinal-cryptography.github.io/AlephBFT/aleph_bft_api.html#313-keychain
-[crate-image]: https://img.shields.io/crates/v/aleph-bft.svg
-[crate-link]: https://crates.io/crates/aleph-bft
-[docs-image]: https://docs.rs/aleph-bft/badge.svg
-[docs-link]: https://docs.rs/aleph-bft
+[dataio-link]: https://cardinal-cryptography.github.io/SetBFT/set_bft_api.html#311-dataio
+[network-link]: https://cardinal-cryptography.github.io/SetBFT/set_bft_api.html#312-network
+[keychain-link]: https://cardinal-cryptography.github.io/SetBFT/set_bft_api.html#313-keychain
+[crate-image]: https://img.shields.io/crates/v/set-bft.svg
+[crate-link]: https://crates.io/crates/set-bft
+[docs-image]: https://docs.rs/set-bft/badge.svg
+[docs-link]: https://docs.rs/set-bft
 [build-image]: https://github.com/setheum/setheum/actions/workflows/ci.yml/badge.svg
 [build-link]: https://github.com/setheum/setheum/actions/workflows/ci.yml
 [codeql-image]: https://github.com/setheum/setheum/actions/workflows/github-code-scanning/codeql/badge.svg?style=flat-square
 [codeql-link]: https://github.com/setheum/setheum/actions/workflows/github-code-scanning/codeql
 [rustc-image]: https://img.shields.io/badge/rustc-stable-blue.svg
-[cargo-audit-image]: https://github.com/Cardinal-Cryptography/AlephBFT/actions/workflows/cargo-audit.yml/badge.svg
-[cargo-audit-link]: https://github.com/Cardinal-Cryptography/AlephBFT/actions/workflows/cargo-audit.yml
+[cargo-audit-image]: https://github.com/Cardinal-Cryptography/SetBFT/actions/workflows/cargo-audit.yml/badge.svg
+[cargo-audit-link]: https://github.com/Cardinal-Cryptography/SetBFT/actions/workflows/cargo-audit.yml
 [//]: ### "general links"
-[reference-link]: https://Cardinal-Cryptography.github.io/AlephBFT/index.html
-[reference-link-implementation-details]: https://cardinal-cryptography.github.io/AlephBFT/differences.html
-[reference-link-api]: https://cardinal-cryptography.github.io/AlephBFT/aleph_bft_api.html
+[reference-link]: https://Cardinal-Cryptography.github.io/SetBFT/index.html
+[reference-link-implementation-details]: https://cardinal-cryptography.github.io/SetBFT/differences.html
+[reference-link-api]: https://cardinal-cryptography.github.io/SetBFT/set_bft_api.html
 [paper-link]: https://arxiv.org/abs/1908.05156
 [old-paper-link]: https://arxiv.org/abs/1810.05256
-[aleph-node-link]: https://github.com/Cardinal-Cryptography/aleph-node
-[webpage-link]: https://alephzero.org
+[set-node-link]: https://github.com/Cardinal-Cryptography/set-node
+[webpage-link]: https://setzero.org

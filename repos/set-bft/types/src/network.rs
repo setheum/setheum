@@ -56,16 +56,16 @@ pub enum Recipient {
 /// that at the same time spammers are cut off but honest nodes are able function correctly within
 /// these bounds.
 ///
-/// Note on Network Reliability: it is not assumed that each message that AlephBFT orders to send
-/// reaches its intended recipient, there are some built-in reliability mechanisms within AlephBFT
+/// Note on Network Reliability: it is not assumed that each message that SetBFT orders to send
+/// reaches its intended recipient, there are some built-in reliability mechanisms within SetBFT
 /// that will automatically detect certain failures and resend messages as needed. Clearly, the less
-/// reliable the network is, the worse the performance of AlephBFT will be (generally slower to
+/// reliable the network is, the worse the performance of SetBFT will be (generally slower to
 /// produce output). Also, not surprisingly if the percentage of dropped messages is too high
-/// AlephBFT might stop making progress, but from what we observe in tests, this happens only when
+/// SetBFT might stop making progress, but from what we observe in tests, this happens only when
 /// the reliability is extremely bad, i.e., drops below 50% (which means there is some significant
 /// issue with the network).
 ///
-/// We refer to the documentation https://cardinal-cryptography.github.io/AlephBFT/aleph_bft_api.html
+/// We refer to the documentation https://cardinal-cryptography.github.io/SetBFT/set_bft_api.html
 /// Section 3.1.2 for a discussion of the required guarantees of this trait's implementation.
 #[async_trait::async_trait]
 pub trait Network<D>: Send + 'static {

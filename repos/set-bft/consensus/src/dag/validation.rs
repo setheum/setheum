@@ -229,7 +229,7 @@ mod test {
         },
         NodeCount, NodeIndex, Signed,
     };
-    use aleph_bft_mock::Keychain;
+    use set_bft_mock::Keychain;
 
     #[test]
     fn validates_trivially_correct() {

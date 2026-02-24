@@ -35,7 +35,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use aleph_bft_types::{SpawnHandle, TaskHandle};
+use set_bft_types::{SpawnHandle, TaskHandle};
 use codec::{Decode, Encode};
 use futures::{channel::oneshot, Future};
 

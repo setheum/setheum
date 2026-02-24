@@ -41,7 +41,7 @@ use crate::{
     units::{SignedUnit as GenericSignedUnit, Unit as GenericUnit},
     NodeCount, Receiver, Round, Sender, Terminator,
 };
-use aleph_bft_mock::{Data, DataProvider, Hasher64, Keychain};
+use set_bft_mock::{Data, DataProvider, Hasher64, Keychain};
 use futures::{
     channel::{mpsc, oneshot},
     FutureExt, StreamExt,
@@ -128,7 +128,7 @@ fn setup_test(n_members: NodeCount) -> TestSetup {
                 io,
                 keychain,
                 starting_round,
-                Terminator::create_root(exit, "AlephBFT-creator"),
+                Terminator::create_root(exit, "SetBFT-creator"),
             )
             .await
         });

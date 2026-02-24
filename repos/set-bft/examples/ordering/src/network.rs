@@ -36,8 +36,8 @@
 // SOFTWARE.
 
 use crate::Data;
-use aleph_bft::{NodeIndex, Recipient};
-use aleph_bft_mock::{Hasher64, PartialMultisignature, Signature};
+use set_bft::{NodeIndex, Recipient};
+use set_bft_mock::{Hasher64, PartialMultisignature, Signature};
 use codec::{Decode, Encode};
 use log::error;
 use std::net::SocketAddr;
@@ -49,7 +49,7 @@ use tokio::{
 
 const MAX_UDP_DATAGRAM_BYTES: usize = 65536;
 
-pub type NetworkData = aleph_bft::NetworkData<Hasher64, Data, Signature, PartialMultisignature>;
+pub type NetworkData = set_bft::NetworkData<Hasher64, Data, Signature, PartialMultisignature>;
 
 #[derive(Debug)]
 pub struct Network {
@@ -116,7 +116,7 @@ impl Network {
 }
 
 #[async_trait::async_trait]
-impl aleph_bft::Network<NetworkData> for Network {
+impl set_bft::Network<NetworkData> for Network {
     fn send(&self, data: NetworkData, recipient: Recipient) {
         match recipient {
             Recipient::Everyone => {

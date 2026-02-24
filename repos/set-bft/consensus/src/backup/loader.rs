@@ -179,7 +179,7 @@ impl<H: Hasher, D: Data, S: Signature, R: AsyncRead> BackupLoader<H, D, S, R> {
 mod tests {
     use codec::Encode;
 
-    use aleph_bft_mock::{Data, Hasher64, Keychain, Loader, Signature};
+    use set_bft_mock::{Data, Hasher64, Keychain, Loader, Signature};
 
     use crate::{
         backup::{loader::LoaderError, BackupLoader as GenericLoader},

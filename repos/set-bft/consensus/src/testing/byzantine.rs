@@ -43,7 +43,7 @@ use crate::{
     Hasher, Network as NetworkT, NetworkData as NetworkDataT, NodeCount, NodeIndex, NodeMap,
     Recipient, Round, SessionId, Signed, SpawnHandle, TaskHandle,
 };
-use aleph_bft_mock::{
+use set_bft_mock::{
     Data, DataProvider, Hash64, Hasher64, Keychain, NetworkHook, Router, Spawner,
 };
 use futures::{channel::oneshot, StreamExt};

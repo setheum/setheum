@@ -35,7 +35,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use aleph_bft_types::{Index, NodeIndex, SignatureSet};
+use set_bft_types::{Index, NodeIndex, SignatureSet};
 use codec::{Decode, Encode};
 use std::hash::Hash;
 

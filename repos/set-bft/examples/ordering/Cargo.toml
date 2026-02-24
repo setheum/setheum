@@ -1,5 +1,5 @@
 [package]
-name = "aleph-bft-examples-ordering"
+name = "set-bft-examples-ordering"
 version = "0.1.0"
 edition = "2021"
 authors = ["Cardinal Cryptography"]
@@ -7,9 +7,9 @@ license = "Apache-2.0 OR MIT"
 publish = false
 
 [dependencies]
-aleph-bft = { path = "../../consensus", version = "*" }
-aleph-bft-mock = { path = "../../mock", version = "*" }
-aleph-bft-types = { path = "../../types", version = "*" }
+set-bft = { path = "../../consensus", version = "*" }
+set-bft-mock = { path = "../../mock", version = "*" }
+set-bft-types = { path = "../../types", version = "*" }
 async-trait = "0.1"
 clap = { version = "4", features = ["derive"] }
 codec = { package = "parity-scale-codec", version = "3.0", default-features = false, features = ["derive"] }

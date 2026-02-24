@@ -41,7 +41,7 @@ mod dataio;
 mod network;
 mod tasks;
 
-pub use aleph_bft_crypto::{
+pub use set_bft_crypto::{
     IncompleteMultisignatureError, Index, Indexed, Keychain, MultiKeychain, Multisigned, NodeCount,
     NodeIndex, NodeMap, NodeSubset, PartialMultisignature, PartiallyMultisigned, Signable,
     Signature, SignatureError, SignatureSet, Signed, UncheckedSigned,

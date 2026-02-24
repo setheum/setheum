@@ -437,7 +437,7 @@ mod tests {
         },
         NodeCount, NodeIndex, Recipient,
     };
-    use aleph_bft_mock::{Hasher64, Keychain};
+    use set_bft_mock::{Hasher64, Keychain};
     use std::thread::sleep;
 
     #[test]

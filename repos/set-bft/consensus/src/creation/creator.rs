@@ -110,7 +110,7 @@ mod tests {
         },
         NodeCount, NodeIndex,
     };
-    use aleph_bft_mock::Hasher64;
+    use set_bft_mock::Hasher64;
 
     type Creator = GenericCreator<Hasher64>;
 

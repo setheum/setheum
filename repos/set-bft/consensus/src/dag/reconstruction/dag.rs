@@ -157,8 +157,8 @@ mod test {
         units::{random_full_parent_units_up_to, TestingFullUnit, Unit},
         Hasher, NodeCount, NodeIndex, NodeMap,
     };
-    use aleph_bft_mock::Hasher64;
-    use aleph_bft_types::Round;
+    use set_bft_mock::Hasher64;
+    use set_bft_types::Round;
     use std::collections::HashSet;
 
     fn full_parents_to_map(

@@ -46,7 +46,7 @@ use crate::{
     },
     NodeCount, NodeIndex, NodeMap, Round, SessionId, Signed,
 };
-use aleph_bft_mock::{Data, Hash64, Hasher64, Keychain, Signature};
+use set_bft_mock::{Data, Hash64, Hasher64, Keychain, Signature};
 use rand::prelude::IteratorRandom;
 
 type ControlHash = GenericControlHash<Hasher64>;

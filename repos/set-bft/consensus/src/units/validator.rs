@@ -158,7 +158,7 @@ mod tests {
         },
         NodeCount, NodeIndex,
     };
-    use aleph_bft_mock::Keychain;
+    use set_bft_mock::Keychain;
     use codec::{Decode, Encode};
 
     type Validator = GenericValidator<Keychain>;

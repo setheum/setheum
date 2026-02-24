@@ -36,7 +36,7 @@
 // SOFTWARE.
 
 use crate::{network::NetworkData, DataStore};
-use aleph_bft::{NodeIndex, Terminator};
+use set_bft::{NodeIndex, Terminator};
 use codec::{Decode, Encode};
 use futures::{
     channel::mpsc::{UnboundedReceiver, UnboundedSender},

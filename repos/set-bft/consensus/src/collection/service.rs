@@ -362,7 +362,7 @@ mod tests {
         },
         Index, NodeCount, NodeIndex, SessionId, Signed, UncheckedSigned,
     };
-    use aleph_bft_mock::{Data, Hasher64, Keychain, Signature};
+    use set_bft_mock::{Data, Hasher64, Keychain, Signature};
     use std::iter::{once, repeat};
 
     type Collection<'a> = GenericCollection<'a, Keychain>;

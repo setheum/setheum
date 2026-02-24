@@ -35,7 +35,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-//! Implements the Aleph BFT Consensus protocol as a "finality gadget". The [run_session] function
+//! Implements the Set BFT Consensus protocol as a "finality gadget". The [run_session] function
 //! requires access to a network layer, a cryptographic primitive, and a data provider that
 //! gives appropriate access to the set of available data that we need to make consensus on.
 
@@ -57,7 +57,7 @@ mod task_queue;
 #[cfg(test)]
 mod testing;
 
-pub use aleph_bft_types::{
+pub use set_bft_types::{
     Data, DataProvider, FinalizationHandler, Hasher, IncompleteMultisignatureError, Index, Indexed,
     Keychain, MultiKeychain, Multisigned, Network, NodeCount, NodeIndex, NodeMap, NodeSubset,
     OrderedUnit, PartialMultisignature, PartiallyMultisigned, Recipient, Round, SessionId,

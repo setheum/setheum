@@ -112,7 +112,7 @@ mod test {
         extension::extender::Extender, units::random_full_parent_reconstrusted_units_up_to,
         NodeCount, Round,
     };
-    use aleph_bft_mock::Keychain;
+    use set_bft_mock::Keychain;
 
     #[test]
     fn easy_elections() {

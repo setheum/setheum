@@ -53,7 +53,7 @@ mod service;
 
 pub use service::{Collection, IO};
 
-const LOG_TARGET: &str = "AlephBFT-collection";
+const LOG_TARGET: &str = "SetBFT-collection";
 
 /// Salt uniquely identifying an initial unit collection instance.
 pub type Salt = u64;

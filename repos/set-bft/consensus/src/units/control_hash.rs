@@ -205,8 +205,8 @@ impl<H: Hasher> ControlHash<H> {
 #[cfg(test)]
 pub mod tests {
     use crate::units::{control_hash::Error, ControlHash, NodeCount, NodeIndex, UnitCoord};
-    use aleph_bft_mock::Hasher64;
-    use aleph_bft_types::{NodeMap, Round};
+    use set_bft_mock::Hasher64;
+    use set_bft_types::{NodeMap, Round};
     use codec::{Decode, Encode};
 
     #[test]

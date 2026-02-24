@@ -92,13 +92,13 @@ impl<
         match network_data {
             Units(unit_message) => {
                 if let Err(e) = self.units_received.unbounded_send(unit_message) {
-                    warn!(target: "AlephBFT-network-hub", "Error when sending units to consensus {:?}", e);
+                    warn!(target: "SetBFT-network-hub", "Error when sending units to consensus {:?}", e);
                 }
             }
 
             Alert(alert_message) => {
                 if let Err(e) = self.alerts_received.unbounded_send(alert_message) {
-                    warn!(target: "AlephBFT-network-hub", "Error when sending alerts to consensus {:?}", e);
+                    warn!(target: "SetBFT-network-hub", "Error when sending alerts to consensus {:?}", e);
                 }
             }
         }
@@ -111,21 +111,21 @@ impl<
                 unit_message = self.units_to_send.next() => match unit_message {
                     Some((unit_message, recipient)) => self.send(NetworkData(Units(unit_message)), recipient),
                     None => {
-                        error!(target: "AlephBFT-network-hub", "Outgoing units stream closed.");
+                        error!(target: "SetBFT-network-hub", "Outgoing units stream closed.");
                         break;
                     }
                 },
                 alert_message = self.alerts_to_send.next() => match alert_message {
                     Some((alert_message, recipient)) => self.send(NetworkData(Alert(alert_message)), recipient),
                     None => {
-                        error!(target: "AlephBFT-network-hub", "Outgoing alerts stream closed.");
+                        error!(target: "SetBFT-network-hub", "Outgoing alerts stream closed.");
                         break;
                     }
                 },
                 incoming_message = self.network.next_event().fuse() => match incoming_message {
                     Some(incoming_message) => self.handle_incoming(incoming_message),
                     None => {
-                        error!(target: "AlephBFT-network-hub", "Network stopped working.");
+                        error!(target: "SetBFT-network-hub", "Network stopped working.");
                         break;
                     }
                 },
@@ -136,6 +136,6 @@ impl<
             }
         }
 
-        debug!(target: "AlephBFT-network-hub", "Network ended.");
+        debug!(target: "SetBFT-network-hub", "Network ended.");
     }
 }
