@@ -1,4 +1,5 @@
 [package]
+license = "Apache-2.0 OR MIT"
 name = "module-asset-registry"
 version = "0.9.81-dev"
 authors.workspace = true
@@ -19,6 +20,7 @@ primitives = { workspace = true }
 xcm = { workspace = true }
 
 module-support = { workspace = true }
+module-traits = { workspace = true }
 
 [dev-dependencies]
 serde_json = { workspace = true, features = ["std"] }
@@ -44,6 +46,7 @@ std = [
 	"primitives/std",
 	"xcm/std",
 	"module-support/std",
+	"module-traits/std",
 ]
 try-runtime = [
 	"frame-support/try-runtime",

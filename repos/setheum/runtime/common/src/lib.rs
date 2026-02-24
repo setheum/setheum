@@ -57,7 +57,7 @@ pub use primitives::{
 
 mod gas_to_weight_ratio;
 
-pub type TimeStampedPrice = orml_oracle::TimestampedValue<Price, primitives::Moment>;
+pub type TimeStampedPrice = module_oracle::TimestampedValue<Price, primitives::Moment>;
 
 // Priority of unsigned transactions
 parameter_types! {

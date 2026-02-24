@@ -5,7 +5,7 @@ authors.workspace = true
 edition.workspace = true
 homepage.workspace = true
 keywords.workspace = true
-license.workspace = true
+license = "Apache-2.0 OR MIT"
 repository.workspace = true
 
 [dependencies]

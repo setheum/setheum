@@ -32,7 +32,7 @@ Welcome to the Setheum ecosystem. This repository contains all core components o
 
 [![Repobeats](https://repobeats.axiom.co/api/embed/2ffa1b05a9f2b984e18a7b86355b4d444e5ba2a6.svg)](https://github.com/setheum/setheum/pulse)
 
-## Projects
+## Repos
 
 - **[cargo-sheyth](./repos/cargo-sheyth)**: The CLI tool for Setheum smart contract development.
 - **[set-bft](./repos/set-bft)**: The Set-BFT Consensus Engine.

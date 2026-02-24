@@ -1,22 +1,39 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
-
 // This file is part of Setheum.
 
 // Copyright (C) 2019-Present Setheum Developers.
-// SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
+// SPDX-License-Identifier: Apache-2.0 OR MIT
 
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// 	http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-
-// You should have received a copy of the GNU General Public License
-// along with this program. If not, see <https://www.gnu.org/licenses/>.
+// Alternatively, this file is available under the MIT License:
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 #![cfg_attr(not(feature = "std"), no_std)]
 #![allow(clippy::unused_unit)]
@@ -29,6 +46,7 @@ use frame_support::{
 };
 use frame_system::pallet_prelude::*;
 use module_support::{AssetIdMapping, BuyWeightRate, EVMBridge, Erc20InfoMapping, InvokeContext, Ratio};
+use module_traits::asset_registry::AssetProcessor;
 use primitives::{
 	currency::{
 		AssetIds, AssetMetadata, CurrencyIdType, DexShare, DexShareType, Erc20Id, ForeignAssetId, TokenInfo,
@@ -311,6 +329,8 @@ impl<T: Config> Pallet<T> {
 		metadata: &AssetMetadata<BalanceOf<T>>,
 	) -> Result<ForeignAssetId, DispatchError> {
 		let foreign_asset_id = Self::get_next_foreign_asset_id()?;
+		let (_, metadata) = T::AssetProcessor::pre_register(Some(AssetIds::ForeignAssetId(foreign_asset_id)), metadata.clone())?;
+
 		LocationToCurrencyIds::<T>::try_mutate(location, |maybe_currency_ids| -> DispatchResult {
 			ensure!(maybe_currency_ids.is_none(), Error::<T>::MultiLocationExisted);
 			*maybe_currency_ids = Some(CurrencyId::ForeignAsset(foreign_asset_id));
@@ -330,6 +350,8 @@ impl<T: Config> Pallet<T> {
 				)
 			})
 		})?;
+
+		T::AssetProcessor::post_register(AssetIds::ForeignAssetId(foreign_asset_id), metadata)?;
 
 		Ok(foreign_asset_id)
 	}
@@ -380,7 +402,9 @@ impl<T: Config> Pallet<T> {
 			decimals: T::EVMBridge::decimals(invoke_context)?,
 			minimal_balance,
 		};
-
+		
+		let (_, metadata) = T::AssetProcessor::pre_register(Some(AssetIds::Erc20(contract)), metadata)?;
+		
 		let erc20_id = Into::<Erc20Id>::into(DexShare::Erc20(contract));
 
 		AssetMetadatas::<T>::try_mutate(AssetIds::Erc20(contract), |maybe_asset_metadatas| -> DispatchResult {
@@ -397,6 +421,8 @@ impl<T: Config> Pallet<T> {
 			Ok(())
 		})?;
 
+		T::AssetProcessor::post_register(AssetIds::Erc20(contract), metadata.clone())?;
+
 		Ok(metadata)
 	}
 
@@ -410,6 +436,8 @@ impl<T: Config> Pallet<T> {
 	}
 
 	fn do_register_native_asset(asset: CurrencyId, metadata: &AssetMetadata<BalanceOf<T>>) -> DispatchResult {
+		let (_, metadata) = T::AssetProcessor::pre_register(Some(AssetIds::NativeAssetId(asset)), metadata.clone())?;
+
 		AssetMetadatas::<T>::try_mutate(
 			AssetIds::NativeAssetId(asset),
 			|maybe_asset_metadatas| -> DispatchResult {
@@ -419,6 +447,8 @@ impl<T: Config> Pallet<T> {
 				Ok(())
 			},
 		)?;
+
+		T::AssetProcessor::post_register(AssetIds::NativeAssetId(asset), metadata)?;
 
 		Ok(())
 	}

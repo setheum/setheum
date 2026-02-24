@@ -1,22 +1,39 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
-
 // This file is part of Setheum.
 
 // Copyright (C) 2019-Present Setheum Developers.
-// SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
+// SPDX-License-Identifier: Apache-2.0 OR MIT
 
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// 	http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-
-// You should have received a copy of the GNU General Public License
-// along with this program. If not, see <https://www.gnu.org/licenses/>.
+// Alternatively, this file is available under the MIT License:
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 #![cfg(test)]
 
@@ -24,7 +41,7 @@ use super::*;
 use frame_support::traits::Currency;
 use frame_support::{assert_noop, assert_ok};
 use mock::{RuntimeEvent, *};
-use orml_nft::TokenInfo;
+use module_nft::TokenInfo;
 use primitives::Balance;
 use sp_runtime::{traits::BlakeTwo256, ArithmeticError, TokenError};
 use sp_std::collections::btree_map::BTreeMap;
@@ -74,7 +91,7 @@ fn create_class_should_work() {
 		);
 
 		assert_eq!(
-			orml_nft::Pallet::<Runtime>::classes(0).unwrap().data,
+			module_nft::Pallet::<Runtime>::classes(0).unwrap().data,
 			ClassData {
 				deposit: cls_deposit,
 				properties: Default::default(),
@@ -160,7 +177,7 @@ fn mint_should_work() {
 			2 * (CREATE_TOKEN_DEPOSIT + DATA_DEPOSIT_PER_BYTE * (metadata_2.len() as u128 + TEST_ATTR_LEN))
 		);
 		assert_eq!(
-			orml_nft::Pallet::<Runtime>::tokens(0, 0).unwrap(),
+			NFTModule::tokens(0, 0).unwrap(),
 			TokenInfo {
 				metadata: metadata_2.clone().try_into().unwrap(),
 				owner: BOB,
@@ -171,7 +188,7 @@ fn mint_should_work() {
 			}
 		);
 		assert_eq!(
-			orml_nft::Pallet::<Runtime>::tokens(0, 1).unwrap(),
+			module_nft::Pallet::<Runtime>::tokens(0, 1).unwrap(),
 			TokenInfo {
 				metadata: metadata_2.clone().try_into().unwrap(),
 				owner: BOB,
@@ -182,7 +199,7 @@ fn mint_should_work() {
 			}
 		);
 		assert_eq!(
-			orml_nft::TokensByOwner::<Runtime>::iter_prefix((BOB,)).collect::<Vec<_>>(),
+			module_nft::TokensByOwner::<Runtime>::iter_prefix((BOB,)).collect::<Vec<_>>(),
 			vec![((0, 1), ()), ((0, 0), ())]
 		);
 	});
@@ -234,8 +251,8 @@ fn mint_should_fail() {
 			Error::<Runtime>::NoPermission
 		);
 
-		orml_nft::NextTokenId::<Runtime>::mutate(CLASS_ID, |id| {
-			*id = <Runtime as orml_nft::Config>::TokenId::max_value()
+		module_nft::NextTokenId::<Runtime>::mutate(CLASS_ID, |id| {
+			*id = <Runtime as module_nft::Config>::TokenId::max_value()
 		});
 		assert_ok!(Balances::deposit_into_existing(
 			&class_id_account(),
@@ -250,7 +267,7 @@ fn mint_should_fail() {
 				Default::default(),
 				2
 			),
-			orml_nft::Error::<Runtime>::NoAvailableTokenId
+			module_nft::Error::<Runtime>::NoAvailableTokenId
 		);
 	});
 }
@@ -379,7 +396,7 @@ fn transfer_should_fail() {
 		);
 		assert_noop!(
 			NFTModule::transfer(RuntimeOrigin::signed(ALICE), BOB, (CLASS_ID, TOKEN_ID)),
-			orml_nft::Error::<Runtime>::NoPermission
+			module_nft::Error::<Runtime>::NoPermission
 		);
 	});
 
@@ -477,7 +494,7 @@ fn burn_should_fail() {
 			Error::<Runtime>::NoPermission
 		);
 
-		orml_nft::Classes::<Runtime>::mutate(CLASS_ID, |class_info| {
+		module_nft::Classes::<Runtime>::mutate(CLASS_ID, |class_info| {
 			class_info.as_mut().unwrap().total_issuance = 0;
 		});
 		assert_noop!(

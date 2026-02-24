@@ -26,12 +26,12 @@ pub mod aleph;
 pub mod bonding;
 pub mod currency;
 pub mod edfis_launchpad;
-pub mod evm;
+// pub mod evm;
 pub mod nft;
 pub mod signature;
 pub mod task;
 pub mod testing;
-pub mod unchecked_extrinsic;
+// pub mod unchecked_extrinsic;
 
 pub use testing::*;
 
@@ -41,13 +41,13 @@ use serde::{Deserialize, Serialize};
 use sp_core::U256;
 use sp_runtime::{
 	generic,
-	traits::{BlakeTwo256, IdentifyAccount, Verify},
+	traits::{BlakeTwo256, IdentifyAccount, Verify, Header as HeaderT},
 	FixedU128, RuntimeDebug,
 };
 use sp_std::prelude::*;
 
 pub use currency::{CurrencyId, DexShare, TokenSymbol};
-pub use evm::{convert_decimals_from_evm, convert_decimals_to_evm};
+// pub use evm::{convert_decimals_from_evm, convert_decimals_to_evm};
 
 #[cfg(test)]
 mod tests;
@@ -90,6 +90,8 @@ pub type EraIndex = u32;
 /// Balance of an account.
 pub type Balance = u128;
 
+pub const TOKEN: Balance = 1_000_000_000_000_000_000;
+
 /// Signed version of Balance
 pub type Amount = i128;
 
@@ -121,7 +123,7 @@ pub type BlockHash = <Header as HeaderT>::Hash;
 pub type SessionCount = u32;
 
 /// Version
-pub type Version = u32;\
+pub type Version = u32;
 
 /// Opaque, encoded, unchecked extrinsic.
 pub use sp_runtime::OpaqueExtrinsic as UncheckedExtrinsic;

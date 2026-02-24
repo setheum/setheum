@@ -19,14 +19,16 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 #![allow(clippy::from_over_into)]
-
-use crate::{evm::EvmAddress, *};
-use bstringify::bstringify;
+use crate::*;
+// use bstringify::bstringify;
 use num_enum::{IntoPrimitive, TryFromPrimitive};
 use parity_scale_codec::{Decode, Encode, MaxEncodedLen};
 use scale_info::TypeInfo;
 use sp_runtime::RuntimeDebug;
 use sp_std::prelude::*;
+use sp_core::H160;
+
+pub type EvmAddress = H160;
 
 use serde::{Deserialize, Serialize};
 
@@ -59,6 +61,7 @@ macro_rules! create_currency_id {
 			}
 		}
 
+/*
 		impl TryFrom<Vec<u8>> for CurrencyId {
 			type Error = ();
 			fn try_from(v: Vec<u8>) -> Result<CurrencyId, ()> {
@@ -68,6 +71,7 @@ macro_rules! create_currency_id {
 				}
 			}
 		}
+*/
 
 		impl TokenInfo for CurrencyId {
 			fn currency_id(&self) -> Option<u8> {
@@ -388,6 +392,7 @@ impl CurrencyId {
 			CurrencyId::Token(symbol) => DexShare::Token(symbol),
 			CurrencyId::Erc20(address) => DexShare::Erc20(address),
 			CurrencyId::ForeignAsset(foreign_asset_id) => DexShare::ForeignAsset(foreign_asset_id),
+			CurrencyId::FiatCurrency(_) => return None,
 // Unsupported
 			CurrencyId::DexShare(..) => return None,
 		};
@@ -395,6 +400,7 @@ impl CurrencyId {
 			CurrencyId::Token(symbol) => DexShare::Token(symbol),
 			CurrencyId::Erc20(address) => DexShare::Erc20(address),
 			CurrencyId::ForeignAsset(foreign_asset_id) => DexShare::ForeignAsset(foreign_asset_id),
+			CurrencyId::FiatCurrency(_) => return None,
 // Unsupported
 			CurrencyId::DexShare(..) => return None,
 		};
@@ -450,9 +456,9 @@ impl Into<CurrencyId> for DexShare {
 #[repr(u8)]
 pub enum CurrencyIdType {
 	Token = 1, // 0 is prefix of precompile and predeploy
-	DexShare,
-	ForeignAsset,
-	FiatCurrency,
+	DexShare = 2,
+	ForeignAsset = 3,
+	FiatCurrency = 4,
 }
 
 #[derive(
@@ -480,7 +486,7 @@ pub enum AssetIds {
 	Erc20(EvmAddress),
 	ForeignAssetId(ForeignAssetId),
 	NativeAssetId(CurrencyId),
-	FiatCurrencyId,(FiatCurrencyId),
+	FiatCurrencyId(FiatCurrencyId),
 }
 
 #[derive(Clone, Eq, PartialEq, RuntimeDebug, Encode, Decode, TypeInfo)]
@@ -489,4 +495,18 @@ pub struct AssetMetadata<Balance> {
 	pub symbol: Vec<u8>,
 	pub decimals: u8,
 	pub minimal_balance: Balance,
+}
+
+impl TryFrom<CurrencyId> for EvmAddress {
+	type Error = ();
+
+	fn try_from(val: CurrencyId) -> Result<Self, Self::Error> {
+		match val {
+			CurrencyId::Erc20(address) => Ok(address),
+			CurrencyId::Token(_) => Err(()),
+			CurrencyId::ForeignAsset(_) => Err(()),
+			CurrencyId::DexShare(..) => Err(()),
+			CurrencyId::FiatCurrency(_) => Err(()),
+		}
+	}
 }

@@ -32,7 +32,7 @@ use frame_system::{EnsureRoot, EnsureSignedBy};
 use module_support::{
 	mocks::MockAddressMapping, AddressMapping as AddressMappingT, SerpTreasury,
 };
-use orml_traits::parameter_type_with_key;
+use module_traits::parameter_type_with_key;
 pub use primitives::{
 	evm::EvmAddress, Amount, BlockNumber, CurrencyId, DexShare, Header, Nonce, ReserveIdentifier, TokenSymbol,
 	TradingPair,
@@ -100,10 +100,10 @@ impl SortedMembers<AccountId> for Members {
 	}
 }
 
-impl orml_oracle::Config for Test {
+impl module_oracle::Config for Test {
 	type Event = Event;
 	type OnNewData = ();
-	type CombineData = orml_oracle::DefaultCombineData<Self, MinimumCount, ExpiresIn>;
+	type CombineData = module_oracle::DefaultCombineData<Self, MinimumCount, ExpiresIn>;
 	type Time = Timestamp;
 	type OracleKey = Key;
 	type OracleValue = Price;
@@ -126,7 +126,7 @@ parameter_type_with_key! {
 	};
 }
 
-impl orml_tokens::Config for Test {
+impl module_tokens::Config for Test {
 	type Event = Event;
 	type Balance = Balance;
 	type Amount = Amount;
@@ -369,7 +369,7 @@ parameter_types! {
 	pub MaxTokenMetadata: u32 = 1024;
 }
 
-impl orml_nft::Config for Test {
+impl module_nft::Config for Test {
 	type ClassId = u32;
 	type TokenId = u64;
 	type ClassData = module_nft::ClassData<Balance>;
@@ -675,9 +675,9 @@ frame_support::construct_runtime!(
 		UncheckedExtrinsic = UncheckedExtrinsic,
 	{
 		System: frame_system::{Pallet, Call, Storage, Config, Event<T>},
-		Oracle: orml_oracle::{Pallet, Storage, Call, Event<T>},
+		Oracle: module_oracle::{Pallet, Storage, Call, Event<T>},
 		Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
-		Tokens: orml_tokens::{Pallet, Storage, Event<T>, Config<T>},
+		Tokens: module_tokens::{Pallet, Storage, Event<T>, Config<T>},
 		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
 		Currencies: module_currencies::{Pallet, Call, Event<T>},
 		EVMBridge: module_evm_bridge::{Pallet},

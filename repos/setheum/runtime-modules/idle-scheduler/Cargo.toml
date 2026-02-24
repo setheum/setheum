@@ -1,5 +1,6 @@
 [package]
-name = "idle-scheduler"
+license = "Apache-2.0 OR MIT"
+name = "module-idle-scheduler"
 version = "1.0.0"
 authors = [ "Afsall Labs", "Setheum Developers", "Setheum Foundation" ]
 edition = "2018"

@@ -1,0 +1,66 @@
+@startuml
+
+rectangle Node {
+  component Substrate-runtime {
+    agent core
+    agent "MoveAPI-RPC"
+
+    core --> "MoveAPI-RPC" : uses
+  }
+
+  component Substrate-node {
+    agent "MovePallet-RPC"
+  }
+}
+
+component move-pallet {
+  agent "MoveAPI-RPC-IF" #line.dashed
+  agent "pallet-extrinsics" #line.bold
+}
+
+"MovePallet-RPC" --> "MoveAPI-RPC" : uses
+"MoveAPI-RPC" <-- "MoveAPI-RPC-IF" : implements
+"MoveAPI-RPC" --> "pallet-extrinsics" : uses
+
+agent "move-vm-backend" #line.bold
+
+rectangle {
+  rectangle #line.dashed {
+    agent "move-vm-runtime" #line.bold
+    agent "move-bytecode-verifier"
+    agent "move-core-types"
+    agent "move-vm-types"
+    agent "move-binary-format"
+    agent "move-borrow-graph"
+    agent "bcs"
+  }
+  agent "move-stdlib (natives)" #line.bold
+}
+
+"pallet-extrinsics" -->> "move-vm-backend"
+"move-vm-backend" -->> "move-vm-runtime"
+"move-vm-backend" -->> "move-stdlib (natives)"
+
+"move-vm-runtime" -->> "move-bytecode-verifier"
+"move-vm-runtime" -->> "move-core-types"
+"move-vm-runtime" -->> "move-vm-types"
+"move-vm-runtime" -->> "move-binary-format"
+
+"move-bytecode-verifier" -->> "move-borrow-graph"
+"move-bytecode-verifier" -->> "move-binary-format"
+"move-bytecode-verifier" -->> "move-core-types"
+
+"move-core-types" -->> "bcs"
+
+"move-vm-types" -->> "move-core-types"
+"move-vm-types" -->> "move-binary-format"
+"move-vm-types" -->> "bcs"
+
+"move-binary-format" -->> "move-core-types"
+
+"move-stdlib (natives)" -->> "move-binary-format"
+"move-stdlib (natives)" -->> "move-core-types"
+"move-stdlib (natives)" -->> "move-vm-runtime"
+"move-stdlib (natives)" -->> "move-vm-types"
+
+@enduml

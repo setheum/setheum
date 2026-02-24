@@ -25,9 +25,9 @@
 use frame_support::{traits::Get, weights::Weight};
 use sp_std::marker::PhantomData;
 
-/// Weight functions for orml_oracle.
+/// Weight functions for module_oracle.
 pub struct WeightInfo<T>(PhantomData<T>);
-impl<T: frame_system::Config> orml_oracle::WeightInfo for WeightInfo<T> {
+impl<T: frame_system::Config> module_oracle::WeightInfo for WeightInfo<T> {
 	fn feed_values(c: u32, ) -> Weight {
 		(37_520_000 as Weight)
 // Standard Error: 38_000

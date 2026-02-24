@@ -19,7 +19,7 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 #[doc(hidden)]
-pub use orml_traits;
+pub use module_traits;
 #[doc(hidden)]
 pub use paste;
 
@@ -66,7 +66,7 @@ macro_rules! mock_handler {
 				}
 			}
 
-			impl $crate::testing::orml_traits::Happened<$t> for $name {
+			impl $crate::testing::module_traits::Happened<$t> for $name {
 				fn happened(val: &$t) {
 					Self::push(val.clone());
 				}

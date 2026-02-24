@@ -1,4 +1,5 @@
 [package]
+license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 name = "primitives-proc-macro"
 version = "0.1.0"
 authors = ["Setheum Developers"]

@@ -1,0 +1,26 @@
+@startuml
+
+rectangle Node {
+  component Substrate-runtime {
+    agent core
+    agent "MoveAPI-RPC"
+
+    core --> "MoveAPI-RPC" : uses
+  }
+
+  component Substrate-node {
+    agent "MovePallet-RPC"
+  }
+}
+
+component move-pallet {
+  agent "MoveAPI-RPC-IF" #line.dashed
+  agent "pallet-extrinsics" #line.bold
+}
+
+
+"MovePallet-RPC" --> "MoveAPI-RPC" : uses
+"MoveAPI-RPC" <-- "MoveAPI-RPC-IF" : implements
+"MoveAPI-RPC" --> "pallet-extrinsics" : uses
+
+@enduml

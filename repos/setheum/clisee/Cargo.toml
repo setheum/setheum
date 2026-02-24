@@ -1,4 +1,5 @@
 [package]
+license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 name = "clisee"
 version = "0.1.0"
 edition = "2021"
@@ -23,7 +24,7 @@ pallet-staking = { git = "https://github.com/Cardinal-Cryptography/polkadot-sdk.
 sp-core = { git = "https://github.com/Cardinal-Cryptography/polkadot-sdk.git", branch = "aleph-v1.3.0", features = ["full_crypto"] }
 
 setheum_client = { path = "../setheum-client" }
-primitives = { path = "../primitives" }
+primitives = { package = "setheum-primitives", path = "../primitives" }
 
 [features]
 default = ["std"]

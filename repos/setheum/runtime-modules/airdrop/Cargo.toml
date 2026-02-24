@@ -1,4 +1,5 @@
 [package]
+license = "Apache-2.0 OR MIT"
 name = "module-airdrop"
 version = "0.1.1"
 authors.workspace = true
@@ -16,12 +17,12 @@ sp-std = { workspace = true }
 frame-support = { workspace = true }
 frame-system = { workspace = true }
 
-orml-traits = { workspace = true }
+module-traits = { workspace = true }
 primitives = { workspace = true }
 module-support = { workspace = true }
 
 [dev-dependencies]
-orml-tokens = { workspace = true, features = ["std"] }
+module-tokens = { workspace = true, features = ["std"] }
 sp-core = { workspace = true, features = ["std"] }
 
 [features]
@@ -29,8 +30,8 @@ default = ["std"]
 std = [
 	"frame-support/std",
 	"frame-system/std",
-	"orml-tokens/std",
-	"orml-traits/std",
+	"module-tokens/std",
+	"module-traits/std",
 	"parity-scale-codec/std",
 	"primitives/std",
 	"sp-runtime/std",

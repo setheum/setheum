@@ -79,7 +79,7 @@ pub use frame_support::{
 	PalletId, RuntimeDebug, StorageValue,
 };
 pub use frame_system::{ensure_root, EnsureOneOf, EnsureRoot, RawOrigin};
-use orml_traits::{
+use module_traits::{
 	create_median_value_data_provider, parameter_type_with_key, DataFeeder, DataProviderExtended,
 // MultiCurrency,
 };
@@ -552,18 +552,18 @@ parameter_types! {
 	pub const MaxHasDispatchedSize: u32 = 40;
 }
 
-type SetheumDataProvider = orml_oracle::Instance1;
-impl orml_oracle::Config<SetheumDataProvider> for Runtime {
+type SetheumDataProvider = module_oracle::Instance1;
+impl module_oracle::Config<SetheumDataProvider> for Runtime {
 	type Event = Event;
 	type OnNewData = ();
-	type CombineData = orml_oracle::DefaultCombineData<Runtime, MinimumCount, ExpiresIn, SetheumDataProvider>;
+	type CombineData = module_oracle::DefaultCombineData<Runtime, MinimumCount, ExpiresIn, SetheumDataProvider>;
 	type Time = Timestamp;
 	type OracleKey = CurrencyId;
 	type OracleValue = Price;
 	type RootOperatorAccountId = ZeroAccountId;
 	type Members = OperatorMembershipSetheum;
 	type MaxHasDispatchedSize = MaxHasDispatchedSize;
-	type WeightInfo = weights::orml_oracle::WeightInfo<Runtime>;
+	type WeightInfo = weights::module_oracle::WeightInfo<Runtime>;
 }
 
 create_median_value_data_provider!(
@@ -622,7 +622,7 @@ parameter_type_with_key! {
 					Self::get(&currency_id_0)
 				}
 			},
-			CurrencyId::Erc20(_) => Balance::max_value(), // not handled by orml-tokens
+			CurrencyId::Erc20(_) => Balance::max_value(), // not handled by module-tokens
 		}
 	};
 }
@@ -633,14 +633,14 @@ parameter_types! {
 // pub SerpTreasuryAccount: AccountId = SerpTreasuryPalletId::get().into_account();
 }
 
-impl orml_tokens::Config for Runtime {
+impl module_tokens::Config for Runtime {
 	type Event = Event;
 	type Balance = Balance;
 	type Amount = Amount;
 	type CurrencyId = CurrencyId;
-	type WeightInfo = weights::orml_tokens::WeightInfo<Runtime>;
+	type WeightInfo = weights::module_tokens::WeightInfo<Runtime>;
 	type ExistentialDeposits = ExistentialDeposits;
-	type OnDust = orml_tokens::TransferDust<Runtime, TreasuryAccount>;
+	type OnDust = module_tokens::TransferDust<Runtime, TreasuryAccount>;
 	type MaxLocks = MaxLocks;
 	type DustRemovalWhitelist = DustRemovalWhitelist;
 }
@@ -1087,20 +1087,17 @@ impl module_nft::Config for Runtime {
 	type PalletId = NftPalletId;
 	type MaxAttributesBytes = MaxAttributesBytes;
 	type WeightInfo = weights::module_nft::WeightInfo<Runtime>;
-}
-
-parameter_types! {
-	pub MaxClassMetadata: u32 = 1024;
-	pub MaxTokenMetadata: u32 = 1024;
-}
-
-impl orml_nft::Config for Runtime {
 	type ClassId = u32;
 	type TokenId = u64;
 	type ClassData = module_nft::ClassData<Balance>;
 	type TokenData = module_nft::TokenData<Balance>;
 	type MaxClassMetadata = MaxClassMetadata;
 	type MaxTokenMetadata = MaxTokenMetadata;
+}
+
+parameter_types! {
+	pub MaxClassMetadata: u32 = 1024;
+	pub MaxTokenMetadata: u32 = 1024;
 }
 
 parameter_types! {
@@ -1136,7 +1133,7 @@ impl InstanceFilter<Call> for ProxyType {
 				)
 			}
 			ProxyType::Auction => {
-				matches!(c, Call::Auction(orml_auction::Call::bid(..)))
+				matches!(c, Call::Auction(module_auction::Call::bid(..)))
 			}
 			ProxyType::Swap => {
 				matches!(
@@ -1248,7 +1245,7 @@ impl pallet_scheduler::Config for Runtime {
 	type WeightInfo = ();
 }
 
-impl orml_authority::Config for Runtime {
+impl module_authority::Config for Runtime {
 	type Event = Event;
 	type Origin = Origin;
 	type PalletsOrigin = OriginCaller;
@@ -1494,12 +1491,12 @@ impl pallet_recovery::Config for Runtime {
 	type RecoveryDeposit = RecoveryDeposit;
 }
 
-// impl orml_auction::Config for Runtime {
+// impl module_auction::Config for Runtime {
 // 	type Event = Event;
 // 	type Balance = Balance;
 // 	type AuctionId = AuctionId;
 // 	type Handler = AuctionManager;
-// 	type WeightInfo = weights::orml_auction::WeightInfo<Runtime>;
+// 	type WeightInfo = weights::module_auction::WeightInfo<Runtime>;
 // }
 
 impl pallet_randomness_collective_flip::Config for Runtime {}
@@ -1530,9 +1527,9 @@ construct_runtime!(
 		Recovery: pallet_recovery::{Pallet, Call, Storage, Event<T>} = 8,
 		Proxy: pallet_proxy::{Pallet, Call, Storage, Event<T>} = 9,
 
-// ORML Core
-// Auction: orml_auction::{Pallet, Storage, Call, Event<T>} = 10,
-		OrmlNFT: orml_nft::{Pallet, Storage, Config<T>} = 11,
+// MODULE Core
+// Auction: module_auction::{Pallet, Storage, Call, Event<T>} = 10,
+		
 
 // Governance
 		ShuraCouncil: pallet_collective::<Instance1>::{Pallet, Call, Storage, Origin<T>, Event<T>, Config<T>} = 12,
@@ -1542,7 +1539,7 @@ construct_runtime!(
 		TechnicalCommittee: pallet_collective::<Instance3>::{Pallet, Call, Storage, Origin<T>, Event<T>, Config<T>} = 16,
 		TechnicalCommitteeMembership: pallet_membership::<Instance3>::{Pallet, Call, Storage, Event<T>, Config<T>} = 17,
 
-		Authority: orml_authority::{Pallet, Call, Storage, Event<T>, Origin<T>} = 18,
+		Authority: module_authority::{Pallet, Call, Storage, Event<T>, Origin<T>} = 18,
 
 		Utility: pallet_utility::{Pallet, Call, Event} = 19,
 
@@ -1550,7 +1547,7 @@ construct_runtime!(
 //
 // NOTE: OperatorMembership must be placed after Oracle or else will have race condition on initialization
 // DexOracle: dex_oracle::{Pallet, Storage, Call}, = 20
-		SetheumOracle: orml_oracle::<Instance1>::{Pallet, Storage, Call, Event<T>} = 21,
+		SetheumOracle: module_oracle::<Instance1>::{Pallet, Storage, Call, Event<T>} = 21,
 		OperatorMembershipSetheum: pallet_membership::<Instance4>::{Pallet, Call, Storage, Event<T>, Config<T>} = 22,
 
 // SERP
@@ -1570,7 +1567,7 @@ construct_runtime!(
 		Tips: pallet_tips::{Pallet, Call, Storage, Event<T>} = 32,
 
 // Extras
-		NFT: module_nft::{Pallet, Call, Event<T>} = 33,
+		NFT: module_nft::{Pallet, Storage, Call, Event<T>, Config<T>} = 33,
 // AirDrop: module_airdrop::{Pallet, Call, Storage, Event<T>} = 34,
 
 // Account lookup
@@ -1579,7 +1576,7 @@ construct_runtime!(
 // Tokens, Fees & Related
 		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>} = 36,
 		Currencies: module_currencies::{Pallet, Call, Event<T>} = 37,
-		Tokens: orml_tokens::{Pallet, Storage, Event<T>, Config<T>} = 38,
+		Tokens: module_tokens::{Pallet, Storage, Event<T>, Config<T>} = 38,
 		TransactionPayment: module_transaction_payment::{Pallet, Call, Storage} = 39,
 		TransactionPause: module_transaction_pause::{Pallet, Call, Storage, Event<T>} = 40,
 		Vesting: module_vesting::{Pallet, Storage, Call, Event<T>, Config<T>} = 41,
@@ -1855,7 +1852,7 @@ impl_runtime_apis! {
 		}
 	}
 
-	impl orml_oracle_rpc_runtime_api::OracleApi<
+	impl module_oracle_rpc_runtime_api::OracleApi<
 		Block,
 		DataProviderId,
 		CurrencyId,
@@ -1993,7 +1990,7 @@ impl_runtime_apis! {
 		) {
 			use frame_benchmarking::{list_benchmark, Benchmarking, BenchmarkList};
 			use frame_support::traits::StorageInfoTrait;
-			use orml_benchmarking::{list_benchmark as orml_list_benchmark};
+			use module_benchmarking::{list_benchmark as module_list_benchmark};
 
 			use module_nft::benchmarking::Pallet as NftBench;
 
@@ -2002,27 +1999,27 @@ impl_runtime_apis! {
 
 			list_benchmark!(list, extra, module_nft, NftBench::<Runtime>);
 
-// orml_list_benchmark!(list, extra, edfis_swap_legacy_module, benchmarking::dex);
-// orml_list_benchmark!(list, extra, auction_manager, benchmarking::auction_manager);
-// orml_list_benchmark!(list, extra, cdp_engine, benchmarking::cdp_engine);
-// orml_list_benchmark!(list, extra, emergency_shutdown, benchmarking::emergency_shutdown);
-// orml_list_benchmark!(list, extra, module_evm, benchmarking::evm);
-// orml_list_benchmark!(list, extra, serp_setmint, benchmarking::serp_setmint);
-// orml_list_benchmark!(list, extra, serp_treasury, benchmarking::serp_treasury);
-// orml_list_benchmark!(list, extra, cdp_treasury, benchmarking::cdp_treasury);
-			orml_list_benchmark!(list, extra, module_transaction_pause, benchmarking::transaction_pause);
-			orml_list_benchmark!(list, extra, module_transaction_payment, benchmarking::transaction_payment);
-			orml_list_benchmark!(list, extra, module_prices, benchmarking::prices);
-// orml_list_benchmark!(list, extra, dex_oracle, benchmarking::dex_oracle);
-			orml_list_benchmark!(list, extra, module_unified_accounts, benchmarking::unified_accounts);
-			orml_list_benchmark!(list, extra, module_currencies, benchmarking::currencies);
-			orml_list_benchmark!(list, extra, module_vesting, benchmarking::vesting);
+// module_list_benchmark!(list, extra, edfis_swap_legacy_module, benchmarking::dex);
+// module_list_benchmark!(list, extra, auction_manager, benchmarking::auction_manager);
+// module_list_benchmark!(list, extra, cdp_engine, benchmarking::cdp_engine);
+// module_list_benchmark!(list, extra, emergency_shutdown, benchmarking::emergency_shutdown);
+// module_list_benchmark!(list, extra, module_evm, benchmarking::evm);
+// module_list_benchmark!(list, extra, serp_setmint, benchmarking::serp_setmint);
+// module_list_benchmark!(list, extra, serp_treasury, benchmarking::serp_treasury);
+// module_list_benchmark!(list, extra, cdp_treasury, benchmarking::cdp_treasury);
+			module_list_benchmark!(list, extra, module_transaction_pause, benchmarking::transaction_pause);
+			module_list_benchmark!(list, extra, module_transaction_payment, benchmarking::transaction_payment);
+			module_list_benchmark!(list, extra, module_prices, benchmarking::prices);
+// module_list_benchmark!(list, extra, dex_oracle, benchmarking::dex_oracle);
+			module_list_benchmark!(list, extra, module_unified_accounts, benchmarking::unified_accounts);
+			module_list_benchmark!(list, extra, module_currencies, benchmarking::currencies);
+			module_list_benchmark!(list, extra, module_vesting, benchmarking::vesting);
 
-			orml_list_benchmark!(list, extra, orml_tokens, benchmarking::tokens);
-			orml_list_benchmark!(list, extra, orml_auction, benchmarking::auction);
+			module_list_benchmark!(list, extra, module_tokens, benchmarking::tokens);
+			module_list_benchmark!(list, extra, module_auction, benchmarking::auction);
 
-			orml_list_benchmark!(list, extra, orml_authority, benchmarking::authority);
-			orml_list_benchmark!(list, extra, orml_oracle, benchmarking::oracle);
+			module_list_benchmark!(list, extra, module_authority, benchmarking::authority);
+			module_list_benchmark!(list, extra, module_oracle, benchmarking::oracle);
 
 			let storage_info = AllPalletsWithSystem::storage_info();
 
@@ -2033,7 +2030,7 @@ impl_runtime_apis! {
 			config: frame_benchmarking::BenchmarkConfig
 		) -> Result<Vec<frame_benchmarking::BenchmarkBatch>, sp_runtime::RuntimeString> {
 			use frame_benchmarking::{Benchmarking, BenchmarkBatch, add_benchmark, TrackedStorageKey};
-			use orml_benchmarking::{add_benchmark as orml_add_benchmark};
+			use module_benchmarking::{add_benchmark as module_add_benchmark};
 
 			impl frame_system_benchmarking::Config for Runtime {}
 
@@ -2060,26 +2057,26 @@ impl_runtime_apis! {
 			let params = (&config, &whitelist);
 
 			add_benchmark!(params, batches, module_nft, NftBench::<Runtime>);
-// orml_add_benchmark!(params, batches, edfis_swap_legacy_module, benchmarking::dex);
-// orml_add_benchmark!(params, batches, auction_manager, benchmarking::auction_manager);
-// orml_add_benchmark!(params, batches, cdp_engine, benchmarking::cdp_engine);
-// orml_add_benchmark!(params, batches, emergency_shutdown, benchmarking::emergency_shutdown);
-// orml_add_benchmark!(params, batches, module_evm, benchmarking::evm);
-// orml_add_benchmark!(params, batches, serp_setmint, benchmarking::serp_setmint);
-// orml_add_benchmark!(params, batches, serp_treasury, benchmarking::serp_treasury);
-// orml_add_benchmark!(params, batches, cdp_treasury, benchmarking::cdp_treasury);
-			orml_add_benchmark!(params, batches, module_transaction_pause, benchmarking::transaction_pause);
-			orml_add_benchmark!(params, batches, module_transaction_payment, benchmarking::transaction_payment);
-// orml_add_benchmark!(params, batches, dex_oracle, benchmarking::dex_oracle);
-			orml_add_benchmark!(params, batches, module_unified_accounts, benchmarking::unified_accounts);
-			orml_add_benchmark!(params, batches, module_currencies, benchmarking::currencies);
+// module_add_benchmark!(params, batches, edfis_swap_legacy_module, benchmarking::dex);
+// module_add_benchmark!(params, batches, auction_manager, benchmarking::auction_manager);
+// module_add_benchmark!(params, batches, cdp_engine, benchmarking::cdp_engine);
+// module_add_benchmark!(params, batches, emergency_shutdown, benchmarking::emergency_shutdown);
+// module_add_benchmark!(params, batches, module_evm, benchmarking::evm);
+// module_add_benchmark!(params, batches, serp_setmint, benchmarking::serp_setmint);
+// module_add_benchmark!(params, batches, serp_treasury, benchmarking::serp_treasury);
+// module_add_benchmark!(params, batches, cdp_treasury, benchmarking::cdp_treasury);
+			module_add_benchmark!(params, batches, module_transaction_pause, benchmarking::transaction_pause);
+			module_add_benchmark!(params, batches, module_transaction_payment, benchmarking::transaction_payment);
+// module_add_benchmark!(params, batches, dex_oracle, benchmarking::dex_oracle);
+			module_add_benchmark!(params, batches, module_unified_accounts, benchmarking::unified_accounts);
+			module_add_benchmark!(params, batches, module_currencies, benchmarking::currencies);
 
-			orml_add_benchmark!(params, batches, orml_tokens, benchmarking::tokens);
-			orml_add_benchmark!(params, batches, orml_auction, benchmarking::auction);
-			orml_add_benchmark!(params, batches, module_vesting, benchmarking::vesting);
+			module_add_benchmark!(params, batches, module_tokens, benchmarking::tokens);
+			module_add_benchmark!(params, batches, module_auction, benchmarking::auction);
+			module_add_benchmark!(params, batches, module_vesting, benchmarking::vesting);
 
-			orml_add_benchmark!(params, batches, orml_authority, benchmarking::authority);
-			orml_add_benchmark!(params, batches, orml_oracle, benchmarking::oracle);
+			module_add_benchmark!(params, batches, module_authority, benchmarking::authority);
+			module_add_benchmark!(params, batches, module_oracle, benchmarking::oracle);
 
 			if batches.is_empty() { return Err("Benchmark not found for this pallet.".into()) }
 			Ok(batches)

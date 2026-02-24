@@ -1,4 +1,5 @@
 [package]
+license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 name = "runtime-common"
 version = "0.9.81-dev"
 authors = ["Setheum Developers"]
@@ -20,10 +21,11 @@ log = { version = "0.4.14", default-features = false }
 pallet-collective = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.10", default-features = false }
 pallet-membership = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.10", default-features = false }
 
-orml-oracle = { path = "../../orml/oracle", default-features = false }
-orml-traits = { path = "../../orml/traits", default-features = false }
+module-oracle = { package = "module-oracle", path = "../../runtime-modules/oracle", default-features = false }
+module-traits = { package = "module-traits", path = "../../runtime-modules/traits", default-features = false }
 
 module-evm = { path = "../../runtime-modules/evm", default-features = false }
+
 module-support = { path = "../../runtime-modules/support", default-features = false }
 module-transaction-payment = { path = "../../runtime-modules/transaction-payment", default-features = false }
 primitives = { package = "setheum-primitives", path = "../../primitives", default-features = false }
@@ -38,8 +40,8 @@ pallet-balances = { git = "https://github.com/paritytech/substrate", branch = "p
 pallet-proxy = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.10" }
 pallet-utility = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.10" }
 
-orml-tokens = { path = "../../orml/tokens" }
-orml-nft = { path = "../../orml/nft" }
+module-tokens = { package = "module-tokens", path = "../../runtime-modules/tokens" }
+# module-nft = { path = "../../runtime-modules/module-nft" }
 
 module-currencies = { path = "../../runtime-modules/currencies" }
 module-evm-bridge = { path = "../../runtime-modules/evm-bridge" }
@@ -64,8 +66,8 @@ std = [
 	"sp-core/std",
 	"sp-runtime/std",
 	"sp-std/std",
-	"orml-oracle/std",
-	"orml-traits/std",
+	"module-oracle/std",
+	"module-traits/std",
 	"module-evm/std",
 	"module-support/std",
 	"primitives/std",

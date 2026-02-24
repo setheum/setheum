@@ -1,0 +1,15 @@
+@startuml
+
+agent "move-pallet" #line.bold
+agent "move-vm-backend" #line.bold
+
+rectangle #line.dashed {
+    agent "move-vm-runtime" #line.bold
+    agent "move-stdlib" #line.bold
+}
+
+"move-pallet" -->> "move-vm-backend"
+"move-vm-backend" -->> "move-vm-runtime"
+"move-vm-backend" -->> "move-stdlib"
+
+@enduml

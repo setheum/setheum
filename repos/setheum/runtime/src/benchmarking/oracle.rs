@@ -21,12 +21,12 @@
 use crate::{SetheumDataProvider, SetheumOracle, CollateralCurrencyIds, Origin, Price, Runtime, System};
 
 use frame_support::traits::OnFinalize;
-use orml_benchmarking::runtime_benchmarks_instance;
+use module_benchmarking::runtime_benchmarks_instance;
 use sp_runtime::traits::One;
 use sp_std::vec;
 
 runtime_benchmarks_instance! {
-	{ Runtime, orml_oracle, SetheumDataProvider }
+	{ Runtime, module_oracle, SetheumDataProvider }
 
 // feed values
 	feed_values {
@@ -57,7 +57,7 @@ runtime_benchmarks_instance! {
 mod tests {
 	use super::*;
 	use crate::benchmarking::utils::tests::new_test_ext;
-	use orml_benchmarking::impl_benchmark_test_suite;
+	use module_benchmarking::impl_benchmark_test_suite;
 
 	impl_benchmark_test_suite!(new_test_ext(),);
 }

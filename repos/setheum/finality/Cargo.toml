@@ -1,4 +1,5 @@
 [package]
+license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 name = "finality-aleph"
 version = "0.10.0"
 authors.workspace = true

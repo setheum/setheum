@@ -22,7 +22,7 @@ use crate::{AccountId, CurrencyId, GetNativeCurrencyId, GetSetUSDId, Runtime, Sy
 use frame_benchmarking::whitelisted_caller;
 use frame_support::traits::OnFinalize;
 use frame_system::RawOrigin;
-use orml_benchmarking::runtime_benchmarks;
+use module_benchmarking::runtime_benchmarks;
 use sp_std::prelude::*;
 
 const STABLECOIN: CurrencyId = GetSetUSDId::get();
@@ -48,7 +48,7 @@ runtime_benchmarks! {
 mod tests {
 	use super::*;
 	use crate::benchmarking::utils::tests::new_test_ext;
-	use orml_benchmarking::impl_benchmark_test_suite;
+	use module_benchmarking::impl_benchmark_test_suite;
 
 	impl_benchmark_test_suite!(new_test_ext(),);
 }

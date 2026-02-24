@@ -1,22 +1,39 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
-
 // This file is part of Setheum.
 
 // Copyright (C) 2019-Present Setheum Developers.
-// SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
+// SPDX-License-Identifier: Apache-2.0 OR MIT
 
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// 	http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-
-// You should have received a copy of the GNU General Public License
-// along with this program. If not, see <https://www.gnu.org/licenses/>.
+// Alternatively, this file is available under the MIT License:
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 #![cfg_attr(not(feature = "std"), no_std)]
 #![allow(clippy::unused_unit)]
@@ -25,7 +42,7 @@
 use frame_support::{pallet_prelude::*, transactional, PalletId};
 use frame_system::pallet_prelude::*;
 use module_support::{Incentives, EmergencyShutdown, FractionalRate, IncentivesManager, PoolId, Rate};
-use orml_traits::{Happened, MultiCurrency, RewardHandler};
+use module_traits::{Happened, MultiCurrency, RewardHandler};
 use primitives::{Amount, Balance, CurrencyId};
 use sp_runtime::{
 	traits::{AccountIdConversion, UniqueSaturatedInto, Zero},
@@ -47,7 +64,7 @@ pub mod module {
 	#[pallet::config]
 	pub trait Config:
 		frame_system::Config
-		+ orml_rewards::Config<Share = Balance, Balance = Balance, PoolId = PoolId, CurrencyId = CurrencyId>
+		+ module_rewards::Config<Share = Balance, Balance = Balance, PoolId = PoolId, CurrencyId = CurrencyId>
 	{
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 
@@ -173,7 +190,7 @@ pub mod module {
 			if now % T::AccumulatePeriod::get() == Zero::zero() {
 				let mut count: u32 = 0;
 
-				for (pool_id, pool_info) in orml_rewards::PoolInfos::<T>::iter() {
+				for (pool_id, pool_info) in module_rewards::PoolInfos::<T>::iter() {
 					if !pool_info.total_shares.is_zero() {
 						match pool_id {
 // TODO:[src/lib.rs:0] - Update to support `EcdpSetrLiquidityRewards` and `EcdpUssdLiquidityRewards`
@@ -386,13 +403,13 @@ impl<T: Config> Pallet<T> {
 			&Self::account_id(),
 			reward_amount,
 		)?;
-		<orml_rewards::Pallet<T>>::accumulate_reward(&pool_id, reward_currency_id, reward_amount)?;
+		<module_rewards::Pallet<T>>::accumulate_reward(&pool_id, reward_currency_id, reward_amount)?;
 		Ok(())
 	}
 
 	fn do_claim_rewards(who: T::AccountId, pool_id: PoolId) -> DispatchResult {
-// orml_rewards will claim rewards for all currencies rewards
-		<orml_rewards::Pallet<T>>::claim_rewards(&who, &pool_id);
+// module_rewards will claim rewards for all currencies rewards
+		<module_rewards::Pallet<T>>::claim_rewards(&who, &pool_id);
 
 		PendingMultiRewards::<T>::mutate_exists(pool_id, &who, |maybe_pending_multi_rewards| {
 			if let Some(pending_multi_rewards) = maybe_pending_multi_rewards {
@@ -477,7 +494,7 @@ impl<T: Config> Pallet<T> {
 		reaccumulate_amount: Balance,
 	) -> DispatchResult {
 		if !reaccumulate_amount.is_zero() {
-			<orml_rewards::Pallet<T>>::accumulate_reward(&pool_id, reward_currency_id, reaccumulate_amount)?;
+			<module_rewards::Pallet<T>>::accumulate_reward(&pool_id, reward_currency_id, reaccumulate_amount)?;
 		}
 		T::Currency::transfer(reward_currency_id, &Self::account_id(), who, payout_amount)?;
 		Ok(())
@@ -489,7 +506,7 @@ impl<T: Config> Incentives<T::AccountId, CurrencyId, Balance> for Pallet<T> {
 		ensure!(lp_currency_id.is_dex_share_currency_id(), Error::<T>::InvalidCurrencyId);
 
 		T::Currency::transfer(lp_currency_id, who, &Self::account_id(), amount)?;
-		<orml_rewards::Pallet<T>>::add_share(who, &PoolId::EdfisLiquidityRewards(lp_currency_id), amount.unique_saturated_into());
+		<module_rewards::Pallet<T>>::add_share(who, &PoolId::EdfisLiquidityRewards(lp_currency_id), amount.unique_saturated_into());
 
 		Self::deposit_event(Event::DepositDexShare {
 			who: who.clone(),
@@ -502,12 +519,12 @@ impl<T: Config> Incentives<T::AccountId, CurrencyId, Balance> for Pallet<T> {
 	fn do_withdraw_dex_share(who: &T::AccountId, lp_currency_id: CurrencyId, amount: Balance) -> DispatchResult {
 		ensure!(lp_currency_id.is_dex_share_currency_id(), Error::<T>::InvalidCurrencyId);
 		ensure!(
-			<orml_rewards::Pallet<T>>::shares_and_withdrawn_rewards(&PoolId::EdfisLiquidityRewards(lp_currency_id), &who).0 >= amount,
+			<module_rewards::Pallet<T>>::shares_and_withdrawn_rewards(&PoolId::EdfisLiquidityRewards(lp_currency_id), &who).0 >= amount,
 			Error::<T>::NotEnough,
 		);
 
 		T::Currency::transfer(lp_currency_id, &Self::account_id(), who, amount)?;
-		<orml_rewards::Pallet<T>>::remove_share(who, &PoolId::EdfisLiquidityRewards(lp_currency_id), amount.unique_saturated_into());
+		<module_rewards::Pallet<T>>::remove_share(who, &PoolId::EdfisLiquidityRewards(lp_currency_id), amount.unique_saturated_into());
 
 		Self::deposit_event(Event::WithdrawDexShare {
 			who: who.clone(),
@@ -570,13 +587,13 @@ impl<T: Config> RewardHandler<T::AccountId, CurrencyId> for Pallet<T> {
 pub struct OnMoyaEarnBonded<T>(sp_std::marker::PhantomData<T>);
 impl<T: Config> Happened<(T::AccountId, Balance)> for OnMoyaEarnBonded<T> {
 	fn happened((who, amount): &(T::AccountId, Balance)) {
-		<orml_rewards::Pallet<T>>::add_share(who, &PoolId::MoyaEarnRewards(T::NativeCurrencyId::get()), *amount);
+		<module_rewards::Pallet<T>>::add_share(who, &PoolId::MoyaEarnRewards(T::NativeCurrencyId::get()), *amount);
 	}
 }
 
 pub struct OnMoyaEarnUnbonded<T>(sp_std::marker::PhantomData<T>);
 impl<T: Config> Happened<(T::AccountId, Balance)> for OnMoyaEarnUnbonded<T> {
 	fn happened((who, amount): &(T::AccountId, Balance)) {
-		<orml_rewards::Pallet<T>>::remove_share(who, &PoolId::MoyaEarnRewards(T::NativeCurrencyId::get()), *amount);
+		<module_rewards::Pallet<T>>::remove_share(who, &PoolId::MoyaEarnRewards(T::NativeCurrencyId::get()), *amount);
 	}
 }

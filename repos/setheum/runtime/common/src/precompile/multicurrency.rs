@@ -25,7 +25,7 @@ use module_support::{AddressMapping as AddressMappingT, CurrencyIdMapping as Cur
 use sp_runtime::RuntimeDebug;
 use sp_std::{fmt::Debug, marker::PhantomData, prelude::*, result};
 
-use orml_traits::MultiCurrency as MultiCurrencyT;
+use module_traits::MultiCurrency as MultiCurrencyT;
 
 use super::input::{Input, InputT, Output};
 use num_enum::{IntoPrimitive, TryFromPrimitive};

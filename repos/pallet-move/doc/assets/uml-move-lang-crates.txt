@@ -1,0 +1,18 @@
+@startuml
+agent "move-borrow-graph" #PowderBlue
+agent "move-compiler"
+agent "move-ir-compiler"
+agent "move-stdlib" #PowderBlue
+agent "move-analyzer"
+agent "move-bytecode-verifier" #PowderBlue
+agent "move-core-types" #PowderBlue
+agent "move-model"
+agent "move-symbol-pool"
+agent "move-binary-format" #PowderBlue
+agent "move-command-line-common"
+agent "move-ir"
+agent "move-prover"
+agent "move-vm-types" #PowderBlue
+agent "move-vm-runtime" #PowderBlue
+agent "tools"
+@enduml

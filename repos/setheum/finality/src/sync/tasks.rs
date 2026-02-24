@@ -40,7 +40,7 @@ use crate::{
 const MIN_DELAY: Duration = Duration::from_millis(300);
 const ADDITIONAL_DELAY: Duration = Duration::from_millis(200);
 
-// The delay is the minimum delay, plus uniformly randomly chosen multiple of additional delay,
+// The delay is the minimum delay, plus unifmoduley randomly chosen multiple of additional delay,
 // linear with the ettempt number.
 fn delay_for_attempt(attempt: u32) -> Duration {
     MIN_DELAY

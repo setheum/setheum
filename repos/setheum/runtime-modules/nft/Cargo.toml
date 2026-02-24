@@ -1,4 +1,5 @@
 [package]
+license = "Apache-2.0 OR MIT"
 name = "module-nft"
 version = "0.9.81-dev"
 authors.workspace = true
@@ -19,16 +20,15 @@ primitives = { workspace = true }
 sp-runtime = { workspace = true }
 sp-std = { workspace = true }
 
-orml-nft = { workspace = true }
-orml-traits = { workspace = true }
+module-traits = { workspace = true }
 
 [dev-dependencies]
 sp-core = { workspace = true, features = ["std"] }
 sp-io = { workspace = true, features = ["std"] }
 pallet-balances = { workspace = true, features = ["std"] }
 pallet-utility = { workspace = true, features = ["std"] }
-orml-tokens = { workspace = true, features = ["std"] }
-module-currencies = { workspace = true, features = ["std"] }
+module-tokens = { workspace = true, features = ["std"] }
+# module-currencies = { workspace = true, features = ["std"] }
 module-support = { workspace = true, features = ["std"] }
 
 [features]
@@ -40,8 +40,7 @@ std = [
 	"frame-benchmarking/std",
 	"frame-support/std",
 	"frame-system/std",
-	"orml-nft/std",
-	"orml-traits/std",
+	"module-traits/std",
 	"pallet-proxy/std",
 	"primitives/std",
 	"scale-info/std",
@@ -58,6 +57,5 @@ runtime-benchmarks = [
 try-runtime = [
 	"frame-support/try-runtime",
 	"frame-system/try-runtime",
-	"orml-nft/try-runtime",
 	"pallet-proxy/try-runtime",
 ]

@@ -1,22 +1,39 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
-
 // This file is part of Setheum.
 
 // Copyright (C) 2019-Present Setheum Developers.
-// SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
+// SPDX-License-Identifier: Apache-2.0 OR MIT
 
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// 	http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-
-// You should have received a copy of the GNU General Public License
-// along with this program. If not, see <https://www.gnu.org/licenses/>.
+// Alternatively, this file is available under the MIT License:
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 #![cfg_attr(not(feature = "std"), no_std)]
 #![allow(clippy::unused_unit)]
@@ -38,7 +55,7 @@ use sp_std::{
 	cmp::{Eq, PartialEq},
 	vec::Vec,
 };
-use orml_traits::{
+use module_traits::{
 	LockIdentifier, MultiCurrency, MultiLockableCurrency,
 };
 use primitives::{ CurrencyId, VestingSchedule };
@@ -220,64 +237,42 @@ pub mod module {
 			self.vesting
 				.iter()
 				.for_each(|(who, currency_id, start, period, period_count, per_period)| {
-					if currency_id == &T::GetNativeCurrencyId::get() {
-						let mut bounded_schedules = VestingSchedules::<T>::get(who);
-						bounded_schedules
-							.try_push(VestingSchedule {
-								start: *start,
-								period: *period,
-								period_count: *period_count,
-								per_period: *per_period,
-							})
-							.expect("Max vesting schedules exceeded");
-						let total_amount = bounded_schedules
-							.iter()
-							.try_fold::<_, _, Result<BalanceOf<T>, DispatchError>>(Zero::zero(), |acc_amount, schedule| {
-								let amount = ensure_valid_vesting_schedule::<T>(T::GetNativeCurrencyId::get(), schedule)?;
-								acc_amount
-									.checked_add(&amount)
-									.ok_or_else(|| ArithmeticError::Overflow.into())
-							})
-							.expect("Invalid vesting schedule");
+					let schedule = VestingSchedule {
+						start: *start,
+						period: *period,
+						period_count: *period_count,
+						per_period: *per_period,
+					};
 
+					if *currency_id == T::GetNativeCurrencyId::get() {
+						let _ = ensure_valid_vesting_schedule::<T>(*currency_id, &schedule).expect("Invalid vesting schedule");
+						let total = schedule.total_amount().unwrap();
+						assert!(
+							T::MultiCurrency::free_balance(*currency_id, who) >= total,
+							"Account does not have enough balance"
+						);
+						
+						if <NativeVestingSchedules<T>>::try_append(who, schedule).is_err() {
+							panic!("Max vesting schedules exceeded");
 						}
 						
+						let locked = Pallet::<T>::locked_balance(*currency_id, who);
+						let _ = T::MultiCurrency::set_lock(VESTING_LOCK_ID, *currency_id, who, locked);
+
+					} else if *currency_id == T::GetEDFCurrencyId::get() {
+						let _ = ensure_valid_vesting_schedule::<T>(*currency_id, &schedule).expect("Invalid vesting schedule");
+						let total = schedule.total_amount().unwrap();
 						assert!(
-							T::MultiCurrency::free_balance(T::GetNativeCurrencyId::get(), who) >= total_amount,
+							T::MultiCurrency::free_balance(*currency_id, who) >= total,
 							"Account does not have enough balance"
 						);
 
-						T::MultiCurrency::set_lock(VESTING_LOCK_ID, T::GetNativeCurrencyId::get(), who, total_amount);
-						NativeVestingSchedules::<T>::insert(who, bounded_schedules);
-					} else if currency_id == &T::GetEDFCurrencyId::get() {
-						let mut bounded_schedules = VestingSchedules::<T>::get(who);
-						bounded_schedules
-							.try_push(VestingSchedule {
-								start: *start,
-								period: *period,
-								period_count: *period_count,
-								per_period: *per_period,
-							})
-							.expect("Max vesting schedules exceeded");
-						let total_amount = bounded_schedules
-							.iter()
-							.try_fold::<_, _, Result<BalanceOf<T>, DispatchError>>(Zero::zero(), |acc_amount, schedule| {
-								let amount = ensure_valid_vesting_schedule::<T>(T::GetEDFCurrencyId::get(), schedule)?;
-								acc_amount
-									.checked_add(&amount)
-									.ok_or_else(|| ArithmeticError::Overflow.into())
-							})
-							.expect("Invalid vesting schedule");
-
+						if <EDFVestingSchedules<T>>::try_append(who, schedule).is_err() {
+							panic!("Max vesting schedules exceeded");
 						}
 						
-						assert!(
-							T::MultiCurrency::free_balance(T::GetEDFCurrencyId::get(), who) >= total_amount,
-							"Account does not have enough balance"
-						);
-
-						T::MultiCurrency::set_lock(VESTING_LOCK_ID, T::GetEDFCurrencyId::get(), who, total_amount);
-						EDFVestingSchedules::<T>::insert(who, bounded_schedules);
+						let locked = Pallet::<T>::locked_balance(*currency_id, who);
+						let _ = T::MultiCurrency::set_lock(VESTING_LOCK_ID, *currency_id, who, locked);
 					}
 				});
 		}
@@ -374,24 +369,24 @@ pub mod module {
 
 impl<T: Config> Pallet<T> {
 	fn do_claim(currency_id: CurrencyIdOf<T>, who: &T::AccountId) -> BalanceOf<T> {
-		let locked = Self::locked_balance(who);
+		let locked = Self::locked_balance(currency_id, who);
 		if locked.is_zero() {
 			if currency_id == T::GetNativeCurrencyId::get() {
-// cleanup the storage and unlock the fund
+				// cleanup the storage and unlock the fund
 				<NativeVestingSchedules<T>>::remove(who);
-				T::MultiCurrency::remove_lock(VESTING_LOCK_ID, currency_id, who);
+				let _ = T::MultiCurrency::remove_lock(VESTING_LOCK_ID, currency_id, who);
 			} else if currency_id == T::GetEDFCurrencyId::get() {
-// cleanup the storage and unlock the fund
+				// cleanup the storage and unlock the fund
 				<EDFVestingSchedules<T>>::remove(who);
-				T::MultiCurrency::remove_lock(VESTING_LOCK_ID, currency_id, who);
+				let _ = T::MultiCurrency::remove_lock(VESTING_LOCK_ID, currency_id, who);
 			}
 		} else {
-			T::MultiCurrency::set_lock(VESTING_LOCK_ID, currency_id, who, locked);
+			let _ = T::MultiCurrency::set_lock(VESTING_LOCK_ID, currency_id, who, locked);
 		}
 		locked
 	}
 
-/// Returns locked balance based on current block number.
+	/// Returns locked balance based on current block number.
 	fn locked_balance(currency_id: CurrencyIdOf<T>, who: &T::AccountId) -> BalanceOf<T> {
 		let now = frame_system::Pallet::<T>::block_number();
 		if currency_id == T::GetNativeCurrencyId::get() {
@@ -430,6 +425,8 @@ impl<T: Config> Pallet<T> {
 				}
 				total
 			})
+		} else {
+			Zero::zero()
 		}
 	}
 
@@ -442,25 +439,21 @@ impl<T: Config> Pallet<T> {
 		if currency_id == T::GetNativeCurrencyId::get() {
 			let schedule_amount = ensure_valid_vesting_schedule::<T>(T::GetNativeCurrencyId::get(), &schedule)?;
 
-			let total_amount = Self::locked_balance(T::GetNativeCurrencyId::get(), to)
-				.checked_add(&schedule_amount)
-				.ok_or(ArithmeticError::Overflow)?;
-
 			T::MultiCurrency::transfer(T::GetNativeCurrencyId::get(), from, to, schedule_amount)?;
-			T::MultiCurrency::set_lock(VESTING_LOCK_ID, T::GetNativeCurrencyId::get(), to, total_amount)?;
 			<NativeVestingSchedules<T>>::try_append(to, schedule).map_err(|_| Error::<T>::MaxNativeVestingSchedulesExceeded)?;
+			
+			let total_amount = Self::locked_balance(T::GetNativeCurrencyId::get(), to);
+			T::MultiCurrency::set_lock(VESTING_LOCK_ID, T::GetNativeCurrencyId::get(), to, total_amount)?;
 		} else if currency_id == T::GetEDFCurrencyId::get() {
 			let schedule_amount = ensure_valid_vesting_schedule::<T>(T::GetEDFCurrencyId::get(), &schedule)?;
 
-			let total_amount = Self::locked_balance(T::GetEDFCurrencyId::get(), to)
-				.checked_add(&schedule_amount)
-				.ok_or(ArithmeticError::Overflow)?;
-
 			T::MultiCurrency::transfer(T::GetEDFCurrencyId::get(), from, to, schedule_amount)?;
-			T::MultiCurrency::set_lock(VESTING_LOCK_ID, T::GetEDFCurrencyId::get(), to, total_amount)?;
 			<EDFVestingSchedules<T>>::try_append(to, schedule).map_err(|_| Error::<T>::MaxEDFVestingSchedulesExceeded)?;
+
+			let total_amount = Self::locked_balance(T::GetEDFCurrencyId::get(), to);
+			T::MultiCurrency::set_lock(VESTING_LOCK_ID, T::GetEDFCurrencyId::get(), to, total_amount)?;
 		}
-			Ok(())
+		Ok(())
 	}
 
 	fn do_update_vesting_schedules(
@@ -473,55 +466,43 @@ impl<T: Config> Pallet<T> {
 				.try_into()
 				.map_err(|_| Error::<T>::MaxNativeVestingSchedulesExceeded)?;
 
-// empty vesting schedules cleanup the storage and unlock the fund
+			// empty vesting schedules cleanup the storage and unlock the fund
 			if bounded_schedules.len().is_zero() {
 				<NativeVestingSchedules<T>>::remove(who);
-				T::MultiCurrency::remove_lock(VESTING_LOCK_ID,T::GetNativeCurrencyId::get(), who)?;
+				let _ = T::MultiCurrency::remove_lock(VESTING_LOCK_ID,T::GetNativeCurrencyId::get(), who);
 				return Ok(());
 			}
 
-			let total_amount = bounded_schedules
-				.iter()
-				.try_fold::<_, _, Result<BalanceOf<T>, DispatchError>>(Zero::zero(), |acc_amount, schedule| {
-					let amount = ensure_valid_vesting_schedule::<T>(T::GetNativeCurrencyId::get(), schedule)?;
-					acc_amount
-						.checked_add(&amount)
-						.ok_or_else(|| ArithmeticError::Overflow.into())
-				})?;
+			<NativeVestingSchedules<T>>::insert(who, bounded_schedules);
+			let total_amount = Self::locked_balance(T::GetNativeCurrencyId::get(), who);
+			
 			ensure!(
 				T::MultiCurrency::free_balance(T::GetNativeCurrencyId::get(), who) >= total_amount,
 				Error::<T>::InsufficientBalanceToLock,
 			);
 
-			T::MultiCurrency::set_lock(VESTING_LOCK_ID, T::GetNativeCurrencyId::get(), who, total_amount);
-			<NativeVestingSchedules<T>>::insert(who, bounded_schedules);
+			T::MultiCurrency::set_lock(VESTING_LOCK_ID, T::GetNativeCurrencyId::get(), who, total_amount)?;
 		} else if currency_id == T::GetEDFCurrencyId::get() {
 			let bounded_schedules: BoundedVec<VestingScheduleOf<T>, T::MaxEDFVestingSchedules> = schedules
 				.try_into()
 				.map_err(|_| Error::<T>::MaxEDFVestingSchedulesExceeded)?;
 
-// empty vesting schedules cleanup the storage and unlock the fund
+			// empty vesting schedules cleanup the storage and unlock the fund
 			if bounded_schedules.len().is_zero() {
 				<EDFVestingSchedules<T>>::remove(who);
-				T::MultiCurrency::remove_lock(VESTING_LOCK_ID,T::GetEDFCurrencyId::get(), who)?;
+				let _ = T::MultiCurrency::remove_lock(VESTING_LOCK_ID,T::GetEDFCurrencyId::get(), who);
 				return Ok(());
 			}
 
-			let total_amount = bounded_schedules
-				.iter()
-				.try_fold::<_, _, Result<BalanceOf<T>, DispatchError>>(Zero::zero(), |acc_amount, schedule| {
-					let amount = ensure_valid_vesting_schedule::<T>(T::GetEDFCurrencyId::get(), schedule)?;
-					acc_amount
-						.checked_add(&amount)
-						.ok_or_else(|| ArithmeticError::Overflow.into())
-				})?;
+			<EDFVestingSchedules<T>>::insert(who, bounded_schedules);
+			let total_amount = Self::locked_balance(T::GetEDFCurrencyId::get(), who);
+
 			ensure!(
 				T::MultiCurrency::free_balance(T::GetEDFCurrencyId::get(), who) >= total_amount,
 				Error::<T>::InsufficientBalanceToLock,
 			);
 
-			T::MultiCurrency::set_lock(VESTING_LOCK_ID, T::GetEDFCurrencyId::get(), who, total_amount);
-			<EDFVestingSchedules<T>>::insert(who, bounded_schedules);
+			T::MultiCurrency::set_lock(VESTING_LOCK_ID, T::GetEDFCurrencyId::get(), who, total_amount)?;
 		}
 		Ok(())
 	}

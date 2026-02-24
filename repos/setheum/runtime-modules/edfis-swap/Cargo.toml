@@ -1,4 +1,5 @@
 [package]
+license = "Apache-2.0 OR MIT"
 name = "module-edfis-swap"
 version = "0.9.81-dev"
 authors.workspace = true
@@ -15,13 +16,13 @@ sp-runtime = { workspace = true }
 frame-support = { workspace = true }
 frame-system = { workspace = true }
 sp-std = { workspace = true }
-orml-traits = { workspace = true }
+module-traits = { workspace = true }
 
 module-support = { workspace = true }
 primitives = { workspace = true }
 
 [dev-dependencies]
-orml-tokens = { workspace = true, features = ["std"] }
+module-tokens = { workspace = true, features = ["std"] }
 sp-core = { workspace = true, features = ["std"] }
 sp-io = { workspace = true, features = ["std"] }
 pallet-balances = { workspace = true, features = ["std"] }
@@ -32,7 +33,7 @@ std = [
 	"parity-scale-codec/std",
 	"frame-support/std",
 	"frame-system/std",
-	"orml-traits/std",
+	"module-traits/std",
 	"primitives/std",
 	"scale-info/std",
 	"sp-runtime/std",

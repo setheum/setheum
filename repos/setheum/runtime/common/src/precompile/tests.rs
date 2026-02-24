@@ -35,7 +35,7 @@ use frame_support::{assert_noop, assert_ok};
 use hex_literal::hex;
 use module_evm::{Context, ExitError, ExitSucceed, Precompile};
 use module_support::AddressMapping;
-use orml_traits::DataFeeder;
+use module_traits::DataFeeder;
 use primitives::{Balance, PREDEPLOY_ADDRESS_START};
 use sp_core::{H160, U256};
 use sp_runtime::FixedPointNumber;
@@ -328,7 +328,7 @@ fn precompile_filter_does_not_work_on_non_system_contracts() {
 // 		assert_ok!(Oracle::feed_value(ALICE, SERP, price));
 // 		assert_eq!(
 // 			Oracle::get_no_op(&SERP),
-// 			Some(orml_oracle::TimestampedValue {
+// 			Some(module_oracle::TimestampedValue {
 // 				value: price,
 // 				timestamp: 1
 // 			})
