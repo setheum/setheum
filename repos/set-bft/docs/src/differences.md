@@ -1,6 +1,6 @@
 ## 4 Differences between the implementation and the paper.
 
-There are several differences between the Set as described in the [paper](https://arxiv.org/abs/1908.05156) and the version implemented in SetBFT. Many of them are already described in previous sections but for completeness we briefly list the differences here.
+There are several differences between the Set as described in the [AlephBFT paper](https://arxiv.org/abs/1908.05156) and the version implemented in SetBFT. Many of them are already described in previous sections but for completeness we briefly list the differences here.
 
 1. The main version of Set uses Reliable Broadcast to disseminate units. The SetBFT implementation is closer to QuickSet (in the Appendix of the paper) that uses Reliable Broadcast only for Alerts.
 2. The specifics of alerts are different in the SetBFT implementation -- in particular they do not require to freeze the protocol at any moment and are generally simpler.

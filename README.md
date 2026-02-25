@@ -15,7 +15,6 @@
 [![Website](https://img.shields.io/badge/Website-gray?logo=web)](https://setheum.com)
 [![Twitter URL](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Ftwitter.com%2FSetheum)](https://twitter.com/Setheum)
 [![Telegram](https://img.shields.io/badge/Telegram-gray?logo=telegram)](https://t.me/SetheumNetwork)
-[![Lines of Code](https://img.shields.io/badge/LinesOfCode-gray?logo=LinesOfCode)](https://cloc.info/github.com/setheum/setheum)
 </div>
 
 * Decentralized
