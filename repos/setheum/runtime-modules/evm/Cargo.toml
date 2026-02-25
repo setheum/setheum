@@ -22,8 +22,8 @@ serde = { workspace = true, features = ["alloc", "derive"] }
 sha3 = { workspace = true }
 tiny-keccak = { workspace = true, features = ["fips202"] }
 scale-info = { workspace = true }
-serde_json = { workspace = true, features = ["alloc"], optional = true }
-hex = { workspace = true, features = ["alloc"], optional = true }
+serde_json = { workspace = true, optional = true, features = ["alloc"] }
+hex = { workspace = true, optional = true, features = ["alloc"] }
 num = { workspace = true, features = ["alloc"] }
 bn = { workspace = true }
 

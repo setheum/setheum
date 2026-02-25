@@ -8,8 +8,8 @@ homepage.workspace = true
 repository.workspace = true
 
 [dependencies]
-aleph-bft-rmc = { workspace = true }
-aleph-bft-types = { workspace = true }
+set-bft-rmc = { workspace = true }
+set-bft-types = { workspace = true }
 async-trait = { workspace = true }
 futures = { workspace = true }
 log = { workspace = true }

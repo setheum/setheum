@@ -1,4 +1,4 @@
-name: Sync Cardinal-Cryptography repo with Aleph-Zero-Foundation repo
+name: Sync Cardinal-Cryptography repo with Set-Zero-Foundation repo
 
 on:
   push:
@@ -8,12 +8,12 @@ on:
 jobs:
   sync:
     runs-on: ubuntu-24.04
-    if: ${{ github.repository == 'Cardinal-Cryptography/AlephBFT'}}
+    if: ${{ github.repository == 'Cardinal-Cryptography/SetBFT'}}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           ref: "main"
           token: ${{ secrets.SYNCAZF }}
-      - name: Push to Aleph-Zero-Foundation
-        run: git push https://x-access-token:${{ secrets.SYNCAZF }}@github.com/aleph-zero-foundation/AlephBFT.git
+      - name: Push to Set-Zero-Foundation
+        run: git push https://x-access-token:${{ secrets.SYNCAZF }}@github.com/set-zero-foundation/SetBFT.git

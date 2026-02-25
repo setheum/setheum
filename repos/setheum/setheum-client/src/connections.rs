@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -55,11 +55,11 @@ use subxt::{
 };
 
 use crate::{
-    api, runtime_types::sp_weights::weight_v2::Weight, AccountId, AlephConfig, BlockHash, Call,
+    api, runtime_types::sp_weights::weight_v2::Weight, AccountId, SetBFTConfig, BlockHash, Call,
     KeyPair, ParamsBuilder, SubxtClient, TxHash, TxStatus,
 };
 
-/// Capable of communicating with a live Aleph chain.
+/// Capable of communicating with a live SetBFT chain.
 #[derive(Clone)]
 pub struct Connection {
 /// inner subxt type
@@ -166,8 +166,8 @@ pub struct TxInfo {
     pub tx_hash: TxHash,
 }
 
-impl From<ExtrinsicEvents<AlephConfig>> for TxInfo {
-    fn from(ee: ExtrinsicEvents<AlephConfig>) -> Self {
+impl From<ExtrinsicEvents<SetBFTConfig>> for TxInfo {
+    fn from(ee: ExtrinsicEvents<SetBFTConfig>) -> Self {
         Self {
             block_hash: ee.block_hash(),
             tx_hash: ee.extrinsic_hash(),
@@ -177,11 +177,11 @@ impl From<ExtrinsicEvents<AlephConfig>> for TxInfo {
 
 /// A signed extrinsics ready to be submitted.
 pub struct SubmittableExtrinsic {
-    submittable: SubxtSubmittable<AlephConfig, SubxtClient>,
+    submittable: SubxtSubmittable<SetBFTConfig, SubxtClient>,
 }
 
-impl From<SubxtSubmittable<AlephConfig, SubxtClient>> for SubmittableExtrinsic {
-    fn from(submittable: SubxtSubmittable<AlephConfig, SubxtClient>) -> Self {
+impl From<SubxtSubmittable<SetBFTConfig, SubxtClient>> for SubmittableExtrinsic {
+    fn from(submittable: SubxtSubmittable<SetBFTConfig, SubxtClient>) -> Self {
         Self { submittable }
     }
 }

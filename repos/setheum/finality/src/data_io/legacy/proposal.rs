@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -33,23 +33,23 @@ use crate::{
 /// a malicious node there is no guarantee that the block hashes in the proposal correspond to real blocks
 /// and even if they do then they could not match the provided number. Moreover, the block number in the
 /// proposal might be completely arbitrary and hence we perform initial validation of the block number and
-/// the branch length before we transform it into a safer `AlephProposal` type that guarantees we will not
+/// the branch length before we transform it into a safer `SetBFTProposal` type that guarantees we will not
 /// fail on  any integer over- or underflows.
-/// We expect that honest nodes create UnvalidatedAlephProposal {branch: [h_0, h_1, ..., h_n], number: num} objects
+/// We expect that honest nodes create UnvalidatedSetBFTProposal {branch: [h_0, h_1, ..., h_n], number: num} objects
 /// that represent an ascending sequence of blocks b_0, b_1, ..., b_n satisfying the following conditions:
 ///     1) hash(b_i) = h_i for i = 0, 1, ..., n,
 ///     2) parent(b_{i+1}) = b_i for i = 0, 1, ..., (n-1),
 ///     3) height(b_n) = num,
-///     4) The parent of b_0 has been finalized (prior to creating this AlephData).
-/// Such an UnvalidatedAlephProposal  object should be thought of as a proposal for block b_n to be finalized.
+///     4) The parent of b_0 has been finalized (prior to creating this SetBFTData).
+/// Such an UnvalidatedSetBFTProposal  object should be thought of as a proposal for block b_n to be finalized.
 /// We refer for to `DataProvider` for a precise description of honest nodes' algorithm of creating proposals.
 #[derive(Clone, Debug, Encode, Decode, Hash, PartialEq, Eq)]
-pub struct UnvalidatedAlephProposal {
+pub struct UnvalidatedSetBFTProposal {
     pub branch: Vec<BlockHash>,
     pub number: BlockNumber,
 }
 
-/// Represents possible invalid states as described in [UnvalidatedAlephProposal].
+/// Represents possible invalid states as described in [UnvalidatedSetBFTProposal].
 #[derive(Debug, PartialEq, Eq)]
 pub enum ValidationError {
     BranchEmpty,
@@ -68,9 +68,9 @@ pub enum ValidationError {
     },
 }
 
-impl UnvalidatedAlephProposal {
+impl UnvalidatedSetBFTProposal {
     pub(crate) fn new(branch: Vec<BlockHash>, block_number: BlockNumber) -> Self {
-        UnvalidatedAlephProposal {
+        UnvalidatedSetBFTProposal {
             branch,
             number: block_number,
         }
@@ -79,7 +79,7 @@ impl UnvalidatedAlephProposal {
     pub(crate) fn validate_bounds(
         &self,
         session_boundaries: &SessionBoundaries,
-    ) -> Result<AlephProposal, ValidationError> {
+    ) -> Result<SetBFTProposal, ValidationError> {
         use ValidationError::*;
 
         if self.branch.len() > MAX_DATA_BRANCH_LEN {
@@ -111,29 +111,29 @@ impl UnvalidatedAlephProposal {
             });
         }
 
-        Ok(AlephProposal {
+        Ok(SetBFTProposal {
             branch: self.branch.clone(),
             number: self.number,
         })
     }
 }
 
-/// A version of UnvalidatedAlephProposal that has been initially validated and fits
+/// A version of UnvalidatedSetBFTProposal that has been initially validated and fits
 /// within session bounds.
 #[derive(Clone, Debug, Encode, Decode, Hash, PartialEq, Eq)]
-pub struct AlephProposal {
+pub struct SetBFTProposal {
     branch: Vec<BlockHash>,
     number: BlockNumber,
 }
 
-impl Index<usize> for AlephProposal {
+impl Index<usize> for SetBFTProposal {
     type Output = BlockHash;
     fn index(&self, index: usize) -> &Self::Output {
         &self.branch[index]
     }
 }
 
-impl AlephProposal {
+impl SetBFTProposal {
 /// Outputs the length the branch.
     pub fn len(&self) -> usize {
         self.branch.len()
@@ -222,7 +222,7 @@ pub enum ProposalStatus {
 mod tests {
     use sp_core::hash::H256;
 
-    use super::{UnvalidatedAlephProposal, ValidationError::*};
+    use super::{UnvalidatedSetBFTProposal, ValidationError::*};
     use crate::{
         primitives ::BlockNumber, data_io::MAX_DATA_BRANCH_LEN, SessionBoundaryInfo,
         SessionId, SessionPeriod,
@@ -233,7 +233,7 @@ mod tests {
         let session_boundaries =
             SessionBoundaryInfo::new(SessionPeriod(20)).boundaries_for_session(SessionId(1));
         let branch = vec![];
-        let proposal = UnvalidatedAlephProposal::new(branch, session_boundaries.first_block());
+        let proposal = UnvalidatedSetBFTProposal::new(branch, session_boundaries.first_block());
         assert_eq!(
             proposal.validate_bounds(&session_boundaries),
             Err(BranchEmpty)
@@ -247,7 +247,7 @@ mod tests {
         let session_end = session_boundaries.last_block();
         let branch = vec![H256::default(); MAX_DATA_BRANCH_LEN + 1];
         let branch_size = branch.len();
-        let proposal = UnvalidatedAlephProposal::new(branch, session_end);
+        let proposal = UnvalidatedSetBFTProposal::new(branch, session_end);
         assert_eq!(
             proposal.validate_bounds(&session_boundaries),
             Err(BranchTooLong { branch_size })
@@ -262,7 +262,7 @@ mod tests {
         let session_end = session_boundaries.last_block();
         let branch = vec![H256::default(); 2];
 
-        let proposal = UnvalidatedAlephProposal::new(branch.clone(), session_start);
+        let proposal = UnvalidatedSetBFTProposal::new(branch.clone(), session_start);
         assert_eq!(
             proposal.validate_bounds(&session_boundaries),
             Err(BlockOutsideSessionBoundaries {
@@ -273,7 +273,7 @@ mod tests {
             })
         );
 
-        let proposal = UnvalidatedAlephProposal::new(branch, session_end + 1);
+        let proposal = UnvalidatedSetBFTProposal::new(branch, session_end + 1);
         assert_eq!(
             proposal.validate_bounds(&session_boundaries),
             Err(BlockOutsideSessionBoundaries {
@@ -291,7 +291,7 @@ mod tests {
             SessionBoundaryInfo::new(SessionPeriod(20)).boundaries_for_session(SessionId(0));
         let branch = vec![H256::default(); 2];
 
-        let proposal = UnvalidatedAlephProposal::new(branch, 1);
+        let proposal = UnvalidatedSetBFTProposal::new(branch, 1);
         assert_eq!(
             proposal.validate_bounds(&session_boundaries),
             Err(BlockNumberOutOfBounds {
@@ -308,12 +308,12 @@ mod tests {
 
         let branch = vec![H256::default(); MAX_DATA_BRANCH_LEN];
         let proposal =
-            UnvalidatedAlephProposal::new(branch, (MAX_DATA_BRANCH_LEN + 1) as BlockNumber);
+            UnvalidatedSetBFTProposal::new(branch, (MAX_DATA_BRANCH_LEN + 1) as BlockNumber);
         assert!(proposal.validate_bounds(&session_boundaries).is_ok());
 
         let branch = vec![H256::default(); 1];
         let proposal =
-            UnvalidatedAlephProposal::new(branch, (MAX_DATA_BRANCH_LEN + 1) as BlockNumber);
+            UnvalidatedSetBFTProposal::new(branch, (MAX_DATA_BRANCH_LEN + 1) as BlockNumber);
         assert!(proposal.validate_bounds(&session_boundaries).is_ok());
     }
 }

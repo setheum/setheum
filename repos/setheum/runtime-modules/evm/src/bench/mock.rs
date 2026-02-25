@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -63,7 +63,7 @@ use sp_runtime::{
 
 type Balance = u128;
 type Ratio = FixedU128;
-pub const USSD: CurrencyId = CurrencyId::Token(TokenSymbol::USSD);
+pub const SEUSD: CurrencyId = CurrencyId::Token(TokenSymbol::SEUSD);
 
 mod evm_module {
 	pub use super::super::super::*;
@@ -123,7 +123,7 @@ impl module_tokens::Config for Runtime {
 }
 
 parameter_types! {
-	pub const GetNativeCurrencyId: CurrencyId = CurrencyId::Token(TokenSymbol::SEE);
+	pub const GetNativeCurrencyId: CurrencyId = CurrencyId::Token(TokenSymbol::SEU);
 }
 
 impl module_currencies::Config for Runtime {
@@ -195,7 +195,7 @@ parameter_types! {
 	pub SetheumTreasuryAccount: AccountId32 = TreasuryPalletId::get().into_account_truncating();
 	pub const CustomFeeSurplus: Percent = Percent::from_percent(50);
 	pub const AlternativeFeeSurplus: Percent = Percent::from_percent(25);
-	pub DefaultFeeTokens: Vec<CurrencyId> = vec![USSD];
+	pub DefaultFeeTokens: Vec<CurrencyId> = vec![SEUSD];
 	pub const TradingPathLimit: u32 = 4;
 	pub const ExistenceRequirement: u128 = 1;
 	pub AlternativeSwapPathJointList: Vec<Vec<CurrencyId>> = vec![];

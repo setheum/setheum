@@ -2,6 +2,6 @@
 
 ## Overview
 
-This crate provides an AlephBFT Block Signature Aggregator
+This crate provides an SetBFT Block Signature Aggregator
 
-Synchronize with [Aleph Aggregator](https:/github.com/Cardinal-Cryptography/aleph-node/tree/main/aggregator)
+Synchronize with [SetBFT Aggregator](https:/github.com/Cardinal-Cryptography/setbft-node/tree/main/aggregator)

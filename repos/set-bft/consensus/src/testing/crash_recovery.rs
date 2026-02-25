@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,7 +40,7 @@ use crate::{
     units::{UncheckedSignedUnit, Unit, UnitCoord},
     NodeCount, NodeIndex, SpawnHandle, TaskHandle,
 };
-use aleph_bft_mock::{Data, DataProvider, Hasher64, Router, Signature, Spawner};
+use set_bft_mock::{Data, DataProvider, Hasher64, Router, Signature, Spawner};
 use codec::Decode;
 use futures::{
     channel::{mpsc, oneshot},

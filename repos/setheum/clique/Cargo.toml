@@ -35,5 +35,5 @@ tokio = { workspace = true, features = [
 ] }
 
 [dev-dependencies]
-aleph-bft-types = { workspace = true }
-aleph-bft-mock = { workspace = true }
+set-bft-types = { workspace = true }
+set-bft-mock = { workspace = true }

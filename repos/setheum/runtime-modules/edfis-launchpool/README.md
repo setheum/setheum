@@ -11,5 +11,4 @@ Based on the `LaunchpoolStakingCurrency` set by teams, the protocol takes a `Lau
 
 ### Launchpool Commission Teers
 Below are the commission teers:
- - 1. `SETR`, `SEE`, `EDF` and `USSD` Pools: No Commissions taken;
  - 5. Other Tokens Pools: `LaunchpoolCommission` should be 5%;

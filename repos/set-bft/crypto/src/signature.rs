@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -370,7 +370,7 @@ impl<T: Signable + Clone, MK: MultiKeychain> Clone for Multisigned<T, MK> {
 /// `PartiallyMultisigned` only conditionally implements `Hash`:
 /// ```rust
 /// # use std::hash::Hasher;
-/// # use aleph_bft_crypto::{MultiKeychain, PartiallyMultisigned, Signable};
+/// # use set_bft_crypto::{MultiKeychain, PartiallyMultisigned, Signable};
 /// # trait Hash {};
 /// impl<'a, T: Hash + Signable, MK: Hash + MultiKeychain>
 ///    Hash for PartiallyMultisigned<T, MK>
@@ -438,7 +438,7 @@ impl<T: Signable, MK: MultiKeychain> PartiallyMultisigned<T, MK> {
     #[must_use = "consumes the original and returns the aggregated signature which should be used"]
     pub fn add_signature(self, signed: Signed<Indexed<T>, MK>, keychain: &MK) -> Self {
         if self.as_signable().hash().as_ref() != signed.as_signable().hash().as_ref() {
-            warn!(target: "AlephBFT-signed", "Tried to add a signature of a different object");
+            warn!(target: "SetBFT-signed", "Tried to add a signature of a different object");
             return self;
         }
         match self {

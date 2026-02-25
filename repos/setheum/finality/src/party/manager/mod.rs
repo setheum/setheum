@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -30,10 +30,10 @@ use sp_runtime::traits::{Block as BlockT, Header as HeaderT};
 
 use crate::{
     abft::{
-        current_create_aleph_config, legacy_create_aleph_config, run_current_member,
+        current_create_setbft_config, legacy_create_setbft_config, run_current_member,
         run_legacy_member, SpawnHandle,
     },
-    primitives ::{AlephSessionApi, BlockHash, BlockNumber, KEY_TYPE},
+    primitives ::{SetBFTSessionApi, BlockHash, BlockNumber, KEY_TYPE},
     block::{
         substrate::{Justification, JustificationTranslator},
         BestBlockSelector, Block, Header, HeaderVerifier, UnverifiedHeader,
@@ -118,7 +118,7 @@ where
     B: Block<UnverifiedHeader = H::Unverified> + BlockT<Hash = BlockHash>,
     B::Header: HeaderT<Number = BlockNumber> + UnverifiedHeader,
     C: ProvideRuntimeApi<B> + BlockchainEvents<H> + Send + Sync + 'static,
-    C::Api: AlephSessionApi<B>,
+    C::Api: SetBFTSessionApi<B>,
     HB: HeaderBackend<H> + Send + Sync + 'static,
     BBS: BestBlockSelector<H> + 'static,
     RB: RequestBlocks<B::UnverifiedHeader> + LegacyRequestBlocks,
@@ -148,7 +148,7 @@ where
     B: Block<UnverifiedHeader = H::Unverified> + BlockT<Hash = BlockHash>,
     B::Header: HeaderT<Number = BlockNumber> + UnverifiedHeader,
     C: ProvideRuntimeApi<B> + BlockchainEvents<H> + Send + Sync + 'static,
-    C::Api: AlephSessionApi<B>,
+    C::Api: SetBFTSessionApi<B>,
     HB: HeaderBackend<H> + Send + Sync + Clone + 'static,
     BBS: BestBlockSelector<H> + 'static,
     RB: RequestBlocks<B::UnverifiedHeader> + LegacyRequestBlocks,
@@ -222,18 +222,18 @@ where
             session_boundaries.clone(),
         );
         let consensus_config =
-            legacy_create_aleph_config(n_members, node_id, session_id, self.unit_creation_delay);
+            legacy_create_setbft_config(n_members, node_id, session_id, self.unit_creation_delay);
         let data_network = data_network.map();
 
-        let (unfiltered_aleph_network, rmc_network) =
-            split(data_network, "aleph_network", "rmc_network");
-        let (data_store, aleph_network) = LegacyDataStore::new(
+        let (unfiltered_setbft_network, rmc_network) =
+            split(data_network, "setbft_network", "rmc_network");
+        let (data_store, setbft_network) = LegacyDataStore::new(
             session_boundaries.clone(),
             self.header_backend.clone(),
             self.client.clone(),
             self.block_requester.clone(),
             Default::default(),
-            unfiltered_aleph_network,
+            unfiltered_setbft_network,
         );
         Subtasks::new(
             exit_rx,
@@ -241,7 +241,7 @@ where
                 subtask_common.clone(),
                 multikeychain.clone(),
                 consensus_config,
-                aleph_network.into(),
+                setbft_network.into(),
                 data_provider,
                 ordered_data_interpreter,
                 backup,
@@ -293,19 +293,19 @@ where
             session_boundaries.clone(),
         );
         let consensus_config =
-            current_create_aleph_config(n_members, node_id, session_id, self.unit_creation_delay);
+            current_create_setbft_config(n_members, node_id, session_id, self.unit_creation_delay);
         let data_network = data_network.map();
 
-        let (unfiltered_aleph_network, rmc_network) =
-            split(data_network, "aleph_network", "rmc_network");
-        let (data_store, aleph_network) = DataStore::new(
+        let (unfiltered_setbft_network, rmc_network) =
+            split(data_network, "setbft_network", "rmc_network");
+        let (data_store, setbft_network) = DataStore::new(
             session_boundaries.clone(),
             self.header_backend.clone(),
             self.client.clone(),
             self.verifier.clone(),
             self.block_requester.clone(),
             Default::default(),
-            unfiltered_aleph_network,
+            unfiltered_setbft_network,
         );
         Subtasks::new(
             exit_rx,
@@ -313,7 +313,7 @@ where
                 subtask_common.clone(),
                 multikeychain.clone(),
                 consensus_config,
-                aleph_network.into(),
+                setbft_network.into(),
                 data_provider,
                 ordered_data_interpreter,
                 backup,
@@ -404,17 +404,17 @@ where
         {
             #[cfg(feature = "only_legacy")]
             _ if self.only_legacy() => {
-                info!(target: "aleph-party", "Running session with legacy-only AlephBFT version.");
+                info!(target: "setbft-party", "Running session with legacy-only SetBFT version.");
                 self.legacy_subtasks(params)
             }
 // The `as`es here should be removed, but this would require a pallet migration and I
 // am lazy.
             Ok(version) if version == CURRENT_VERSION as u32 => {
-                info!(target: "aleph-party", "Running session with AlephBFT version {}, which is current.", version);
+                info!(target: "setbft-party", "Running session with SetBFT version {}, which is current.", version);
                 self.current_subtasks(params)
             }
             Ok(version) if version == LEGACY_VERSION as u32 => {
-                info!(target: "aleph-party", "Running session with AlephBFT version {}, which is legacy.", version);
+                info!(target: "setbft-party", "Running session with SetBFT version {}, which is legacy.", version);
                 self.legacy_subtasks(params)
             }
             Ok(version) if version > CURRENT_VERSION as u32 => {
@@ -423,8 +423,8 @@ where
                 )
             }
             Ok(version) => {
-                info!(target: "aleph-party", "Attempting to run session with too old version {}, likely because we are synchronizing old sessions for which we have keys. This will not work, but it doesn't matter.", version);
-                info!(target: "aleph-party", "Running session with AlephBFT version {}, which is legacy.", LEGACY_VERSION);
+                info!(target: "setbft-party", "Attempting to run session with too old version {}, likely because we are synchronizing old sessions for which we have keys. This will not work, but it doesn't matter.", version);
+                info!(target: "setbft-party", "Running session with SetBFT version {}, which is legacy.", LEGACY_VERSION);
                 self.legacy_subtasks(params)
             }
             _ => {
@@ -450,7 +450,7 @@ where
     B: Block<UnverifiedHeader = H::Unverified> + BlockT<Hash = BlockHash>,
     B::Header: HeaderT<Number = BlockNumber> + UnverifiedHeader,
     C: ProvideRuntimeApi<B> + BlockchainEvents<H> + Send + Sync + 'static,
-    C::Api: AlephSessionApi<B>,
+    C::Api: SetBFTSessionApi<B>,
     HB: HeaderBackend<H> + Send + Sync + Clone + 'static,
     BBS: BestBlockSelector<H> + 'static,
     RB: RequestBlocks<B::UnverifiedHeader> + LegacyRequestBlocks,
@@ -474,9 +474,9 @@ where
 
         AuthorityTask::new(
             self.spawn_handle
-                .spawn_essential("aleph/session_authority", async move {
+                .spawn_essential("setbft/session_authority", async move {
                     if subtasks.wait_completion().await.is_err() {
-                        warn!(target: "aleph-party", "Authority subtasks failed.");
+                        warn!(target: "setbft-party", "Authority subtasks failed.");
                     }
                 }),
             node_id,
@@ -521,11 +521,11 @@ where
         let our_consensus_keys: HashSet<_> = match self.keystore.keys(KEY_TYPE) {
             Ok(keys) => keys.into_iter().collect(),
             Err(e) => {
-                warn!(target: "aleph-data-store", "Error accessing keystore: {}", e);
+                warn!(target: "setbft-data-store", "Error accessing keystore: {}", e);
                 return None;
             }
         };
-        trace!(target: "aleph-data-store", "Found {:?} consensus keys in our local keystore {:?}", our_consensus_keys.len(), our_consensus_keys);
+        trace!(target: "setbft-data-store", "Found {:?} consensus keys in our local keystore {:?}", our_consensus_keys.len(), our_consensus_keys);
         authorities
             .iter()
             .position(|pkey| our_consensus_keys.contains(&pkey.to_raw_vec()))

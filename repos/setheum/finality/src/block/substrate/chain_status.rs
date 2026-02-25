@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -31,7 +31,7 @@ use sp_runtime::traits::{Block as SubstrateBlock, Header as SubstrateHeader};
 
 use crate::{
     primitives ::{
-        Block, BlockNumber, Hash as AlephHash, Header as AlephHeader, ALEPH_ENGINE_ID,
+        Block, BlockNumber, Hash as SetBFTHash, Header as SetBFTHeader, SETBFT_ENGINE_ID,
     },
     block::{
         substrate::{Justification, LOG_TARGET},
@@ -45,9 +45,9 @@ use crate::{
 /// What can go wrong when checking chain status
 #[derive(Debug)]
 pub enum Error {
-    MissingHash(AlephHash),
-    MissingBody(AlephHash),
-    MissingJustification(AlephHash),
+    MissingHash(SetBFTHash),
+    MissingBody(SetBFTHash),
+    MissingJustification(SetBFTHash),
     Backend(BackendError),
     MismatchedId,
     NoGenesisBlock,
@@ -94,7 +94,7 @@ impl From<BackendError> for Error {
 #[derive(Clone)]
 pub struct SubstrateChainStatus {
     backend: Arc<TFullBackend<Block>>,
-    genesis_header: AlephHeader,
+    genesis_header: SetBFTHeader,
 }
 
 impl SubstrateChainStatus {
@@ -114,22 +114,22 @@ impl SubstrateChainStatus {
         self.backend.blockchain().info()
     }
 
-    fn hash_for_number(&self, number: BlockNumber) -> Result<Option<AlephHash>, BackendError> {
+    fn hash_for_number(&self, number: BlockNumber) -> Result<Option<SetBFTHash>, BackendError> {
         self.backend.blockchain().hash(number)
     }
 
-    fn header_for_hash(&self, hash: AlephHash) -> Result<Option<AlephHeader>, BackendError> {
+    fn header_for_hash(&self, hash: SetBFTHash) -> Result<Option<SetBFTHeader>, BackendError> {
         self.backend.blockchain().header(hash)
     }
 
     fn body_for_hash(
         &self,
-        hash: AlephHash,
+        hash: SetBFTHash,
     ) -> Result<Option<Vec<<Block as SubstrateBlock>::Extrinsic>>, BackendError> {
         self.backend.blockchain().body(hash)
     }
 
-    fn header(&self, id: &BlockId) -> Result<Option<AlephHeader>, Error> {
+    fn header(&self, id: &BlockId) -> Result<Option<SetBFTHeader>, Error> {
         let maybe_header = self.header_for_hash(id.hash)?;
         match maybe_header
             .as_ref()
@@ -140,7 +140,7 @@ impl SubstrateChainStatus {
         }
     }
 
-    fn justification(&self, header: AlephHeader) -> Result<Option<Justification>, BackendError> {
+    fn justification(&self, header: SetBFTHeader) -> Result<Option<Justification>, BackendError> {
         if header == self.genesis_header {
             return Ok(Some(Justification::genesis_justification(header)));
         };
@@ -148,16 +148,16 @@ impl SubstrateChainStatus {
             .backend
             .blockchain()
             .justifications(header.hash())?
-            .and_then(|j| j.into_justification(ALEPH_ENGINE_ID))
+            .and_then(|j| j.into_justification(SETBFT_ENGINE_ID))
         {
             Some(justification) => justification,
             None => return Ok(None),
         };
 
         match backwards_compatible_decode(encoded_justification) {
-            Ok(aleph_justification) => Ok(Some(Justification::aleph_justification(
+            Ok(setbft_justification) => Ok(Some(Justification::setbft_justification(
                 header,
-                aleph_justification,
+                setbft_justification,
             ))),
 // This should not happen, as we only import correctly encoded justification.
             Err(e) => {
@@ -172,11 +172,11 @@ impl SubstrateChainStatus {
         }
     }
 
-    fn best_hash(&self) -> AlephHash {
+    fn best_hash(&self) -> SetBFTHash {
         self.info().best_hash
     }
 
-    fn finalized_hash(&self) -> AlephHash {
+    fn finalized_hash(&self) -> SetBFTHash {
         self.info().finalized_hash
     }
 }
@@ -232,7 +232,7 @@ impl ChainStatus<Block, Justification> for SubstrateChainStatus {
         }
     }
 
-    fn best_block(&self) -> Result<AlephHeader, Self::Error> {
+    fn best_block(&self) -> Result<SetBFTHeader, Self::Error> {
         let best_hash = self.best_hash();
 
         self.header_for_hash(best_hash)?
@@ -248,7 +248,7 @@ impl ChainStatus<Block, Justification> for SubstrateChainStatus {
             .ok_or(Error::MissingJustification(finalized_hash))
     }
 
-    fn children(&self, id: BlockId) -> Result<Vec<AlephHeader>, Self::Error> {
+    fn children(&self, id: BlockId) -> Result<Vec<SetBFTHeader>, Self::Error> {
 // This checks whether we have the block at all and the provided id is consistent.
         self.header(&id)?;
         Ok(self
@@ -257,24 +257,24 @@ impl ChainStatus<Block, Justification> for SubstrateChainStatus {
             .children(id.hash)?
             .into_iter()
             .map(|hash| self.header_for_hash(hash))
-            .collect::<Result<Vec<Option<AlephHeader>>, BackendError>>()?
+            .collect::<Result<Vec<Option<SetBFTHeader>>, BackendError>>()?
             .into_iter()
             .flatten()
             .collect())
     }
 }
 
-impl HeaderBackend<AlephHeader> for SubstrateChainStatus {
+impl HeaderBackend<SetBFTHeader> for SubstrateChainStatus {
     type Error = Error;
 
-    fn header(&self, id: &BlockId) -> Result<Option<AlephHeader>, Self::Error> {
+    fn header(&self, id: &BlockId) -> Result<Option<SetBFTHeader>, Self::Error> {
         SubstrateChainStatus::header(self, id)
     }
 
     fn header_of_finalized_at(
         &self,
         number: BlockNumber,
-    ) -> Result<Option<AlephHeader>, Self::Error> {
+    ) -> Result<Option<SetBFTHeader>, Self::Error> {
         match self.finalized_at(number) {
             Ok(FinalizationStatus::FinalizedWithJustification(justification)) => {
                 Ok(Some(justification.header().clone()))

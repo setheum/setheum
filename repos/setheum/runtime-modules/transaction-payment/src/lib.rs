@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -293,7 +293,7 @@ pub mod module {
 			+ IsType<<Self as frame_system::Config>::RuntimeCall>;
 
 /// Native currency id, the actual received currency type as fee for
-/// treasury. Should be SEE
+/// treasury. Should be SEU
 		#[pallet::constant]
 		type NativeCurrencyId: Get<CurrencyId>;
 
@@ -1252,7 +1252,7 @@ where
 // tipPerWeight = tipPerWight // TipPerWeightStep * TipPerWeightStep
 //              = tip // bounded_{weight|length} / TipPerWeightStep * TipPerWeightStep
 // priority = tipPerWeight * max_block_{weight|length}
-// MaxTipsOfPriority = 10_000 SEE = 10^16.
+// MaxTipsOfPriority = 10_000 SEU = 10^16.
 // `MaxTipsOfPriority * max_block_{weight|length}` will overflow, so div `TipPerWeightStep` here.
 		let max_reward = |val: PalletBalanceOf<T>| {
 			val.checked_div(T::TipPerWeightStep::get())

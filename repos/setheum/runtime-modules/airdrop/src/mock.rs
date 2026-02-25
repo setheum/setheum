@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -54,11 +54,8 @@ pub type BlockNumber = u64;
 pub const TREASURY: AccountId = AccountId32::new([0u8; 32]);
 pub const ALICE: AccountId = AccountId32::new([2u8; 32]);
 pub const BOB: AccountId = AccountId32::new([3u8; 32]);
-pub const SETR: CurrencyId = CurrencyId::Token(TokenSymbol::SETR);
-pub const SETUSD: CurrencyId = CurrencyId::Token(TokenSymbol::SETUSD);
-pub const SEE: CurrencyId = CurrencyId::Token(TokenSymbol::SEE);
-pub const DNAR: CurrencyId = CurrencyId::Token(TokenSymbol::DNAR);
-pub const HELP: CurrencyId = CurrencyId::Token(TokenSymbol::HELP);
+pub const SEUSD: CurrencyId = CurrencyId::Token(TokenSymbol::SEUSD);
+pub const SEU: CurrencyId = CurrencyId::Token(TokenSymbol::SEU);
 
 mod airdrop {
 	pub use super::super::*;
@@ -114,14 +111,10 @@ impl module_tokens::Config for Runtime {
 
 parameter_types! {
 	pub StableCurrencyIds: Vec<CurrencyId> = vec![
-		SETR,
-		SETUSD,
+		SEUSD,
 	];
-	pub const SetterCurrencyId: CurrencyId = SETR;  // Setter  currency ticker is SETR/
-	pub const GetSetUSDId: CurrencyId = SETUSD;  // SetDollar currency ticker is SETUSD/
-	pub const GetNativeCurrencyId: CurrencyId = SEE;  // Setheum native currency ticker is SEE/
-	pub const GetDinarCurrencyId: CurrencyId = DNAR;  // Setheum native currency ticker is SEE/
-	pub const GetHelpCurrencyId: CurrencyId = HELP;  // Setheum native currency ticker is SEE/
+	pub const GetSetUSDId: CurrencyId = SEUSD;  // SetDollar currency ticker is SEUSD/
+	pub const GetNativeCurrencyId: CurrencyId = SEU;  // Setheum native currency ticker is SEU/
 	pub const AirdropPalletId: PalletId = PalletId(*b"set/drop");
 	pub const MaxAirdropListSize: usize = 4;
 }
@@ -162,21 +155,12 @@ impl Default for ExtBuilder {
 	fn default() -> Self {
 		Self {
 			_balances: vec![
-				(ALICE, SETR, 1000),
-				(BOB, SETR, 1000),
-				(TREASURY, SETR, 1000),
-				(ALICE, SETUSD, 1000),
-				(BOB, SETUSD, 1000),
-				(TREASURY, SETUSD, 1000),
-				(ALICE, SEE, 1000),
-				(BOB, SEE, 1000),
-				(TREASURY, SEE, 1000),
-				(ALICE, DNAR, 1000),
-				(BOB, DNAR, 1000),
-				(TREASURY, DNAR, 1000),
-				(ALICE, HELP, 1000),
-				(BOB, HELP, 1000),
-				(TREASURY, HELP, 1000),
+				(ALICE, SEUSD, 1000),
+				(BOB, SEUSD, 1000),
+				(TREASURY, SEUSD, 1000),
+				(ALICE, SEU, 1000),
+				(BOB, SEU, 1000),
+				(TREASURY, SEU, 1000),
 			],
 		}
 	}

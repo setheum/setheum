@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -161,7 +161,7 @@ pub mod module {
 
 /// The stable currency id
 		#[pallet::constant]
-		type GetUSSDCurrencyId: Get<CurrencyId>;
+		type GetSEUSDCurrencyId: Get<CurrencyId>;
 
 /// Currency to transfer assets
 		type Currency: MultiCurrency<Self::AccountId, CurrencyId = CurrencyId, Balance = Balance>;
@@ -445,7 +445,7 @@ impl<T: Config> Pallet<T> {
 
 // calculate how much collateral to offset target in settle price
 		let settle_price =
-			T::PriceSource::get_relative_price(T::GetUSSDCurrencyId::get(), collateral_auction.currency_id)
+			T::PriceSource::get_relative_price(T::GetSEUSDCurrencyId::get(), collateral_auction.currency_id)
 				.ok_or(Error::<T>::InvalidFeedPrice)?;
 		let confiscate_collateral_amount = if collateral_auction.always_forward() {
 			collateral_auction.amount
@@ -564,7 +564,7 @@ impl<T: Config> Pallet<T> {
 // if there's bid before, return stablecoin from new bidder to last bidder
 				if let Some(last_bidder) = last_bidder {
 					let refund = collateral_auction.payment_amount(last_bid_price);
-					T::Currency::transfer(T::GetUSSDCurrencyId::get(), &new_bidder, last_bidder, refund)?;
+					T::Currency::transfer(T::GetSEUSDCurrencyId::get(), &new_bidder, last_bidder, refund)?;
 
 					payment = payment
 						.checked_sub(refund)

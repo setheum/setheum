@@ -1,39 +1,22 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
+
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
-// SPDX-License-Identifier: Apache-2.0 OR MIT
+// Copyright (C) 2019-Present Afsall Labs.
+// SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// 	http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 
-// Alternatively, this file is available under the MIT License:
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 #![cfg_attr(not(feature = "std"), no_std)]
 #![doc = include_str!("../README.md")]
@@ -43,7 +26,7 @@ mod impls;
 mod mock;
 #[cfg(test)]
 mod tests;
-mod traits;
+mod impls;
 
 use frame_support::traits::StorageVersion;
 pub use pallet::*;
@@ -77,21 +60,21 @@ pub mod pallet {
     use primitives::{BannedValidators, CommitteeSeats, ElectionOpenness};
 
     use super::*;
-    use crate::traits::ValidatorProvider;
+    use module_traits::ValidatorProvider;
 
     #[pallet::config]
     pub trait Config: frame_system::Config {
         type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
-/// Something that provides data for elections.
+        /// Something that provides data for elections.
         type DataProvider: ElectionDataProvider<
             AccountId = Self::AccountId,
             BlockNumber = BlockNumberFor<Self>,
         >;
         type ValidatorProvider: ValidatorProvider<AccountId = Self::AccountId>;
-/// The maximum number of winners that can be elected by this `ElectionProvider`
-/// implementation.
-///
-/// Note: This must always be greater or equal to `T::DataProvider::desired_targets()`.
+        /// The maximum number of winners that can be elected by this `ElectionProvider`
+        /// implementation.
+        ///
+        /// Note: This must always be greater or equal to `T::DataProvider::desired_targets()`.
         #[pallet::constant]
         type MaxWinners: Get<u32>;
         type BannedValidators: BannedValidators<AccountId = Self::AccountId>;
@@ -100,7 +83,7 @@ pub mod pallet {
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
-/// Committee for the next era has changed
+        /// Committee for the next era has changed
         ChangeValidators(Vec<T::AccountId>, Vec<T::AccountId>, CommitteeSeats),
     }
 
@@ -109,7 +92,7 @@ pub mod pallet {
     #[pallet::without_storage_info]
     pub struct Pallet<T>(_);
 
-/// Desirable size of a committee, see [`CommitteeSeats`].
+    /// Desirable size of a committee, see [`CommitteeSeats`].
     #[pallet::storage]
     pub type CommitteeSize<T> = StorageValue<_, CommitteeSeats, ValueQuery>;
 
@@ -118,33 +101,34 @@ pub mod pallet {
         CommitteeSize::<T>::get()
     }
 
-/// Desired size of a committee in effect from a new era.
+    /// Desired size of a committee in effect from a new era.
     #[pallet::storage]
     pub type NextEraCommitteeSize<T> =
         StorageValue<_, CommitteeSeats, ValueQuery, DefaultNextEraCommitteeSize<T>>;
 
-/// Next era's list of reserved validators.
+    /// Next era's list of reserved validators.
     #[pallet::storage]
     pub type NextEraReservedValidators<T: Config> = StorageValue<_, Vec<T::AccountId>, ValueQuery>;
 
-/// Current era's list of reserved validators.
+    /// Current era's list of reserved validators.
     #[pallet::storage]
+    #[pallet::getter(fn current_era_validators)]
     pub type CurrentEraValidators<T: Config> =
         StorageValue<_, EraValidators<T::AccountId>, ValueQuery>;
 
-/// Next era's list of non reserved validators.
+    /// Next era's list of non reserved validators.
     #[pallet::storage]
     pub type NextEraNonReservedValidators<T: Config> =
         StorageValue<_, Vec<T::AccountId>, ValueQuery>;
 
-/// Default value for elections openness.
+    /// Default value for elections openness.
     #[pallet::type_value]
     pub fn DefaultOpenness<T: Config>() -> ElectionOpenness {
         ElectionOpenness::Permissioned
     }
 
-/// Openness of the elections, whether we allow all candidates that bonded enough tokens or
-/// the validators list is managed by sudo
+    /// Openness of the elections, whether we allow all candidates that bonded enough tokens or
+    /// the validators list is managed by sudo
     #[pallet::storage]
     pub type Openness<T> = StorageValue<_, ElectionOpenness, ValueQuery, DefaultOpenness<T>>;
 
@@ -184,7 +168,7 @@ pub mod pallet {
             Ok(())
         }
 
-/// Set openness of the elections
+        /// Set openness of the elections
         #[pallet::call_index(4)]
         #[pallet::weight((T::BlockWeights::get().max_block, DispatchClass::Operational))]
         pub fn set_elections_openness(
@@ -296,8 +280,8 @@ pub mod pallet {
     pub enum ElectionError {
         DataProvider(&'static str),
 
-/// Winner number is greater than
-/// [`Config::MaxWinners`]
+        /// Winner number is greater than
+        /// [`Config::MaxWinners`]
         TooManyWinners,
     }
 
@@ -323,9 +307,9 @@ pub mod pallet {
             false
         }
 
-/// We calculate the supports for each validator. The external validators are chosen as:
-/// 1) "`NextEraNonReservedValidators` that are staking and are not banned" in case of Permissioned ElectionOpenness
-/// 2) "All staking and not banned validators" in case of Permissionless ElectionOpenness
+        /// We calculate the supports for each validator. The external validators are chosen as:
+        /// 1) "`NextEraNonReservedValidators` that are staking and are not banned" in case of Permissioned ElectionOpenness
+        /// 2) "All staking and not banned validators" in case of Permissionless ElectionOpenness
         fn elect() -> Result<BoundedSupportsOf<Self>, Self::Error> {
             let staking_validators =
                 Self::DataProvider::electable_targets(DataProviderBounds::default())
@@ -354,10 +338,10 @@ pub mod pallet {
                     .collect(),
                 ElectionOpenness::Permissionless => eligible_non_reserved.into_iter().collect(),
             };
-// We store new list here to ensure that validators that end up in the result of the elect
-// method are a disjoint union of NextEraReservedValidators and NextEraNonReservedValidators.
-// This condition is important since results of elect ends up in pallet staking while the above lists
-// are used in our session manager, so we have to ensure consistency between them.
+            // We store new list here to ensure that validators that end up in the result of the elect
+            // method are a disjoint union of NextEraReservedValidators and NextEraNonReservedValidators.
+            // This condition is important since results of elect ends up in pallet staking while the above lists
+            // are used in our session manager, so we have to ensure consistency between them.
             NextEraNonReservedValidators::<T>::put(new_non_reserved_validators.clone());
 
             let eligible_validators = staking_reserved_validators
@@ -368,8 +352,8 @@ pub mod pallet {
                 .map(|id| {
                     (
                         id,
-// Under normal circumstances support will never be `0` since 'self-vote'
-// is counted in.
+                        // Under normal circumstances support will never be `0` since 'self-vote'
+                        // is counted in.
                         Support {
                             total: 0,
                             voters: Vec::new(),
@@ -381,8 +365,8 @@ pub mod pallet {
             let voters = Self::DataProvider::electing_voters(DataProviderBounds::default())
                 .map_err(Self::Error::DataProvider)?;
             for (voter, vote, targets) in voters {
-// The parameter `Staking::MAX_NOMINATIONS` is set to 1 which guarantees that
-// `len(targets) == 1`.
+                // The parameter `Staking::MAX_NOMINATIONS` is set to 1 which guarantees that
+                // `len(targets) == 1`.
                 let member = &targets[0];
                 if let Some(support) = supports.get_mut(member) {
                     support.total += vote as u128;

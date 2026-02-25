@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -28,14 +28,14 @@ mod types;
 
 use std::fmt::Debug;
 
-use aleph_bft_crypto::{PartialMultisignature, Signature};
+use setbft_bft_crypto::{PartialMultisignature, Signature};
 pub use crypto::Keychain;
 pub use current::{
-    create_aleph_config as current_create_aleph_config, run_member as run_current_member,
+    create_setbft_config as current_create_setbft_config, run_member as run_current_member,
     NetworkData as CurrentNetworkData, VERSION as CURRENT_VERSION,
 };
 pub use legacy::{
-    create_aleph_config as legacy_create_aleph_config, run_member as run_legacy_member,
+    create_setbft_config as legacy_create_setbft_config, run_member as run_legacy_member,
     NetworkData as LegacyNetworkData, VERSION as LEGACY_VERSION,
 };
 pub use network::NetworkWrapper;
@@ -44,11 +44,11 @@ pub use traits::{Hash, SpawnHandle, Wrapper as HashWrapper};
 pub use types::{NodeCount, NodeIndex, Recipient};
 
 /// Wrapper for `SignatureSet` to be able to implement both legacy and current `PartialMultisignature` trait.
-/// Inner `SignatureSet` is imported from `aleph_bft_crypto` with fixed version for compatibility reasons:
+/// Inner `SignatureSet` is imported from `setbft_bft_crypto` with fixed version for compatibility reasons:
 /// this is also used in the justification which already exist in our chain history and we
 /// need to be careful with changing this.
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Encode, Decode)]
-pub struct SignatureSet<Signature>(pub aleph_bft_crypto::SignatureSet<Signature>);
+pub struct SignatureSet<Signature>(pub setbft_bft_crypto::SignatureSet<Signature>);
 
 impl<S: Clone> SignatureSet<S> {
     pub fn size(&self) -> NodeCount {
@@ -56,7 +56,7 @@ impl<S: Clone> SignatureSet<S> {
     }
 
     pub fn with_size(len: NodeCount) -> Self {
-        SignatureSet(aleph_bft_crypto::SignatureSet::with_size(len.into()))
+        SignatureSet(setbft_bft_crypto::SignatureSet::with_size(len.into()))
     }
 
     pub fn iter(&self) -> impl Iterator<Item = (NodeIndex, &S)> {
@@ -84,25 +84,25 @@ impl<S: 'static> IntoIterator for SignatureSet<S> {
     }
 }
 
-impl<S: Signature> legacy_aleph_bft::PartialMultisignature for SignatureSet<S> {
+impl<S: Signature> legacy_setbft_bft::PartialMultisignature for SignatureSet<S> {
     type Signature = S;
 
     fn add_signature(
         self,
         signature: &Self::Signature,
-        index: legacy_aleph_bft::NodeIndex,
+        index: legacy_setbft_bft::NodeIndex,
     ) -> Self {
         SignatureSet::add_signature(self, signature, index.into())
     }
 }
 
-impl<S: Signature> current_aleph_bft::PartialMultisignature for SignatureSet<S> {
+impl<S: Signature> current_setbft_bft::PartialMultisignature for SignatureSet<S> {
     type Signature = S;
 
     fn add_signature(
         self,
         signature: &Self::Signature,
-        index: current_aleph_bft::NodeIndex,
+        index: current_setbft_bft::NodeIndex,
     ) -> Self {
         SignatureSet::add_signature(self, signature, index.into())
     }

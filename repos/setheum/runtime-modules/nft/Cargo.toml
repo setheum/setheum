@@ -12,7 +12,7 @@ serde = { workspace = true, features = ["alloc", "derive"] }
 parity-scale-codec = { workspace = true, features = ["max-encoded-len"] }
 scale-info = { workspace = true }
 
-frame-benchmarking = { workspace = true, optional = true}
+frame-benchmarking = { workspace = true, optional = true }
 frame-support = { workspace = true }
 frame-system = { workspace = true }
 pallet-proxy = { workspace = true }

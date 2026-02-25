@@ -1,0 +1,82 @@
+[package]
+name = "finality-setbft"
+version = "0.11.0"
+license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
+authors.workspace = true
+edition.workspace = true
+homepage.workspace = true
+repository.workspace = true
+
+[dependencies]
+# fixed version to 'freeze' some types used in abft, mainly `SignatureSet` used in justification and signature aggregation
+set-bft-crypto = { workspace = true }
+
+current-set-bft = { package = "set-bft", path = "../../../set-bft/consensus" }
+current-set-bft-rmc = { package = "set-bft-rmc", path = "../../../set-bft/rmc" }
+legacy-set-bft = { package = "set-bft", path = "../../../set-bft/consensus" }
+legacy-set-bft-rmc = { package = "set-bft-rmc", path = "../../../set-bft/rmc" }
+
+network-clique = { workspace = true }
+primitives = { workspace = true }
+legacy-setbft-aggregator = { package = "aggregator", path = "../aggregator" }
+current-setbft-aggregator = { path = "../aggregator", package = "aggregator" }
+finality-rate-limiter = { package = "finality-rate-limiter", path = "../rate-limiter" }
+fake-runtime-api = { workspace = true, features = ["std"] }
+module-setbft-runtime-api = { workspace = true, features = ["std"] }
+
+async-trait = { workspace = true }
+array-bytes = { workspace = true }
+derive_more = { workspace = true }
+futures = { workspace = true }
+futures-timer = { workspace = true }
+hex = { workspace = true }
+log = { workspace = true }
+lru = { workspace = true }
+parity-scale-codec = { workspace = true, features = ["derive"] }
+parking_lot = { workspace = true }
+rand = { workspace = true }
+serde = { workspace = true }
+static_assertions = { workspace = true }
+tiny-bip39 = { workspace = true }
+tokio = { workspace = true, features = ["sync", "macros", "time", "rt-multi-thread"] }
+libp2p = { workspace = true }
+
+substrate-prometheus-endpoint = { workspace = true }
+
+frame-support = { workspace = true }
+
+sc-client-api = { workspace = true }
+sc-consensus = { workspace = true }
+sc-consensus-aura = { workspace = true }
+sc-keystore = { workspace = true }
+sc-network = { workspace = true }
+sc-network-common = { workspace = true }
+sc-network-sync = { workspace = true }
+sc-network-light = { workspace = true }
+sc-network-transactions = { workspace = true }
+sc-rpc = { workspace = true }
+sc-service = { workspace = true }
+sc-transaction-pool = { workspace = true }
+sc-transaction-pool-api = { workspace = true }
+sc-utils = { workspace = true }
+
+sp-api = { workspace = true }
+sp-application-crypto = { workspace = true }
+sp-blockchain = { workspace = true }
+sp-consensus = { workspace = true }
+sp-consensus-aura = { workspace = true }
+sp-consensus-slots = { workspace = true }
+sp-core = { workspace = true }
+sp-keystore = { workspace = true }
+sp-runtime = { workspace = true }
+sp-timestamp = { workspace = true }
+
+[dev-dependencies]
+substrate-test-runtime-client = { workspace = true }
+substrate-test-runtime = { workspace = true }
+substrate-test-client = { workspace = true }
+sc-block-builder = { workspace = true }
+sc-basic-authorship = { workspace = true }
+
+[features]
+only_legacy = []

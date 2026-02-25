@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,8 +41,8 @@ use crate::{
     Index, Indexed, Keychain as _, NodeCount, NodeIndex, NodeMap, Recipient, Round, Signable,
     Signed, Terminator, UncheckedSigned,
 };
-use aleph_bft_mock::{Data, Hasher64, Keychain, PartialMultisignature, Signature};
-use aleph_bft_rmc::Message as RmcMessage;
+use set_bft_mock::{Data, Hasher64, Keychain, PartialMultisignature, Signature};
+use set_bft_rmc::Message as RmcMessage;
 use futures::{
     channel::{mpsc, oneshot},
     FutureExt, StreamExt,
@@ -266,7 +266,7 @@ impl TestCase {
 
         tokio::spawn(async move {
             alerter_service
-                .run(Terminator::create_root(exit_alerter_rx, "AlephBFT-alerter"))
+                .run(Terminator::create_root(exit_alerter_rx, "SetBFT-alerter"))
                 .await
         });
 

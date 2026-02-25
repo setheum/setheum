@@ -8,8 +8,7 @@ Edfis Exchange needs to support multiple open liquidity reward mechanisms. Each 
 
 ## Pool types:
 
-1. EcdpSetrLiquidityRewards: record the shares and rewards for Setter (SETR) ECDP users who are staking LP tokens.
-2. EcdpUssdLiquidityRewards: record the shares and rewards for Slick USD (USSD) ECDP users who are staking LP tokens.
+2. EcdpUssdLiquidityRewards: record the shares and rewards for Setheum USD (SEUSD) ECDP users who are staking LP tokens.
 3. EdfisLiquidityRewards: record the shares and rewards for Edfis makers who are staking LP token.
 
 ## Rewards accumulation:

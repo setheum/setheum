@@ -5,8 +5,8 @@ set -eou pipefail
 function usage() {
   cat << EOF
 Usage:
-  This script is a demonstration usage of AlephBFT protocol, in which there are N nodes and they want to achieve
-  a consensus with regards to provided data. The data sent to AlephBFT from each node is a stream of integers from range
+  This script is a demonstration usage of SetBFT protocol, in which there are N nodes and they want to achieve
+  a consensus with regards to provided data. The data sent to SetBFT from each node is a stream of integers from range
   [0, N * DATA_ITEMS), where DATA_ITEMS is configurable. Each node of index 'i'  sends to the consensus
   integers from range [i * DATA_ITEMS; (i + 1) * DATA_ITEMS). where 0 <= i < N. At the end, each node makes
   sure that it receives all integers from range [0, N * DATA_ITEMS), each integer exactly once.
@@ -14,8 +14,8 @@ Usage:
   N nodes are started on your machine, and they communicate via UDP. Not all nodes behave correctly - some of them crash
   or are stuck while providing data.
 
-  This script is using aleph-bft-examples-ordering and assumes to be available in a relative folder from this script path
-    ../../target/release/aleph-bft-examples-ordering
+  This script is using set-bft-examples-ordering and assumes to be available in a relative folder from this script path
+    ../../target/release/set-bft-examples-ordering
 
    $0
      [-n|--nodes NODES]
@@ -145,7 +145,7 @@ done
 script_path="${BASH_SOURCE[0]}"
 script_dir=$(dirname "${script_path}")
 ordering_binary_dir=$(realpath "${script_dir}/../../")
-ordering_binary="${ordering_binary_dir}/target/release/aleph-bft-examples-ordering"
+ordering_binary="${ordering_binary_dir}/target/release/set-bft-examples-ordering"
 
 if [[ ! -x "${ordering_binary}" ]]; then
   error "${ordering_binary} does not exist or it's not an executable file!"
@@ -156,7 +156,7 @@ PORTS=($(seq -s , 10000 $(( 10000 + ALL_NODES - 1 ))))
 EXPECTED_FINALIZED_DATA_ITEMS=$(( ALL_NODES * DATA_ITEMS ))
 
 for id in $(seq 0 $(( ALL_NODES - 1 ))); do
-    rm -f "aleph-bft-examples-ordering-backup/${id}.units"
+    rm -f "set-bft-examples-ordering-backup/${id}.units"
     rm -f "node${id}.log"
 done
 

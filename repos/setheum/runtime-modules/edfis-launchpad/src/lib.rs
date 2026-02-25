@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -77,7 +77,6 @@ pub mod module {
 	pub trait Config: frame_system::Config {
 		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
 
-/// The Currency for managing assets related to the SERP (Setheum Elastic Reserve Protocol).
 		type MultiCurrency: MultiLockableCurrency<Self::AccountId, CurrencyId = CurrencyId, Balance = Balance>;
 
 		#[pallet::constant]
@@ -94,7 +93,6 @@ pub mod module {
 		type GetCommission: Get<(u32, u32)>;
 
 /// The amount to be held on deposit by the owner of a crowdfund
-/// - in HighEnd LaunchPad (HELP) currency id. (LaunchPad Token)  
 		type SubmissionDeposit: Get<BalanceOf<Self>>;
 
 /// The minimum amount that must be raised in a crowdsales campaign.

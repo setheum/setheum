@@ -9,7 +9,7 @@ repository.workspace = true
 
 [dependencies]
 parity-scale-codec = { workspace = true }
-libsecp256k1 = { workspace = true, features = ["hmac", "static-context"], optional = true }
+libsecp256k1 = { workspace = true, optional = true, features = ["hmac", "static-context"] }
 scale-info = { workspace = true }
 
 frame-support = { workspace = true }

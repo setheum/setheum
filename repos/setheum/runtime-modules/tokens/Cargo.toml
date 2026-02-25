@@ -8,7 +8,7 @@ homepage.workspace = true
 repository.workspace = true
 
 [dependencies]
-parity-scale-codec = { workspace = true, default-features = false, features = ["max-encoded-len"] }
+parity-scale-codec = { workspace = true, features = ["max-encoded-len"] }
 log = { workspace = true }
 scale-info = { workspace = true }
 serde = { workspace = true, optional = true }
@@ -20,7 +20,7 @@ sp-arithmetic = { workspace = true }
 sp-runtime = { workspace = true }
 sp-std = { workspace = true }
 
-module-traits = { package = "module-traits", path = "../traits", default-features = false }
+module-traits = { workspace = true }
 
 [dev-dependencies]
 pallet-elections-phragmen = { workspace = true, features = ["std"] }

@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -43,7 +43,7 @@ pub use data::MAX_MESSAGE_SIZE;
 pub use handler::DatabaseIO;
 pub use service::{Service, IO};
 
-const LOG_TARGET: &str = "aleph-block-sync";
+const LOG_TARGET: &str = "setbft-block-sync";
 
 /// The identifier of a connected peer.
 pub trait PeerId: Debug + Clone + Hash + Eq {}

@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -56,11 +56,11 @@ impl FinalityRateMetrics {
 
         Ok(FinalityRateMetrics::Prometheus {
             own_finalized: register(
-                Counter::new("aleph_own_finalized_blocks", "no help")?,
+                Counter::new("setbft_own_finalized_blocks", "no help")?,
                 registry,
             )?,
             own_hopeless: register(
-                Counter::new("aleph_own_hopeless_blocks", "no help")?,
+                Counter::new("setbft_own_hopeless_blocks", "no help")?,
                 registry,
             )?,
             imported_cache: Arc::new(Mutex::new(LruCache::new(

@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -44,9 +44,9 @@ use crate::{
     },
     data_io::{
         chain_info::{CachedChainInfoProvider, ChainInfoProvider, SubstrateChainInfoProvider},
-        proposal::{AlephProposal, PendingProposalStatus, ProposalStatus},
+        proposal::{SetBFTProposal, PendingProposalStatus, ProposalStatus},
         status_provider::get_proposal_status,
-        AlephNetworkMessage,
+        SetBFTNetworkMessage,
     },
     network::data::{
         component::{Network as ComponentNetwork, Receiver, SimpleNetwork},
@@ -57,7 +57,7 @@ use crate::{
     BlockId, SessionBoundaries,
 };
 
-const LOG_TARGET: &str = "aleph-data-store";
+const LOG_TARGET: &str = "setbft-data-store";
 
 type MessageId = u64;
 
@@ -87,13 +87,13 @@ impl PendingProposalInfo {
 }
 
 #[derive(PartialEq, Eq, Clone, Debug)]
-pub struct PendingMessageInfo<UH: UnverifiedHeader, M: AlephNetworkMessage<UH>> {
+pub struct PendingMessageInfo<UH: UnverifiedHeader, M: SetBFTNetworkMessage<UH>> {
     message: M,
 // Data items that we still wait for
-    pending_proposals: HashSet<AlephProposal<UH>>,
+    pending_proposals: HashSet<SetBFTProposal<UH>>,
 }
 
-impl<UH: UnverifiedHeader, M: AlephNetworkMessage<UH>> PendingMessageInfo<UH, M> {
+impl<UH: UnverifiedHeader, M: SetBFTNetworkMessage<UH>> PendingMessageInfo<UH, M> {
     fn new(message: M) -> Self {
         PendingMessageInfo {
             message,
@@ -145,11 +145,11 @@ impl Display for Error {
     }
 }
 
-// DataStore is the data availability proxy for the AlephBFT protocol, meaning that whenever we receive
-// a message `m` we must check whether the data `m.included_data()` is available to pass it to AlephBFT.
-// Data is represented by the `AlephData` type -- we refer to the docs of this type to learn what
-// it represents and how honest nodes form `AlephData` instances.
-// An `AlephData` is considered available if it is either `Empty` or it is `HeadProposal(p)` where
+// DataStore is the data availability proxy for the SetBFT protocol, meaning that whenever we receive
+// a message `m` we must check whether the data `m.included_data()` is available to pass it to SetBFT.
+// Data is represented by the `SetBFTData` type -- we refer to the docs of this type to learn what
+// it represents and how honest nodes form `SetBFTData` instances.
+// An `SetBFTData` is considered available if it is either `Empty` or it is `HeadProposal(p)` where
 // `p` is a proposal satisfying one of the conditions below:
 // 1) the top block of `p`s branch is available AND the branch is correct (hashes correspond to existing blocks
 //    with correct number and the ancestry is correct) AND the parent of the bottom block in the branch is finalized.
@@ -184,7 +184,7 @@ impl Display for Error {
 //       were missed by the block import subscription.
 //    b) To explicitly request blocks that are the cause of some proposals pending for a long time.
 
-/// This component is used for filtering available data for Aleph Network.
+/// This component is used for filtering available data for SetBFT Network.
 /// It needs to be started by calling the run method.
 pub struct DataStore<H, HB, BEV, RB, Message, R, V>
 where
@@ -192,7 +192,7 @@ where
     HB: HeaderBackend<H> + 'static,
     BEV: BlockchainEvents<H>,
     RB: RequestBlocks<H::Unverified>,
-    Message: AlephNetworkMessage<H::Unverified>
+    Message: SetBFTNetworkMessage<H::Unverified>
         + std::fmt::Debug
         + Send
         + Sync
@@ -203,14 +203,14 @@ where
     V: HeaderVerifier<H>,
 {
     next_free_id: MessageId,
-    pending_proposals: HashMap<AlephProposal<H::Unverified>, PendingProposalInfo>,
-    event_triggers: HashMap<ChainEvent, HashSet<AlephProposal<H::Unverified>>>,
+    pending_proposals: HashMap<SetBFTProposal<H::Unverified>, PendingProposalInfo>,
+    event_triggers: HashMap<ChainEvent, HashSet<SetBFTProposal<H::Unverified>>>,
 // We use BtreeMap instead of HashMap to be able to fetch the Message with lowest MessageId
 // when pruning messages.
     pending_messages: BTreeMap<MessageId, PendingMessageInfo<H::Unverified, Message>>,
     chain_info_provider: CachedChainInfoProvider<SubstrateChainInfoProvider<H, HB>>,
     verifier: V,
-    available_proposals_cache: LruCache<AlephProposal<H::Unverified>, ProposalStatus>,
+    available_proposals_cache: LruCache<SetBFTProposal<H::Unverified>, ProposalStatus>,
     num_triggers_registered_since_last_pruning: usize,
     highest_finalized_num: BlockNumber,
     session_boundaries: SessionBoundaries,
@@ -218,7 +218,7 @@ where
     block_requester: RB,
     config: DataStoreConfig,
     messages_from_network: R,
-    messages_for_aleph: UnboundedSender<Message>,
+    messages_for_setbft: UnboundedSender<Message>,
 }
 
 impl<H, HB, BEV, RB, Message, R, V> DataStore<H, HB, BEV, RB, Message, R, V>
@@ -227,7 +227,7 @@ where
     HB: HeaderBackend<H>,
     BEV: BlockchainEvents<H>,
     RB: RequestBlocks<H::Unverified>,
-    Message: AlephNetworkMessage<H::Unverified>
+    Message: SetBFTNetworkMessage<H::Unverified>
         + std::fmt::Debug
         + Send
         + Sync
@@ -247,7 +247,7 @@ where
         config: DataStoreConfig,
         component_network: N,
     ) -> (Self, impl DataNetwork<Message>) {
-        let (messages_for_aleph, messages_from_data_store) = mpsc::unbounded();
+        let (messages_for_setbft, messages_from_data_store) = mpsc::unbounded();
         let (messages_to_network, messages_from_network) = component_network.into();
         let highest_finalized_num = header_backend.top_finalized_id().number();
         let chain_info_provider = CachedChainInfoProvider::new(
@@ -271,7 +271,7 @@ where
                 block_requester,
                 config,
                 messages_from_network,
-                messages_for_aleph,
+                messages_for_setbft,
             },
             SimpleNetwork::new(messages_from_data_store, messages_to_network),
         )
@@ -428,7 +428,7 @@ where
 
     fn register_block_import_trigger(
         &mut self,
-        proposal: &AlephProposal<H::Unverified>,
+        proposal: &SetBFTProposal<H::Unverified>,
         block: &BlockId,
     ) {
         self.num_triggers_registered_since_last_pruning += 1;
@@ -440,7 +440,7 @@ where
 
     fn register_finality_trigger(
         &mut self,
-        proposal: &AlephProposal<H::Unverified>,
+        proposal: &SetBFTProposal<H::Unverified>,
         number: BlockNumber,
     ) {
         self.num_triggers_registered_since_last_pruning += 1;
@@ -452,7 +452,7 @@ where
         }
     }
 
-    fn register_next_finality_trigger(&mut self, proposal: &AlephProposal<H::Unverified>) {
+    fn register_next_finality_trigger(&mut self, proposal: &SetBFTProposal<H::Unverified>) {
         if self.highest_finalized_num < proposal.number_below_branch() {
             self.register_finality_trigger(proposal, proposal.number_below_branch());
         } else if self.highest_finalized_num < proposal.number_top_block() {
@@ -490,7 +490,7 @@ where
         }
     }
 
-    fn on_proposal_available(&mut self, proposal: &AlephProposal<H::Unverified>) {
+    fn on_proposal_available(&mut self, proposal: &SetBFTProposal<H::Unverified>) {
         if let Some(proposal_info) = self.pending_proposals.remove(proposal) {
             for id in proposal_info.messages {
                 self.remove_proposal_from_pending_message(proposal, id);
@@ -500,7 +500,7 @@ where
 
 // Makes an availability check for `data` and updates its status. Outputs whether the bump resulted in
 // this proposal becoming available.
-    fn bump_proposal(&mut self, proposal: &AlephProposal<H::Unverified>) -> bool {
+    fn bump_proposal(&mut self, proposal: &SetBFTProposal<H::Unverified>) -> bool {
 // Some minor inefficiencies in HashMap access below because of borrow checker.
         let old_status = match self.pending_proposals.get(proposal) {
             None => {
@@ -542,7 +542,7 @@ where
 // Outputs the current status of the proposal based on the `old_status` (for optimization).
     fn check_proposal_availability(
         &mut self,
-        proposal: &AlephProposal<H::Unverified>,
+        proposal: &SetBFTProposal<H::Unverified>,
         old_status: Option<&ProposalStatus>,
     ) -> ProposalStatus {
         if let Some(status) = self.available_proposals_cache.get(proposal) {
@@ -575,7 +575,7 @@ where
 // If the proposal is available, message_info is not modified.
     fn add_message_proposal_dependency(
         &mut self,
-        proposal: &AlephProposal<H::Unverified>,
+        proposal: &SetBFTProposal<H::Unverified>,
         message_info: &mut PendingMessageInfo<H::Unverified, Message>,
         id: MessageId,
     ) {
@@ -625,7 +625,7 @@ where
             "Sending message from DataStore {:?}",
             message
         );
-        if let Err(e) = self.messages_for_aleph.unbounded_send(message) {
+        if let Err(e) = self.messages_for_setbft.unbounded_send(message) {
             error!(
                 target: LOG_TARGET,
                 "Unable to send a ready message from DataStore {}", e
@@ -642,7 +642,7 @@ where
 // proposals a message waits for.
     fn remove_proposal_from_pending_message(
         &mut self,
-        proposal: &AlephProposal<H::Unverified>,
+        proposal: &SetBFTProposal<H::Unverified>,
         id: MessageId,
     ) {
         let mut message_info = match self.pending_messages.remove(&id) {
@@ -668,7 +668,7 @@ where
 
     fn remove_message_id_from_pending_proposal(
         &mut self,
-        proposal: &AlephProposal<H::Unverified>,
+        proposal: &SetBFTProposal<H::Unverified>,
         id: MessageId,
     ) {
         if let Occupied(mut proposal_entry) = self.pending_proposals.entry(proposal.clone()) {
@@ -779,7 +779,7 @@ where
     HB: HeaderBackend<H>,
     BEV: BlockchainEvents<H> + Send + Sync + 'static,
     RB: RequestBlocks<H::Unverified>,
-    Message: AlephNetworkMessage<H::Unverified>
+    Message: SetBFTNetworkMessage<H::Unverified>
         + std::fmt::Debug
         + Send
         + Sync

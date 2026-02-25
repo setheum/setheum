@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,11 +41,11 @@ use crate::{Data, Hasher, NodeIndex, Round};
 
 /// The source of data items that consensus should order.
 ///
-/// AlephBFT internally calls [`DataProvider::get_data`] whenever a new unit is created and data
+/// SetBFT internally calls [`DataProvider::get_data`] whenever a new unit is created and data
 /// needs to be placed inside.
 ///
 /// We refer to the documentation
-/// https://cardinal-cryptography.github.io/AlephBFT/aleph_bft_api.html for a discussion and
+/// https://cardinal-cryptography.github.io/SetBFT/set_bft_api.html for a discussion and
 /// examples of how this trait can be implemented.
 #[async_trait]
 pub trait DataProvider: Sync + Send + 'static {
@@ -65,11 +65,11 @@ pub trait FinalizationHandler<D: Data>: Sync + Send + 'static {
     fn data_finalized(&mut self, data: D);
 }
 
-/// Represents state of the main internal data structure of AlephBFT (i.e. direct acyclic graph) used for
+/// Represents state of the main internal data structure of SetBFT (i.e. direct acyclic graph) used for
 /// achieving consensus.
 ///
 /// Instances of this type are returned indirectly by [`member::run_session`] method using the
-/// [`UnitFinalizationHandler`] trait. This way it allows to reconstruct the DAG's structure used by AlephBFT,
+/// [`UnitFinalizationHandler`] trait. This way it allows to reconstruct the DAG's structure used by SetBFT,
 /// which can be then used for example for the purpose of node's performance evaluation.
 pub struct OrderedUnit<D: Data, H: Hasher> {
     pub data: Option<D>,

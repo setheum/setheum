@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@ use setheum_runtime::{
 //
 	AccountId,
 //
-	BabeConfig, BalancesConfig, GenesisConfig, SystemConfig,
+	AuraConfig, BalancesConfig, GenesisConfig, SystemConfig,
 	SS58Prefix, opaque::SessionKeys, get_all_module_accounts,
 	ImOnlineId, IndicesConfig, SessionConfig, StakingConfig,
 	AuthorityDiscoveryId, EVMConfig, AuthorityDiscoveryConfig,
@@ -43,10 +43,10 @@ use setheum_runtime::{
 	TokensConfig,
 	NativeTokenExistentialDeposit, MaxNativeTokenExistentialDeposit,
 //
-	SEE, SERP, DNAR, HELP, SETR, SETUSD,
+	SEU, SEUSD,
 };
-use sp_consensus_babe::AuthorityId as BabeId;
-use sp_finality_grandpa::AuthorityId as GrandpaId;
+use sp_consensus_aura::sr25519::AuthorityId as AuraId;
+// AuraId no longer needed with SetBFT
 use sp_runtime::traits::{IdentifyAccount};
 use sp_runtime::{traits::Zero, FixedPointNumber, FixedU128};
 use sc_service::{ChainType, Properties};
@@ -62,7 +62,7 @@ use hex_literal::hex;
 use sp_core::{crypto::UncheckedInto, bytes::from_hex};
 
 use setheum_primitives::{AccountPublic, Balance, Nonce, currency::TokenInfo, TradingPair};
-use setheum_runtime::BABE_GENESIS_EPOCH_CONFIG;
+// BABE_GENESIS_EPOCH_CONFIG no longer used
 use module_nft::GenesisConfig as NFTConfig;
 
 // The URL for the telemetry server.
@@ -85,8 +85,8 @@ pub struct Extensions {
 pub type ChainSpec = sc_service::GenericChainSpec<GenesisConfig, Extensions>;
 
 fn get_session_keys(
-	grandpa: GrandpaId,
-	babe: BabeId,
+	// grandpa: no longer needed with SetBFT
+	aura: AuraId,
 	im_online: ImOnlineId,
 	authority_discovery: AuthorityDiscoveryId,
 	) -> SessionKeys {
@@ -110,12 +110,12 @@ where
 
 /// Generate an authority keys.
 pub fn get_authority_keys_from_seed(seed: &str)
-	-> (AccountId, AccountId, GrandpaId, BabeId, ImOnlineId, AuthorityDiscoveryId) {
+	-> (AccountId, AccountId, AuraId, AuraId, ImOnlineId, AuthorityDiscoveryId) {
 	(
 		get_account_id_from_seed::<sr25519::Public>(&format!("{}/stash", seed)),
 		get_account_id_from_seed::<sr25519::Public>(seed),
-		get_from_seed::<GrandpaId>(seed),
-		get_from_seed::<BabeId>(seed),
+		get_from_seed::<AuraId>(seed),
+		get_from_seed::<AuraId>(seed),
 		get_from_seed::<ImOnlineId>(seed),
 		get_from_seed::<AuthorityDiscoveryId>(seed),
 	)
@@ -418,7 +418,7 @@ pub fn mainnet_config() -> Result<ChainSpec, String> {
 
 fn dev_genesis(
 	wasm_binary: &[u8],
-	initial_authorities: Vec<(AccountId, AccountId, GrandpaId, BabeId, ImOnlineId, AuthorityDiscoveryId)>,
+	initial_authorities: Vec<(AccountId, AccountId, AuraId, AuraId, ImOnlineId, AuthorityDiscoveryId)>,
 	root_key: AccountId,
 	endowed_accounts: Vec<AccountId>,
 ) -> GenesisConfig {
@@ -427,8 +427,8 @@ fn dev_genesis(
 
 	let evm_genesis_accounts = evm_genesis();
 
-	let initial_balance: u128 = 10_000 * 1_000_000_000_000_000_000;	/ 1,000,000 SEE/SERP/DNAR/HELP/SETR/SETUSD
-	let initial_staking: u128 = 2_000 * 1_000_000_000_000_000_000; 	/ 258,000 SEE/SERP/DNAR/HELP/SETR/SETUSD
+	let initial_balance: u128 = 10_000 * 1_000_000_000_000_000_000;	/ 1,000,000 SEU
+	let initial_staking: u128 = 2_000 * 1_000_000_000_000_000_000; 	/ 258,000 SEU
 
 	let balances = initial_authorities
 		.iter()
@@ -516,22 +516,14 @@ fn dev_genesis(
 			slash_reward_fraction: sp_runtime::Perbill::from_percent(10),
 			..Default::default()
 		},
-		babe: BabeConfig { authorities: Default::default(), epoch_config: Some(BABE_GENESIS_EPOCH_CONFIG) },
-		grandpa: Default::default(),
+		aura: AuraConfig { authorities: Default::default() },
+		// grandpa: removed, using SetBFT finality
 		authority_discovery: AuthorityDiscoveryConfig { keys: vec![] },
 		im_online: Default::default(),
 		treasury: Default::default(), // Main Treasury (Setheum Treasury)
+// No SEUSD or other tokens on genesis as they are collateralized or removed.
 		tokens: TokensConfig {
-			balances: endowed_accounts
-				.iter()
-				.flat_map(|x| vec![
-					(x.clone(), SERP, initial_balance),
-					(x.clone(), DNAR, initial_balance),
-					(x.clone(), HELP, initial_balance),
-					(x.clone(), SETR, initial_balance),
-					(x.clone(), SETUSD, initial_balance),
-					])
-				.collect(),
+			balances: vec![]
 		},
 		evm: EVMConfig {
 			accounts: evm_genesis_accounts,
@@ -541,62 +533,31 @@ fn dev_genesis(
 			vesting: endowed_accounts
 			.iter()
 			.flat_map(|x| vec![
-				(x.clone(), SEE, 10, 1, 3600, 100_000_000_000_000_000),
-				(x.clone(), SERP, 10, 1, 3600, 100_000_000_000_000_000),
-				(x.clone(), DNAR, 10, 1, 3600, 100_000_000_000_000_000),
-				(x.clone(), HELP, 10, 1, 3600, 100_000_000_000_000_000),
-				(x.clone(), SETR, 10, 1, 3600, 100_000_000_000_000_000),
-				(x.clone(), SETUSD, 10, 1, 3600, 100_000_000_000_000_000),
+				(x.clone(), SEU, 10, 1, 3600, 100_000_000_000_000_000),
 				])
 			.collect(),
 		},
 // serp_treasury: SerpTreasuryConfig {
 // 	stable_currency_inflation_rate: vec![
-// 		(SETR, 100_000_000_000_000_000_000), 	/ (currency_id, inflation rate of a setcurrency)
-// 		(SETUSD, 10_000_000_000_000_000_000),	/ (currency_id, inflation rate of a setcurrency)
+// 		(SEUSD, 10_000_000_000_000_000_000),	/ (currency_id, inflation rate of a setcurrency)
 // 	],
 // 	stable_currency_cashdrop: vec![
-// 		(SETR,  initial_balance), 	/ (currency_id, cashdrop pool balance of a setcurrency)
-// 		(SETUSD,  initial_balance),  // (currency_id, cashdrop pool balance of a setcurrency)
+// 		(SEUSD,  initial_balance),  // (currency_id, cashdrop pool balance of a setcurrency)
 // 	],
 // },
 // cdp_treasury: CdpTreasuryConfig {
 // 	expected_collateral_auction_size: vec![
-// 		(SEE, 500 * 1_000_000_000_000_000_000), 		/ (currency_id, max size of a collateral auction)
-// 		(SERP, 300 * 1_000_000_000_000_000_000), 		/ (currency_id, max size of a collateral auction)
-// 		(DNAR, 100 * 1_000_000_000_000_000_000), 		/ (currency_id, max size of a collateral auction)
-// 		(HELP, 100 * 1_000_000_000_000_000_000), 		/ (currency_id, max size of a collateral auction)
+// 		(SEU, 500 * 1_000_000_000_000_000_000), 		/ (currency_id, max size of a collateral auction)
 // 	],
 // },
 // cdp_engine: CdpEngineConfig {
 // 	collaterals_params: vec![
 // 		(
-// 			SEE,
+// 			SEU,
 // 			Some(FixedU128::saturating_from_rational(105, 100)), // liquidation ratio
 // 			Some(FixedU128::saturating_from_rational(5, 100)),   // liquidation penalty rate
 // 			Some(FixedU128::saturating_from_rational(110, 100)), // required liquidation ratio
-// 			25_800_000 * 1_000_000_000_000_000_000,              // maximum debit value in SETUSD (cap)
-// 		),
-// 		(
-// 			SERP,
-// 			Some(FixedU128::saturating_from_rational(105, 100)), // liquidation ratio
-// 			Some(FixedU128::saturating_from_rational(5, 100)),   // liquidation penalty rate
-// 			Some(FixedU128::saturating_from_rational(110, 100)), // required liquidation ratio
-// 			25_800_000 * 1_000_000_000_000_000_000,              // maximum debit value in SETUSD (cap)
-// 		),
-// 		(
-// 			DNAR,
-// 			Some(FixedU128::saturating_from_rational(105, 100)), // liquidation ratio
-// 			Some(FixedU128::saturating_from_rational(5, 100)),   // liquidation penalty rate
-// 			Some(FixedU128::saturating_from_rational(110, 100)), // required liquidation ratio
-// 			25_800_000 * 1_000_000_000_000_000_000,              // maximum debit value in SETUSD (cap)
-// 		),
-// 		(
-// 			HELP,
-// 			Some(FixedU128::saturating_from_rational(105, 100)), // liquidation ratio
-// 			Some(FixedU128::saturating_from_rational(5, 100)),   // liquidation penalty rate
-// 			Some(FixedU128::saturating_from_rational(110, 100)), // required liquidation ratio
-// 			25_800_000 * 1_000_000_000_000_000_000,              // maximum debit value in SETUSD (cap)
+// 			25_800_000 * 1_000_000_000_000_000_000,              // maximum debit value in SEUSD (cap)
 // 		),
 // 	],
 // },
@@ -611,7 +572,7 @@ fn dev_genesis(
 
 fn testnet_genesis(
 	wasm_binary: &[u8],
-	initial_authorities: Vec<(AccountId, AccountId, GrandpaId, BabeId, ImOnlineId, AuthorityDiscoveryId)>,
+	initial_authorities: Vec<(AccountId, AccountId, AuraId, AuraId, ImOnlineId, AuthorityDiscoveryId)>,
 	root_key: AccountId,
 	endowed_accounts: Vec<(AccountId, Balance)>,
 	foundation: AccountId,
@@ -752,24 +713,14 @@ fn testnet_genesis(
 			slash_reward_fraction: sp_runtime::Perbill::from_percent(10),
 			..Default::default()
 		},
-		babe: BabeConfig { authorities: Default::default(), epoch_config: Some(BABE_GENESIS_EPOCH_CONFIG) },
-		grandpa: Default::default(),
+		aura: AuraConfig { authorities: Default::default() },
+		// grandpa: removed, using SetBFT finality
 		authority_discovery: AuthorityDiscoveryConfig { keys: vec![] },
 		im_online: Default::default(),
 		treasury: Default::default(), // Main Treasury (Setheum Treasury)
+// No SEUSD or other tokens on genesis.
 		tokens: TokensConfig {
-			balances: vec![
-				(foundation.clone(), SERP, serp_foundation_alloc + serp_airdrops_alloc),
-				(team.clone(), SERP, serp_team_alloc),
-				(foundation.clone(), DNAR, dnar_foundation_alloc + dnar_airdrop_alloc),
-				(team.clone(), DNAR, dnar_team_alloc),
-				(foundation.clone(), HELP, help_foundation_alloc + help_airdrop_alloc),
-				(team.clone(), HELP, help_team_alloc),
-				(foundation.clone(), SETR, setr_foundation_alloc + setr_airdrop_alloc),
-				(team.clone(), SETR, setr_team_alloc),
-				(foundation.clone(), SETUSD, setusd_foundation_alloc + setusd_airdrop_alloc),
-				(team.clone(), SETUSD, setusd_team_alloc),
-			]
+			balances: vec![]
 		},
 		evm: EVMConfig {
 			accounts: evm_genesis_accounts,
@@ -778,72 +729,37 @@ fn testnet_genesis(
 		vesting: VestingConfig {
 			vesting: vec![
 // All schedules here last 1 lunar year.
-				(foundation.clone(), SEE, 258, 1, 5_112_000, setm_foundation_vesting),
-				(team.clone(), SEE, 258, 1, 5_112_000, setm_team_vesting),
-
-				(foundation.clone(), SERP, 258, 1, 5_112_000, serp_foundation_vesting),
-				(team.clone(), SERP, 258, 1, 5_112_000, serp_team_vesting),
-
-				(foundation.clone(), DNAR, 258, 1, 5_112_000, dnar_foundation_vesting),
-				(team.clone(), DNAR, 258, 1, 5_112_000, dnar_team_vesting),
-
-				(foundation.clone(), HELP, 258, 1, 5_112_000, help_foundation_vesting),
-				(team.clone(), HELP, 258, 1, 5_112_000, help_team_vesting),
-
-				(foundation.clone(), SETR, 258, 1, 5_112_000, setr_foundation_vesting),
-				(team.clone(), SETR, 258, 1, 5_112_000, setr_team_vesting),
-
-				(foundation.clone(), SETUSD, 258, 1, 5_112_000, setusd_foundation_vesting),
-				(team.clone(), SETUSD, 258, 1, 5_112_000, setusd_team_vesting),
+				(foundation.clone(), SEU, 258, 1, 5_112_000, setm_foundation_vesting),
+				(team.clone(), SEU, 258, 1, 5_112_000, setm_team_vesting),
 			]
 		},
 // serp_treasury: SerpTreasuryConfig {
 // 	stable_currency_inflation_rate: vec![
-// 		(SETR, 0), 	/ (currency_id, inflation rate of a setcurrency) to be set on-chain;
-// 		(SETUSD, 0),	/ (currency_id, inflation rate of a setcurrency) to be set on-chain;
+// 		(SEUSD, 0),	/ (currency_id, inflation rate of a setcurrency) to be set on-chain;
 // 	],
 // 	stable_currency_cashdrop: vec![
-// 		(SETR,  setr_cashdrop_alloc), 	/ (currency_id, cashdrop pool balance of a setcurrency)
-// 		(SETUSD,  setusd_cashdrop_alloc),  // (currency_id, cashdrop pool balance of a setcurrency)
+// 		(SEUSD,  setusd_cashdrop_alloc),  // (currency_id, cashdrop pool balance of a setcurrency)
 // 	],
 // },
 // cdp_treasury: CdpTreasuryConfig {
 // 	expected_collateral_auction_size: vec![
-// 		(SEE, 500 * 1_000_000_000_000_000_000), 		/ (currency_id, max size of a collateral auction)
-// 		(SERP, 300 * 1_000_000_000_000_000_000), 		/ (currency_id, max size of a collateral auction)
-// 		(DNAR, 100 * 1_000_000_000_000_000_000), 		/ (currency_id, max size of a collateral auction)
-// 		(HELP, 100 * 1_000_000_000_000_000_000), 		/ (currency_id, max size of a collateral auction)
+// 		(SEU, 500 * 1_000_000_000_000_000_000), 		/ (currency_id, max size of a collateral auction)
 // 	],
 // },
 // cdp_engine: CdpEngineConfig {
 // 	collaterals_params: vec![
 // 		(
-// 			SEE,
+// 			SEU,
 // 			Some(FixedU128::saturating_from_rational(105, 100)), // liquidation ratio
 // 			Some(FixedU128::saturating_from_rational(5, 100)),   // liquidation penalty rate
 // 			Some(FixedU128::saturating_from_rational(110, 100)), // required liquidation ratio
-// 			25_800_000 * 1_000_000_000_000_000_000,              // maximum debit value in SETUSD (cap)
+// 			25_800_000 * 1_000_000_000_000_000_000,              // maximum debit value in SEUSD (cap)
 // 		),
 // 		(
-// 			SERP,
 // 			Some(FixedU128::saturating_from_rational(105, 100)), // liquidation ratio
 // 			Some(FixedU128::saturating_from_rational(5, 100)),   // liquidation penalty rate
 // 			Some(FixedU128::saturating_from_rational(110, 100)), // required liquidation ratio
-// 			25_800_000 * 1_000_000_000_000_000_000,              // maximum debit value in SETUSD (cap)
-// 		),
-// 		(
-// 			DNAR,
-// 			Some(FixedU128::saturating_from_rational(105, 100)), // liquidation ratio
-// 			Some(FixedU128::saturating_from_rational(5, 100)),   // liquidation penalty rate
-// 			Some(FixedU128::saturating_from_rational(110, 100)), // required liquidation ratio
-// 			25_800_000 * 1_000_000_000_000_000_000,              // maximum debit value in SETUSD (cap)
-// 		),
-// 		(
-// 			HELP,
-// 			Some(FixedU128::saturating_from_rational(105, 100)), // liquidation ratio
-// 			Some(FixedU128::saturating_from_rational(5, 100)),   // liquidation penalty rate
-// 			Some(FixedU128::saturating_from_rational(110, 100)), // required liquidation ratio
-// 			25_800_000 * 1_000_000_000_000_000_000,              // maximum debit value in SETUSD (cap)
+// 			25_800_000 * 1_000_000_000_000_000_000,              // maximum debit value in SEUSD (cap)
 // 		),
 // 	],
 // },
@@ -858,7 +774,7 @@ fn testnet_genesis(
 
 fn mainnet_genesis(
 	wasm_binary: &[u8],
-	initial_authorities: Vec<(AccountId, AccountId, GrandpaId, BabeId, ImOnlineId, AuthorityDiscoveryId)>,
+	initial_authorities: Vec<(AccountId, AccountId, AuraId, AuraId, ImOnlineId, AuthorityDiscoveryId)>,
 	root_key: AccountId,
 	endowed_accounts: Vec<(AccountId, Balance)>,
 	foundation: AccountId,
@@ -1021,38 +937,14 @@ fn mainnet_genesis(
 			slash_reward_fraction: sp_runtime::Perbill::from_percent(10),
 			..Default::default()
 		},
-		babe: BabeConfig { authorities: Default::default(), epoch_config: Some(BABE_GENESIS_EPOCH_CONFIG) },
-		grandpa: Default::default(),
+		aura: AuraConfig { authorities: Default::default() },
+		// grandpa: removed, using SetBFT finality
 		authority_discovery: AuthorityDiscoveryConfig { keys: vec![] },
 		im_online: Default::default(),
 		treasury: Default::default(), // Setheum Treasury
+// No SEUSD or other tokens on genesis.
 		tokens: TokensConfig {
-			balances: vec![
-				(foundation.clone(), SERP, serp_foundation_alloc + serp_airdrops_alloc),
-				(spf.clone(), SERP, serp_spf_alloc),
-				(team.clone(), SERP, serp_team_alloc),
-				(advisors_n_partners.clone(), SERP, serp_advisors_n_partners_alloc),
-
-				(foundation.clone(), DNAR, dnar_foundation_alloc + dnar_airdrop_alloc),
-				(spf.clone(), DNAR, dnar_spf_alloc),
-				(team.clone(), DNAR, dnar_team_alloc),
-				(advisors_n_partners.clone(), DNAR, dnar_advisors_n_partners_alloc),
-
-				(foundation.clone(), HELP, help_foundation_alloc + help_airdrop_alloc),
-				(spf.clone(), HELP, help_spf_alloc),
-				(team.clone(), HELP, help_team_alloc),
-				(advisors_n_partners.clone(), HELP, help_advisors_n_partners_alloc),
-
-				(foundation.clone(), SETR, setr_foundation_alloc + setr_airdrop_alloc),
-				(spf.clone(), SETR, setr_spf_alloc),
-				(team.clone(), SETR, setr_team_alloc),
-				(advisors_n_partners.clone(), SETR, setr_advisors_n_partners_alloc),
-
-				(foundation.clone(), SETUSD, setusd_foundation_alloc + setusd_airdrop_alloc),
-				(spf.clone(), SETUSD, setusd_spf_alloc),
-				(team.clone(), SETUSD, setusd_team_alloc),
-				(advisors_n_partners.clone(), SETUSD, setusd_advisors_n_partners_alloc),
-			]
+			balances: vec![]
 		},
 		evm: EVMConfig {
 			accounts: evm_genesis_accounts,
@@ -1060,84 +952,33 @@ fn mainnet_genesis(
 		},
 		vesting: VestingConfig {
 			vesting: vec![
-				(foundation.clone(), SEE, 313, 1, 117_576_000, setm_foundation_vesting),
-				(spf.clone(), SEE, 313, 1, 96_008_000, setm_spf_vesting),
-				(team.clone(), SEE, 313, 1, 117_576_000, setm_team_vesting),
-				(advisors_n_partners.clone(), SEE, 313, 1, 35_784_000, setm_advisors_n_partners_vesting),
-				
-				(foundation.clone(), SERP, 313, 1, 97_128_000, serp_foundation_vesting),
-				(spf.clone(), SERP, 313, 1, 35_784_000, serp_spf_vesting),
-				(team.clone(), SERP, 313, 1, 97_128_000, serp_team_vesting),
-				(advisors_n_partners.clone(), SERP, 313, 1, 25_560_000, serp_advisors_n_partners_vesting),
-				
-				(foundation.clone(), DNAR, 313, 1, 97_128_000, dnar_foundation_vesting),
-				(spf.clone(), DNAR, 313, 1, 35_784_000, dnar_spf_vesting),
-				(team.clone(), DNAR, 313, 1, 97_128_000, dnar_team_vesting),
-				(advisors_n_partners.clone(), DNAR, 313, 1, 25_560_000, dnar_advisors_n_partners_vesting),
-				
-				(foundation.clone(), HELP, 313, 1, 97_128_000, help_foundation_vesting),
-				(spf.clone(), HELP, 313, 1, 35_784_000, help_spf_vesting),
-				(team.clone(), HELP, 313, 1, 97_128_000, help_team_vesting),
-				(advisors_n_partners.clone(), HELP, 313, 1, 25_560_000, help_advisors_n_partners_vesting),
-				
-				(foundation.clone(), SETR, 313, 1, 15_336_000, setr_foundation_vesting),
-				(spf.clone(), SETR, 313, 1, 15_336_000, setr_spf_vesting),
-				(team.clone(), SETR, 313, 1, 15_336_000, setr_team_vesting),
-				(advisors_n_partners.clone(), SETR, 313, 1, 15_336_000, setr_advisors_n_partners_vesting),
-				
-				(foundation.clone(), SETUSD, 313, 1, 10_224_000, setusd_foundation_vesting),
-				(spf.clone(), SETUSD, 313, 1, 10_224_000, setusd_spf_vesting),
-				(team.clone(), SETUSD, 313, 1, 10_224_000, setusd_team_vesting),
-				(advisors_n_partners.clone(), SETUSD, 313, 1, 10_224_000, setusd_advisors_n_partners_vesting),
+				(foundation.clone(), SEU, 313, 1, 117_576_000, setm_foundation_vesting),
+				(spf.clone(), SEU, 313, 1, 96_008_000, setm_spf_vesting),
+				(team.clone(), SEU, 313, 1, 117_576_000, setm_team_vesting),
+				(advisors_n_partners.clone(), SEU, 313, 1, 35_784_000, setm_advisors_n_partners_vesting),
 			]
 		},
 // serp_treasury: SerpTreasuryConfig {
 // 	stable_currency_inflation_rate: vec![
-// 		(SETR, 0), 	/ (currency_id, inflation rate of a setcurrency) to be set on-chain;
-// 		(SETUSD, 0),	/ (currency_id, inflation rate of a setcurrency) to be set on-chain;
+// 		(SEUSD, 0),	/ (currency_id, inflation rate of a setcurrency) to be set on-chain;
 // 	],
 // 	stable_currency_cashdrop: vec![
-// 		(SETR,  setr_cashdrop_alloc), 	/ (currency_id, cashdrop pool balance of a setcurrency)
-// 		(SETUSD,  setusd_cashdrop_alloc),  // (currency_id, cashdrop pool balance of a setcurrency)
+// 		(SEUSD,  setusd_cashdrop_alloc),  // (currency_id, cashdrop pool balance of a setcurrency)
 // 	],
 // },
 // cdp_treasury: CdpTreasuryConfig {
 // 	expected_collateral_auction_size: vec![
-// 		(SEE, 500 * 1_000_000_000_000_000_000), 		/ (currency_id, max size of a collateral auction)
-// 		(SERP, 300 * 1_000_000_000_000_000_000), 		/ (currency_id, max size of a collateral auction)
-// 		(DNAR, 100 * 1_000_000_000_000_000_000), 		/ (currency_id, max size of a collateral auction)
-// 		(HELP, 100 * 1_000_000_000_000_000_000), 		/ (currency_id, max size of a collateral auction)
+// 		(SEU, 500 * 1_000_000_000_000_000_000), 		/ (currency_id, max size of a collateral auction)
 // 	],
 // },
 // cdp_engine: CdpEngineConfig {
 // 	collaterals_params: vec![
 // 		(
-// 			SEE,
+// 			SEU,
 // 			Some(FixedU128::saturating_from_rational(105, 100)), // liquidation ratio
 // 			Some(FixedU128::saturating_from_rational(5, 100)),   // liquidation penalty rate
 // 			Some(FixedU128::saturating_from_rational(110, 100)), // required liquidation ratio
-// 			25_800_000 * 1_000_000_000_000_000_000,              // maximum debit value in SETUSD (cap)
-// 		),
-// 		(
-// 			SERP,
-// 			Some(FixedU128::saturating_from_rational(105, 100)), // liquidation ratio
-// 			Some(FixedU128::saturating_from_rational(5, 100)),   // liquidation penalty rate
-// 			Some(FixedU128::saturating_from_rational(110, 100)), // required liquidation ratio
-// 			25_800_000 * 1_000_000_000_000_000_000,              // maximum debit value in SETUSD (cap)
-// 		),
-// 		(
-// 			DNAR,
-// 			Some(FixedU128::saturating_from_rational(105, 100)), // liquidation ratio
-// 			Some(FixedU128::saturating_from_rational(5, 100)),   // liquidation penalty rate
-// 			Some(FixedU128::saturating_from_rational(110, 100)), // required liquidation ratio
-// 			25_800_000 * 1_000_000_000_000_000_000,              // maximum debit value in SETUSD (cap)
-// 		),
-// 		(
-// 			HELP,
-// 			Some(FixedU128::saturating_from_rational(105, 100)), // liquidation ratio
-// 			Some(FixedU128::saturating_from_rational(5, 100)),   // liquidation penalty rate
-// 			Some(FixedU128::saturating_from_rational(110, 100)), // required liquidation ratio
-// 			25_800_000 * 1_000_000_000_000_000_000,              // maximum debit value in SETUSD (cap)
+// 			25_800_000 * 1_000_000_000_000_000_000,              // maximum debit value in SEUSD (cap)
 // 		),
 // 	],
 // },
@@ -1156,7 +997,7 @@ pub fn setheum_properties() -> Properties {
 	let mut properties = Map::new();
 	let mut token_symbol: Vec<String> = vec![];
 	let mut token_decimals: Vec<u32> = vec![];
-	[SEE, SERP, DNAR, HELP, SETR, SETUSD].iter().for_each(|token| {
+	[SEU, SEUSD].iter().for_each(|token| {
 		token_symbol.push(token.symbol().unwrap().to_string());
 		token_decimals.push(token.decimals().unwrap() as u32);
 	});

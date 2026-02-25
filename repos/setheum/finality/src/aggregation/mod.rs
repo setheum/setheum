@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -20,8 +20,8 @@
 
 use std::marker::PhantomData;
 
-use current_aleph_aggregator::NetworkError as CurrentNetworkError;
-use legacy_aleph_aggregator::NetworkError as LegacyNetworkError;
+use current_setbft_aggregator::NetworkError as CurrentNetworkError;
+use legacy_setbft_aggregator::NetworkError as LegacyNetworkError;
 
 use crate::{
     abft::SignatureSet,
@@ -36,21 +36,21 @@ use crate::{
 };
 
 pub type LegacyRmcNetworkData =
-    legacy_aleph_aggregator::RmcNetworkData<BlockHash, Signature, SignatureSet<Signature>>;
+    legacy_setbft_aggregator::RmcNetworkData<BlockHash, Signature, SignatureSet<Signature>>;
 pub type CurrentRmcNetworkData =
-    current_aleph_aggregator::RmcNetworkData<BlockHash, Signature, SignatureSet<Signature>>;
+    current_setbft_aggregator::RmcNetworkData<BlockHash, Signature, SignatureSet<Signature>>;
 
-pub type LegacySignableBlockHash = legacy_aleph_aggregator::SignableHash<BlockHash>;
+pub type LegacySignableBlockHash = legacy_setbft_aggregator::SignableHash<BlockHash>;
 pub type LegacyRmc<'a> =
-    legacy_aleph_bft_rmc::ReliableMulticast<'a, LegacySignableBlockHash, Keychain>;
+    legacy_setbft_bft_rmc::ReliableMulticast<'a, LegacySignableBlockHash, Keychain>;
 
 pub struct NoopMetrics;
 
-impl legacy_aleph_aggregator::Metrics<BlockHash> for NoopMetrics {
+impl legacy_setbft_aggregator::Metrics<BlockHash> for NoopMetrics {
     fn report_aggregation_complete(&mut self, _: BlockHash) {}
 }
 
-pub type LegacyAggregator<'a, N> = legacy_aleph_aggregator::IO<
+pub type LegacyAggregator<'a, N> = legacy_setbft_aggregator::IO<
     BlockHash,
     LegacyRmcNetworkData,
     NetworkWrapper<LegacyRmcNetworkData, N>,
@@ -60,7 +60,7 @@ pub type LegacyAggregator<'a, N> = legacy_aleph_aggregator::IO<
 >;
 
 pub type CurrentAggregator<N> =
-    current_aleph_aggregator::IO<BlockHash, NetworkWrapper<CurrentRmcNetworkData, N>, Keychain>;
+    current_setbft_aggregator::IO<BlockHash, NetworkWrapper<CurrentRmcNetworkData, N>, Keychain>;
 
 enum EitherAggregator<'a, CN, LN>
 where
@@ -89,18 +89,18 @@ where
     pub fn new_legacy(multikeychain: &'a Keychain, rmc_network: LN) -> Self {
         let (messages_for_rmc, messages_from_network) = mpsc::unbounded();
         let (messages_for_network, messages_from_rmc) = mpsc::unbounded();
-        let scheduler = legacy_aleph_bft_rmc::DoublingDelayScheduler::new(
+        let scheduler = legacy_setbft_bft_rmc::DoublingDelayScheduler::new(
             tokio::time::Duration::from_millis(500),
         );
-        let rmc = legacy_aleph_bft_rmc::ReliableMulticast::new(
+        let rmc = legacy_setbft_bft_rmc::ReliableMulticast::new(
             messages_from_network,
             messages_for_network,
             multikeychain,
-            legacy_aleph_bft::Keychain::node_count(multikeychain),
+            legacy_setbft_bft::Keychain::node_count(multikeychain),
             scheduler,
         );
 // For the compatibility with the legacy aggregator we need extra `Option` layer
-        let aggregator = legacy_aleph_aggregator::BlockSignatureAggregator::new(NoopMetrics);
+        let aggregator = legacy_setbft_aggregator::BlockSignatureAggregator::new(NoopMetrics);
         let aggregator_io = LegacyAggregator::<LN>::new(
             messages_for_rmc,
             messages_from_rmc,
@@ -115,12 +115,12 @@ where
     }
 
     pub fn new_current(multikeychain: &'a Keychain, rmc_network: CN) -> Self {
-        let scheduler = current_aleph_bft_rmc::DoublingDelayScheduler::new(
+        let scheduler = current_setbft_bft_rmc::DoublingDelayScheduler::new(
             tokio::time::Duration::from_millis(500),
         );
-        let rmc_handler = current_aleph_bft_rmc::Handler::new(multikeychain.clone());
-        let rmc_service = current_aleph_bft_rmc::Service::new(scheduler, rmc_handler);
-        let aggregator = current_aleph_aggregator::BlockSignatureAggregator::new();
+        let rmc_handler = current_setbft_bft_rmc::Handler::new(multikeychain.clone());
+        let rmc_service = current_setbft_bft_rmc::Service::new(scheduler, rmc_handler);
+        let aggregator = current_setbft_aggregator::BlockSignatureAggregator::new();
         let aggregator_io =
             CurrentAggregator::<CN>::new(NetworkWrapper::new(rmc_network), rmc_service, aggregator);
 
@@ -160,7 +160,7 @@ impl<D: Data, N: Network<D>> NetworkWrapper<D, N> {
 }
 
 #[async_trait::async_trait]
-impl<T, D> legacy_aleph_aggregator::ProtocolSink<D> for NetworkWrapper<D, T>
+impl<T, D> legacy_setbft_aggregator::ProtocolSink<D> for NetworkWrapper<D, T>
 where
     T: Network<D>,
     D: Data,
@@ -172,7 +172,7 @@ where
     fn send(
         &self,
         data: D,
-        recipient: legacy_aleph_bft::Recipient,
+        recipient: legacy_setbft_bft::Recipient,
     ) -> Result<(), LegacyNetworkError> {
         self.0.send(data, recipient.into()).map_err(|e| match e {
             SendError::SendFailed => LegacyNetworkError::SendFail,
@@ -181,7 +181,7 @@ where
 }
 
 #[async_trait::async_trait]
-impl<T, D> current_aleph_aggregator::ProtocolSink<D> for NetworkWrapper<D, T>
+impl<T, D> current_setbft_aggregator::ProtocolSink<D> for NetworkWrapper<D, T>
 where
     T: Network<D>,
     D: Data,
@@ -193,7 +193,7 @@ where
     fn send(
         &self,
         data: D,
-        recipient: current_aleph_bft::Recipient,
+        recipient: current_setbft_bft::Recipient,
     ) -> Result<(), CurrentNetworkError> {
         self.0.send(data, recipient.into()).map_err(|e| match e {
             SendError::SendFailed => CurrentNetworkError::SendFail,

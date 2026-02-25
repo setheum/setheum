@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -24,7 +24,7 @@ pub use acceptance_policy::AcceptancePolicy;
 pub use block_finalizer::MockedBlockFinalizer;
 pub use client::{Backend, TestClient, TestClientBuilder, TestClientBuilderExt};
 pub use proposal::{
-    aleph_data_from_blocks, aleph_data_from_headers, unvalidated_proposal_from_headers,
+    setbft_data_from_blocks, setbft_data_from_headers, unvalidated_proposal_from_headers,
 };
 use sp_core::H256;
 

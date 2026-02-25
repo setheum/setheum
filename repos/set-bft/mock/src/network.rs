@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,7 +35,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use aleph_bft_types::{Network as NetworkT, NodeCount, NodeIndex, Recipient};
+use set_bft_types::{Network as NetworkT, NodeCount, NodeIndex, Recipient};
 use futures::{
     channel::{
         mpsc::{unbounded, UnboundedReceiver, UnboundedSender},

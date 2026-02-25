@@ -1,14 +1,14 @@
 [package]
-name = "aleph-bft-examples-blockchain"
+name = "set-bft-examples-blockchain"
 version = "0.0.3"
 edition = "2021"
-authors = ["Cardinal Cryptography"]
+authors = ["Afsall Labs"]
 license = "Apache-2.0 OR MIT"
 publish = false
 
 [dependencies]
-aleph-bft = { path = "../../consensus", version = "*" }
-aleph-bft-mock = { path = "../../mock", version = "*" }
+set-bft = { path = "../../consensus", version = "*" }
+set-bft-mock = { path = "../../mock", version = "*" }
 async-trait = "0.1"
 clap = { version = "4", features = ["derive"] }
 codec = { package = "parity-scale-codec", version = "3.0", default-features = false, features = ["derive"] }

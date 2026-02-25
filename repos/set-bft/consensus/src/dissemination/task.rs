@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -437,7 +437,7 @@ mod tests {
         },
         NodeCount, NodeIndex, Recipient,
     };
-    use aleph_bft_mock::{Hasher64, Keychain};
+    use set_bft_mock::{Hasher64, Keychain};
     use std::thread::sleep;
 
     #[test]

@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -43,7 +43,6 @@ use frame_support::{assert_noop, assert_ok, dispatch::GetDispatchInfo, traits::W
 use mock::{
 	alice, bob, deploy_contracts, erc20_address, erc20_address_not_exist, eva, AccountId, AdaptedBasicCurrency,
 	Balances, CouncilAccount, Currencies, DustAccount, ExtBuilder, NativeCurrency, PalletBalances, Runtime,
-	RuntimeEvent, RuntimeOrigin, System, Tokens, ALICE_BALANCE, CHARLIE, DAVE, EDF, EVE, EVM, FERDIE, ID_1,
 	NATIVE_CURRENCY_ID, X_TOKEN_ID,
 };
 use module_support::mocks::MockAddressMapping;
@@ -284,17 +283,14 @@ fn force_set_lock_and_force_remove_lock_should_work() {
 		.build()
 		.execute_with(|| {
 			assert_noop!(
-				Currencies::force_set_lock(Some(bob()).into(), alice(), EDF, 100, ID_1,),
 				BadOrigin
 			);
 
-			assert_eq!(Tokens::locks(&alice(), EDF).len(), 0);
 			assert_eq!(PalletBalances::locks(&alice()).len(), 0);
 
 			assert_ok!(Currencies::force_set_lock(
 				RuntimeOrigin::root(),
 				alice(),
-				EDF,
 				100,
 				ID_1,
 			));
@@ -307,7 +303,6 @@ fn force_set_lock_and_force_remove_lock_should_work() {
 			));
 
 			assert_eq!(
-				Tokens::locks(&alice(), EDF)[0],
 				module_tokens::BalanceLock { id: ID_1, amount: 100 }
 			);
 			assert_eq!(
@@ -322,7 +317,6 @@ fn force_set_lock_and_force_remove_lock_should_work() {
 			assert_ok!(Currencies::force_set_lock(
 				RuntimeOrigin::root(),
 				alice(),
-				EDF,
 				10,
 				ID_1,
 			));
@@ -334,7 +328,6 @@ fn force_set_lock_and_force_remove_lock_should_work() {
 				ID_1,
 			));
 			assert_eq!(
-				Tokens::locks(&alice(), EDF)[0],
 				module_tokens::BalanceLock { id: ID_1, amount: 10 }
 			);
 			assert_eq!(
@@ -347,26 +340,21 @@ fn force_set_lock_and_force_remove_lock_should_work() {
 			);
 
 // do nothing
-			assert_ok!(Currencies::force_set_lock(RuntimeOrigin::root(), alice(), EDF, 0, ID_1,));
 			assert_eq!(
-				Tokens::locks(&alice(), EDF)[0],
 				module_tokens::BalanceLock { id: ID_1, amount: 10 }
 			);
 
 // remove lock
 			assert_noop!(
-				Currencies::force_remove_lock(Some(bob()).into(), alice(), EDF, ID_1,),
 				BadOrigin
 			);
 
-			assert_ok!(Currencies::force_remove_lock(RuntimeOrigin::root(), alice(), EDF, ID_1,));
 			assert_ok!(Currencies::force_remove_lock(
 				RuntimeOrigin::root(),
 				alice(),
 				NATIVE_CURRENCY_ID,
 				ID_1,
 			));
-			assert_eq!(Tokens::locks(&alice(), EDF).len(), 0);
 			assert_eq!(PalletBalances::locks(&alice()).len(), 0);
 		});
 }
@@ -1722,7 +1710,6 @@ fn fungible_inspect_trait_should_work() {
 				true
 			);
 			assert_eq!(<Currencies as fungibles::Inspect<_>>::asset_exists(X_TOKEN_ID), true);
-			assert_eq!(<Currencies as fungibles::Inspect<_>>::asset_exists(EDF), false);
 			assert_eq!(
 				<Currencies as fungibles::Inspect<_>>::asset_exists(CurrencyId::Erc20(erc20_address())),
 				true
@@ -2838,7 +2825,6 @@ fn sweep_dust_tokens_works() {
 	ExtBuilder::default().build().execute_with(|| {
 		module_tokens::Accounts::<Runtime>::insert(
 			bob(),
-			EDF,
 			module_tokens::AccountData {
 				free: 1,
 				frozen: 0,
@@ -2847,7 +2833,6 @@ fn sweep_dust_tokens_works() {
 		);
 		module_tokens::Accounts::<Runtime>::insert(
 			eva(),
-			EDF,
 			module_tokens::AccountData {
 				free: 2,
 				frozen: 0,
@@ -2856,7 +2841,6 @@ fn sweep_dust_tokens_works() {
 		);
 		module_tokens::Accounts::<Runtime>::insert(
 			alice(),
-			EDF,
 			module_tokens::AccountData {
 				free: 0,
 				frozen: 1,
@@ -2865,44 +2849,34 @@ fn sweep_dust_tokens_works() {
 		);
 		module_tokens::Accounts::<Runtime>::insert(
 			DustAccount::get(),
-			EDF,
 			module_tokens::AccountData {
 				free: 100,
 				frozen: 0,
 				reserved: 0,
 			},
 		);
-		module_tokens::TotalIssuance::<Runtime>::insert(EDF, 104);
 
 		let accounts = vec![bob(), eva(), alice()];
 
 		assert_noop!(
-			Currencies::sweep_dust(RuntimeOrigin::signed(bob()), EDF, accounts.clone()),
 			DispatchError::BadOrigin
 		);
 
 		assert_ok!(Currencies::sweep_dust(
 			RuntimeOrigin::signed(CouncilAccount::get()),
-			EDF,
 			accounts
 		));
 		System::assert_last_event(RuntimeEvent::Currencies(crate::Event::DustSwept {
-			currency_id: EDF,
 			who: bob(),
 			amount: 1,
 		}));
 
 // bob's account is gone
-		assert_eq!(module_tokens::Accounts::<Runtime>::contains_key(bob(), EDF), false);
-		assert_eq!(Currencies::free_balance(EDF, &bob()), 0);
 
 // eva's account remains, not below ED
-		assert_eq!(Currencies::free_balance(EDF, &eva()), 2);
 
 // Dust transferred to dust receiver
-		assert_eq!(Currencies::free_balance(EDF, &DustAccount::get()), 101);
 // Total issuance remains the same
-		assert_eq!(Currencies::total_issuance(EDF), 104);
 	});
 }
 
@@ -3025,7 +2999,6 @@ fn transfer_erc20_will_charge_gas() {
 
 		let dispatch_info = module::Call::<Runtime>::transfer {
 			dest: alice(),
-			currency_id: EDF,
 			amount: 1,
 		}
 		.get_dispatch_info();

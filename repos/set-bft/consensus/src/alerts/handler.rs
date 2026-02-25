@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,8 +41,8 @@ use crate::{
     Data, Hasher, Keychain, MultiKeychain, Multisigned, NodeIndex, PartialMultisignature,
     Recipient, SessionId, Signature, Signed, UncheckedSigned,
 };
-use aleph_bft_rmc::Message as RmcMessage;
-use aleph_bft_types::Round;
+use set_bft_rmc::Message as RmcMessage;
+use set_bft_types::Round;
 use codec::{Decode, Encode};
 use std::{
     collections::{HashMap, HashSet},
@@ -109,9 +109,9 @@ pub enum RmcResponse<H: Hasher, S: Signature, MS: PartialMultisignature> {
     Noop,
 }
 
-/// The component responsible for fork alerts in AlephBFT. We refer to the documentation
-/// https://cardinal-cryptography.github.io/AlephBFT/how_alephbft_does_it.html Section 2.5 and
-/// https://cardinal-cryptography.github.io/AlephBFT/reliable_broadcast.html and to the Aleph
+/// The component responsible for fork alerts in SetBFT. We refer to the documentation
+/// https://cardinal-cryptography.github.io/SetBFT/how_setbft_does_it.html Section 2.5 and
+/// https://cardinal-cryptography.github.io/SetBFT/reliable_broadcast.html and to the Set
 /// paper https://arxiv.org/abs/1908.05156 Appendix A1 for a discussion.
 pub struct Handler<H: Hasher, D: Data, MK: MultiKeychain> {
     session_id: SessionId,
@@ -323,9 +323,9 @@ mod tests {
         units::{FullUnit, PreUnit},
         PartiallyMultisigned, Recipient, Round,
     };
-    use aleph_bft_mock::{Data, Hasher64, Keychain, Signature};
-    use aleph_bft_rmc::Message;
-    use aleph_bft_types::{NodeCount, NodeIndex, NodeMap, Signable, Signed};
+    use set_bft_mock::{Data, Hasher64, Keychain, Signature};
+    use set_bft_rmc::Message;
+    use set_bft_types::{NodeCount, NodeIndex, NodeMap, Signable, Signed};
 
     type TestForkProof = ForkProof<Hasher64, Data, Signature>;
 

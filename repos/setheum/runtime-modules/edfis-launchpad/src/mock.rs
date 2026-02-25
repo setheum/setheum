@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -57,10 +57,8 @@ pub const ALICE: AccountId = 1;
 pub const BOB: AccountId = 2;
 pub const CHARLIE: AccountId = 3;
 
-pub const SEE: CurrencyId = CurrencyId::Token(TokenSymbol::SEE);
-pub const USSD: CurrencyId = CurrencyId::Token(TokenSymbol::USSD);
-pub const TEST: CurrencyId = CurrencyId::Token(TokenSymbol::SETR);
-pub const EDF: CurrencyId = CurrencyId::Token(TokenSymbol::EDF);
+pub const SEU: CurrencyId = CurrencyId::Token(TokenSymbol::SEU);
+pub const SEUSD: CurrencyId = CurrencyId::Token(TokenSymbol::SEUSD);
 
 mod launchpad_crowdsales {
 	pub use super::super::*;
@@ -117,9 +115,8 @@ impl module_tokens::Config for Runtime {
 parameter_type_with_key! {
 	pub MinRaise: |currency_id: CurrencyId| -> Balance {
 		match currency_id {
-			&USSD => 100,
-			&SEE => 100,
-			&EDF => 100,
+			&SEUSD => 100,
+			&SEU => 100,
 			_ => 0,
 		}
 	};
@@ -128,16 +125,15 @@ parameter_type_with_key! {
 parameter_type_with_key! {
 	pub MinContribution: |currency_id: CurrencyId| -> Balance {
 		match currency_id {
-			&USSD => 100,
-			&SEE => 100,
-			&EDF => 100,
+			&SEUSD => 100,
+			&SEU => 100,
 			_ => 0,
 		}
 	};
 }
 
 parameter_types! {
-	pub const GetNativeCurrencyId: CurrencyId = SEE;  // Setheum native currency ticker is SEE/
+	pub const GetNativeCurrencyId: CurrencyId = SEU;  // Setheum native currency ticker is SEU/
 	pub const GetCommission: (u32, u32) = (10, 100); // 10%
 	pub const SubmissionDeposit: Balance = 101;
 	pub const MaxProposalsCount: u32 = 3;
@@ -204,17 +200,14 @@ impl ExtBuilder {
 
 	pub fn one_hundred_thousand_for_all(self) -> Self {
 		self.balances(vec![
-			(ALICE, SEE, 100_000),
-			(ALICE, USSD, 100_000),
-			(ALICE, EDF, 100_000),
+			(ALICE, SEU, 100_000),
+			(ALICE, SEUSD, 100_000),
 			(ALICE, TEST, 100_000),
-			(BOB, SEE, 100_000),
-			(BOB, USSD, 100_000),
-			(BOB, EDF, 100_000),
+			(BOB, SEU, 100_000),
+			(BOB, SEUSD, 100_000),
 			(BOB, TEST, 100_000),
-			(CHARLIE, SEE, 100_000),
-			(CHARLIE, USSD, 100_000),
-			(CHARLIE, EDF, 100_000),
+			(CHARLIE, SEU, 100_000),
+			(CHARLIE, SEUSD, 100_000),
 			(CHARLIE, TEST, 100_000),
 		])
 	}

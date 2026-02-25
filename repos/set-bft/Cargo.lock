@@ -27,12 +27,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "aleph-bft"
+name = "set-bft"
 version = "0.45.4"
 dependencies = [
- "aleph-bft-mock",
- "aleph-bft-rmc",
- "aleph-bft-types",
+ "set-bft-mock",
+ "set-bft-rmc",
+ "set-bft-types",
  "anyhow",
  "async-trait",
  "derivative",
@@ -50,7 +50,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "aleph-bft-crypto"
+name = "set-bft-crypto"
 version = "0.11.0"
 dependencies = [
  "async-trait",
@@ -62,11 +62,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "aleph-bft-examples-blockchain"
+name = "set-bft-examples-blockchain"
 version = "0.0.3"
 dependencies = [
- "aleph-bft",
- "aleph-bft-mock",
+ "set-bft",
+ "set-bft-mock",
  "async-trait",
  "clap",
  "env_logger",
@@ -82,12 +82,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "aleph-bft-examples-ordering"
+name = "set-bft-examples-ordering"
 version = "0.1.0"
 dependencies = [
- "aleph-bft",
- "aleph-bft-mock",
- "aleph-bft-types",
+ "set-bft",
+ "set-bft-mock",
+ "set-bft-types",
  "async-trait",
  "clap",
  "env_logger",
@@ -101,10 +101,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "aleph-bft-mock"
+name = "set-bft-mock"
 version = "0.18.0"
 dependencies = [
- "aleph-bft-types",
+ "set-bft-types",
  "async-trait",
  "futures",
  "log",
@@ -115,12 +115,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "aleph-bft-rmc"
+name = "set-bft-rmc"
 version = "0.16.0"
 dependencies = [
- "aleph-bft-crypto",
- "aleph-bft-mock",
- "aleph-bft-types",
+ "set-bft-crypto",
+ "set-bft-mock",
+ "set-bft-types",
  "async-trait",
  "futures",
  "futures-timer",
@@ -131,10 +131,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "aleph-bft-types"
+name = "set-bft-types"
 version = "0.16.0"
 dependencies = [
- "aleph-bft-crypto",
+ "set-bft-crypto",
  "async-trait",
  "futures",
  "parity-scale-codec",

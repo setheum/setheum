@@ -27,7 +27,7 @@ sp-io = { workspace = true, features = ["std"] }
 pallet-balances = { workspace = true, features = ["std"] }
 module-currencies = { workspace = true, features = ["std"] }
 module-tokens = { workspace = true, features = ["std"] }
-module-ecdp-ussd-treasury = { workspace = true, features = ["std"] }
+module-ecdp-seusd-treasury = { workspace = true, features = ["std"] }
 
 [features]
 default = ["std"]

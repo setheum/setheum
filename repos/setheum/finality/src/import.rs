@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -32,7 +32,7 @@ use sp_consensus::{BlockOrigin, Error as ConsensusError};
 use sp_runtime::{traits::Header as HeaderT, Justification as SubstrateJustification};
 
 use crate::{
-    primitives ::{Block, BlockHash, BlockNumber, ALEPH_ENGINE_ID},
+    primitives ::{Block, BlockHash, BlockNumber, SETBFT_ENGINE_ID},
     block::substrate::{Justification, JustificationTranslator, TranslateError},
     justification::{backwards_compatible_decode, DecodeError},
     metrics::{AllBlockMetrics, Checkpoint},
@@ -104,7 +104,7 @@ where
 /// A wrapper around a block import that also extracts any present justifications and sends them to
 /// our components which will process them further and possibly finalize the block.
 #[derive(Clone)]
-pub struct AlephBlockImport<I>
+pub struct SetBFTBlockImport<I>
 where
     I: BlockImport<Block> + Clone + Send,
 {
@@ -127,7 +127,7 @@ impl<TE: Debug> From<DecodeError> for SendJustificationError<TE> {
     }
 }
 
-impl<I> AlephBlockImport<I>
+impl<I> SetBFTBlockImport<I>
 where
     I: BlockImport<Block> + Clone + Send,
 {
@@ -135,8 +135,8 @@ where
         inner: I,
         justification_tx: UnboundedSender<Justification>,
         translator: JustificationTranslator,
-    ) -> AlephBlockImport<I> {
-        AlephBlockImport {
+    ) -> SetBFTBlockImport<I> {
+        SetBFTBlockImport {
             inner,
             justification_tx,
             translator,
@@ -148,17 +148,17 @@ where
         block_id: BlockId,
         justification: SubstrateJustification,
     ) -> Result<(), SendJustificationError<TranslateError>> {
-        debug!(target: "aleph-justification", "Importing justification for block {}.", block_id);
-        if justification.0 != ALEPH_ENGINE_ID {
+        debug!(target: "setbft-justification", "Importing justification for block {}.", block_id);
+        if justification.0 != SETBFT_ENGINE_ID {
             return Err(SendJustificationError::Consensus(Box::new(
-                ConsensusError::ClientImport("Aleph can import only Aleph justifications.".into()),
+                ConsensusError::ClientImport("SetBFT can import only SetBFT justifications.".into()),
             )));
         }
         let justification_raw = justification.1;
-        let aleph_justification = backwards_compatible_decode(justification_raw)?;
+        let setbft_justification = backwards_compatible_decode(justification_raw)?;
         let justification = self
             .translator
-            .translate(aleph_justification, block_id)
+            .translate(setbft_justification, block_id)
             .map_err(SendJustificationError::Translate)?;
 
         self.justification_tx
@@ -168,7 +168,7 @@ where
 }
 
 #[async_trait::async_trait]
-impl<I> BlockImport<Block> for AlephBlockImport<I>
+impl<I> BlockImport<Block> for SetBFTBlockImport<I>
 where
     I: BlockImport<Block> + Clone + Send,
 {
@@ -190,20 +190,20 @@ where
 
         let justifications = block.justifications.take();
 
-        debug!(target: "aleph-justification", "Importing block {:?} {:?} {:?}", number, block.header.hash(), block.post_hash());
+        debug!(target: "setbft-justification", "Importing block {:?} {:?} {:?}", number, block.header.hash(), block.post_hash());
         let result = self.inner.import_block(block).await;
 
         if let Ok(ImportResult::Imported(_)) = result {
             if let Some(justification) =
-                justifications.and_then(|just| just.into_justification(ALEPH_ENGINE_ID))
+                justifications.and_then(|just| just.into_justification(SETBFT_ENGINE_ID))
             {
-                debug!(target: "aleph-justification", "Got justification along imported block {:?}", number);
+                debug!(target: "setbft-justification", "Got justification along imported block {:?}", number);
 
                 if let Err(e) = self.send_justification(
                     BlockId::new(post_hash, number),
-                    (ALEPH_ENGINE_ID, justification),
+                    (SETBFT_ENGINE_ID, justification),
                 ) {
-                    warn!(target: "aleph-justification", "Error while receiving justification for block {:?}: {:?}", post_hash, e);
+                    warn!(target: "setbft-justification", "Error while receiving justification for block {:?}: {:?}", post_hash, e);
                 }
             }
         }
@@ -213,14 +213,14 @@ where
 }
 
 #[async_trait::async_trait]
-impl<I> JustificationImport<Block> for AlephBlockImport<I>
+impl<I> JustificationImport<Block> for SetBFTBlockImport<I>
 where
     I: BlockImport<Block> + Clone + Send,
 {
     type Error = ConsensusError;
 
     async fn on_start(&mut self) -> Vec<(BlockHash, BlockNumber)> {
-        debug!(target: "aleph-justification", "On start called");
+        debug!(target: "setbft-justification", "On start called");
         Vec::new()
     }
 
@@ -231,7 +231,7 @@ where
         justification: SubstrateJustification,
     ) -> Result<(), Self::Error> {
         use SendJustificationError::*;
-        debug!(target: "aleph-justification", "import_justification called on {:?}", justification);
+        debug!(target: "setbft-justification", "import_justification called on {:?}", justification);
         self.send_justification(BlockId::new(hash, number), justification)
             .map_err(|error| match error {
                 Send(_) => ConsensusError::ClientImport(String::from(

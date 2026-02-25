@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -53,7 +53,7 @@ mod service;
 
 pub use service::{Collection, IO};
 
-const LOG_TARGET: &str = "AlephBFT-collection";
+const LOG_TARGET: &str = "SetBFT-collection";
 
 /// Salt uniquely identifying an initial unit collection instance.
 pub type Salt = u64;

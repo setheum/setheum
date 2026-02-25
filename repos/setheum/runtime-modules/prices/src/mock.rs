@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -56,11 +56,10 @@ use sp_std::cell::RefCell;
 pub type AccountId = u128;
 pub type BlockNumber = u64;
 
-pub const SEE: CurrencyId = CurrencyId::Token(TokenSymbol::SEE);
-pub const USSD: CurrencyId = CurrencyId::Token(TokenSymbol::USSD);
-pub const EDF: CurrencyId = CurrencyId::Token(TokenSymbol::EDF);
-pub const LP_USSD_SEE: CurrencyId =
-	CurrencyId::DexShare(DexShare::Token(TokenSymbol::USSD), DexShare::Token(TokenSymbol::SEE));
+pub const SEU: CurrencyId = CurrencyId::Token(TokenSymbol::SEU);
+pub const SEUSD: CurrencyId = CurrencyId::Token(TokenSymbol::SEUSD);
+pub const LP_SEUSD_SEE: CurrencyId =
+	CurrencyId::DexShare(DexShare::Token(TokenSymbol::SEUSD), DexShare::Token(TokenSymbol::SEU));
 
 
 mod prices {
@@ -106,16 +105,14 @@ impl DataProvider<CurrencyId, Price> for MockDataProvider {
 	fn get(currency_id: &CurrencyId) -> Option<Price> {
 		if CHANGED.with(|v| *v.borrow_mut()) {
 			match *currency_id {
-				USSD => None,
-				SEE => Some(Price::saturating_from_integer(10)),
-				EDF => Some(Price::saturating_from_integer(200)),
+				SEUSD => None,
+				SEU => Some(Price::saturating_from_integer(10)),
 				_ => None,
 			}
 		} else {
 			match *currency_id {
-				USSD => Some(Price::saturating_from_rational(99, 100)),
-				SEE => Some(Price::saturating_from_integer(100)),
-				EDF => None,
+				SEUSD => Some(Price::saturating_from_rational(99, 100)),
+				SEU => Some(Price::saturating_from_integer(100)),
 				_ => None,
 			}
 		}
@@ -132,7 +129,7 @@ pub struct MockSwapManager;
 impl SwapManager<AccountId, Balance, CurrencyId> for MockSwapManager {
 	fn get_liquidity_pool(currency_id_a: CurrencyId, currency_id_b: CurrencyId) -> (Balance, Balance) {
 		match (currency_id_a, currency_id_b) {
-			(USSD, SEE) => (10000, 200),
+			(SEUSD, SEU) => (10000, 200),
 			_ => (0, 0),
 		}
 	}
@@ -212,16 +209,16 @@ ord_parameter_types! {
 }
 
 parameter_types! {
-	pub const GetUSSDCurrencyId: CurrencyId = USSD;
-	pub const GetSEECurrencyId: CurrencyId = SEE;
-	pub USSDFixedPrice: Price = Price::one();
+	pub const GetSEUSDCurrencyId: CurrencyId = SEUSD;
+	pub const GetSEECurrencyId: CurrencyId = SEU;
+	pub SEUSDFixedPrice: Price = Price::one();
 }
 
 impl Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type Source = MockDataProvider;
-	type GetUSSDCurrencyId = GetUSSDCurrencyId;
-	type USSDFixedPrice = USSDFixedPrice;
+	type GetSEUSDCurrencyId = GetSEUSDCurrencyId;
+	type SEUSDFixedPrice = SEUSDFixedPrice;
 	type GetSEECurrencyId = GetSEECurrencyId;
 	type LockOrigin = EnsureSignedBy<One, AccountId>;
 	type SwapManager = MockSwapManager;

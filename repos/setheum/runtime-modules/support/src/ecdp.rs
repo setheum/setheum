@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -102,7 +102,7 @@ impl<AccountId, CurrencyId, Balance: Default, DebitBalance> EcdpUssdRiskManager<
 	}
 }
 
-/// An abstraction of cdp treasury for SlickUSD ECDP Protocol.
+/// An abstraction of cdp treasury for SetheumUSD ECDP Protocol.
 pub trait EcdpUssdTreasury<AccountId> {
 	type Balance;
 	type CurrencyId;
@@ -122,7 +122,7 @@ pub trait EcdpUssdTreasury<AccountId> {
 /// issue debit for cdp treasury
 	fn on_system_debit(amount: Self::Balance) -> DispatchResult;
 
-/// issue surplus(USSD) for cdp treasury
+/// issue surplus(SEUSD) for cdp treasury
 	fn on_system_surplus(amount: Self::Balance) -> DispatchResult;
 
 /// issue debit to `who`
@@ -130,13 +130,13 @@ pub trait EcdpUssdTreasury<AccountId> {
 /// assets, otherwise will increase same amount of debit to system debit.
 	fn issue_debit(who: &AccountId, debit: Self::Balance, backed: bool) -> DispatchResult;
 
-/// burn debit(USSD) of `who`
+/// burn debit(SEUSD) of `who`
 	fn burn_debit(who: &AccountId, debit: Self::Balance) -> DispatchResult;
 
-/// deposit surplus(USSD) to cdp treasury by `from`
+/// deposit surplus(SEUSD) to cdp treasury by `from`
 	fn deposit_surplus(from: &AccountId, surplus: Self::Balance) -> DispatchResult;
 
-/// withdraw surplus(USSD) from cdp treasury to `to`
+/// withdraw surplus(SEUSD) from cdp treasury to `to`
 	fn withdraw_surplus(to: &AccountId, surplus: Self::Balance) -> DispatchResult;
 
 /// deposit collateral assets to cdp treasury by `who`
@@ -147,7 +147,7 @@ pub trait EcdpUssdTreasury<AccountId> {
 }
 
 pub trait EcdpUssdTreasuryExtended<AccountId>: SlickUsdTreasury<AccountId> {
-	fn swap_collateral_to_ussd(
+	fn swap_collateral_to_seusd(
 		currency_id: Self::CurrencyId,
 		limit: SwapLimit<Self::Balance>,
 		collateral_in_auction: bool,
@@ -169,7 +169,7 @@ pub trait EcdpUssdTreasuryExtended<AccountId>: SlickUsdTreasury<AccountId> {
 	fn max_auction() -> u32;
 }
 
-/// Functionality of SlickUSD ECDP Protocol to be exposed to EVM.
+/// Functionality of SetheumUSD ECDP Protocol to be exposed to EVM.
 pub trait EcdpUssdManager<AccountId, CurrencyId, Amount, Balance> {
 /// Adjust ECDP loan
 	fn adjust_loan(

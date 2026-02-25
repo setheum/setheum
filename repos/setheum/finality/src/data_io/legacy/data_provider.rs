@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -28,13 +28,13 @@ use sp_runtime::{traits::Zero, SaturatedConversion};
 use crate::{
     primitives ::BlockNumber,
     block::{BestBlockSelector, Header, HeaderBackend},
-    data_io::legacy::{proposal::UnvalidatedAlephProposal, AlephData, MAX_DATA_BRANCH_LEN},
+    data_io::legacy::{proposal::UnvalidatedSetBFTProposal, SetBFTData, MAX_DATA_BRANCH_LEN},
     metrics::{AllBlockMetrics, Checkpoint},
     party::manager::Runnable,
     BlockId, SessionBoundaries,
 };
 
-const LOG_TARGET: &str = "aleph-data-store";
+const LOG_TARGET: &str = "setbft-data-store";
 
 // Reduce block header to the level given by num, by traversing down via parents.
 pub fn reduce_header_to_num<H, C>(client: &C, header: H, num: BlockNumber) -> H
@@ -83,7 +83,7 @@ pub fn get_proposal<H, C>(
     client: &C,
     best_block: BlockId,
     finalized_block: BlockId,
-) -> Result<AlephData, ()>
+) -> Result<SetBFTData, ()>
 where
     H: Header,
     C: HeaderBackend<H>,
@@ -102,8 +102,8 @@ where
         let num_last = finalized_block.number() + <BlockNumber>::saturated_from(branch.len());
 // The hashes in `branch` are ordered from top to bottom -- need to reverse.
         branch.reverse();
-        Ok(AlephData {
-            head_proposal: UnvalidatedAlephProposal::new(branch, num_last),
+        Ok(SetBFTData {
+            head_proposal: UnvalidatedSetBFTProposal::new(branch, num_last),
         })
     } else {
 // By backtracking from the best block we reached a block conflicting with best finalized.
@@ -138,7 +138,7 @@ struct ChainInfo {
     highest_finalized: BlockId,
 }
 
-/// ChainTracker keeps track of the best_block in a given session and allows to generate `AlephData`.
+/// ChainTracker keeps track of the best_block in a given session and allows to generate `SetBFTData`.
 /// Internally it frequently updates a `data_to_propose` field that is shared with a `DataProvider`, which
 /// in turn is a tiny wrapper around this single shared resource that takes out `data_to_propose` whenever
 /// `get_data` is called.
@@ -150,7 +150,7 @@ where
 {
     best_block_selection_strategy: BBS,
     client: C,
-    data_to_propose: Arc<Mutex<Option<AlephData>>>,
+    data_to_propose: Arc<Mutex<Option<SetBFTData>>>,
     session_boundaries: SessionBoundaries,
     prev_chain_info: Option<ChainInfo>,
     config: ChainTrackerConfig,
@@ -190,7 +190,7 @@ where
 
     fn update_data(&mut self, best_block_in_session: &BlockId) {
 // We use best_block_in_session argument and the top_finalized block from the client and compute
-// the corresponding `AlephData<B>` in `data_to_propose` for AlephBFT. To not recompute this many
+// the corresponding `SetBFTData<B>` in `data_to_propose` for SetBFT. To not recompute this many
 // times we remember these "inputs" in `prev_chain_info` and upon match we leave the old value
 // of `data_to_propose` unaffected.
         let finalized_block = self.client.top_finalized_id();
@@ -325,10 +325,10 @@ where
     }
 }
 
-/// Provides data to AlephBFT for ordering.
+/// Provides data to SetBFT for ordering.
 #[derive(Clone)]
 pub struct DataProvider {
-    data_to_propose: Arc<Mutex<Option<AlephData>>>,
+    data_to_propose: Arc<Mutex<Option<SetBFTData>>>,
     metrics: AllBlockMetrics,
 }
 
@@ -341,7 +341,7 @@ pub struct DataProvider {
 //    last finalized till `best_block` with the restriction that the branch must be truncated to length
 //    at most MAX_DATA_BRANCH_LEN.
 impl DataProvider {
-    pub async fn get_data(&mut self) -> Option<AlephData> {
+    pub async fn get_data(&mut self) -> Option<SetBFTData> {
         let data_to_propose = (*self.data_to_propose.lock()).take();
 
         if let Some(data) = &data_to_propose {
@@ -366,8 +366,8 @@ mod tests {
     use crate::{
         data_io::legacy::{
             data_provider::{ChainTracker, ChainTrackerConfig},
-            test::aleph_data_from_blocks,
-            AlephData, DataProvider, MAX_DATA_BRANCH_LEN,
+            test::setbft_data_from_blocks,
+            SetBFTData, DataProvider, MAX_DATA_BRANCH_LEN,
         },
         metrics::AllBlockMetrics,
         party::manager::Runnable,
@@ -424,7 +424,7 @@ mod tests {
 
 // Retries sleeping and checking if data in provider is available.
 // This theoretically might fail, but practically shouldn't.
-    async fn sleep_until_data_available(data_provider: &mut DataProvider) -> AlephData {
+    async fn sleep_until_data_available(data_provider: &mut DataProvider) -> SetBFTData {
         const RETRIES: u128 = 1000;
         for _ in 0..RETRIES {
             sleep(SLEEP_TIME).await;
@@ -472,7 +472,7 @@ mod tests {
                 .await;
 
             let data = sleep_until_data_available(&mut data_provider).await;
-            let expected_data = aleph_data_from_blocks(blocks[..MAX_DATA_BRANCH_LEN].to_vec());
+            let expected_data = setbft_data_from_blocks(blocks[..MAX_DATA_BRANCH_LEN].to_vec());
             assert_eq!(data, expected_data);
         })
         .await;
@@ -488,7 +488,7 @@ mod tests {
                 chain_builder.finalize_block(&blocks[height - 1].header.hash());
                 let data = sleep_until_data_available(&mut data_provider).await;
                 let expected_data =
-                    aleph_data_from_blocks(blocks[height..(MAX_DATA_BRANCH_LEN + height)].to_vec());
+                    setbft_data_from_blocks(blocks[height..(MAX_DATA_BRANCH_LEN + height)].to_vec());
                 assert_eq!(data, expected_data);
             }
             chain_builder.finalize_block(&blocks.last().unwrap().header.hash());
@@ -511,7 +511,7 @@ mod tests {
                 )
                 .await;
             let data = sleep_until_data_available(&mut data_provider).await;
-            let expected_data = aleph_data_from_blocks(blocks[0..MAX_DATA_BRANCH_LEN].to_vec());
+            let expected_data = setbft_data_from_blocks(blocks[0..MAX_DATA_BRANCH_LEN].to_vec());
             assert_eq!(data, expected_data);
 
 // Finalize a block beyond the last block in the session.

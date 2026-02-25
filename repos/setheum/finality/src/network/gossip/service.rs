@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -46,7 +46,7 @@ use crate::{
     SpawnHandle, STATUS_REPORT_INTERVAL,
 };
 
-const LOG_TARGET: &str = "aleph-network";
+const LOG_TARGET: &str = "setbft-network";
 
 enum Command<D: Data, P: Clone + Debug + Eq + Hash + Send + 'static> {
     Send(D, P),
@@ -467,7 +467,7 @@ impl<N: RawNetwork, ES: EventStream<N::PeerId>, AD: Data, BSD: Data> Service<N, 
                         self.authentication_connected_peers.insert(peer.clone());
                         self.authentication_peer_senders.insert(peer.clone(), tx);
                         self.spawn_handle.spawn(
-                            "aleph/network/authentication_peer_sender",
+                            "setbft/network/authentication_peer_sender",
                             self.peer_sender(peer, rx, Protocol::Authentication),
                         );
                     }
@@ -476,7 +476,7 @@ impl<N: RawNetwork, ES: EventStream<N::PeerId>, AD: Data, BSD: Data> Service<N, 
                         self.block_sync_connected_peers.insert(peer.clone());
                         self.block_sync_peer_senders.insert(peer.clone(), tx);
                         self.spawn_handle.spawn(
-                            "aleph/network/sync_peer_sender",
+                            "setbft/network/sync_peer_sender",
                             self.peer_sender(peer, rx, Protocol::BlockSync),
                         );
                     }

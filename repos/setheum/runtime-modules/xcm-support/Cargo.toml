@@ -17,7 +17,7 @@ sp-std = { workspace = true }
 xcm = { workspace = true }
 xcm-executor = { workspace = true }
 
-module-traits = { package = "module-traits", path = "../../runtime-modules/traits", default-features = false }
+module-traits = { workspace = true }
 
 [features]
 default = [ "std" ]

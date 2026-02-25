@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,7 +40,7 @@ use crate::{
     Data, Hasher, Index, Keychain, MultiKeychain, Multisigned, NodeIndex, PartialMultisignature,
     Signable, Signature, UncheckedSigned,
 };
-use aleph_bft_rmc::Message as RmcMessage;
+use set_bft_rmc::Message as RmcMessage;
 use codec::{Decode, Encode};
 use derivative::Derivative;
 use parking_lot::RwLock;

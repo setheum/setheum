@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 
 pub mod time {
 	use primitives::{MILLISECS_PER_BLOCK, Balance, BlockNumber, Moment};
-// use runtime_common::{dollar, millicent, SEE};
+// use runtime_common::{dollar, millicent, SEU};
 
 // These time units are defined in number of blocks.
 	pub const MINUTES: BlockNumber = 60 // (MILLISECS_PER_BLOCK as BlockNumber);
@@ -40,7 +40,7 @@ pub mod fee {
 		WeightToFeeCoefficient, WeightToFeeCoefficients, WeightToFeePolynomial,
 	};
 	use primitives::Balance;
-	use runtime_common::{cent, SEE};
+	use runtime_common::{cent, SEU};
 	use smallvec::smallvec;
 	use sp_runtime::Perbill;
 
@@ -48,7 +48,7 @@ pub mod fee {
 	pub const TARGET_BLOCK_FULLNESS: Perbill = Perbill::from_percent(25);
 
 	fn base_tx_in_setm() -> Balance {
-		cent(SEE) // 10
+		cent(SEU) // 10
 	}
 
 /// Handles converting a weight scalar to a fee value, based on the scale

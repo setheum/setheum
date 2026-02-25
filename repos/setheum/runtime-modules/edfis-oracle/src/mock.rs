@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -51,19 +51,14 @@ use sp_std::cell::RefCell;
 
 pub type AccountId = u128;
 
-pub const SEE: CurrencyId = CurrencyId::Token(TokenSymbol::SEE);
-pub const USSD: CurrencyId = CurrencyId::Token(TokenSymbol::USSD);
-pub const EDF: CurrencyId = CurrencyId::Token(TokenSymbol::EDF);
-pub const LP_USSD_EDF: CurrencyId =
-	CurrencyId::DexShare(DexShare::Token(TokenSymbol::USSD), DexShare::Token(TokenSymbol::EDF));
+pub const SEU: CurrencyId = CurrencyId::Token(TokenSymbol::SEU);
+pub const SEUSD: CurrencyId = CurrencyId::Token(TokenSymbol::SEUSD);
 
 mod dex_oracle {
 	pub use super::super::*;
 }
 
 parameter_types! {
-	pub static USSDEDFPair: TradingPair = TradingPair::from_currency_ids(USSD, EDF).unwrap();
-	pub static SEEEDFPair: TradingPair = TradingPair::from_currency_ids(SEE, EDF).unwrap();
 }
 
 #[derive_impl(frame_system::config_preludes::TestDefaultConfig as frame_system::DefaultConfig)]
@@ -82,15 +77,9 @@ impl pallet_timestamp::Config for Runtime {
 }
 
 thread_local! {
-	static USSD_EDF_POOL: RefCell<(Balance, Balance)> = RefCell::new((Zero::zero(), Zero::zero()));
-	static SEE_EDF_POOL: RefCell<(Balance, Balance)> = RefCell::new((Zero::zero(), Zero::zero()));
 }
 
 pub fn set_pool(trading_pair: &TradingPair, pool_0: Balance, pool_1: Balance) {
-	if *trading_pair == USSDEDFPair::get() {
-		USSD_EDF_POOL.with(|v| *v.borrow_mut() = (pool_0, pool_1));
-	} else if *trading_pair == SEEEDFPair::get() {
-		SEE_EDF_POOL.with(|v| *v.borrow_mut() = (pool_0, pool_1));
 	}
 }
 
@@ -99,10 +88,6 @@ impl SwapManager<AccountId, Balance, CurrencyId> for MockDEX {
 	fn get_liquidity_pool(currency_id_0: CurrencyId, currency_id_1: CurrencyId) -> (Balance, Balance) {
 		TradingPair::from_currency_ids(currency_id_0, currency_id_1)
 			.map(|trading_pair| {
-				if trading_pair == USSDEDFPair::get() {
-					USSD_EDF_POOL.with(|v| *v.borrow())
-				} else if trading_pair == SEEEDFPair::get() {
-					SEE_EDF_POOL.with(|v| *v.borrow())
 				} else {
 					(0, 0)
 				}

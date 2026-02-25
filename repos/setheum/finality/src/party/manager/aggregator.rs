@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -38,7 +38,7 @@ use crate::{
         Header, HeaderBackend,
     },
     crypto::Signature,
-    justification::AlephJustification,
+    justification::SetBFTJustification,
     metrics::{AllBlockMetrics, Checkpoint},
     network::data::Network,
     party::{
@@ -85,7 +85,7 @@ async fn process_new_block_data<CN, LN>(
     CN: Network<CurrentRmcNetworkData>,
     LN: Network<LegacyRmcNetworkData>,
 {
-    trace!(target: "aleph-party", "Received unit {:?} in aggregator.", block);
+    trace!(target: "setbft-party", "Received unit {:?} in aggregator.", block);
     let hash = block.hash();
     metrics.report_block(block, Checkpoint::Ordered, None);
 
@@ -107,17 +107,17 @@ where
     let number = client.hash_to_id(hash).unwrap().unwrap().number();
 // The unwrap might actually fail if data availability is not implemented correctly.
     let justification = match justification_translator.translate(
-        AlephJustification::CommitteeMultisignature(multisignature),
+        SetBFTJustification::CommitteeMultisignature(multisignature),
         BlockId::new(hash, number),
     ) {
         Ok(justification) => justification,
         Err(e) => {
-            error!(target: "aleph-party", "Issue with translating justification from Aggregator to Sync Justification: {}.", e);
+            error!(target: "setbft-party", "Issue with translating justification from Aggregator to Sync Justification: {}.", e);
             return Err(());
         }
     };
     if let Err(e) = justifications_for_chain.submit(justification) {
-        error!(target: "aleph-party", "Issue with sending justification from Aggregator to JustificationHandler {}.", e);
+        error!(target: "setbft-party", "Issue with sending justification from Aggregator to JustificationHandler {}.", e);
         return Err(());
     }
     Ok(())
@@ -148,7 +148,7 @@ where
         let block_num = block.number();
         async move {
             if block_num == session_boundaries.last_block() {
-                debug!(target: "aleph-party", "Aggregator is processing last block in session.");
+                debug!(target: "setbft-party", "Aggregator is processing last block in session.");
             }
             block_num <= session_boundaries.last_block()
         }
@@ -160,7 +160,7 @@ where
     let mut status_ticker = time::interval(STATUS_REPORT_INTERVAL);
 
     loop {
-        trace!(target: "aleph-party", "Aggregator Loop started a next iteration");
+        trace!(target: "setbft-party", "Aggregator Loop started a next iteration");
         tokio::select! {
             maybe_block = blocks_from_interpreter.next(), if !no_more_blocks => match maybe_block {
                 Some(block) => {
@@ -172,7 +172,7 @@ where
                     ).await;
                 },
                 None => {
-                    debug!(target: "aleph-party", "Blocks ended in aggregator.");
+                    debug!(target: "setbft-party", "Blocks ended in aggregator.");
                     no_more_blocks = true;
                 },
             },
@@ -187,16 +187,16 @@ where
                 aggregator.status_report();
             },
             _ = &mut exit_rx => {
-                debug!(target: "aleph-party", "Aggregator received exit signal. Terminating.");
+                debug!(target: "setbft-party", "Aggregator received exit signal. Terminating.");
                 break;
             }
         }
         if hash_of_last_block.is_none() && no_more_blocks {
-            debug!(target: "aleph-party", "Aggregator processed all provided blocks. Terminating.");
+            debug!(target: "setbft-party", "Aggregator processed all provided blocks. Terminating.");
             break;
         }
     }
-    debug!(target: "aleph-party", "Aggregator finished its work.");
+    debug!(target: "setbft-party", "Aggregator finished its work.");
     Ok(())
 }
 
@@ -233,7 +233,7 @@ where
                 Current(rmc_network) => Aggregator::new_current(&multikeychain, rmc_network),
                 Legacy(rmc_network) => Aggregator::new_legacy(&multikeychain, rmc_network),
             };
-            debug!(target: "aleph-party", "Running the aggregator task for {:?}", session_id);
+            debug!(target: "setbft-party", "Running the aggregator task for {:?}", session_id);
             let result = run_aggregator(
                 aggregator_io,
                 io,
@@ -246,16 +246,16 @@ where
             let result = match result {
                 Ok(_) => Ok(()),
                 Err(err) => {
-                    error!(target: "aleph-party", "Aggregator exited with error: {err}");
+                    error!(target: "setbft-party", "Aggregator exited with error: {err}");
                     Err(())
                 }
             };
-            debug!(target: "aleph-party", "Aggregator task stopped for {:?}", session_id);
+            debug!(target: "setbft-party", "Aggregator task stopped for {:?}", session_id);
             result
         }
     };
 
     let handle =
-        spawn_handle.spawn_essential_with_result("aleph/consensus_session_aggregator", task);
+        spawn_handle.spawn_essential_with_result("setbft/consensus_session_aggregator", task);
     Task::new(handle, stop)
 }

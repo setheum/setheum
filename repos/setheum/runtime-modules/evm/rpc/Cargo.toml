@@ -1,7 +1,7 @@
 [package]
 name = "evm-rpc"
 version = "1.0.0"
-authors = ["Setheum Developers"]
+authors = ["Afsall Labs"]
 edition = "2021"
 license = "Apache-2.0 OR MIT"
 
@@ -10,11 +10,11 @@ ethereum-types = { workspace = true }
 frame-support = { workspace = true }
 jsonrpc-core = "15.1.0"
 jsonrpc-derive = "15.1.0"
-module-evm = { path = ".." }
+module-evm = { workspace = true }
 module-evm-rpc-runtime-api = { path = "runtime_api" }
 pallet-transaction-payment-rpc-runtime-api = { workspace = true }
 rustc-hex = "2.1.0"
-sc-rpc-api = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.10" }
+sc-rpc-api = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 sp-runtime = { workspace = true }

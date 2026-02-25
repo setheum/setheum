@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -52,7 +52,7 @@ impl Task {
             return result;
         }
         if self.exit.send(()).is_err() {
-            warn!(target: "aleph-party", "Failed to send exit signal to authority");
+            warn!(target: "setbft-party", "Failed to send exit signal to authority");
         }
         self.handle.await
     }
@@ -90,12 +90,12 @@ pub fn task<R: Runnable>(subtask_common: TaskCommon, runnable: R, name: &'static
     let (stop, exit) = oneshot::channel();
     let task = {
         async move {
-            debug!(target: "aleph-party", "Running the {} task for {:?}", name, session_id);
+            debug!(target: "setbft-party", "Running the {} task for {:?}", name, session_id);
             runnable.run(exit).await;
-            debug!(target: "aleph-party", "The {} task stopped for {:?}", name, session_id);
+            debug!(target: "setbft-party", "The {} task stopped for {:?}", name, session_id);
         }
     };
 
-    let handle = spawn_handle.spawn_essential("aleph/consensus_session_task", task);
+    let handle = spawn_handle.spawn_essential("setbft/consensus_session_task", task);
     Task::new(handle, stop)
 }

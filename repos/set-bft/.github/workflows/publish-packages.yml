@@ -10,7 +10,7 @@ jobs:
   publish:
     environment: Autobump version
     runs-on: ubuntu-24.04
-    if: ${{ github.repository == 'Cardinal-Cryptography/AlephBFT'}}
+    if: ${{ github.repository == 'Cardinal-Cryptography/SetBFT'}}
     steps:
       - name: Publish
         if: ${{ github.event_name == 'push' }}

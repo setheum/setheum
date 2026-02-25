@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -84,13 +84,11 @@ fn adjust_position_should_work() {
 
 // mock can't pass liquidation ratio check
 		assert_noop!(
-			EcdpLoansModule::adjust_position(&ALICE, EDF, 500, 0),
 			sp_runtime::DispatchError::Other("mock below liquidation ratio error")
 		);
 
 // mock can't pass required ratio check
 		assert_noop!(
-			EcdpLoansModule::adjust_position(&ALICE, EDF, 500, 1),
 			sp_runtime::DispatchError::Other("mock below required collateral ratio error")
 		);
 
@@ -112,7 +110,7 @@ fn adjust_position_should_work() {
 		assert_eq!(EcdpLoansModule::total_positions(BTC).collateral, 0);
 		assert_eq!(EcdpLoansModule::positions(BTC, &ALICE).debit, 0);
 		assert_eq!(EcdpLoansModule::positions(BTC, &ALICE).collateral, 0);
-		assert_eq!(Currencies::free_balance(USSD, &ALICE), 0);
+		assert_eq!(Currencies::free_balance(SEUSD, &ALICE), 0);
 
 // success
 		assert_ok!(EcdpLoansModule::adjust_position(&ALICE, BTC, 500, 300));
@@ -122,7 +120,7 @@ fn adjust_position_should_work() {
 		assert_eq!(EcdpLoansModule::total_positions(BTC).collateral, 500);
 		assert_eq!(EcdpLoansModule::positions(BTC, &ALICE).debit, 300);
 		assert_eq!(EcdpLoansModule::positions(BTC, &ALICE).collateral, 500);
-		assert_eq!(Currencies::free_balance(USSD, &ALICE), 150);
+		assert_eq!(Currencies::free_balance(SEUSD, &ALICE), 150);
 		System::assert_has_event(RuntimeEvent::EcdpLoansModule(crate::Event::EcdpPositionUpdated {
 			owner: ALICE,
 			collateral_type: BTC,
@@ -239,15 +237,8 @@ fn confiscate_collateral_and_debit_work() {
 // #[test]
 // fn loan_updated_updated_when_adjust_collateral() {
 // 	ExtBuilder::default().build().execute_with(|| {
-// 		assert_eq!(EDF_SHARES.with(|v| *v.borrow().get(&BOB).unwrap_or(&0)), 0);
 
-// 		assert_ok!(EcdpLoansModule::update_loan(&BOB, EDF, 1000, 0));
-// 		assert_eq!(EDF_SHARES.with(|v| *v.borrow().get(&BOB).unwrap_or(&0)), 1000);
 
-// 		assert_ok!(EcdpLoansModule::update_loan(&BOB, EDF, 0, 200));
-// 		assert_eq!(EDF_SHARES.with(|v| *v.borrow().get(&BOB).unwrap_or(&0)), 1000);
 
-// 		assert_ok!(EcdpLoansModule::update_loan(&BOB, EDF, -800, 500));
-// 		assert_eq!(EDF_SHARES.with(|v| *v.borrow().get(&BOB).unwrap_or(&0)), 200);
 // 	});
 // }

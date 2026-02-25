@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -94,7 +94,6 @@ type Balance = u128;
 
 parameter_type_with_key! {
 	pub ExistentialDeposits: |currency_id: CurrencyId| -> Balance {
-		if *currency_id == EDF { return 2; }
 		Default::default()
 	};
 }
@@ -132,9 +131,8 @@ impl module_tokens::Config for Runtime {
 	type DustRemovalWhitelist = Nothing;
 }
 
-pub const NATIVE_CURRENCY_ID: CurrencyId = CurrencyId::Token(TokenSymbol::SEE);
-pub const X_TOKEN_ID: CurrencyId = CurrencyId::Token(TokenSymbol::USSD);
-pub const EDF: CurrencyId = CurrencyId::Token(TokenSymbol::EDF);
+pub const NATIVE_CURRENCY_ID: CurrencyId = CurrencyId::Token(TokenSymbol::SEU);
+pub const X_TOKEN_ID: CurrencyId = CurrencyId::Token(TokenSymbol::SEUSD);
 
 parameter_types! {
 	pub const GetNativeCurrencyId: CurrencyId = NATIVE_CURRENCY_ID;

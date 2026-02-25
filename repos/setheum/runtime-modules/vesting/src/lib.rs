@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -129,20 +129,16 @@ pub mod module {
 		type MultiCurrency: MultiLockableCurrency<Self::AccountId,  CurrencyId = CurrencyId, Moment = BlockNumberFor<Self>>;
 		
 		#[pallet::constant]
-/// Native Setheum (SEE) currency id.
+/// Native Setheum (SEU) currency id.
 		type GetNativeCurrencyId: Get<CurrencyId>;
 
 		#[pallet::constant]
-/// Ethical DeFi (EDF) currency id.
-		type GetEDFCurrencyId: Get<CurrencyId>;
 
 		#[pallet::constant]
-/// The minimum amount of SEE transferred to call `vested_transfer`.
+/// The minimum amount of SEU transferred to call `vested_transfer`.
 		type MinNativeVestedTransfer: Get<BalanceOf<Self>>;
 
 		#[pallet::constant]
-/// The minimum amount of EDF transferred to call `vested_transfer`.
-		type MinEDFVestedTransfer: Get<BalanceOf<Self>>;
 
 /// Required origin for vested transfer.
 		type VestedTransferOrigin: EnsureOrigin<Self::RuntimeOrigin, Success = Self::AccountId>;
@@ -150,11 +146,9 @@ pub mod module {
 /// Weight information for extrinsics in this module.
 		type WeightInfo: WeightInfo;
 
-/// The maximum vesting schedules for SEE
+/// The maximum vesting schedules for SEU
 		type MaxNativeVestingSchedules: Get<u32>;
 
-/// The maximum vesting schedules for EDF
-		type MaxEDFVestingSchedules: Get<u32>;
 	}
 
 	#[pallet::error]
@@ -169,10 +163,8 @@ pub mod module {
 		TooManyVestingSchedules,
 /// The vested transfer amount is too low
 		AmountLow,
-/// Failed because the maximum vesting schedules for SEE was exceeded
+/// Failed because the maximum vesting schedules for SEU was exceeded
 		MaxNativeVestingSchedulesExceeded,
-/// Failed because the maximum vesting schedules for EDF was exceeded
-		MaxEDFVestingSchedulesExceeded,
 	}
 
 	#[pallet::event]
@@ -191,7 +183,7 @@ pub mod module {
 		VestingSchedulesUpdated {currency_id: CurrencyIdOf<T>, who: T::AccountId },
 	}
 
-/// Vesting schedules of an account under Native Currency (SEE).
+/// Vesting schedules of an account under Native Currency (SEU).
 ///
 /// NativeVestingSchedules: map AccountId => Vec<VestingSchedule>
 	#[pallet::storage]
@@ -204,16 +196,12 @@ pub mod module {
 		ValueQuery,
 	>;
 	
-/// Vesting schedules of an account under EDF Currency.
 ///
-/// EDFVestingSchedules: map AccountId => Vec<VestingSchedule>
 	#[pallet::storage]
 	#[pallet::getter(fn edf_vesting_schedules)]
-	pub type EDFVestingSchedules<T: Config> = StorageMap<
 		_,
 		Blake2_128Concat,
 		T::AccountId,
-		BoundedVec<VestingScheduleOf<T>, T::MaxEDFVestingSchedules>,
 		ValueQuery,
 	>;
 	
@@ -259,7 +247,6 @@ pub mod module {
 						let locked = Pallet::<T>::locked_balance(*currency_id, who);
 						let _ = T::MultiCurrency::set_lock(VESTING_LOCK_ID, *currency_id, who, locked);
 
-					} else if *currency_id == T::GetEDFCurrencyId::get() {
 						let _ = ensure_valid_vesting_schedule::<T>(*currency_id, &schedule).expect("Invalid vesting schedule");
 						let total = schedule.total_amount().unwrap();
 						assert!(
@@ -267,7 +254,6 @@ pub mod module {
 							"Account does not have enough balance"
 						);
 
-						if <EDFVestingSchedules<T>>::try_append(who, schedule).is_err() {
 							panic!("Max vesting schedules exceeded");
 						}
 						
@@ -375,9 +361,7 @@ impl<T: Config> Pallet<T> {
 				// cleanup the storage and unlock the fund
 				<NativeVestingSchedules<T>>::remove(who);
 				let _ = T::MultiCurrency::remove_lock(VESTING_LOCK_ID, currency_id, who);
-			} else if currency_id == T::GetEDFCurrencyId::get() {
 				// cleanup the storage and unlock the fund
-				<EDFVestingSchedules<T>>::remove(who);
 				let _ = T::MultiCurrency::remove_lock(VESTING_LOCK_ID, currency_id, who);
 			}
 		} else {
@@ -407,8 +391,6 @@ impl<T: Config> Pallet<T> {
 				}
 				total
 			})
-		} else if currency_id == T::GetEDFCurrencyId::get() {
-			<EDFVestingSchedules<T>>::mutate_exists(who, |maybe_schedules| {
 				let total = if let Some(schedules) = maybe_schedules.as_mut() {
 					let mut total: BalanceOf<T> = Zero::zero();
 					schedules.retain(|s| {
@@ -444,14 +426,8 @@ impl<T: Config> Pallet<T> {
 			
 			let total_amount = Self::locked_balance(T::GetNativeCurrencyId::get(), to);
 			T::MultiCurrency::set_lock(VESTING_LOCK_ID, T::GetNativeCurrencyId::get(), to, total_amount)?;
-		} else if currency_id == T::GetEDFCurrencyId::get() {
-			let schedule_amount = ensure_valid_vesting_schedule::<T>(T::GetEDFCurrencyId::get(), &schedule)?;
 
-			T::MultiCurrency::transfer(T::GetEDFCurrencyId::get(), from, to, schedule_amount)?;
-			<EDFVestingSchedules<T>>::try_append(to, schedule).map_err(|_| Error::<T>::MaxEDFVestingSchedulesExceeded)?;
 
-			let total_amount = Self::locked_balance(T::GetEDFCurrencyId::get(), to);
-			T::MultiCurrency::set_lock(VESTING_LOCK_ID, T::GetEDFCurrencyId::get(), to, total_amount)?;
 		}
 		Ok(())
 	}
@@ -482,27 +458,18 @@ impl<T: Config> Pallet<T> {
 			);
 
 			T::MultiCurrency::set_lock(VESTING_LOCK_ID, T::GetNativeCurrencyId::get(), who, total_amount)?;
-		} else if currency_id == T::GetEDFCurrencyId::get() {
-			let bounded_schedules: BoundedVec<VestingScheduleOf<T>, T::MaxEDFVestingSchedules> = schedules
 				.try_into()
-				.map_err(|_| Error::<T>::MaxEDFVestingSchedulesExceeded)?;
 
 			// empty vesting schedules cleanup the storage and unlock the fund
 			if bounded_schedules.len().is_zero() {
-				<EDFVestingSchedules<T>>::remove(who);
-				let _ = T::MultiCurrency::remove_lock(VESTING_LOCK_ID,T::GetEDFCurrencyId::get(), who);
 				return Ok(());
 			}
 
-			<EDFVestingSchedules<T>>::insert(who, bounded_schedules);
-			let total_amount = Self::locked_balance(T::GetEDFCurrencyId::get(), who);
 
 			ensure!(
-				T::MultiCurrency::free_balance(T::GetEDFCurrencyId::get(), who) >= total_amount,
 				Error::<T>::InsufficientBalanceToLock,
 			);
 
-			T::MultiCurrency::set_lock(VESTING_LOCK_ID, T::GetEDFCurrencyId::get(), who, total_amount)?;
 		}
 		Ok(())
 	}
@@ -521,8 +488,6 @@ fn ensure_valid_vesting_schedule<T: Config>(
 
 	if currency_id == T::GetNativeCurrencyId::get() {
 		ensure!(total_total >= T::MinNativeVestedTransfer::get(), Error::<T>::AmountLow);
-	} else if currency_id == T::GetEDFCurrencyId::get() {
-		ensure!(total_total >= T::MinEDFVestedTransfer::get(), Error::<T>::AmountLow);
 	}
 
 	Ok(total_total)

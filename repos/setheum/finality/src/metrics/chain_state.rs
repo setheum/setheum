@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -99,13 +99,13 @@ impl ChainStateMetrics {
 
         Ok(ChainStateMetrics::Prometheus {
             top_finalized_block: register(
-                Gauge::new("aleph_top_finalized_block", "no help")?,
+                Gauge::new("setbft_top_finalized_block", "no help")?,
                 &registry,
             )?,
-            best_block: register(Gauge::new("aleph_best_block", "no help")?, &registry)?,
+            best_block: register(Gauge::new("setbft_best_block", "no help")?, &registry)?,
             reorgs: register(
                 Histogram::with_opts(
-                    HistogramOpts::new("aleph_reorgs", "Number of reorgs by length")
+                    HistogramOpts::new("setbft_reorgs", "Number of reorgs by length")
                         .buckets(vec![1., 2., 3., 5., 10.]),
                 )?,
                 &registry,
@@ -113,7 +113,7 @@ impl ChainStateMetrics {
             time_till_block_inclusion: register(
                 Histogram::with_opts(
                     HistogramOpts::new(
-                        "aleph_transaction_to_block_time",
+                        "setbft_transaction_to_block_time",
                         "Time from becoming ready in the pool to inclusion in some valid block.",
                     )
                     .buckets(exponential_buckets_two_sided(
@@ -126,7 +126,7 @@ impl ChainStateMetrics {
                 &registry,
             )?,
             transactions_not_seen_in_the_pool: register(
-                Counter::new("aleph_transactions_not_seen_in_the_pool", "no help")?,
+                Counter::new("setbft_transactions_not_seen_in_the_pool", "no help")?,
                 &registry,
             )?,
         })

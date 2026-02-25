@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -26,8 +26,8 @@ use std::{
 };
 
 use setheum_client::{
-    aleph_keypair_from_string, api, pallets::aleph::AlephRpc, primitives::app::Public,
-    sp_core::H256, AlephKeyPair, BlockNumber, Connection, ConnectionApi, Pair,
+    setbft_keypair_from_string, api, pallets::setbft::SetBFTRpc, primitives::app::Public,
+    sp_core::H256, SetBFTKeyPair, BlockNumber, Connection, ConnectionApi, Pair,
 };
 use anyhow::Result;
 use dialoguer::Confirm;
@@ -262,7 +262,7 @@ async fn pre_single_finalization_check(
 
 async fn try_finalize_single_block(
     connections: &Connections,
-    key: &AlephKeyPair,
+    key: &SetBFTKeyPair,
     num: BlockNumber,
 ) -> Result<()> {
     println!("Trying to finalize block number {num}");
@@ -330,14 +330,14 @@ pub async fn try_finalize(
 }
 
 async fn get_finalizer_pubkey(connection: &Connection) -> Option<Public> {
-    let addrs = api::storage().aleph().emergency_finalizer();
+    let addrs = api::storage().setbft().emergency_finalizer();
     connection.get_storage_entry_maybe(&addrs, None).await
 }
 
-fn read_key_from_file(seed_path: PathBuf) -> Result<AlephKeyPair> {
+fn read_key_from_file(seed_path: PathBuf) -> Result<SetBFTKeyPair> {
     println!("Reading the finalizer key from file {:?}", &seed_path);
     let suri = fs::read_to_string(seed_path)?;
-    let key = aleph_keypair_from_string(suri.trim());
+    let key = setbft_keypair_from_string(suri.trim());
     println!("Read a pubkey {}\n", hex::encode(key.public().0));
     Ok(key)
 }

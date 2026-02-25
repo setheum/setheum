@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -192,35 +192,35 @@ impl<B: Block, H: ExHashT> EventStream<PeerId> for NetworkEventStream<B, H> {
                         PeerConnected(remote) => {
                             let multiaddress: Multiaddr =
                                 iter::once(MultiaddressProtocol::P2p(remote.into())).collect();
-                            trace!(target: "aleph-network", "Connected event from address {:?}", multiaddress);
+                            trace!(target: "setbft-network", "Connected event from address {:?}", multiaddress);
                             if let Err(e) = self.network.add_peers_to_reserved_set(
                                 self.naming.protocol_name(&Protocol::Authentication),
                                 iter::once(multiaddress.clone()).collect(),
                             ) {
-                                error!(target: "aleph-network", "add_reserved failed for authentications: {}", e);
+                                error!(target: "setbft-network", "add_reserved failed for authentications: {}", e);
                             }
                             if let Err(e) = self.network.add_peers_to_reserved_set(
                                 self.naming.protocol_name(&Protocol::BlockSync),
                                 iter::once(multiaddress).collect(),
                             ) {
-                                error!(target: "aleph-network", "add_reserved failed for block sync: {}", e);
+                                error!(target: "setbft-network", "add_reserved failed for block sync: {}", e);
                             }
                             continue;
                         }
                         PeerDisconnected(remote) => {
-                            trace!(target: "aleph-network", "Disconnected event for peer {:?}", remote);
+                            trace!(target: "setbft-network", "Disconnected event for peer {:?}", remote);
                             let addresses: Vec<_> = iter::once(remote).collect();
                             if let Err(e) = self.network.remove_peers_from_reserved_set(
                                 self.naming.protocol_name(&Protocol::Authentication),
                                 addresses.clone(),
                             ) {
-                                warn!(target: "aleph-network", "Error while removing peer from Protocol::Authentication reserved set: {}", e)
+                                warn!(target: "setbft-network", "Error while removing peer from Protocol::Authentication reserved set: {}", e)
                             }
                             if let Err(e) = self.network.remove_peers_from_reserved_set(
                                 self.naming.protocol_name(&Protocol::BlockSync),
                                 addresses,
                             ) {
-                                warn!(target: "aleph-network", "Error while removing peer from Protocol::BlockSync reserved set: {}", e)
+                                warn!(target: "setbft-network", "Error while removing peer from Protocol::BlockSync reserved set: {}", e)
                             }
                             continue;
                         }
@@ -256,10 +256,10 @@ impl<B: Block, H: ExHashT> SubstrateNetwork<B, H> {
 
     pub fn event_stream(&self) -> NetworkEventStream<B, H> {
         NetworkEventStream {
-            stream: self.network.event_stream("aleph-network").fuse(),
+            stream: self.network.event_stream("setbft-network").fuse(),
             sync_stream: self
                 .sync_network
-                .event_stream("aleph-syncing-network")
+                .event_stream("setbft-syncing-network")
                 .fuse(),
             naming: self.naming.clone(),
             network: self.network.clone(),

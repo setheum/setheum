@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -49,7 +49,7 @@ mod task;
 pub use responder::Responder;
 pub use task::{Manager as TaskManager, ManagerStatus as TaskManagerStatus};
 
-const LOG_TARGET: &str = "AlephBFT-dissemination";
+const LOG_TARGET: &str = "SetBFT-dissemination";
 
 /// Some form of message with the intended recipients.
 #[derive(Eq, PartialEq, Debug, Clone)]

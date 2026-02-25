@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,8 +40,8 @@ use std::{
     hash::Hash as StdHash,
 };
 
-use aleph_bft_rmc::{Message as RmcMessage, Signable};
-use aleph_bft_types::Recipient;
+use setbft_bft_rmc::{Message as RmcMessage, Signable};
+use setbft_bft_types::Recipient;
 use parity_scale_codec::{Codec, Decode, Encode};
 
 mod aggregator;

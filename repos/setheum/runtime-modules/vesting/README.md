@@ -2,7 +2,6 @@
 
 ## Overview
 
-Vesting module provides a means of scheduled balance lock on an account. It uses the *graded vesting* way, which unlocks a specific amount of balance every period of time, until all balance unlocked. The `NativeCurrencyId` (SEE) and `EDFCurrencyId` (EDF) are both supported in this module.
 
 ### Vesting Schedule
 

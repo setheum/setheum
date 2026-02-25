@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -556,7 +556,6 @@ fn register_native_asset_works() {
 	ExtBuilder::default().build().execute_with(|| {
 		assert_ok!(AssetRegistry::register_native_asset(
 			RuntimeOrigin::signed(CouncilAccount::get()),
-			CurrencyId::Token(TokenSymbol::EDF),
 			Box::new(AssetMetadata {
 				name: b"Token Name".to_vec(),
 				symbol: b"TN".to_vec(),
@@ -565,7 +564,6 @@ fn register_native_asset_works() {
 			})
 		));
 		System::assert_last_event(RuntimeEvent::AssetRegistry(crate::Event::AssetRegistered {
-			asset_id: AssetIds::NativeAssetId(CurrencyId::Token(TokenSymbol::EDF)),
 			metadata: AssetMetadata {
 				name: b"Token Name".to_vec(),
 				symbol: b"TN".to_vec(),
@@ -575,7 +573,6 @@ fn register_native_asset_works() {
 		}));
 
 		assert_eq!(
-			AssetMetadatas::<Runtime>::get(AssetIds::NativeAssetId(CurrencyId::Token(TokenSymbol::EDF))),
 			Some(AssetMetadata {
 				name: b"Token Name".to_vec(),
 				symbol: b"TN".to_vec(),
@@ -587,7 +584,6 @@ fn register_native_asset_works() {
 		assert_noop!(
 			AssetRegistry::register_native_asset(
 				RuntimeOrigin::signed(CouncilAccount::get()),
-				CurrencyId::Token(TokenSymbol::EDF),
 				Box::new(AssetMetadata {
 					name: b"Token Name".to_vec(),
 					symbol: b"TN".to_vec(),
@@ -606,7 +602,6 @@ fn update_native_asset_works() {
 		assert_noop!(
 			AssetRegistry::update_native_asset(
 				RuntimeOrigin::signed(CouncilAccount::get()),
-				CurrencyId::Token(TokenSymbol::EDF),
 				Box::new(AssetMetadata {
 					name: b"New Token Name".to_vec(),
 					symbol: b"NTN".to_vec(),
@@ -619,7 +614,6 @@ fn update_native_asset_works() {
 
 		assert_ok!(AssetRegistry::register_native_asset(
 			RuntimeOrigin::signed(CouncilAccount::get()),
-			CurrencyId::Token(TokenSymbol::EDF),
 			Box::new(AssetMetadata {
 				name: b"Token Name".to_vec(),
 				symbol: b"TN".to_vec(),
@@ -630,7 +624,6 @@ fn update_native_asset_works() {
 
 		assert_ok!(AssetRegistry::update_native_asset(
 			RuntimeOrigin::signed(CouncilAccount::get()),
-			CurrencyId::Token(TokenSymbol::EDF),
 			Box::new(AssetMetadata {
 				name: b"New Token Name".to_vec(),
 				symbol: b"NTN".to_vec(),
@@ -640,7 +633,6 @@ fn update_native_asset_works() {
 		));
 
 		System::assert_last_event(RuntimeEvent::AssetRegistry(crate::Event::AssetUpdated {
-			asset_id: AssetIds::NativeAssetId(CurrencyId::Token(TokenSymbol::EDF)),
 			metadata: AssetMetadata {
 				name: b"New Token Name".to_vec(),
 				symbol: b"NTN".to_vec(),
@@ -650,7 +642,6 @@ fn update_native_asset_works() {
 		}));
 
 		assert_eq!(
-			AssetMetadatas::<Runtime>::get(AssetIds::NativeAssetId(CurrencyId::Token(TokenSymbol::EDF))),
 			Some(AssetMetadata {
 				name: b"New Token Name".to_vec(),
 				symbol: b"NTN".to_vec(),
@@ -694,7 +685,7 @@ fn name_works() {
 				1
 			));
 			assert_eq!(
-				EvmErc20InfoMapping::<Runtime>::name(CurrencyId::Token(TokenSymbol::SEE)),
+				EvmErc20InfoMapping::<Runtime>::name(CurrencyId::Token(TokenSymbol::SEU)),
 				Some(b"Setheum".to_vec())
 			);
 			assert_eq!(
@@ -708,13 +699,13 @@ fn name_works() {
 			);
 
 			assert_eq!(
-				EvmErc20InfoMapping::<Runtime>::name(CurrencyId::DexShare(DexShare::Token(TokenSymbol::SEE), DexShare::Token(TokenSymbol::USSD))),
-				Some(b"LP Setheum - Slick USD".to_vec())
+				EvmErc20InfoMapping::<Runtime>::name(CurrencyId::DexShare(DexShare::Token(TokenSymbol::SEU), DexShare::Token(TokenSymbol::SEUSD))),
+				Some(b"LP Setheum - Setheum USD".to_vec())
 			);
 
 			assert_eq!(
-				EvmErc20InfoMapping::<Runtime>::name(CurrencyId::DexShare(DexShare::Erc20(erc20_address()), DexShare::Token(TokenSymbol::USSD))),
-				Some(b"LP long string name, long string name, long string name, long string name, long string name - Slick USD"[..32].to_vec())
+				EvmErc20InfoMapping::<Runtime>::name(CurrencyId::DexShare(DexShare::Erc20(erc20_address()), DexShare::Token(TokenSymbol::SEUSD))),
+				Some(b"LP long string name, long string name, long string name, long string name, long string name - Setheum USD"[..32].to_vec())
 			);
 
 			assert_eq!(
@@ -723,7 +714,7 @@ fn name_works() {
 			);
 
 			assert_eq!(
-				EvmErc20InfoMapping::<Runtime>::name(CurrencyId::DexShare(DexShare::Token(TokenSymbol::SEE), DexShare::Erc20(erc20_address_not_exists()))),
+				EvmErc20InfoMapping::<Runtime>::name(CurrencyId::DexShare(DexShare::Token(TokenSymbol::SEU), DexShare::Erc20(erc20_address_not_exists()))),
 				None
 			);
 
@@ -747,8 +738,8 @@ fn symbol_works() {
 				1
 			));
 			assert_eq!(
-				EvmErc20InfoMapping::<Runtime>::symbol(CurrencyId::Token(TokenSymbol::SEE)),
-				Some(b"SEE".to_vec())
+				EvmErc20InfoMapping::<Runtime>::symbol(CurrencyId::Token(TokenSymbol::SEU)),
+				Some(b"SEU".to_vec())
 			);
 			assert_eq!(
 				EvmErc20InfoMapping::<Runtime>::symbol(CurrencyId::Erc20(erc20_address())),
@@ -762,18 +753,18 @@ fn symbol_works() {
 
 			assert_eq!(
 				EvmErc20InfoMapping::<Runtime>::symbol(CurrencyId::DexShare(
-					DexShare::Token(TokenSymbol::SEE),
-					DexShare::Token(TokenSymbol::USSD)
+					DexShare::Token(TokenSymbol::SEU),
+					DexShare::Token(TokenSymbol::SEUSD)
 				)),
-				Some(b"LP_SEE_USSD".to_vec())
+				Some(b"LP_SEU_SEUSD".to_vec())
 			);
 
 			assert_eq!(
 				EvmErc20InfoMapping::<Runtime>::symbol(CurrencyId::DexShare(
 					DexShare::Erc20(erc20_address()),
-					DexShare::Token(TokenSymbol::USSD)
+					DexShare::Token(TokenSymbol::SEUSD)
 				)),
-				Some(b"LP_TestToken_USSD".to_vec())
+				Some(b"LP_TestToken_SEUSD".to_vec())
 			);
 
 			assert_eq!(
@@ -786,7 +777,7 @@ fn symbol_works() {
 
 			assert_eq!(
 				EvmErc20InfoMapping::<Runtime>::symbol(CurrencyId::DexShare(
-					DexShare::Token(TokenSymbol::SEE),
+					DexShare::Token(TokenSymbol::SEU),
 					DexShare::Erc20(erc20_address_not_exists())
 				)),
 				None
@@ -815,7 +806,7 @@ fn decimals_works() {
 				1
 			));
 			assert_eq!(
-				EvmErc20InfoMapping::<Runtime>::decimals(CurrencyId::Token(TokenSymbol::SEE)),
+				EvmErc20InfoMapping::<Runtime>::decimals(CurrencyId::Token(TokenSymbol::SEU)),
 				Some(12)
 			);
 			assert_eq!(
@@ -830,8 +821,8 @@ fn decimals_works() {
 
 			assert_eq!(
 				EvmErc20InfoMapping::<Runtime>::decimals(CurrencyId::DexShare(
-					DexShare::Token(TokenSymbol::SEE),
-					DexShare::Token(TokenSymbol::USSD)
+					DexShare::Token(TokenSymbol::SEU),
+					DexShare::Token(TokenSymbol::SEUSD)
 				)),
 				Some(12)
 			);
@@ -839,7 +830,7 @@ fn decimals_works() {
 			assert_eq!(
 				EvmErc20InfoMapping::<Runtime>::decimals(CurrencyId::DexShare(
 					DexShare::Erc20(erc20_address()),
-					DexShare::Token(TokenSymbol::USSD)
+					DexShare::Token(TokenSymbol::SEUSD)
 				)),
 				Some(17)
 			);
@@ -876,7 +867,7 @@ fn encode_evm_address_works() {
 
 // Token
 			assert_eq!(
-				EvmErc20InfoMapping::<Runtime>::encode_evm_address(CurrencyId::Token(TokenSymbol::SEE)),
+				EvmErc20InfoMapping::<Runtime>::encode_evm_address(CurrencyId::Token(TokenSymbol::SEU)),
 				H160::from_str("0x0000000000000000000100000000000000000000").ok()
 			);
 
@@ -894,8 +885,8 @@ fn encode_evm_address_works() {
 // DexShare
 			assert_eq!(
 				EvmErc20InfoMapping::<Runtime>::encode_evm_address(CurrencyId::DexShare(
-					DexShare::Token(TokenSymbol::SEE),
-					DexShare::Token(TokenSymbol::USSD)
+					DexShare::Token(TokenSymbol::SEU),
+					DexShare::Token(TokenSymbol::SEUSD)
 				)),
 				H160::from_str("0x0000000000000000000200000000000000000001").ok()
 			);
@@ -903,14 +894,14 @@ fn encode_evm_address_works() {
 			assert_eq!(
 				EvmErc20InfoMapping::<Runtime>::encode_evm_address(CurrencyId::DexShare(
 					DexShare::Erc20(erc20_address()),
-					DexShare::Token(TokenSymbol::USSD)
+					DexShare::Token(TokenSymbol::SEUSD)
 				)),
 				H160::from_str("0x00000000000000000002015dddfce50000000001").ok()
 			);
 
 			assert_eq!(
 				EvmErc20InfoMapping::<Runtime>::encode_evm_address(CurrencyId::DexShare(
-					DexShare::Token(TokenSymbol::USSD),
+					DexShare::Token(TokenSymbol::SEUSD),
 					DexShare::Erc20(erc20_address())
 				)),
 				H160::from_str("0x000000000000000000020000000001015dddfce5").ok()
@@ -926,7 +917,7 @@ fn encode_evm_address_works() {
 
 			assert_eq!(
 				EvmErc20InfoMapping::<Runtime>::encode_evm_address(CurrencyId::DexShare(
-					DexShare::Token(TokenSymbol::SEE),
+					DexShare::Token(TokenSymbol::SEU),
 					DexShare::Erc20(erc20_address_not_exists())
 				)),
 				None
@@ -964,9 +955,9 @@ fn decode_evm_address_works() {
 // Token
 			assert_eq!(
 				EvmErc20InfoMapping::<Runtime>::decode_evm_address(
-					EvmErc20InfoMapping::<Runtime>::encode_evm_address(CurrencyId::Token(TokenSymbol::SEE)).unwrap()
+					EvmErc20InfoMapping::<Runtime>::encode_evm_address(CurrencyId::Token(TokenSymbol::SEU)).unwrap()
 				),
-				Some(CurrencyId::Token(TokenSymbol::SEE))
+				Some(CurrencyId::Token(TokenSymbol::SEU))
 			);
 
 // Erc20
@@ -989,14 +980,14 @@ fn decode_evm_address_works() {
 			assert_eq!(
 				EvmErc20InfoMapping::<Runtime>::decode_evm_address(
 					EvmErc20InfoMapping::<Runtime>::encode_evm_address(CurrencyId::DexShare(
-						DexShare::Token(TokenSymbol::SEE),
-						DexShare::Token(TokenSymbol::USSD)
+						DexShare::Token(TokenSymbol::SEU),
+						DexShare::Token(TokenSymbol::SEUSD)
 					))
 					.unwrap(),
 				),
 				Some(CurrencyId::DexShare(
-					DexShare::Token(TokenSymbol::SEE),
-					DexShare::Token(TokenSymbol::USSD)
+					DexShare::Token(TokenSymbol::SEU),
+					DexShare::Token(TokenSymbol::SEUSD)
 				))
 			);
 
@@ -1004,13 +995,13 @@ fn decode_evm_address_works() {
 				EvmErc20InfoMapping::<Runtime>::decode_evm_address(
 					EvmErc20InfoMapping::<Runtime>::encode_evm_address(CurrencyId::DexShare(
 						DexShare::Erc20(erc20_address()),
-						DexShare::Token(TokenSymbol::USSD)
+						DexShare::Token(TokenSymbol::SEUSD)
 					))
 					.unwrap()
 				),
 				Some(CurrencyId::DexShare(
 					DexShare::Erc20(erc20_address()),
-					DexShare::Token(TokenSymbol::USSD)
+					DexShare::Token(TokenSymbol::SEUSD)
 				))
 			);
 
@@ -1029,7 +1020,7 @@ fn decode_evm_address_works() {
 			);
 
 // decode invalid evm address
-// CurrencyId::DexShare(DexShare::Token(TokenSymbol::SEE),
+// CurrencyId::DexShare(DexShare::Token(TokenSymbol::SEU),
 // DexShare::Erc20(erc20_address_not_exists()))
 			assert_eq!(
 				EvmErc20InfoMapping::<Runtime>::decode_evm_address(

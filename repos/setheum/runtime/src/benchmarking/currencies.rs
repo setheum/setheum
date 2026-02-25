@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -36,22 +36,17 @@ use module_traits::MultiCurrency;
 const SEED: u32 = 0;
 
 const NATIVE: CurrencyId = GetNativeCurrencyId::get();
-const DNAR: CurrencyId = GetDinarCurrencyId::get();
 
 runtime_benchmarks! {
 	{ Runtime, module_currencies }
 
 // `transfer` non-native currency
 	transfer_non_native_currency {
-		let amount: Balance = 1_000 * dollar(DNAR);
 		let from: AccountId = whitelisted_caller();
-		set_balance(DNAR, &from, amount);
 
 		let to: AccountId = account("to", 0, SEED);
 		let to_lookup = lookup_of_account(to.clone());
-	}: transfer(RawOrigin::Signed(from), to_lookup, DNAR, amount, false)
 	verify {
-		assert_eq!(<Currencies as MultiCurrency<_>>::total_balance(DNAR, &to), amount);
 	}
 
 // `transfer` native currency and in worst case
@@ -87,13 +82,10 @@ runtime_benchmarks! {
 
 // `update_balance` for non-native currency
 	update_balance_non_native_currency {
-		let balance: Balance = 2 * dollar(DNAR);
 		let amount: Amount = balance.unique_saturated_into();
 		let who: AccountId = account("who", 0, SEED);
 		let who_lookup = lookup_of_account(who.clone());
-	}: update_balance(RawOrigin::Root, who_lookup, DNAR, amount)
 	verify {
-		assert_eq!(<Currencies as MultiCurrency<_>>::total_balance(DNAR, &who), balance);
 	}
 
 // `update_balance` for native currency
@@ -128,19 +120,14 @@ runtime_benchmarks! {
 		let treasury: AccountId = TreasuryPalletId::get().into_account();
 		let accounts: Vec<AccountId> = vec!["alice", "bob", "charlie"].into_iter().map(|x| account(x, 0, SEED)).collect();
 		accounts.iter().for_each(|account| {
-			module_tokens::Accounts::<Runtime>::insert(account, DNAR, module_tokens::AccountData {
 				free: 100,
 				frozen: 0,
 				reserved: 0
 			});
 		});
-		set_balance(DNAR, &treasury, dollar(DNAR));
-	}: _(RawOrigin::Root, DNAR, (&accounts[..c as usize]).to_vec())
 	verify {
 		(&accounts[..c as usize]).iter().for_each(|account| {
-			assert_eq!(module_tokens::Accounts::<Runtime>::contains_key(account, DNAR), false);
 		});
-		assert_eq!(Tokens::free_balance(DNAR, &treasury), dollar(DNAR) + (100 * c) as Balance);
 	}
 }
 

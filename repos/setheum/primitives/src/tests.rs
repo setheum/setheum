@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -29,12 +29,10 @@ use std::str::FromStr;
 
 #[test]
 fn trading_pair_works() {
-	let see = CurrencyId::Token(TokenSymbol::SEE);
-	let setr = CurrencyId::Token(TokenSymbol::SETR);
+	let see = CurrencyId::Token(TokenSymbol::SEU);
 	let erc20 = CurrencyId::Erc20(EvmAddress::from_str("0x0000000000000000000000000000000000000000").unwrap());
-	let see_setr_lp = CurrencyId::DexShare(DexShare::Token(TokenSymbol::SEE), DexShare::Token(TokenSymbol::SETR));
 	let erc20_see_lp = CurrencyId::DexShare(
-		DexShare::Token(TokenSymbol::SEE),
+		DexShare::Token(TokenSymbol::SEU),
 		DexShare::Erc20(EvmAddress::from_str("0x0000000000000000000000000000000000000000").unwrap()),
 	);
 
@@ -69,17 +67,17 @@ fn trading_pair_works() {
 #[test]
 fn currency_id_try_from_vec_u8_works() {
 	assert_ok!(
-		"SEE".as_bytes().to_vec().try_into(),
-		CurrencyId::Token(TokenSymbol::SEE)
+		"SEU".as_bytes().to_vec().try_into(),
+		CurrencyId::Token(TokenSymbol::SEU)
 	);
 }
 
 #[test]
 fn currency_id_into_u32_works() {
-	let currency_id = DexShare::Token(TokenSymbol::SEE);
+	let currency_id = DexShare::Token(TokenSymbol::SEU);
 	assert_eq!(Into::<u32>::into(currency_id), 0x00);
 
-	let currency_id = DexShare::Token(TokenSymbol::USSD);
+	let currency_id = DexShare::Token(TokenSymbol::SEUSD);
 	assert_eq!(Into::<u32>::into(currency_id), 0x01);
 
 	let currency_id = DexShare::Erc20(EvmAddress::from_str("0x2000000000000000000000000000000000000000").unwrap());
@@ -98,14 +96,13 @@ fn currency_id_into_u32_works() {
 #[test]
 fn currency_id_try_into_evm_address_works() {
 	assert_eq!(
-		EvmAddress::try_from(CurrencyId::Token(TokenSymbol::SEE,)),
+		EvmAddress::try_from(CurrencyId::Token(TokenSymbol::SEU,)),
 		Ok(EvmAddress::from_str("0x0000000000000000000100000000000000000000").unwrap())
 	);
 
 	assert_eq!(
 		EvmAddress::try_from(CurrencyId::DexShare(
-			DexShare::Token(TokenSymbol::SEE),
-			DexShare::Token(TokenSymbol::SETR),
+			DexShare::Token(TokenSymbol::SEU),
 		)),
 		Ok(EvmAddress::from_str("0x0000000000000000000200000000000000000001").unwrap())
 	);
