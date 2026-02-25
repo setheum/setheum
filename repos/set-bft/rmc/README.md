@@ -16,5 +16,5 @@ For more information, check [the documentation][reference-link-rmc].
 [docs-image]: https://docs.rs/set-bft-rmc/badge.svg
 [docs-link]: https://docs.rs/set-bft-rmc
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
-[license-link]: https://github.com/Cardinal-Cryptography/SetBFT/blob/main/LICENSE
+[license-link]: https://github.com/setheum/set-bft/blob/main/LICENSE
 [reference-link-rmc]: https://cardinal-cryptography.github.io/SetBFT/reliable_broadcast.html

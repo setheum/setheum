@@ -7,8 +7,8 @@
 [![cargo-audit][cargo-audit-image]][cargo-audit-link]
 
 <p align="center">
-  <a href="https://setzero.org" target="_blank">
-  <img src="https://setzero.org/wp-content/uploads/A0_logotype_bft_dark.jpg" />
+  <a href="https://setheum.com" target="_blank">
+  <img src="https://setheum.com/wp-content/uploads/A0_logotype_bft_dark.jpg" />
   </a>
 </p>
 
@@ -185,13 +185,13 @@ The implementation in this repository is funded by [Set Zero Foundation][webpage
 [codeql-image]: https://github.com/setheum/setheum/actions/workflows/github-code-scanning/codeql/badge.svg?style=flat-square
 [codeql-link]: https://github.com/setheum/setheum/actions/workflows/github-code-scanning/codeql
 [rustc-image]: https://img.shields.io/badge/rustc-stable-blue.svg
-[cargo-audit-image]: https://github.com/Cardinal-Cryptography/SetBFT/actions/workflows/cargo-audit.yml/badge.svg
-[cargo-audit-link]: https://github.com/Cardinal-Cryptography/SetBFT/actions/workflows/cargo-audit.yml
+[cargo-audit-image]: https://github.com/setheum/set-bft/actions/workflows/cargo-audit.yml/badge.svg
+[cargo-audit-link]: https://github.com/setheum/set-bft/actions/workflows/cargo-audit.yml
 [//]: ### "general links"
-[reference-link]: https://Cardinal-Cryptography.github.io/SetBFT/index.html
+[reference-link]: https://Afsall-Labs.github.io/SetBFT/index.html
 [reference-link-implementation-details]: https://cardinal-cryptography.github.io/SetBFT/differences.html
 [reference-link-api]: https://cardinal-cryptography.github.io/SetBFT/set_bft_api.html
 [paper-link]: https://arxiv.org/abs/1908.05156
 [old-paper-link]: https://arxiv.org/abs/1810.05256
-[set-node-link]: https://github.com/Cardinal-Cryptography/set-node
-[webpage-link]: https://setzero.org
+[set-node-link]: https://github.com/Afsall-Labs/set-node
+[webpage-link]: https://setheum.com

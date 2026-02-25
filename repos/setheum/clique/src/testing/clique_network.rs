@@ -40,8 +40,8 @@ use std::{
     sync::Once,
 };
 
-use aleph_bft_mock::Spawner;
-use aleph_bft_types::SpawnHandle;
+use set_bft_mock::Spawner;
+use set_bft_types::SpawnHandle;
 use futures::{
     channel::{mpsc, oneshot},
     StreamExt,

@@ -1,5 +1,5 @@
 [book]
-authors = ["Cardinal Cryptography"]
+authors = ["Afsall Labs"]
 language = "en"
 description = "Documentation of the Rust implementation of Set protocol"
 multilingual = false

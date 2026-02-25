@@ -1,6 +1,6 @@
 ## 1. What is SetBFT?
 
-SetBFT is a Rust implementation of the [Set Consensus Protocol](https://arxiv.org/abs/1908.05156) that offers a convenient API allowing it to be easily applied to various problems. The prime application of SetBFT is to be the consensus engine (sometimes called the "finality gadget") of the [Set Zero blockchain](https://setzero.org/).
+SetBFT is a Rust implementation of the [Set Consensus Protocol](https://arxiv.org/abs/1908.05156) that offers a convenient API allowing it to be easily applied to various problems. The prime application of SetBFT is to be the consensus engine (sometimes called the "finality gadget") of the [Set Zero blockchain](https://setheum.com/).
 
 ### 1.1 High level idea of what SetBFT does.
 

@@ -2,12 +2,12 @@
 name = "set-bft-crypto"
 version = "0.11.0"
 edition = "2021"
-authors = ["Cardinal Cryptography"]
+authors = ["Afsall Labs"]
 documentation = "https://docs.rs/?"
-homepage = "https://setzero.org"
+homepage = "https://setheum.com"
 license = "Apache-2.0 OR MIT"
 categories = ["cryptography"]
-repository = "https://github.com/Cardinal-Cryptography/SetBFT"
+repository = "https://github.com/setheum/set-bft"
 readme = "./README.md"
 description = "Utilities for node addressing and message signing in the set-bft package."
 

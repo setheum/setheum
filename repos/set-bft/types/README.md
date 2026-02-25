@@ -14,4 +14,4 @@ Contains traits that need to be implemented by the user.
 [docs-image]: https://docs.rs/set-bft-types/badge.svg
 [docs-link]: https://docs.rs/set-bft-types
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
-[license-link]: https://github.com/Cardinal-Cryptography/SetBFT/blob/main/LICENSE
+[license-link]: https://github.com/setheum/set-bft/blob/main/LICENSE

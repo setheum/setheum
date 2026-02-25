@@ -2,11 +2,11 @@
 name = "set-bft-mock"
 version = "0.18.0"
 edition = "2021"
-authors = ["Cardinal Cryptography"]
+authors = ["Afsall Labs"]
 documentation = "https://docs.rs/?"
-homepage = "https://setzero.org"
+homepage = "https://setheum.com"
 license = "Apache-2.0 OR MIT"
-repository = "https://github.com/Cardinal-Cryptography/SetBFT"
+repository = "https://github.com/setheum/set-bft"
 readme = "./README.md"
 description = "Mock implementations of traits required by the set-bft package. Do NOT use outside of testing!"
 

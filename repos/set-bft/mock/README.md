@@ -14,4 +14,4 @@ Mock implementations of required traits. Do NOT use outside of testing!
 [docs-image]: https://docs.rs/set-bft-mock/badge.svg
 [docs-link]: https://docs.rs/set-bft-mock
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
-[license-link]: https://github.com/Cardinal-Cryptography/SetBFT/blob/main/LICENSE
+[license-link]: https://github.com/setheum/set-bft/blob/main/LICENSE

@@ -2,11 +2,11 @@
 name = "set-bft-rmc"
 version = "0.16.0"
 edition = "2021"
-authors = ["Cardinal Cryptography"]
+authors = ["Afsall Labs"]
 categories = ["algorithms", "cryptography"]
 documentation = "https://docs.rs/?"
-homepage = "https://setzero.org"
-repository = "https://github.com/Cardinal-Cryptography/SetBFT"
+homepage = "https://setheum.com"
+repository = "https://github.com/setheum/set-bft"
 keywords = ["asynchronous", "consensus", "bft", "distributed-systems"]
 license = "Apache-2.0 OR MIT"
 readme = "./README.md"

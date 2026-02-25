@@ -5,22 +5,22 @@ members = [
 	# "node",
 
 	"runtime-modules/airdrop",
-	"runtime-modules/aleph",
+	"runtime-modules/setbft",
 	"runtime-modules/asset-registry",
-	# "runtime-modules/committee-management",
+	"runtime-modules/committee-management",
 	"runtime-modules/currencies",
 	"runtime-modules/ecdp-loans",
 	"runtime-modules/ecdp-ussd-engine",
 	"runtime-modules/ecdp-ussd-treasury",
 	"runtime-modules/edfis-swap-legacy",
-	# "runtime-modules/elections",
+	"runtime-modules/elections",
 	"runtime-modules/evm",
 	"runtime-modules/evm-bridge",
 	"runtime-modules/evm-manager",
 	"runtime-modules/evm-utility",
 	"runtime-modules/idle-scheduler",
 	"runtime-modules/incentives",
-	# "runtime-modules/operations",
+	"runtime-modules/operations",
 	"runtime-modules/oracle",
 	"runtime-modules/parameters",
 	"runtime-modules/prices",
@@ -38,14 +38,18 @@ members = [
 	"runtime-modules/currencies/runtime-api",
 	"runtime-modules/oracle/runtime-api",
 	"runtime-modules/tokens/runtime-api",
+	"runtime-modules/setbft-runtime-api",
 	"runtime-modules/evm-utility/macro",
 	"primitives",
 	# "clisee",
 	"setheum-client",
 	"rate-limiter",
-	# "aggregator",
+	"finality/aggregator",
+	"finality/rate-limiter",
 	# "clique",
 	# "finality",
+	"finality/finality-setbft",
+	"finality/fake-runtime-api",
 	# "finalizer",
 
 	"runtime",
@@ -143,11 +147,12 @@ insta.opt-level = 3
 similar.opt-level = 3
 
 [workspace.dependencies]
-aleph-bft-crypto = { version = "0.8" }
-aleph-bft-mock = { version = "0.11.1" }
-aleph-bft-rmc = { version = "0.11" }
-aleph-bft-types = { version = "0.11" }
+set-bft-crypto = { path = "../set-bft/crypto" }
+set-bft-mock = { path = "../set-bft/mock" }
+set-bft-rmc = { path = "../set-bft/rmc" }
+set-bft-types = { path = "../set-bft/types" }
 async-trait = { version = "0.1.71" }
+array-bytes = { version = "6" }
 bn = { package = "substrate-bn", version = "0.6", default-features = false }
 bytes = { version = "1.5" }
 bstringify = { version = "0.1.2" }
@@ -252,6 +257,15 @@ module-unified-accounts = { path = "runtime-modules/unified-accounts", default-f
 rate-limiter = { path = "rate-limiter", default-features = false }
 network-clique = { path = "clique" }
 
+# SetBFT specific Local Crates
+fake-runtime-api = { path = "finality/fake-runtime-api", default-features = false }
+module-setbft-runtime-api = { path = "runtime-modules/setbft-runtime-api", default-features = false }
+module-setbft = { path = "runtime-modules/setbft", default-features = false }
+module-elections = { path = "runtime-modules/elections", default-features = false }
+module-committee-management = { path = "runtime-modules/committee-management", default-features = false }
+module-operations = { path = "runtime-modules/operations", default-features = false }
+finality-setbft = { path = "finality/finality-setbft" }
+
 
 
 
@@ -299,7 +313,7 @@ pallet-transaction-payment-rpc = { version = "27.0.0" }
 pallet-transaction-payment-rpc-runtime-api = { version = "25.0.0", default-features = false }
 pallet-treasury = { version = "24.0.0", default-features = false }
 pallet-utility = { version = "25.0.0", default-features = false }
-pallet-xcm = { version = "4.0.0", default-features = false }
+pallet-xcm = { git = "https://github.com/Cardinal-Cryptography/polkadot-sdk.git", branch = "aleph-v1.3.0", default-features = false }
 
 sp-api = { version = "23.0.0", default-features = false }
 sp-application-crypto = { version = "27.0.0", default-features = false }
@@ -331,9 +345,9 @@ sp-trie = { version = "26.0.0", default-features = false }
 sp-version = { version = "26.0.0", default-features = false }
 sp-wasm-interface = { version = "18.0.0", default-features = false }
 sp-weights = { version = "24.0.0", default-features = false }
-xcm = { package = "staging-xcm", version = "4.0.0", default-features = false }
-xcm-builder = { package = "staging-xcm-builder", version = "4.0.0", default-features = false }
-xcm-executor = { package = "staging-xcm-executor", version = "4.0.0", default-features = false }
+xcm = { package = "staging-xcm", git = "https://github.com/Cardinal-Cryptography/polkadot-sdk.git", branch = "aleph-v1.3.0", default-features = false }
+xcm-builder = { package = "staging-xcm-builder", git = "https://github.com/Cardinal-Cryptography/polkadot-sdk.git", branch = "aleph-v1.3.0", default-features = false }
+xcm-executor = { package = "staging-xcm-executor", git = "https://github.com/Cardinal-Cryptography/polkadot-sdk.git", branch = "aleph-v1.3.0", default-features = false }
 
 frame-benchmarking-cli = { version = "29.0.0" }
 sc-basic-authorship = { version = "0.31.0" }
@@ -350,6 +364,8 @@ sc-keystore = { git = "https://github.com/Cardinal-Cryptography/polkadot-sdk.git
 sc-network = { version = "0.31.0" }
 sc-network-common = { version = "0.30.0" }
 sc-network-sync = { version = "0.30.0" }
+sc-network-light = { version = "0.30.0" }
+sc-network-transactions = { version = "0.30.0" }
 sc-offchain = { version = "26.0.0" }
 sc-rpc = { version = "26.0.0" }
 sc-rpc-api = { version = "0.30.0" }
@@ -368,7 +384,7 @@ substrate-wasm-builder = { version = "14.0.0" }
 
 try-runtime-cli = { version = "0.35.0" }
 
-xcm-simulator = { version = "4.0.0" }
+xcm-simulator = { git = "https://github.com/Cardinal-Cryptography/polkadot-sdk.git", branch = "aleph-v1.3.0" }
 
 halo2_proofs = { git = "https://github.com/Cardinal-Cryptography/pse-halo2", branch = "aleph", default-features = false }
 

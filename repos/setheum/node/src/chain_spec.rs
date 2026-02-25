@@ -23,7 +23,7 @@ use setheum_runtime::{
 //
 	AccountId,
 //
-	BabeConfig, BalancesConfig, GenesisConfig, SystemConfig,
+	AuraConfig, BalancesConfig, GenesisConfig, SystemConfig,
 	SS58Prefix, opaque::SessionKeys, get_all_module_accounts,
 	ImOnlineId, IndicesConfig, SessionConfig, StakingConfig,
 	AuthorityDiscoveryId, EVMConfig, AuthorityDiscoveryConfig,
@@ -45,8 +45,8 @@ use setheum_runtime::{
 //
 	SEE, SERP, DNAR, HELP, SETR, SETUSD,
 };
-use sp_consensus_babe::AuthorityId as BabeId;
-use sp_finality_grandpa::AuthorityId as GrandpaId;
+use sp_consensus_aura::sr25519::AuthorityId as AuraId;
+// AuraId no longer needed with SetBFT
 use sp_runtime::traits::{IdentifyAccount};
 use sp_runtime::{traits::Zero, FixedPointNumber, FixedU128};
 use sc_service::{ChainType, Properties};
@@ -62,7 +62,7 @@ use hex_literal::hex;
 use sp_core::{crypto::UncheckedInto, bytes::from_hex};
 
 use setheum_primitives::{AccountPublic, Balance, Nonce, currency::TokenInfo, TradingPair};
-use setheum_runtime::BABE_GENESIS_EPOCH_CONFIG;
+// BABE_GENESIS_EPOCH_CONFIG no longer used
 use module_nft::GenesisConfig as NFTConfig;
 
 // The URL for the telemetry server.
@@ -85,8 +85,8 @@ pub struct Extensions {
 pub type ChainSpec = sc_service::GenericChainSpec<GenesisConfig, Extensions>;
 
 fn get_session_keys(
-	grandpa: GrandpaId,
-	babe: BabeId,
+	// grandpa: no longer needed with SetBFT
+	aura: AuraId,
 	im_online: ImOnlineId,
 	authority_discovery: AuthorityDiscoveryId,
 	) -> SessionKeys {
@@ -110,12 +110,12 @@ where
 
 /// Generate an authority keys.
 pub fn get_authority_keys_from_seed(seed: &str)
-	-> (AccountId, AccountId, GrandpaId, BabeId, ImOnlineId, AuthorityDiscoveryId) {
+	-> (AccountId, AccountId, AuraId, AuraId, ImOnlineId, AuthorityDiscoveryId) {
 	(
 		get_account_id_from_seed::<sr25519::Public>(&format!("{}/stash", seed)),
 		get_account_id_from_seed::<sr25519::Public>(seed),
-		get_from_seed::<GrandpaId>(seed),
-		get_from_seed::<BabeId>(seed),
+		get_from_seed::<AuraId>(seed),
+		get_from_seed::<AuraId>(seed),
 		get_from_seed::<ImOnlineId>(seed),
 		get_from_seed::<AuthorityDiscoveryId>(seed),
 	)
@@ -418,7 +418,7 @@ pub fn mainnet_config() -> Result<ChainSpec, String> {
 
 fn dev_genesis(
 	wasm_binary: &[u8],
-	initial_authorities: Vec<(AccountId, AccountId, GrandpaId, BabeId, ImOnlineId, AuthorityDiscoveryId)>,
+	initial_authorities: Vec<(AccountId, AccountId, AuraId, AuraId, ImOnlineId, AuthorityDiscoveryId)>,
 	root_key: AccountId,
 	endowed_accounts: Vec<AccountId>,
 ) -> GenesisConfig {
@@ -516,8 +516,8 @@ fn dev_genesis(
 			slash_reward_fraction: sp_runtime::Perbill::from_percent(10),
 			..Default::default()
 		},
-		babe: BabeConfig { authorities: Default::default(), epoch_config: Some(BABE_GENESIS_EPOCH_CONFIG) },
-		grandpa: Default::default(),
+		aura: AuraConfig { authorities: Default::default() },
+		// grandpa: removed, using SetBFT finality
 		authority_discovery: AuthorityDiscoveryConfig { keys: vec![] },
 		im_online: Default::default(),
 		treasury: Default::default(), // Main Treasury (Setheum Treasury)
@@ -611,7 +611,7 @@ fn dev_genesis(
 
 fn testnet_genesis(
 	wasm_binary: &[u8],
-	initial_authorities: Vec<(AccountId, AccountId, GrandpaId, BabeId, ImOnlineId, AuthorityDiscoveryId)>,
+	initial_authorities: Vec<(AccountId, AccountId, AuraId, AuraId, ImOnlineId, AuthorityDiscoveryId)>,
 	root_key: AccountId,
 	endowed_accounts: Vec<(AccountId, Balance)>,
 	foundation: AccountId,
@@ -752,8 +752,8 @@ fn testnet_genesis(
 			slash_reward_fraction: sp_runtime::Perbill::from_percent(10),
 			..Default::default()
 		},
-		babe: BabeConfig { authorities: Default::default(), epoch_config: Some(BABE_GENESIS_EPOCH_CONFIG) },
-		grandpa: Default::default(),
+		aura: AuraConfig { authorities: Default::default() },
+		// grandpa: removed, using SetBFT finality
 		authority_discovery: AuthorityDiscoveryConfig { keys: vec![] },
 		im_online: Default::default(),
 		treasury: Default::default(), // Main Treasury (Setheum Treasury)
@@ -858,7 +858,7 @@ fn testnet_genesis(
 
 fn mainnet_genesis(
 	wasm_binary: &[u8],
-	initial_authorities: Vec<(AccountId, AccountId, GrandpaId, BabeId, ImOnlineId, AuthorityDiscoveryId)>,
+	initial_authorities: Vec<(AccountId, AccountId, AuraId, AuraId, ImOnlineId, AuthorityDiscoveryId)>,
 	root_key: AccountId,
 	endowed_accounts: Vec<(AccountId, Balance)>,
 	foundation: AccountId,
@@ -1021,8 +1021,8 @@ fn mainnet_genesis(
 			slash_reward_fraction: sp_runtime::Perbill::from_percent(10),
 			..Default::default()
 		},
-		babe: BabeConfig { authorities: Default::default(), epoch_config: Some(BABE_GENESIS_EPOCH_CONFIG) },
-		grandpa: Default::default(),
+		aura: AuraConfig { authorities: Default::default() },
+		// grandpa: removed, using SetBFT finality
 		authority_discovery: AuthorityDiscoveryConfig { keys: vec![] },
 		im_online: Default::default(),
 		treasury: Default::default(), // Setheum Treasury

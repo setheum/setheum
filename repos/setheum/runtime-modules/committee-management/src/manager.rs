@@ -1,44 +1,30 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
+
 // This file is part of Setheum.
 
 // Copyright (C) 2019-Present Setheum Developers.
-// SPDX-License-Identifier: Apache-2.0 OR MIT
+// SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// 	http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 
-// Alternatively, this file is available under the MIT License:
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 use frame_system::pallet_prelude::BlockNumberFor;
 use log::debug;
 use pallet_session::SessionManager;
-use primitives::{EraManager, FinalityCommitteeManager, SessionCommittee};
+use primitives::{AbftScoresProvider, EraManager, FinalityCommitteeManager, SessionCommittee};
+use rand::{prelude::SliceRandom, SeedableRng};
+use rand_pcg::Pcg32;
+use sp_runtime::traits::Get;
 use sp_staking::{EraIndex, SessionIndex};
 use sp_std::{marker::PhantomData, vec::Vec};
 
@@ -109,7 +95,7 @@ where
     fn session_starts_era(session: SessionIndex) -> Option<EraIndex> {
         let active_era = match E::active_era() {
             Some(ae) => ae,
-// no active era, session can't start it
+            // no active era, session can't start it
             _ => return None,
         };
 
@@ -123,7 +109,7 @@ where
     fn session_starts_next_era(session: SessionIndex) -> Option<EraIndex> {
         let active_era = match E::active_era() {
             Some(ae) => ae + 1,
-// no active era, session can't start it
+            // no active era, session can't start it
             _ => return None,
         };
 
@@ -158,27 +144,37 @@ where
         }
 
         let SessionCommittee {
-            finality_committee,
-            block_producers,
+            producers,
+            finalizers,
         } = Pallet::<C>::rotate_committee(new_index)?;
-// Notify about elected next session finality committee
-        C::FinalityCommitteeManager::on_next_session_finality_committee(finality_committee);
+        // Notify about elected next session finality committee
+        C::FinalityCommitteeManager::on_next_session_finality_committee(finalizers);
 
-        Some(block_producers)
+        // Prepare a list of all block authors for the next session. We shuffle to minimize
+        // the impact of slow producer on his followers.
+        let full_size = C::SessionPeriod::get() as usize;
+        let mut full_aura: Vec<_> = producers.into_iter().cycle().take(full_size).collect();
+        let mut rng = Pcg32::seed_from_u64(new_index as u64);
+        full_aura.shuffle(&mut rng);
+
+        Some(full_aura)
     }
 
     fn end_session(end_index: SessionIndex) {
         T::end_session(end_index);
-        Pallet::<C>::adjust_rewards_for_session();
         Pallet::<C>::calculate_underperforming_validators();
-// clear block count after calculating stats for underperforming validators, as they use
-// SessionValidatorBlockCount for that
+        let underperfs = Pallet::<C>::calculate_underperforming_finalizers(end_index);
+        Pallet::<C>::adjust_rewards_for_session(underperfs);
+        // clear block count after calculating stats for underperforming validators, as they use
+        // SessionValidatorBlockCount for that
         let result = SessionValidatorBlockCount::<C>::clear(u32::MAX, None);
         debug!(
             target: LOG_TARGET,
             "Result of clearing the `SessionValidatorBlockCount`, {:?}",
             result.deconstruct()
         );
+
+        C::AbftScoresProvider::clear_nonce();
     }
 
     fn start_session(start_index: SessionIndex) {

@@ -14,4 +14,4 @@ Utilities for node addressing and message signing.
 [docs-image]: https://docs.rs/set-bft-crypto/badge.svg
 [docs-link]: https://docs.rs/set-bft-crypto
 [license-image]: https://img.shields.io/badge/license-Apache2.0-blue.svg
-[license-link]: https://github.com/Cardinal-Cryptography/SetBFT/blob/main/LICENSE
+[license-link]: https://github.com/setheum/set-bft/blob/main/LICENSE

@@ -1,64 +1,53 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
+
 // This file is part of Setheum.
 
 // Copyright (C) 2019-Present Setheum Developers.
-// SPDX-License-Identifier: Apache-2.0 OR MIT
+// SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// 	http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 
-// Alternatively, this file is available under the MIT License:
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 use frame_support::{
     construct_runtime,
     pallet_prelude::ConstU32,
     parameter_types,
-    traits::{ConstU64, OneSessionHandler},
+    traits::{ConstBool, ConstU64, Contains, OneSessionHandler, Randomness},
     weights::{RuntimeDbWeight, Weight},
 };
-use frame_system::mocking::MockBlock;
+use frame_system::{mocking::MockBlock, pallet_prelude::BlockNumberFor};
+use pallet_staking::BalanceOf;
 use sp_runtime::{
     testing::{UintAuthorityId, H256},
-    traits::{ConvertInto, IdentityLookup},
-    BuildStorage,
+    traits::{Convert, ConvertInto, IdentityLookup},
+    BuildStorage, Perbill,
 };
+use sp_staking::StakerStatus;
+use sp_std::prelude::*;
 
-use crate as module_operations;
+use crate as pallet_operations;
+
 pub(crate) type AccountId = u64;
 
 construct_runtime!(
     pub struct TestRuntime {
         System: frame_system,
         Balances: pallet_balances,
-        Operations: module_operations,
+        Operations: pallet_operations,
         Session: pallet_session,
         Staking: pallet_staking,
+        Contracts: pallet_contracts,
+        Timestamp: pallet_timestamp,
     }
 );
 
@@ -77,6 +66,7 @@ impl frame_system::Config for TestRuntime {
     type BlockLength = ();
     type RuntimeOrigin = RuntimeOrigin;
     type RuntimeCall = RuntimeCall;
+    type RuntimeTask = RuntimeTask;
     type Nonce = u64;
     type Block = MockBlock<TestRuntime>;
     type Hash = H256;
@@ -117,26 +107,27 @@ impl pallet_balances::Config for TestRuntime {
     type WeightInfo = ();
     type MaxLocks = ();
     type FreezeIdentifier = ();
-    type MaxHolds = ConstU32<0>;
+    type MaxHolds = ConstU32<1>;
     type MaxFreezes = ConstU32<0>;
-    type RuntimeHoldReason = ();
+    type RuntimeHoldReason = RuntimeHoldReason;
     type RuntimeFreezeReason = ();
 }
 
 pub struct OtherSessionHandler;
+
 impl OneSessionHandler<AccountId> for OtherSessionHandler {
     type Key = UintAuthorityId;
 
-    fn on_genesis_session<'a, I: 'a>(_: I)
+    fn on_genesis_session<'a, I>(_: I)
     where
-        I: Iterator<Item = (&'a AccountId, Self::Key)>,
+        I: Iterator<Item = (&'a AccountId, Self::Key)> + 'a,
         AccountId: 'a,
     {
     }
 
-    fn on_new_session<'a, I: 'a>(_: bool, _: I, _: I)
+    fn on_new_session<'a, I>(_: bool, _: I, _: I)
     where
-        I: Iterator<Item = (&'a AccountId, Self::Key)>,
+        I: Iterator<Item = (&'a AccountId, Self::Key)> + 'a,
         AccountId: 'a,
     {
     }
@@ -181,9 +172,9 @@ parameter_types! {
     pub static BondingDuration: u32 = 3;
 }
 
-pub struct UniformEraPayout;
+pub struct ZeroEraPayout;
 
-impl pallet_staking::EraPayout<u128> for UniformEraPayout {
+impl pallet_staking::EraPayout<u128> for ZeroEraPayout {
     fn era_payout(_: u128, _: u128, _: u64) -> (u128, u128) {
         (0, 0)
     }
@@ -203,28 +194,98 @@ impl pallet_staking::Config for TestRuntime {
     type AdminOrigin = frame_system::EnsureRoot<Self::AccountId>;
     type BondingDuration = BondingDuration;
     type SessionInterface = ();
-    type EraPayout = UniformEraPayout;
+    type EraPayout = ZeroEraPayout;
     type NextNewSession = ();
-    type MaxNominatorRewardedPerValidator = ConstU32<64>;
+    type MaxExposurePageSize = ConstU32<64>;
     type OffendingValidatorsThreshold = ();
     type ElectionProvider =
-        frame_election_provider_support::NoElection<(AccountId, u64, Staking, ())>;
+        frame_election_provider_support::NoElection<(AccountId, u64, Staking, ConstU32<1>)>;
     type GenesisElectionProvider = Self::ElectionProvider;
     type VoterList = pallet_staking::UseNominatorsAndValidatorsMap<TestRuntime>;
     type TargetList = pallet_staking::UseValidatorsMap<Self>;
     type NominationsQuota = pallet_staking::FixedNominationsQuota<16>;
     type MaxUnlockingChunks = ConstU32<32>;
+    type MaxControllersInDeprecationBatch = ConstU32<64>;
     type HistoryDepth = ConstU32<84>;
     type EventListeners = ();
     type BenchmarkingConfig = pallet_staking::TestBenchmarkingConfig;
     type WeightInfo = ();
 }
+pub const UNITS: u128 = 10_000_000_000;
 
-impl module_operations::Config for TestRuntime {
+pub const CENTS: u128 = UNITS / 100; // 100_00
+pub const fn deposit(items: u32, bytes: u32) -> u128 {
+    items as u128 * CENTS + (bytes as u128) * CENTS
+}
+
+parameter_types! {
+    pub const DepositPerItem: u128 = deposit(1, 0);
+    pub const DepositPerByte: u128 = deposit(0, 1);
+    pub const DefaultDepositLimit: u128 = deposit(1024, 1024 * 1024);
+    pub Schedule: pallet_contracts::Schedule<TestRuntime> = Default::default();
+    pub const CodeHashLockupDepositPercent: Perbill = Perbill::from_percent(0);
+    pub const MaxDelegateDependencies: u32 = 32;
+}
+
+pub struct DummyRandomness<T: pallet_contracts::Config>(sp_std::marker::PhantomData<T>);
+
+impl<T: pallet_contracts::Config> Randomness<T::Hash, BlockNumberFor<T>> for DummyRandomness<T> {
+    fn random(_subject: &[u8]) -> (T::Hash, BlockNumberFor<T>) {
+        (Default::default(), Default::default())
+    }
+}
+
+#[derive(Clone, Default)]
+pub struct Filters;
+
+impl Contains<RuntimeCall> for Filters {
+    fn contains(_: &RuntimeCall) -> bool {
+        todo!()
+    }
+}
+
+impl Convert<Weight, BalanceOf<Self>> for TestRuntime {
+    fn convert(w: Weight) -> BalanceOf<Self> {
+        w.ref_time().into()
+    }
+}
+
+impl pallet_contracts::Config for TestRuntime {
+    type Time = pallet_timestamp::Pallet<Self>;
+    type Randomness = DummyRandomness<Self>;
+    type Currency = Balances;
+    type RuntimeEvent = RuntimeEvent;
+    type RuntimeCall = RuntimeCall;
+    type CallFilter = Filters;
+    type WeightPrice = Self;
+    type WeightInfo = ();
+    type ChainExtension = ();
+    type Schedule = Schedule;
+    type CallStack = [pallet_contracts::Frame<Self>; 5];
+    type DepositPerByte = DepositPerByte;
+    type DefaultDepositLimit = DefaultDepositLimit;
+    type DepositPerItem = DepositPerItem;
+    type CodeHashLockupDepositPercent = CodeHashLockupDepositPercent;
+    type AddressGenerator = pallet_contracts::DefaultAddressGenerator;
+    type MaxCodeLen = ConstU32<{ 123 * 1024 }>;
+    type MaxStorageKeyLen = ConstU32<128>;
+    type MaxDelegateDependencies = MaxDelegateDependencies;
+    type UnsafeUnstableInterface = ConstBool<true>;
+    type MaxDebugBufferLen = ConstU32<{ 2 * 1024 * 1024 }>;
+    type RuntimeHoldReason = RuntimeHoldReason;
+    type Migrations = ();
+    type Debug = ();
+    type Environment = ();
+    type Xcm = ();
+}
+
+impl pallet_operations::Config for TestRuntime {
     type RuntimeEvent = RuntimeEvent;
     type AccountInfoProvider = System;
     type BalancesProvider = Balances;
     type NextKeysSessionProvider = Session;
+    type BondedStashProvider = Staking;
+    type ContractInfoProvider = Contracts;
 }
 
 pub fn new_test_ext(accounts_and_balances: &[(u64, bool, u128)]) -> sp_io::TestExternalities {
@@ -232,6 +293,8 @@ pub fn new_test_ext(accounts_and_balances: &[(u64, bool, u128)]) -> sp_io::TestE
         &frame_system::GenesisConfig::default(),
     )
     .expect("Storage should be build.");
+
+    assert!(!accounts_and_balances.is_empty());
 
     let balances: Vec<_> = accounts_and_balances
         .iter()
@@ -241,6 +304,29 @@ pub fn new_test_ext(accounts_and_balances: &[(u64, bool, u128)]) -> sp_io::TestE
     pallet_balances::GenesisConfig::<TestRuntime> { balances }
         .assimilate_storage(&mut t)
         .unwrap();
+
+    pallet_staking::GenesisConfig::<TestRuntime> {
+        validator_count: accounts_and_balances
+            .iter()
+            .filter(|(_, is_authority, _)| *is_authority)
+            .count() as u32,
+        minimum_validator_count: 1,
+        invulnerables: vec![],
+        force_era: Default::default(),
+        slash_reward_fraction: Default::default(),
+        canceled_payout: 0,
+        stakers: accounts_and_balances
+            .iter()
+            .filter(|(_, is_authority, _)| *is_authority)
+            .map(|(id, _, balance)| (*id, *id, *balance / 2, StakerStatus::<AccountId>::Validator))
+            .collect(),
+        min_nominator_bond: 1,
+        min_validator_bond: 1,
+        max_validator_count: None,
+        max_nominator_count: None,
+    }
+    .assimilate_storage(&mut t)
+    .unwrap();
 
     pallet_session::GenesisConfig::<TestRuntime> {
         keys: accounts_and_balances

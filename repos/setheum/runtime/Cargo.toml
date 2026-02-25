@@ -71,7 +71,8 @@ pallet-session = { git = "https://github.com/paritytech/substrate", default-feat
 pallet-staking = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.10" }
 pallet-staking-reward-curve = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.10" }
 pallet-authorship = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.10" }
-pallet-babe = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.10" }
+pallet-aura = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.10" }
+sp-consensus-aura = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.10" }
 sp-consensus-babe = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.10" }
 pallet-im-online = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.10" }
 pallet-offences = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.10" }
@@ -153,7 +154,8 @@ std = [
 	"pallet-session/std",
 	"pallet-staking/std",
 	"pallet-authorship/std",
-	"pallet-babe/std",
+	"pallet-aura/std",
+	"sp-consensus-aura/std",
 	"sp-consensus-babe/std",
 	"sp-authority-discovery/std",
 	"pallet-authority-discovery/std",

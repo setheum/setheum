@@ -55,6 +55,7 @@ use pallet_grandpa::fg_primitives;
 use frame_election_provider_support::onchain;
 pub use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 pub use sp_authority_discovery::AuthorityId as AuthorityDiscoveryId;
+pub use sp_consensus_aura::sr25519::AuthorityId as AuraId;
 
 use sp_version::RuntimeVersion;
 #[cfg(feature = "std")]
@@ -234,8 +235,8 @@ pub mod opaque {
 
 	impl_opaque_keys! {
 		pub struct SessionKeys {
-			pub babe: Babe,
-			pub grandpa: Grandpa,
+			pub aura: Aura,
+			pub setbft: SetBFT,
 			pub im_online: ImOnline,
 			pub authority_discovery: AuthorityDiscovery,
 		}
@@ -261,12 +262,10 @@ pub fn native_version() -> NativeVersion {
 	}
 }
 
-/// The BABE epoch configuration at genesis.
-pub const BABE_GENESIS_EPOCH_CONFIG: sp_consensus_babe::BabeEpochConfiguration =
-	sp_consensus_babe::BabeEpochConfiguration {
-		c: PRIMARY_PROBABILITY, // 1 in 4 blocks will be BABE
-		allowed_slots: sp_consensus_babe::AllowedSlots::PrimaryAndSecondaryPlainSlots,
-	};
+/// Aura slot duration configuration.
+parameter_types! {
+	pub const MaxAuthorities: u32 = 100_000;
+}
 
 parameter_types! {
 	pub const Version: RuntimeVersion = VERSION;
@@ -335,20 +334,21 @@ impl pallet_session::Config for Runtime {
 	type Event = Event;
 	type ValidatorId = <Self as frame_system::Config>::AccountId;
 	type ValidatorIdOf = pallet_staking::StashOf<Self>;
-	type ShouldEndSession = Babe;
-	type NextSessionRotation = Babe;
-	type SessionManager = pallet_session::historical::NoteHistoricalRoot<Self, Staking>;
-	type SessionHandler = <opaque::SessionKeys as OpaqueKeys>::KeyTypeIdProviders;
+	type ShouldEndSession = pallet_session::PeriodicSessions<SessionPeriod, Offset>;
+	type NextSessionRotation = pallet_session::PeriodicSessions<SessionPeriod, Offset>;
+	type SessionManager = SetBFT;
+	type SessionHandler = (Aura, SetBFT);
 	type Keys = opaque::SessionKeys;
 	type DisabledValidatorsThreshold = DisabledValidatorsThreshold;
 	type WeightInfo = ();
 }
 
 parameter_types! {
-	pub const EpochDuration: u64 = EPOCH_DURATION_IN_SLOTS;
+	pub const SessionPeriod: u32 = EPOCH_DURATION_IN_SLOTS as u32;
+	pub const Offset: u32 = 0;
 	pub const ExpectedBlockTime: Moment = MILLISECS_PER_BLOCK;
 	pub const ReportLongevity: u64 =
-		BondingDuration::get() as u64 * SessionsPerEra::get() as u64 * EpochDuration::get();
+		BondingDuration::get() as u64 * SessionsPerEra::get() as u64 * SessionPeriod::get() as u64;
 }
 
 impl pallet_session::historical::Config for Runtime {
@@ -408,33 +408,20 @@ impl onchain::Config for Runtime {
 }
 
 
-impl pallet_babe::Config for Runtime {
-	type EpochDuration = EpochDuration;
-	type ExpectedBlockTime = ExpectedBlockTime;
-	type EpochChangeTrigger = pallet_babe::ExternalTrigger;
-	type KeyOwnerProofSystem = Historical;
-	type KeyOwnerProof =
-		<Self::KeyOwnerProofSystem as KeyOwnerProofSystem<(KeyTypeId, pallet_babe::AuthorityId)>>::Proof;
-	type KeyOwnerIdentification =
-		<Self::KeyOwnerProofSystem as KeyOwnerProofSystem<(KeyTypeId, pallet_babe::AuthorityId)>>::IdentificationTuple;
-	type HandleEquivocation =
-		pallet_babe::EquivocationHandler<Self::KeyOwnerIdentification, Offences, ReportLongevity>;
-	type WeightInfo = ();
-	type DisabledValidators = Session;
+impl pallet_aura::Config for Runtime {
+	type MaxAuthorities = MaxAuthorities;
+	type AuthorityId = AuraId;
+	type DisabledValidators = ();
 }
 
-impl pallet_grandpa::Config for Runtime {
-	type Event = Event;
-	type Call = Call;
-	type KeyOwnerProofSystem = Historical;
-	type KeyOwnerProof =
-		<Self::KeyOwnerProofSystem as KeyOwnerProofSystem<(KeyTypeId, GrandpaId)>>::Proof;
-	type KeyOwnerIdentification =
-		<Self::KeyOwnerProofSystem as KeyOwnerProofSystem<(KeyTypeId, GrandpaId)>>::IdentificationTuple;
-	type HandleEquivocation =
-		pallet_grandpa::EquivocationHandler<Self::KeyOwnerIdentification, Offences, ReportLongevity>;
-	type WeightInfo = ();
-}
+// SetBFT pallet replaces Grandpa as the finality gadget
+// impl module_setbft::Config for Runtime {
+// 	type AuthorityId = primitives::AuthorityId;
+// 	type RuntimeEvent = Event;
+// 	type SessionInfoProvider = SessionInfoImpl;
+// 	type SessionManager = pallet_session::historical::NoteHistoricalRoot<Self, Staking>;
+// }
+
 
 parameter_types! {
 	pub const MinimumPeriod: u64 = SLOT_DURATION // 2;
@@ -443,7 +430,7 @@ parameter_types! {
 impl pallet_timestamp::Config for Runtime {
 /// A timestamp: milliseconds since the unix epoch.
 	type Moment = u64;
-	type OnTimestampSet = Babe;
+	type OnTimestampSet = Aura;
 	type MinimumPeriod = MinimumPeriod;
 	type WeightInfo = ();
 }
@@ -453,7 +440,7 @@ parameter_types! {
 }
 
 impl pallet_authorship::Config for Runtime {
-	type FindAuthor = pallet_session::FindAccountFromAuthorIndex<Self, Babe>;
+	type FindAuthor = pallet_session::FindAccountFromAuthorIndex<Self, Aura>;
 	type UncleGenerations = UncleGenerations;
 	type FilterUncle = ();
 	type EventHandler = (Staking, ImOnline);
@@ -475,7 +462,7 @@ impl pallet_im_online::Config for Runtime {
 	type AuthorityId = ImOnlineId;
 	type Event = Event;
 	type ValidatorSet = Historical;
-	type NextSessionRotation = Babe;
+	type NextSessionRotation = pallet_session::PeriodicSessions<SessionPeriod, Offset>;
 	type ReportUnresponsiveness = Offences;
 	type UnsignedPriority = ImOnlineUnsignedPriority;
 	type WeightInfo = ();
@@ -1590,16 +1577,21 @@ construct_runtime!(
 		EVMBridge: module_evm_bridge::{Pallet} = 45,
 		EvmManager: module_evm_manager::{Pallet, Storage} = 46,
 
-// Consensus
+// Consensus - Aura + SetBFT (replacing Babe + Grandpa)
 		Authorship: pallet_authorship::{Pallet, Call, Storage, Inherent} = 47,
-		Babe: pallet_babe::{Pallet, Call, Storage, Config, ValidateUnsigned} = 48,
-		Grandpa: pallet_grandpa::{Pallet, Call, Storage, Config, Event, ValidateUnsigned} = 49,
+		Aura: pallet_aura::{Pallet, Config, Storage} = 48,
+		// SetBFT: module_setbft::{Pallet, Call, Config<T>, Storage, Event<T>} = 49,
 		Staking: pallet_staking::{Pallet, Call, Config<T>, Storage, Event<T>} = 50,
 		Session: pallet_session::{Pallet, Call, Storage, Event, Config<T>} = 51,
 		Historical: pallet_session_historical::{Pallet} = 52,
 		Offences: pallet_offences::{Pallet, Storage, Event} = 53,
 		ImOnline: pallet_im_online::{Pallet, Call, Storage, Event<T>, ValidateUnsigned, Config<T>} = 54,
 		AuthorityDiscovery: pallet_authority_discovery::{Pallet, Config} = 55,
+
+		// SetBFT consensus modules
+		// Elections: module_elections::{Pallet, Call, Storage, Event<T>} = 56,
+		// CommitteeManagement: module_committee_management::{Pallet, Call, Storage, Event<T>} = 57,
+		// Operations: module_operations::{Pallet, Call, Storage, Event<T>} = 58,
 	}
 );
 

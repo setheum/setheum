@@ -2,7 +2,7 @@
 name = "set-bft-examples-blockchain"
 version = "0.0.3"
 edition = "2021"
-authors = ["Cardinal Cryptography"]
+authors = ["Afsall Labs"]
 license = "Apache-2.0 OR MIT"
 publish = false
 

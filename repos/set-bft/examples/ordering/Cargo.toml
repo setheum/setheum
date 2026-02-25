@@ -2,7 +2,7 @@
 name = "set-bft-examples-ordering"
 version = "0.1.0"
 edition = "2021"
-authors = ["Cardinal Cryptography"]
+authors = ["Afsall Labs"]
 license = "Apache-2.0 OR MIT"
 publish = false
 
