@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -26,7 +26,7 @@ mod impls;
 mod mock;
 #[cfg(test)]
 mod tests;
-mod traits;
+mod impls;
 
 use frame_support::traits::StorageVersion;
 pub use pallet::*;
@@ -60,7 +60,7 @@ pub mod pallet {
     use primitives::{BannedValidators, CommitteeSeats, ElectionOpenness};
 
     use super::*;
-    use crate::traits::ValidatorProvider;
+    use module_traits::ValidatorProvider;
 
     #[pallet::config]
     pub trait Config: frame_system::Config {

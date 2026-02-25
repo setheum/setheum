@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -57,7 +57,7 @@ pub enum BlockStatus {
 
 /// Waiting _for_ various events API
 #[async_trait::async_trait]
-pub trait AlephWaiting {
+pub trait SetBFTWaiting {
 /// Wait for a particular block to be in a [`BlockStatus`].
 /// Block number must match given predicate.
 /// * `predicate` - a `u32` -> `bool` functor, first argument is a block number
@@ -126,7 +126,7 @@ pub trait WaitingExt {
 }
 
 #[async_trait::async_trait]
-impl<C: AsConnection + Sync> AlephWaiting for C {
+impl<C: AsConnection + Sync> SetBFTWaiting for C {
     async fn wait_for_block<P: Fn(u32) -> bool + Send>(&self, predicate: P, status: BlockStatus) {
         let mut block_sub = match status {
             BlockStatus::Best => self

@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -33,7 +33,7 @@ use sp_consensus::{Error as ConsensusError, SelectChain};
 use sp_runtime::{traits::Header as HeaderT, Justification as SubstrateJustification};
 
 use crate::{
-    setbft_primitives::{Block, BlockHash, BlockNumber, ALEPH_ENGINE_ID},
+    setbft_primitives::{Block, BlockHash, BlockNumber, SETBFT_ENGINE_ID},
     block::substrate::{Justification, JustificationTranslator, TranslateError},
     justification::{backwards_compatible_decode, DecodeError},
     BlockId,
@@ -157,7 +157,7 @@ where
         justification: SubstrateJustification,
     ) -> Result<(), SendJustificationError<TranslateError>> {
         debug!(target: "setbft-justification", "Importing justification for block {}.", block_id);
-        if justification.0 != ALEPH_ENGINE_ID {
+        if justification.0 != SETBFT_ENGINE_ID {
             return Err(SendJustificationError::Consensus(Box::new(
                 ConsensusError::ClientImport("SetBFT can import only SetBFT justifications.".into()),
             )));
@@ -203,13 +203,13 @@ where
 
         if let Ok(ImportResult::Imported(_)) = result {
             if let Some(justification) =
-                justifications.and_then(|just| just.into_justification(ALEPH_ENGINE_ID))
+                justifications.and_then(|just| just.into_justification(SETBFT_ENGINE_ID))
             {
                 debug!(target: "setbft-justification", "Got justification along imported block {:?}", number);
 
                 if let Err(e) = self.send_justification(
                     BlockId::new(post_hash, number),
-                    (ALEPH_ENGINE_ID, justification),
+                    (SETBFT_ENGINE_ID, justification),
                 ) {
                     warn!(target: "setbft-justification", "Error while receiving justification for block {:?}: {:?}", post_hash, e);
                 }

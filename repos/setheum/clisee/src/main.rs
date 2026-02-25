@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 
 use std::env;
 
-use setheum_client::{account_from_keypair, aleph_keypair_from_string, keypair_from_string, Pair};
+use setheum_client::{account_from_keypair, setbft_keypair_from_string, keypair_from_string, Pair};
 use clap::Parser;
 use clisee::{
     bond, call, change_validators, code_info, finalize, force_new_era, instantiate,
@@ -104,12 +104,12 @@ async fn main() -> anyhow::Result<()> {
             finalizer_seed,
         } => {
             let finalizer_seed = read_secret(finalizer_seed, "Provide finalizer seed:");
-            let finalizer = aleph_keypair_from_string(&finalizer_seed);
+            let finalizer = setbft_keypair_from_string(&finalizer_seed);
             finalize(cfg.get_connection().await, block, hash, finalizer).await;
         }
         Command::SetEmergencyFinalizer { finalizer_seed } => {
             let finalizer_seed = read_secret(finalizer_seed, "Provide finalizer seed:");
-            let finalizer = aleph_keypair_from_string(&finalizer_seed);
+            let finalizer = setbft_keypair_from_string(&finalizer_seed);
             let finalizer = account_from_keypair(&finalizer);
             set_emergency_finalizer(cfg.get_root_connection().await, finalizer).await;
         }

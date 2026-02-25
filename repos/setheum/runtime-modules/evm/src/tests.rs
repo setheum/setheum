@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -571,7 +571,7 @@ fn should_transfer_from_contract() {
 			alice(),
 			contract_address,
 			one_eth_via_transfer,
-			convert_decimals_to_evm(dollar_see), // 1 SEE
+			convert_decimals_to_evm(dollar_see), // 1 SEU
 			1000000,
 			1000000,
 			vec![],

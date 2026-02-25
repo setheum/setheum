@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -67,10 +67,8 @@ pub const ALICE: AccountId = AccountId::new([1u8; 32]);
 pub const BOB: AccountId = AccountId::new([2u8; 32]);
 pub const CHARLIE: AccountId = AccountId::new([3u8; 32]);
 pub const DAVE: AccountId = AccountId::new([4u8; 32]);
-pub const SEE: CurrencyId = CurrencyId::Token(TokenSymbol::SEE);
-pub const SETR: CurrencyId = CurrencyId::Token(TokenSymbol::SETR);
-pub const USSD: CurrencyId = CurrencyId::Token(TokenSymbol::USSD);
-pub const EDF: CurrencyId = CurrencyId::Token(TokenSymbol::EDF);
+pub const SEU: CurrencyId = CurrencyId::Token(TokenSymbol::SEU);
+pub const SEUSD: CurrencyId = CurrencyId::Token(TokenSymbol::SEUSD);
 
 parameter_types! {
 	static ExtrinsicBaseWeight: Weight = Weight::zero();
@@ -103,9 +101,7 @@ impl frame_system::Config for Runtime {
 parameter_type_with_key! {
 	pub ExistentialDeposits: |currency_id: CurrencyId| -> Balance {
 		match *currency_id {
-			USSD => 100,
-			SETR => 100,
-			EDF => 1,
+			SEUSD => 100,
 			_ => Default::default(),
 		}
 	};
@@ -145,7 +141,7 @@ impl pallet_balances::Config for Runtime {
 pub type AdaptedBasicCurrency = module_currencies::BasicCurrencyAdapter<Runtime, PalletBalances, Amount, BlockNumber>;
 
 parameter_types! {
-	pub const GetNativeCurrencyId: CurrencyId = SEE;
+	pub const GetNativeCurrencyId: CurrencyId = SEU;
 	pub Erc20HoldingAccount: H160 = H160::from_low_u64_be(1);
 }
 
@@ -175,10 +171,7 @@ parameter_types! {
 	pub const EdfisSwapPalletId: PalletId = PalletId(*b"set/edfis");
 	pub const GetExchangeFee: (u32, u32) = (0, 100);
 	pub EnabledTradingPairs: Vec<TradingPair> = vec![
-		TradingPair::from_currency_ids(USSD, SEE).unwrap(),
-		TradingPair::from_currency_ids(USSD, SETR).unwrap(),
-		TradingPair::from_currency_ids(SETR, SEE).unwrap(),
-		TradingPair::from_currency_ids(USSD, EDF).unwrap(),
+		TradingPair::from_currency_ids(SEUSD, SEU).unwrap(),
 	];
 	pub const TradingPathLimit: u32 = 4;
 }
@@ -201,10 +194,7 @@ parameter_types! {
 	pub MaxSwapSlippageComparedToOracle: Ratio = Ratio::saturating_from_rational(1, 2);
 	pub static TransactionByteFee: u128 = 1;
 	pub static TipPerWeightStep: u128 = 1;
-	pub DefaultFeeTokens: Vec<CurrencyId> = vec![USSD, SETR];
-	pub USSDFeeSwapPath: Vec<CurrencyId> = vec![USSD, SEE];
-	pub SETRFeeSwapPath: Vec<CurrencyId> = vec![SETR, SEE];
-	pub EDFFeeSwapPath: Vec<CurrencyId> = vec![EDF, SETR, SEE];
+	pub SEUSDFeeSwapPath: Vec<CurrencyId> = vec![SEUSD, SEU];
 }
 
 thread_local! {
@@ -254,7 +244,6 @@ parameter_types! {
 	pub const TreasuryPalletId: PalletId = PalletId(*b"set/trsry");
 	pub TreasuryAccount: AccountId = TreasuryPalletId::get().into_account_truncating();
 	pub AlternativeSwapPathJointList: Vec<Vec<CurrencyId>> = vec![
-		vec![SETR, USSD],
 	];
 }
 ord_parameter_types! {
@@ -342,9 +331,7 @@ impl Default for ExtBuilder {
 	fn default() -> Self {
 		Self {
 			balances: vec![
-				(ALICE, USSD, 10000),
-				(ALICE, SETR, 10000),
-				(ALICE, EDF, 1000),
+				(ALICE, SEUSD, 10000),
 			],
 			base_weight: Weight::zero(),
 			byte_fee: 2,

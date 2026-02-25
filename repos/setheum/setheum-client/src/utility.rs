@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,7 +44,7 @@ use crate::{
     api::transaction_payment::events::TransactionFeePaid,
     connections::{AsConnection, TxInfo},
     pallets::{committee_management::CommitteeManagementApi, staking::StakingApi},
-    AlephConfig, BlockHash, BlockNumber, EraIndex, SessionIndex,
+    SetBFTConfig, BlockHash, BlockNumber, EraIndex, SessionIndex,
 };
 
 /// Block info API.
@@ -80,7 +80,7 @@ pub trait BlocksApi {
     ) -> anyhow::Result<Option<BlockNumber>>;
 
 /// Fetch all events that corresponds to the transaction identified by `tx_info`.
-    async fn get_tx_events(&self, tx_info: TxInfo) -> anyhow::Result<ExtrinsicEvents<AlephConfig>>;
+    async fn get_tx_events(&self, tx_info: TxInfo) -> anyhow::Result<ExtrinsicEvents<SetBFTConfig>>;
 
 /// Returns the fee that was paid for the transaction identified by `tx_info`.
     async fn get_tx_fee(&self, tx_info: TxInfo) -> anyhow::Result<Balance>;
@@ -146,7 +146,7 @@ impl<C: AsConnection + Sync> BlocksApi for C {
             .map_err(|e| e.into())
     }
 
-    async fn get_tx_events(&self, tx_info: TxInfo) -> anyhow::Result<ExtrinsicEvents<AlephConfig>> {
+    async fn get_tx_events(&self, tx_info: TxInfo) -> anyhow::Result<ExtrinsicEvents<SetBFTConfig>> {
         let block_body = self
             .as_connection()
             .as_client()
@@ -160,7 +160,7 @@ impl<C: AsConnection + Sync> BlocksApi for C {
             .extrinsics()
             .iter()
             .find(|tx| match tx {
-                Ok(tx) => tx_info.tx_hash == <AlephConfig as Config>::Hasher::hash_of(&tx.bytes()),
+                Ok(tx) => tx_info.tx_hash == <SetBFTConfig as Config>::Hasher::hash_of(&tx.bytes()),
                 _ => false,
             })
             .ok_or_else(|| anyhow!("Couldn't find the transaction in the block."))??

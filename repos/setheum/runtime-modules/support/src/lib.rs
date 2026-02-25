@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -187,7 +187,7 @@ pub trait LiquidateCollateral<AccountId> {
 		who: &AccountId,
 		currency_id: CurrencyId,
 		amount: Balance,
-		target_ussd_amount: Balance,
+		target_seusd_amount: Balance,
 	) -> DispatchResult;
 }
 
@@ -197,11 +197,11 @@ impl<AccountId> LiquidateCollateral<AccountId> for Tuple {
 		who: &AccountId,
 		currency_id: CurrencyId,
 		amount: Balance,
-		target_ussd_amount: Balance,
+		target_seusd_amount: Balance,
 	) -> DispatchResult {
 		let mut last_error = None;
 		for_tuples!( #(
-			match Tuple::liquidate(who, currency_id, amount, target_ussd_amount) {
+			match Tuple::liquidate(who, currency_id, amount, target_seusd_amount) {
 				Ok(_) => return Ok(()),
 				Err(e) => { last_error = Some(e) }
 			}

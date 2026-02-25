@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -39,12 +39,8 @@ use sp_runtime::traits::Zero;
 use sp_std::prelude::*;
 use module_support::{SwapManager, SerpTreasury as SerpTreasurySupport, SerpTreasuryExtended, SwapLimit};
 
-const SEE: CurrencyId = GetNativeCurrencyId::get();
-const SETR: CurrencyId = SetterCurrencyId::get();
-const SETUSD: CurrencyId = GetSetUSDId::get();
-const DNAR: CurrencyId = GetDinarCurrencyId::get();
-const SERP: CurrencyId = GetSerpCurrencyId::get();
-const HELP: CurrencyId = GetHelpCurrencyId::get();
+const SEU: CurrencyId = GetNativeCurrencyId::get();
+const SEUSD: CurrencyId = GetSetUSDId::get();
 
 runtime_benchmarks! {
 	{ Runtime, serp_treasury }
@@ -55,90 +51,56 @@ runtime_benchmarks! {
 		let block_number = StableCurrencyInflationPeriod::get();
 		
 		let caller: AccountId = whitelisted_caller();
-		set_balance(DNAR, &caller, 1000000000 * dollar(DNAR));
-		set_balance(SERP, &caller, 1000000000 * dollar(SERP));
-		set_balance(SEE, &caller, 1000000000 * dollar(SEE));
-		set_balance(HELP, &caller, 1000000000 * dollar(HELP));
-		set_balance(SETR, &caller, 1000000000 * dollar(SETR));
-		set_balance(SETUSD, &caller, 1000000000 * dollar(SETUSD));
-		let _ = Dex::enable_trading_pair(RawOrigin::Root.into(), SETR, DNAR);
-		let _ = Dex::enable_trading_pair(RawOrigin::Root.into(), SETR, SERP);
-		let _ = Dex::enable_trading_pair(RawOrigin::Root.into(), SETR, SEE);
-		let _ = Dex::enable_trading_pair(RawOrigin::Root.into(), SETR, HELP);
-		let _ = Dex::enable_trading_pair(RawOrigin::Root.into(), SETUSD, SETR);
-		let _ = Dex::enable_trading_pair(RawOrigin::Root.into(), SETUSD, DNAR);
-		let _ = Dex::enable_trading_pair(RawOrigin::Root.into(), SETUSD, SERP);
-		let _ = Dex::enable_trading_pair(RawOrigin::Root.into(), SETUSD, SEE);
-		let _ = Dex::enable_trading_pair(RawOrigin::Root.into(), SETUSD, HELP);
+		set_balance(SEU, &caller, 1000000000 * dollar(SEU));
+		set_balance(SEUSD, &caller, 1000000000 * dollar(SEUSD));
+		let _ = Dex::enable_trading_pair(RawOrigin::Root.into(), SEUSD, SEU);
 		Dex::add_liquidity(
 			RawOrigin::Signed(caller.clone()).into(),
-			SETR,
-			DNAR,
-			1000 * dollar(SETR),
-			100 * dollar(DNAR),
 			0,
 		)?;
 		Dex::add_liquidity(
 			RawOrigin::Signed(caller.clone()).into(),
-			SETR,
-			SERP,
-			1000 * dollar(SETR),
-			100 * dollar(SERP),
 			0,
 		)?;
 		Dex::add_liquidity(
 			RawOrigin::Signed(caller.clone()).into(),
-			SETR,
-			SEE,
-			1000 * dollar(SETR),
-			100 * dollar(SEE),
+			SEU,
+			100 * dollar(SEU),
 			0,
 		)?;
 		Dex::add_liquidity(
 			RawOrigin::Signed(caller.clone()).into(),
-			SETR,
-			HELP,
-			1000 * dollar(SETR),
-			100 * dollar(HELP),
 			0,
 		)?;
 		Dex::add_liquidity(
 			RawOrigin::Signed(caller.clone()).into(),
-			SETUSD,
-			SETR,
-			1000 * dollar(SETUSD),
-			100 * dollar(SETR),
+			SEUSD,
+			1000 * dollar(SEUSD),
 			0,
 		)?;Dex::add_liquidity(
 			RawOrigin::Signed(caller.clone()).into(),
-			SETUSD,
-			DNAR,
-			1000 * dollar(SETUSD),
-			100 * dollar(DNAR),
+			SEUSD,
+			1000 * dollar(SEUSD),
 			0,
 		)?;
 		Dex::add_liquidity(
 			RawOrigin::Signed(caller.clone()).into(),
-			SETUSD,
-			SERP,
-			1000 * dollar(SETUSD),
-			100 * dollar(SERP),
+			SEUSD,
+			1000 * dollar(SEUSD),
 			0,
 		)?;
 		Dex::add_liquidity(
 			RawOrigin::Signed(caller.clone()).into(),
-			SETUSD,
-			SEE,
-			1000 * dollar(SETUSD),
-			100 * dollar(SEE),
+			SEUSD,
+			SEU,
+			1000 * dollar(SEUSD),
+			100 * dollar(SEU),
 			0,
 		)?;
 		Dex::add_liquidity(
 			RawOrigin::Signed(caller.clone()).into(),
-			SETUSD,
-			HELP,
-			1000 * dollar(SETUSD),
-			100 * dollar(HELP),
+			SEUSD,
+			1000 * dollar(SEUSD),
 			0,
 		)?;
 
@@ -158,31 +120,27 @@ runtime_benchmarks! {
 // 2
 				<SerpTreasury as SerpTreasuryExtended<AccountId>>::buyback_swap_with_exact_supply(
 					currency_id,
-					DNAR,
 					SwapLimit::ExactSupply(inflamounts, 0),
 				)?;
 // 3
 				<SerpTreasury as SerpTreasuryExtended<AccountId>>::buyback_swap_with_exact_supply(
 					currency_id,
-					SERP,
 					SwapLimit::ExactSupply(inflamounts, 0),
 				)?;
 // 4
 				<SerpTreasury as SerpTreasuryExtended<AccountId>>::buyback_swap_with_exact_supply(
 					currency_id,
-					SEE,
+					SEU,
 					SwapLimit::ExactSupply(inflamounts, 0),
 				)?;
 // 5
 				<SerpTreasury as SerpTreasuryExtended<AccountId>>::buyback_swap_with_exact_supply(
 					currency_id,
-					HELP,
 					SwapLimit::ExactSupply(inflamounts, 0),
 				)?;
 			};
 		}
 
-		let (setter_pool, setdollar_pool) = Dex::get_liquidity_pool(SETR, SETUSD);
 
 		let setter_peg: Balance = 4;
 
@@ -192,15 +150,11 @@ runtime_benchmarks! {
 			0 => {} 
 			setdollar_pool if setdollar_pool > base_unit => {
 // safe from underflow because `setdollar_pool` is checked to be greater than `base_unit`
-				let supply = <Currencies as MultiCurrency<_>>::total_issuance(SETR);
 				let expand_by = <SerpTreasury as SerpTreasurySupport<AccountId>>::calculate_supply_change(setdollar_pool, base_unit, supply);
-				<SerpTreasury as SerpTreasurySupport<AccountId>>::on_serpup(SETR, expand_by)?;
 			}
 			setdollar_pool if setdollar_pool < base_unit => {
 // safe from underflow because `setdollar_pool` is checked to be less than `base_unit`
-				let supply = <Currencies as MultiCurrency<_>>::total_issuance(SETR);
 				let contract_by = <SerpTreasury as SerpTreasurySupport<AccountId>>::calculate_supply_change(base_unit, setdollar_pool, supply);
-				<SerpTreasury as SerpTreasurySupport<AccountId>>::on_serpdown(SETR, contract_by)?;
 			}
 			_ => {}
 		}
@@ -212,32 +166,17 @@ runtime_benchmarks! {
 	}
 
 	set_stable_currency_inflation_rate {
-	}: _(RawOrigin::Root, crate::SerpStableCurrencyId::SETR, 200 * 1_000_000_000_000_000_000)
 	
 	force_serpdown {
 		let caller: AccountId = whitelisted_caller();
-		set_balance(DNAR, &caller, 1000000000 * dollar(DNAR));
-		set_balance(SERP, &caller, 1000000000 * dollar(SERP));
-		set_balance(SETR, &caller, 1000000000 * dollar(SETR));
-		let _ = Dex::enable_trading_pair(RawOrigin::Root.into(), SETR, DNAR);
-		let _ = Dex::enable_trading_pair(RawOrigin::Root.into(), SETR, SERP);
 		Dex::add_liquidity(
 			RawOrigin::Signed(caller.clone()).into(),
-			SETR,
-			DNAR,
-			1000 * dollar(SETR),
-			100 * dollar(DNAR),
 			0,
 		)?;
 		Dex::add_liquidity(
 			RawOrigin::Signed(caller.clone()).into(),
-			SETR,
-			SERP,
-			1000 * dollar(SETR),
-			100 * dollar(SERP),
 			0,
 		)?;
-	}: _(RawOrigin::Root, SETR, 100 * dollar(SETR))
 }
 
 #[cfg(test)]

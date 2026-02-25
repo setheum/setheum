@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -42,7 +42,7 @@ mod verifier;
 pub use cache::VerifierCache;
 pub use verifier::SessionVerifier;
 
-/// Supplies finalized number. Will be unified together with other traits used in Aleph's A0-1839.
+/// Supplies finalized number. Will be unified together with other traits used in SetBFT's A0-1839.
 pub trait FinalizationInfo: Clone + Send + Sync + 'static {
     fn finalized_number(&self) -> BlockNumber;
 }

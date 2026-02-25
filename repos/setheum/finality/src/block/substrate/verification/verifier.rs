@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -24,7 +24,7 @@ use sp_runtime::RuntimeAppPublic;
 
 use crate::{
     primitives ::SessionAuthorityData, crypto::AuthorityVerifier,
-    justification::AlephJustification, AuthorityId,
+    justification::SetBFTJustification, AuthorityId,
 };
 
 /// A justification verifier within a single session.
@@ -66,10 +66,10 @@ impl SessionVerifier {
 /// Verifies the correctness of a justification for supplied bytes.
     pub fn verify_bytes(
         &self,
-        justification: &AlephJustification,
+        justification: &SetBFTJustification,
         bytes: Vec<u8>,
     ) -> Result<(), SessionVerificationError> {
-        use AlephJustification::*;
+        use SetBFTJustification::*;
         use SessionVerificationError::*;
         match justification {
             CommitteeMultisignature(multisignature) => {

@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,7 +39,7 @@ pub use crate::setheum::api::runtime_types::*;
 use crate::{
     setheum_runtime::SessionKeys,
     api::runtime_types::{
-        primitives::app::Public as AlephPublic,
+        primitives::app::Public as SetBFTPublic,
         sp_consensus_aura::sr25519::app_sr25519::Public as AuraPublic,
         sp_core::{ed25519::Public as EdPublic, sr25519::Public as SrPublic},
     },
@@ -66,10 +66,10 @@ impl From<Vec<u8>> for SessionKeys {
                     .try_into()
                     .expect("Failed to convert bytes slice to an Aura key!"),
             )),
-            aleph: AlephPublic(EdPublic(
+            setbft: SetBFTPublic(EdPublic(
                 bytes[32..64]
                     .try_into()
-                    .expect("Failed to convert bytes slice to an Aleph key!"),
+                    .expect("Failed to convert bytes slice to an SetBFT key!"),
             )),
         }
     }

@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -58,7 +58,7 @@ construct_runtime!(
         Staking: pallet_staking,
         Session: pallet_session,
         History: pallet_session::historical,
-        Aleph: module_setbft,
+        SetBFT: module_setbft,
         CommitteeManagement: module_committee_management,
         Elections: module_elections,
     }
@@ -66,7 +66,7 @@ construct_runtime!(
 
 impl_opaque_keys! {
     pub struct TestSessionKeys {
-        pub aleph: Aleph,
+        pub setbft: SetBFT,
     }
 }
 
@@ -202,8 +202,8 @@ impl pallet_session::Config for TestRuntime {
     type ValidatorIdOf = ConvertInto;
     type ShouldEndSession = pallet_session::PeriodicSessions<SessionPeriod, Offset>;
     type NextSessionRotation = pallet_session::PeriodicSessions<SessionPeriod, Offset>;
-    type SessionManager = Aleph;
-    type SessionHandler = (Aleph,);
+    type SessionManager = SetBFT;
+    type SessionHandler = (SetBFT,);
     type Keys = TestSessionKeys;
     type WeightInfo = ();
 }
@@ -268,9 +268,9 @@ impl Config for TestRuntime {
     type ValidatorProvider = Elections;
     type ValidatorRewardsHandler = Staking;
     type ValidatorExtractor = Staking;
-    type FinalityCommitteeManager = Aleph;
+    type FinalityCommitteeManager = SetBFT;
     type SessionPeriod = SessionPeriod;
-    type AbftScoresProvider = Aleph;
+    type AbftScoresProvider = SetBFT;
 }
 
 pub fn active_era() -> EraIndex {
@@ -399,7 +399,7 @@ impl TestExtBuilder {
             .iter()
             .map(|&&v| UintAuthorityId(v).to_public_key::<AuthorityId>())
             .enumerate()
-            .map(|(i, k)| (i as u64, i as u64, TestSessionKeys { aleph: k }))
+            .map(|(i, k)| (i as u64, i as u64, TestSessionKeys { setbft: k }))
             .collect();
 
         pallet_session::GenesisConfig::<TestRuntime> { keys: session_keys }

@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -362,7 +362,7 @@ impl<NI: NetworkIdentity, D: Data, VCU: ValidatorAddressCacheUpdater> Manager<NI
                         },
                     );
                     if handler.is_validator() {
-                        debug!(target: "aleph-network", "Adding addresses for session {:?} to reserved: {:?}", session_id, address);
+                        debug!(target: "setbft-network", "Adding addresses for session {:?} to reserved: {:?}", session_id, address);
                         self.connections.add_peers(session_id, [address.peer_id()]);
                         maybe_command = Some(ConnectionCommand::AddReserved([address].into()));
                     }
@@ -373,7 +373,7 @@ impl<NI: NetworkIdentity, D: Data, VCU: ValidatorAddressCacheUpdater> Manager<NI
                 }
             }
             None => {
-                debug!(target: "aleph-network", "Received message from unknown session: {:?}", message);
+                debug!(target: "setbft-network", "Received message from unknown session: {:?}", message);
                 ManagerActions::noop()
             }
         }
@@ -467,7 +467,7 @@ impl<NI: NetworkIdentity, D: Data, VCU: ValidatorAddressCacheUpdater> Manager<NI
         }
 
         if !authenticated.is_empty() || !missing.is_empty() {
-            info!(target: "aleph-network", "{}", status);
+            info!(target: "setbft-network", "{}", status);
         }
     }
 }

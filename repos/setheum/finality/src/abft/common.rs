@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -60,7 +60,7 @@ pub fn sanity_check_round_delays(max_rounds: u16, round_delays: DelaySchedule) {
     let delays_ok = sanity_check_round_delays_inner(max_rounds, round_delays);
     assert!(
         delays_ok,
-        "Incorrect setting of delays. Make sure the total AlephBFT session time is at least {SESSION_LEN_LOWER_BOUND_MS}ms."
+        "Incorrect setting of delays. Make sure the total SetBFT session time is at least {SESSION_LEN_LOWER_BOUND_MS}ms."
     );
 }
 

@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -49,85 +49,85 @@ pub enum Recipient {
     Node(NodeIndex),
 }
 
-impl From<legacy_aleph_bft::Recipient> for Recipient {
-    fn from(recipient: legacy_aleph_bft::Recipient) -> Self {
+impl From<legacy_setbft_bft::Recipient> for Recipient {
+    fn from(recipient: legacy_setbft_bft::Recipient) -> Self {
         match recipient {
-            legacy_aleph_bft::Recipient::Everyone => Recipient::Everyone,
-            legacy_aleph_bft::Recipient::Node(id) => Recipient::Node(id.into()),
+            legacy_setbft_bft::Recipient::Everyone => Recipient::Everyone,
+            legacy_setbft_bft::Recipient::Node(id) => Recipient::Node(id.into()),
         }
     }
 }
 
-impl From<current_aleph_bft::Recipient> for Recipient {
-    fn from(recipient: current_aleph_bft::Recipient) -> Self {
+impl From<current_setbft_bft::Recipient> for Recipient {
+    fn from(recipient: current_setbft_bft::Recipient) -> Self {
         match recipient {
-            current_aleph_bft::Recipient::Everyone => Recipient::Everyone,
-            current_aleph_bft::Recipient::Node(id) => Recipient::Node(id.into()),
+            current_setbft_bft::Recipient::Everyone => Recipient::Everyone,
+            current_setbft_bft::Recipient::Node(id) => Recipient::Node(id.into()),
         }
     }
 }
 
-impl From<NodeCount> for current_aleph_bft::NodeCount {
+impl From<NodeCount> for current_setbft_bft::NodeCount {
     fn from(count: NodeCount) -> Self {
-        current_aleph_bft::NodeCount(count.0)
+        current_setbft_bft::NodeCount(count.0)
     }
 }
-impl From<NodeCount> for legacy_aleph_bft::NodeCount {
+impl From<NodeCount> for legacy_setbft_bft::NodeCount {
     fn from(count: NodeCount) -> Self {
-        legacy_aleph_bft::NodeCount(count.0)
+        legacy_setbft_bft::NodeCount(count.0)
     }
 }
 
-impl From<legacy_aleph_bft::NodeCount> for NodeCount {
-    fn from(count: legacy_aleph_bft::NodeCount) -> Self {
+impl From<legacy_setbft_bft::NodeCount> for NodeCount {
+    fn from(count: legacy_setbft_bft::NodeCount) -> Self {
         Self(count.0)
     }
 }
 
-impl From<current_aleph_bft::NodeCount> for NodeCount {
-    fn from(count: current_aleph_bft::NodeCount) -> Self {
+impl From<current_setbft_bft::NodeCount> for NodeCount {
+    fn from(count: current_setbft_bft::NodeCount) -> Self {
         Self(count.0)
     }
 }
 
-impl From<NodeIndex> for current_aleph_bft::NodeIndex {
+impl From<NodeIndex> for current_setbft_bft::NodeIndex {
     fn from(idx: NodeIndex) -> Self {
-        current_aleph_bft::NodeIndex(idx.0)
+        current_setbft_bft::NodeIndex(idx.0)
     }
 }
 
-impl From<NodeIndex> for legacy_aleph_bft::NodeIndex {
+impl From<NodeIndex> for legacy_setbft_bft::NodeIndex {
     fn from(idx: NodeIndex) -> Self {
-        legacy_aleph_bft::NodeIndex(idx.0)
+        legacy_setbft_bft::NodeIndex(idx.0)
     }
 }
 
-impl From<legacy_aleph_bft::NodeIndex> for NodeIndex {
-    fn from(idx: legacy_aleph_bft::NodeIndex) -> Self {
+impl From<legacy_setbft_bft::NodeIndex> for NodeIndex {
+    fn from(idx: legacy_setbft_bft::NodeIndex) -> Self {
         Self(idx.0)
     }
 }
 
-impl From<current_aleph_bft::NodeIndex> for NodeIndex {
-    fn from(idx: current_aleph_bft::NodeIndex) -> Self {
+impl From<current_setbft_bft::NodeIndex> for NodeIndex {
+    fn from(idx: current_setbft_bft::NodeIndex) -> Self {
         Self(idx.0)
     }
 }
 
-impl From<Recipient> for current_aleph_bft::Recipient {
+impl From<Recipient> for current_setbft_bft::Recipient {
     fn from(recipient: Recipient) -> Self {
         match recipient {
-            Recipient::Everyone => current_aleph_bft::Recipient::Everyone,
-            Recipient::Node(idx) => current_aleph_bft::Recipient::Node(idx.into()),
+            Recipient::Everyone => current_setbft_bft::Recipient::Everyone,
+            Recipient::Node(idx) => current_setbft_bft::Recipient::Node(idx.into()),
         }
     }
 }
 
-impl From<Recipient> for legacy_aleph_bft::Recipient {
+impl From<Recipient> for legacy_setbft_bft::Recipient {
     fn from(recipient: Recipient) -> Self {
         match recipient {
-            Recipient::Everyone => legacy_aleph_bft::Recipient::Everyone,
-            Recipient::Node(idx) => legacy_aleph_bft::Recipient::Node(idx.into()),
+            Recipient::Everyone => legacy_setbft_bft::Recipient::Everyone,
+            Recipient::Node(idx) => legacy_setbft_bft::Recipient::Node(idx.into()),
         }
     }
 }

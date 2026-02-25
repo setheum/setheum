@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -31,7 +31,7 @@ use substrate_prometheus_endpoint::{exponential_buckets, prometheus};
 pub use timing::{Checkpoint, DefaultClock, TimingBlockMetrics};
 pub use transaction_pool::TransactionPoolInfoProvider;
 
-const LOG_TARGET: &str = "aleph-metrics";
+const LOG_TARGET: &str = "setbft-metrics";
 
 /// Create `count_below` + 1 + `count_above` buckets, where (`count_below` + 1)th bucket
 /// has an upper bound `start`. The buckets are exponentially distributed with a factor `factor`.

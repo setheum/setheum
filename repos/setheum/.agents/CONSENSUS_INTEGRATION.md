@@ -4,15 +4,15 @@ This document outlines the implementation plan and task progress for integrating
 
 ## Implementation Plan
 
-### 1. Rebrand AlephBFT to SetBFT
+### 1. Rebrand SetBFT to SetBFT
 - **Repository**: `repos/set-bft`
 - **Actions**:
-    - Rename directories and files: `aleph` -> `set`, `AlephBFT` -> `SetBFT`, `aleph-bft` -> `set-bft`.
+    - Rename directories and files: `setbft` -> `set`, `SetBFT` -> `SetBFT`, `set-bft` -> `set-bft`.
     - Update text contents to reflect rebranding.
     - Status: [x] Done.
 
-### 2. Implement Setheum Consensus (Aleph-Zero style)
-- **Goal**: Adopt the consensus architecture used by Aleph-Zero (Aura + AlephBFT).
+### 2. Implement Setheum Consensus (SetBFT-Zero style)
+- **Goal**: Adopt the consensus architecture used by SetBFT-Zero (Aura + SetBFT).
 - **Runtime Changes**:
     - Replace `pallet-babe` and `pallet-grandpa` with `pallet-aura` and `module-setbft`.
     - Configure `Session` keys to include `AuraId`.
@@ -40,7 +40,7 @@ This document outlines the implementation plan and task progress for integrating
 - [x] Verify basic compilation of the rebranded crates.
 
 ### Phase 2: Consensus Integration
-- [x] Analyze Aleph-Zero runtime structure.
+- [x] Analyze SetBFT-Zero runtime structure.
 - [x] Replace Babe with Aura in `runtime/src/lib.rs`.
 - [x] Replace Grandpa with SetBFT in `runtime/src/lib.rs`.
 - [x] Update Session, Timestamp, and Authorship configs.
@@ -48,12 +48,13 @@ This document outlines the implementation plan and task progress for integrating
 - [x] Refactor `node/src/rpc.rs` and `node/src/command.rs`.
 - [x] Update `node/src/chain_spec.rs` using renaming script.
 - [x] Update workspace and local `Cargo.toml` dependencies.
-- [/] Update Polkadot SDK to `stable2506` and resolve dependency conflicts.
-- [ ] Commit changes.
+- [x] Update Polkadot SDK to `stable2506` and resolve dependency conflicts.
+- [x] Commit changes.
 
 ### Phase 3: Web3 Integrity (EVM)
-- [ ] Analyze Astar Unified Accounts.
-- [ ] Analyze Acala EVM Native Tokens.
-- [ ] Integrate Frontier EVM.
-- [ ] Implement Unified Address Mapping.
-- [ ] Implement Native Currency Precompiles.
+- [x] Analyze Astar Unified Accounts.
+- [x] Analyze Acala EVM Native Tokens.
+- [/] Integrate Frontier EVM (Standardizing on SDK `stable2506`).
+- [ ] Implement Unified Address Mapping with 18-decimal support.
+- [ ] Implement Native Currency Precompiles for SEU/SEUSD (Hybrid EVM).
+- [x] Update `primitives/src/evm.rs` for new 18-decimal standard.

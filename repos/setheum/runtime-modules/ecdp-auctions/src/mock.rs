@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -63,9 +63,8 @@ pub type Amount = i64;
 pub const ALICE: AccountId = 1;
 pub const BOB: AccountId = 2;
 pub const CAROL: AccountId = 3;
-pub const USSD: CurrencyId = CurrencyId::Token(TokenSymbol::USSD);
+pub const SEUSD: CurrencyId = CurrencyId::Token(TokenSymbol::SEUSD);
 pub const BTC: CurrencyId = CurrencyId::ForeignAsset(255);
-pub const EDF: CurrencyId = CurrencyId::Token(TokenSymbol::EDF);
 
 mod auction_manager {
 	pub use super::super::*;
@@ -112,19 +111,18 @@ ord_parameter_types! {
 }
 
 parameter_types! {
-	pub const GetUSSDCurrencyId: CurrencyId = USSD;
+	pub const GetSEUSDCurrencyId: CurrencyId = SEUSD;
 	pub const MaxAuctionsCount: u32 = 10_000;
-	pub const EcdpUssdTreasuryPalletId: PalletId = PalletId(*b"set/ussdtrsymod");
-	pub TreasuryAccount: AccountId = PalletId(*b"set/ussdtrsyacc").into_account_truncating();
+	pub const EcdpUssdTreasuryPalletId: PalletId = PalletId(*b"set/seusdtrsymod");
+	pub TreasuryAccount: AccountId = PalletId(*b"set/seusdtrsyacc").into_account_truncating();
 	pub AlternativeSwapPathJointList: Vec<Vec<CurrencyId>> = vec![
-		vec![EDF],
 	];
 }
 
-impl module_ecdp_ussd_treasury::Config for Runtime {
+impl module_ecdp_seusd_treasury::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type Currency = Tokens;
-	type GetUSSDCurrencyId = GetUSSDCurrencyId;
+	type GetSEUSDCurrencyId = GetSEUSDCurrencyId;
 	type EcdpAuctionsManagerHandler = EcdpAuctionsManagerModule;
 	type UpdateOrigin = EnsureSignedBy<One, AccountId>;
 	type DEX = EdfisSwapModule;
@@ -159,9 +157,7 @@ parameter_types! {
 	pub const EdfisSwapPalletId: PalletId = PalletId(*b"set/edfis");
 	pub const GetExchangeFee: (u32, u32) = (0, 100);
 	pub EnabledTradingPairs: Vec<TradingPair> = vec![
-		TradingPair::from_currency_ids(USSD, BTC).unwrap(),
-		TradingPair::from_currency_ids(EDF, BTC).unwrap(),
-		TradingPair::from_currency_ids(USSD, EDF).unwrap()
+		TradingPair::from_currency_ids(SEUSD, BTC).unwrap(),
 	];
 }
 
@@ -205,7 +201,7 @@ impl Config for Runtime {
 	type MinimumIncrementSize = MinimumIncrementSize;
 	type AuctionTimeToClose = ConstU64<100>;
 	type AuctionDurationSoftCap = ConstU64<2000>;
-	type GetUSSDCurrencyId = GetUSSDCurrencyId;
+	type GetSEUSDCurrencyId = GetSEUSDCurrencyId;
 	type EcdpUssdTreasury = EcdpUssdTreasuryModule;
 	type PriceSource = MockPriceSource;
 	type UnsignedPriority = ConstU64<1048576>; // 1 << 20
@@ -222,7 +218,7 @@ construct_runtime!(
 		EcdpAuctionsManagerModule: auction_manager,
 		Tokens: module_tokens,
 		AuctionModule: module_auction,
-		EcdpUssdTreasuryModule: module_ecdp_ussd_treasury,
+		EcdpUssdTreasuryModule: module_ecdp_seusd_treasury,
 		EdfisSwapModule: module_edfis_swap_legacy,
 	}
 );
@@ -245,15 +241,12 @@ impl Default for ExtBuilder {
 	fn default() -> Self {
 		Self {
 			balances: vec![
-				(ALICE, USSD, 1000),
-				(BOB, USSD, 1000),
-				(CAROL, USSD, 1000),
+				(ALICE, SEUSD, 1000),
+				(BOB, SEUSD, 1000),
+				(CAROL, SEUSD, 1000),
 				(ALICE, BTC, 1000),
 				(BOB, BTC, 1000),
 				(CAROL, BTC, 1000),
-				(ALICE, EDF, 1000),
-				(BOB, EDF, 1000),
-				(CAROL, EDF, 1000),
 			],
 		}
 	}

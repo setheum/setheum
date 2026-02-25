@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -19,22 +19,22 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 use crate::data_io::{
-    legacy::{AlephData, DataProvider, OrderedDataInterpreter},
+    legacy::{SetBFTData, DataProvider, OrderedDataInterpreter},
     ChainInfoProvider,
 };
 
 #[async_trait::async_trait]
-impl legacy_aleph_bft::DataProvider<AlephData> for DataProvider {
-    async fn get_data(&mut self) -> Option<AlephData> {
+impl legacy_setbft_bft::DataProvider<SetBFTData> for DataProvider {
+    async fn get_data(&mut self) -> Option<SetBFTData> {
         DataProvider::get_data(self).await
     }
 }
 
-impl<CIP> legacy_aleph_bft::FinalizationHandler<AlephData> for OrderedDataInterpreter<CIP>
+impl<CIP> legacy_setbft_bft::FinalizationHandler<SetBFTData> for OrderedDataInterpreter<CIP>
 where
     CIP: ChainInfoProvider,
 {
-    fn data_finalized(&mut self, data: AlephData) {
+    fn data_finalized(&mut self, data: SetBFTData) {
         OrderedDataInterpreter::data_finalized(self, data)
     }
 }

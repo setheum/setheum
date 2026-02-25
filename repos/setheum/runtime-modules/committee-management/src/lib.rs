@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -30,7 +30,7 @@ pub mod migration;
 mod mock;
 #[cfg(test)]
 mod tests;
-mod traits;
+mod manager;
 
 use frame_support::{pallet_prelude::Get, traits::StorageVersion};
 pub use manager::SessionAndEraManager;
@@ -43,7 +43,7 @@ use primitives::{
 use scale_info::TypeInfo;
 use sp_runtime::Perquintill;
 use sp_std::{collections::btree_map::BTreeMap, default::Default};
-pub use traits::*;
+use sp_std::{collections::btree_map::BTreeMap, default::Default};
 
 pub type TotalReward = u32;
 #[derive(Decode, Encode, TypeInfo, PartialEq, Eq)]
@@ -91,10 +91,10 @@ pub mod pallet {
     use sp_std::vec::Vec;
 
     use crate::{
-        traits::{EraInfoProvider, ValidatorRewardsHandler},
         BanInfo, CurrentAndNextSessionValidators, DefaultLenientThreshold, FinalityBanConfigStruct,
-        ProductionBanConfigStruct, ValidatorExtractor, ValidatorTotalRewards, STORAGE_VERSION,
+        ProductionBanConfigStruct, ValidatorTotalRewards, STORAGE_VERSION,
     };
+    use module_traits::{EraInfoProvider, ValidatorRewardsHandler, ValidatorExtractor};
 
     #[pallet::config]
     pub trait Config: frame_system::Config {

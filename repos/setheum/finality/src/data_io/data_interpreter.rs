@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@ use crate::{
         chain_info::{AuxFinalizationChainInfoProvider, CachedChainInfoProvider},
         proposal::ProposalStatus,
         status_provider::get_proposal_status,
-        AlephData, ChainInfoProvider,
+        SetBFTData, ChainInfoProvider,
     },
     mpsc::TrySendError,
     BlockId, SessionBoundaries,
@@ -38,7 +38,7 @@ use crate::{
 type InterpretersChainInfoProvider<CIP> =
     CachedChainInfoProvider<AuxFinalizationChainInfoProvider<CIP>>;
 
-/// Takes as input ordered `AlephData` from `AlephBFT` and pushes blocks that should be finalized
+/// Takes as input ordered `SetBFTData` from `SetBFT` and pushes blocks that should be finalized
 /// to an output channel. The other end of the channel is held by the aggregator whose goal is to
 /// create multisignatures under the finalized blocks.
 pub struct OrderedDataInterpreter<CIP, H, V>
@@ -50,7 +50,7 @@ where
     blocks_to_finalize_tx: mpsc::UnboundedSender<BlockId>,
     chain_info_provider: InterpretersChainInfoProvider<CIP>,
     verifier: V,
-    last_finalized_by_aleph: BlockId,
+    last_finalized_by_setbft: BlockId,
     session_boundaries: SessionBoundaries,
     _phantom: PhantomData<H>,
 }
@@ -88,17 +88,17 @@ where
         verifier: V,
         session_boundaries: SessionBoundaries,
     ) -> Self {
-        let last_finalized_by_aleph =
+        let last_finalized_by_setbft =
             get_last_block_prev_session(session_boundaries.clone(), &mut chain_info);
         let chain_info_provider =
-            AuxFinalizationChainInfoProvider::new(chain_info, last_finalized_by_aleph.clone());
+            AuxFinalizationChainInfoProvider::new(chain_info, last_finalized_by_setbft.clone());
         let chain_info_provider =
             CachedChainInfoProvider::new(chain_info_provider, Default::default());
 
         OrderedDataInterpreter {
             blocks_to_finalize_tx,
             chain_info_provider,
-            last_finalized_by_aleph,
+            last_finalized_by_setbft,
             session_boundaries,
             verifier,
             _phantom: PhantomData,
@@ -106,7 +106,7 @@ where
     }
 
     pub fn set_last_finalized(&mut self, block: BlockId) {
-        self.last_finalized_by_aleph = block;
+        self.last_finalized_by_setbft = block;
     }
 
     pub fn chain_info_provider(&mut self) -> &mut InterpretersChainInfoProvider<CIP> {
@@ -119,13 +119,13 @@ where
 
     pub fn blocks_to_finalize_from_data(
         &mut self,
-        new_data: AlephData<H::Unverified>,
+        new_data: SetBFTData<H::Unverified>,
     ) -> Vec<BlockId> {
         let unvalidated_proposal = new_data.head_proposal;
         let proposal = match unvalidated_proposal.validate_bounds(&self.session_boundaries) {
             Ok(proposal) => proposal,
             Err(error) => {
-                warn!(target: "aleph-finality", "Incorrect proposal {:?} passed through data availability, session bounds: {:?}, error: {:?}", unvalidated_proposal, self.session_boundaries, error);
+                warn!(target: "setbft-finality", "Incorrect proposal {:?} passed through data availability, session bounds: {:?}, error: {:?}", unvalidated_proposal, self.session_boundaries, error);
                 return Vec::new();
             }
         };
@@ -143,7 +143,7 @@ where
         match status {
             Finalize(blocks) => blocks,
             Ignore => {
-                debug!(target: "aleph-finality", "Ignoring proposal {:?} in interpreter.", proposal);
+                debug!(target: "setbft-finality", "Ignoring proposal {:?} in interpreter.", proposal);
                 Vec::new()
             }
             Pending(pending_status) => {
@@ -154,14 +154,14 @@ where
         }
     }
 
-    pub fn data_finalized(&mut self, data: AlephData<H::Unverified>) {
+    pub fn data_finalized(&mut self, data: SetBFTData<H::Unverified>) {
         for block in self.blocks_to_finalize_from_data(data) {
             self.set_last_finalized(block.clone());
             self.chain_info_provider()
                 .inner()
                 .update_aux_finalized(block.clone());
             if let Err(err) = self.send_block_to_finalize(block) {
-                error!(target: "aleph-finality", "Error in sending a block from FinalizationHandler, {}", err);
+                error!(target: "setbft-finality", "Error in sending a block from FinalizationHandler, {}", err);
             }
         }
     }

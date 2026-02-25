@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -21,15 +21,15 @@
 use crate::{
     abft::SignatureSet,
     crypto::Signature,
-    data_io::legacy::{AlephData, AlephNetworkMessage},
+    data_io::legacy::{SetBFTData, SetBFTNetworkMessage},
     Hasher,
 };
 
 pub type NetworkData =
-    legacy_aleph_bft::NetworkData<Hasher, AlephData, Signature, SignatureSet<Signature>>;
+    legacy_setbft_bft::NetworkData<Hasher, SetBFTData, Signature, SignatureSet<Signature>>;
 
-impl AlephNetworkMessage for NetworkData {
-    fn included_data(&self) -> Vec<AlephData> {
+impl SetBFTNetworkMessage for NetworkData {
+    fn included_data(&self) -> Vec<SetBFTData> {
         self.included_data()
     }
 }

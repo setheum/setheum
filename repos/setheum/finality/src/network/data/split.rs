@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -171,18 +171,18 @@ async fn forward_or_wait<
     match receiver.lock().await.next().await {
         Some(Split::Left(data)) => {
             if left_sender.unbounded_send(data).is_err() {
-                debug!(target: "aleph-network", "Unable to send to LeftNetwork ({}) - already disabled", name);
+                debug!(target: "setbft-network", "Unable to send to LeftNetwork ({}) - already disabled", name);
             }
             true
         }
         Some(Split::Right(data)) => {
             if right_sender.unbounded_send(data).is_err() {
-                debug!(target: "aleph-network", "Unable to send to RightNetwork ({}) - already disabled", name);
+                debug!(target: "setbft-network", "Unable to send to RightNetwork ({}) - already disabled", name);
             }
             true
         }
         None => {
-            trace!(target: "aleph-network", "Split data channel ended");
+            trace!(target: "setbft-network", "Split data channel ended");
             left_sender.close_channel();
             right_sender.close_channel();
             false
@@ -244,7 +244,7 @@ fn split_receiver<LeftData: Data, RightData: Data, R: Receiver<Split<LeftData, R
 /// `next()` is polled, and unpack it to two separate channels. At the same time each polls
 /// the end of those channels which contains the type that it is supposed to return.
 ///
-/// The main example for now is creating an `aleph_bft::Network` and a separate one for accumulating
+/// The main example for now is creating an `setbft_bft::Network` and a separate one for accumulating
 /// signatures for justifications.
 pub fn split<LeftData: Data, RightData: Data, CN: Network<Split<LeftData, RightData>>>(
     network: CN,

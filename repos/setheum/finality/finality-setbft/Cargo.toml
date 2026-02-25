@@ -18,7 +18,7 @@ legacy-set-bft-rmc = { package = "set-bft-rmc", path = "../../../set-bft/rmc" }
 
 network-clique = { workspace = true }
 primitives = { workspace = true }
-legacy-setbft-aggregator = { package = "aggregator", git = "https://github.com/Cardinal-Cryptography/aleph-node.git", tag = "r-14.0.0" }
+legacy-setbft-aggregator = { package = "aggregator", path = "../aggregator" }
 current-setbft-aggregator = { path = "../aggregator", package = "aggregator" }
 finality-rate-limiter = { package = "finality-rate-limiter", path = "../rate-limiter" }
 fake-runtime-api = { workspace = true, features = ["std"] }

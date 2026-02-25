@@ -120,7 +120,7 @@ pub use runtime_common::{
 	EnsureRootOrOneThirdsTechnicalCommittee, EnsureRootOrTwoThirdsTechnicalCommittee,
 	EnsureRootOrThreeFourthsTechnicalCommittee, TechnicalCommitteeInstance, TechnicalCommitteeMembershipInstance,
 
-	OperatorMembershipInstanceSetheum, SEE, SERP, DNAR, HELP, SETR, SETUSD,
+	OperatorMembershipInstanceSetheum, SEU, SEUSD,
 };
 
 
@@ -469,9 +469,9 @@ impl pallet_im_online::Config for Runtime {
 }
 
 parameter_types! {
-	pub BasicDeposit: Balance =      10 * dollar(SEE);
-	pub FieldDeposit: Balance =        1 * dollar(SEE);
-	pub SubAccountDeposit: Balance =  20 * dollar(SEE);
+	pub BasicDeposit: Balance =      10 * dollar(SEU);
+	pub FieldDeposit: Balance =        1 * dollar(SEU);
+	pub SubAccountDeposit: Balance =  20 * dollar(SEU);
 	pub const MaxSubAccounts: u32 = 100;
 	pub const MaxAdditionalFields: u32 = 100;
 	pub const MaxRegistrars: u32 = 19;
@@ -494,7 +494,7 @@ impl pallet_identity::Config for Runtime {
 
 
 parameter_types! {
-	pub IndexDeposit: Balance = 1 * dollar(SEE);
+	pub IndexDeposit: Balance = 1 * dollar(SEU);
 }
 
 impl pallet_indices::Config for Runtime {
@@ -506,15 +506,10 @@ impl pallet_indices::Config for Runtime {
 }
 
 parameter_types! {
-	pub const GetNativeCurrencyId: CurrencyId = SEE;
-	pub const GetSerpCurrencyId: CurrencyId = SERP;
-	pub const GetDinarCurrencyId: CurrencyId = DNAR;
-	pub const GetHelpCurrencyId: CurrencyId = HELP;
-	pub const SetterCurrencyId: CurrencyId = SETR;
-	pub const GetSetUSDId: CurrencyId = SETUSD;
+	pub const GetNativeCurrencyId: CurrencyId = SEU;
+	pub const GetSEUSDId: CurrencyId = SEUSD;
 	pub StableCurrencyIds: Vec<CurrencyId> = vec![
-		SETR,
-		SETUSD,
+		SEUSD,
 	];
 }
 
@@ -577,8 +572,7 @@ impl Contains<AccountId> for DustRemovalWhitelist {
 parameter_type_with_key! {
 	pub GetStableCurrencyMinimumSupply: |currency_id: CurrencyId| -> Balance {
 		match currency_id {
-			&SETR => 1_000_000_000 * dollar(SETR),
-			&SETUSD => 1_000_000_000 * dollar(SETUSD),
+			&SEUSD => 1_000_000_000 * dollar(SEUSD),
 			_ => 0,
 		}
 	};
@@ -588,12 +582,8 @@ parameter_type_with_key! {
 	pub ExistentialDeposits: |currency_id: CurrencyId| -> Balance {
 		match currency_id {
 			CurrencyId::Token(symbol) => match symbol {
-				TokenSymbol::SETUSD => 10 * cent(SETUSD), // 10 cents (0.1)
-				TokenSymbol::SETR => 10 * cent(SETR), // 10 cents (0.1)
-				TokenSymbol::SERP => 10 * cent(SERP), // 10 cents (0.1)
-				TokenSymbol::HELP => 10 * cent(HELP), // 10 cents (0.1)
-				TokenSymbol::DNAR => 10 * cent(DNAR), // 10 cents (0.1)
-				TokenSymbol::SEE => 10 * cent(SEE), // 10 cents (0.1)
+				TokenSymbol::SEUSD => 10 * cent(SEUSD), // 10 cents (0.1)
+				TokenSymbol::SEU => 10 * cent(SEU), // 10 cents (0.1)
 			},
 			CurrencyId::DexShare(dex_share_0, _) => {
 				let currency_id_0: CurrencyId = (*dex_share_0).into();
@@ -750,24 +740,14 @@ where
 
 parameter_types! {
 	pub AlternativeSwapPathJointList: Vec<Vec<CurrencyId>> = vec![
-		vec![SERP],
-		vec![DNAR],
-		vec![SEE],
-		vec![HELP],
-		vec![SEE, SETR],
-		vec![SEE, SETUSD],
-		vec![SERP, SETR],
-		vec![SERP, SETUSD],
-		vec![DNAR, SETR],
-		vec![DNAR, SETUSD],
-		vec![HELP, SETR],
-		vec![HELP, SETUSD],
+		vec![SEU],
+		vec![SEU, SEUSD],
 	];
-	pub CollateralCurrencyIds: Vec<CurrencyId> = vec![SEE, SERP, DNAR, HELP];
+	pub CollateralCurrencyIds: Vec<CurrencyId> = vec![SEU];
 	pub DefaultLiquidationRatio: Ratio = Ratio::saturating_from_rational(110, 100);
 	pub DefaultDebitExchangeRate: ExchangeRate = ExchangeRate::saturating_from_rational(1, 10);
 	pub DefaultLiquidationPenalty: Rate = Rate::saturating_from_rational(5, 100);
-	pub MinimumDebitValue: Balance = 10 * dollar(SETUSD);
+	pub MinimumDebitValue: Balance = 10 * dollar(SEUSD);
 	pub MaxSwapSlippageComparedToOracle: Ratio = Ratio::saturating_from_rational(15, 100);
 }
 
@@ -817,15 +797,7 @@ parameter_types! {
 	pub const GetStableCurrencyExchangeFee: (u32, u32) = (1, 1000);	/ 0.1%
 	pub const TradingPathLimit: u32 = 4;
 	pub EnabledTradingPairs: Vec<TradingPair> = vec![
-		TradingPair::from_currency_ids(SETUSD, SEE).unwrap(),
-		TradingPair::from_currency_ids(SETUSD, SERP).unwrap(),
-		TradingPair::from_currency_ids(SETUSD, DNAR).unwrap(),
-		TradingPair::from_currency_ids(SETUSD, HELP).unwrap(),
-		TradingPair::from_currency_ids(SETUSD, SETR).unwrap(),
-		TradingPair::from_currency_ids(SETR, SEE).unwrap(),
-		TradingPair::from_currency_ids(SETR, SERP).unwrap(),
-		TradingPair::from_currency_ids(SETR, DNAR).unwrap(),
-		TradingPair::from_currency_ids(SETR, HELP).unwrap(),
+		TradingPair::from_currency_ids(SEUSD, SEU).unwrap(),
 	];
 }
 
@@ -858,10 +830,8 @@ parameter_types! {
 parameter_types! {
     pub const StableCurrencyInflationPeriod: BlockNumber = MINUTES;
     
-	pub SetterMinimumClaimableTransferAmounts: Balance = 10 * dollar(SETR);
-	pub SetterMaximumClaimableTransferAmounts: Balance = 2_000_000 * dollar(SETR);
-	pub SetDollarMinimumClaimableTransferAmounts: Balance = 4 * dollar(SETUSD);
-	pub SetDollarMaximumClaimableTransferAmounts: Balance = 100_000 * dollar(SETUSD);
+	pub SetDollarMinimumClaimableTransferAmounts: Balance = 4 * dollar(SEUSD);
+	pub SetDollarMaximumClaimableTransferAmounts: Balance = 100_000 * dollar(SEUSD);
 }
 
 // impl serp_treasury::Config for Runtime {
@@ -911,14 +881,7 @@ parameter_types! {
 parameter_types! {
 // Sort by fee charge order
 	pub DefaultFeeSwapPathList: Vec<Vec<CurrencyId>> = vec![
-		vec![SETR, SEE],
-		vec![SETUSD, SEE],
-		vec![SERP, SETR, SEE],
-		vec![SERP, SETUSD, SEE],
-		vec![DNAR, SETR, SEE],
-		vec![DNAR, SETUSD, SEE],
-		vec![HELP, SETR, SEE],
-		vec![HELP, SETUSD, SEE],
+		vec![SEUSD, SEU],
 	];
 }
 
@@ -985,8 +948,8 @@ parameter_types! {
 parameter_types! {
 	pub const NewContractExtraBytes: u32 = 10_000;
 	pub StorageDepositPerByte: Balance = deposit(0, 1);
-	pub DeveloperDeposit: Balance = 7 * dollar(SEE);
-	pub DeploymentFee: Balance = 7 * dollar(SEE);
+	pub DeveloperDeposit: Balance = 7 * dollar(SEU);
+	pub DeploymentFee: Balance = 7 * dollar(SEU);
 }
 
 pub type MultiCurrencyPrecompile = runtime_common::MultiCurrencyPrecompile<
@@ -1060,8 +1023,8 @@ impl module_evm_bridge::Config for Runtime {
 }
 
 parameter_types! {
-	pub CreateClassDeposit: Balance = 11 * dollar(SEE);
-	pub CreateTokenDeposit: Balance = 7 * dollar(SEE);
+	pub CreateClassDeposit: Balance = 11 * dollar(SEU);
+	pub CreateTokenDeposit: Balance = 7 * dollar(SEU);
 	pub MaxAttributesBytes: u32 = 2048;
 }
 
@@ -1164,10 +1127,10 @@ impl pallet_proxy::Config for Runtime {
 }
 
 parameter_types! {
-// note: if we add other native tokens (SETUSD) we have to set native
+// note: if we add other native tokens (SEUSD) we have to set native
 // existential deposit to 0 or check for other tokens on account pruning
-	pub NativeTokenExistentialDeposit: Balance = 1 * dollar(SEE); // 1 SEE
-	pub MaxNativeTokenExistentialDeposit: Balance = 100 * dollar(SEE); // 100 SEE
+	pub NativeTokenExistentialDeposit: Balance = 1 * dollar(SEU); // 1 SEU
+	pub MaxNativeTokenExistentialDeposit: Balance = 100 * dollar(SEU); // 100 SEU
 	pub const MaxLocks: u32 = 50;
 	pub const MaxReserves: u32 = ReserveIdentifier::Count as u32;
 }
@@ -1188,10 +1151,6 @@ impl pallet_balances::Config for Runtime {
 parameter_types! {
 	pub MinVestedTransfer: Balance = 0;
 	pub const MaxNativeVestingSchedules: u32 = 70;
-	pub const MaxSerpVestingSchedules: u32 = 70;
-	pub const MaxDinarVestingSchedules: u32 = 70;
-	pub const MaxHelpVestingSchedules: u32 = 70;
-	pub const MaxSetterVestingSchedules: u32 = 70;
 	pub const MaxSetUSDVestingSchedules: u32 = 70;
 }
 
@@ -1199,19 +1158,11 @@ impl module_vesting::Config for Runtime {
 	type Event = Event;
 	type MultiCurrency = Currencies;
 	type GetNativeCurrencyId = GetNativeCurrencyId;
-	type GetSerpCurrencyId = GetSerpCurrencyId;
-	type GetDinarCurrencyId = GetDinarCurrencyId;
-	type GetHelpCurrencyId = GetHelpCurrencyId;
-	type SetterCurrencyId = SetterCurrencyId;
 	type GetSetUSDId = GetSetUSDId;
 	type MinVestedTransfer = MinVestedTransfer;
 	type TreasuryAccount = TreasuryAccount;
 	type UpdateOrigin = EnsureRootOrTwoThirdsShuraCouncil;
 	type MaxNativeVestingSchedules = MaxNativeVestingSchedules;
-	type MaxSerpVestingSchedules = MaxSerpVestingSchedules;
-	type MaxDinarVestingSchedules = MaxDinarVestingSchedules;
-	type MaxHelpVestingSchedules = MaxHelpVestingSchedules;
-	type MaxSetterVestingSchedules = MaxSetterVestingSchedules;
 	type MaxSetUSDVestingSchedules = MaxSetUSDVestingSchedules;
 	type WeightInfo = weights::module_vesting::WeightInfo<Runtime>;
 }
@@ -1401,7 +1352,7 @@ impl ContainsLengthBound for ShuraCouncilProvider {
 
 parameter_types! {
 	pub const ProposalBond: Permill = Permill::from_percent(3);
-	pub ProposalBondMinimum: Balance = 1 * dollar(SEE); // 1 SEE
+	pub ProposalBondMinimum: Balance = 1 * dollar(SEU); // 1 SEU
 	pub const SpendPeriod: BlockNumber = 40 * DAYS;
 	pub const Burn: Permill = Permill::from_perthousand(0); // 0.0%
 	pub const MaxApprovals: u32 = 100;
@@ -1416,7 +1367,7 @@ parameter_types! {
 	pub const BountyDepositPayoutDelay: BlockNumber = DAYS;
 	pub const BountyUpdatePeriod: BlockNumber = 21 * DAYS;
 	pub const BountyCuratorDeposit: Permill = Permill::from_percent(50);
-	pub BountyValueMinimum: Balance = 1 * dollar(SEE); // 1 SEE
+	pub BountyValueMinimum: Balance = 1 * dollar(SEU); // 1 SEU
 	pub DataDepositPerByte: Balance = deposit(0, 1);
 	pub const MaximumReasonLength: u32 = 16384;
 }
@@ -1486,7 +1437,7 @@ impl pallet_recovery::Config for Runtime {
 // 	type WeightInfo = weights::module_auction::WeightInfo<Runtime>;
 // }
 
-impl pallet_randomness_collective_flip::Config for Runtime {}
+impl pallet_insecure_randomness_collective_flip::Config for Runtime {}
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
 
@@ -1503,7 +1454,7 @@ construct_runtime!(
 	{
 // Core
 		System: frame_system::{Pallet, Call, Config, Storage, Event<T>} = 0,
-		RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Pallet, Storage} = 1,
+		RandomnessCollectiveFlip: pallet_insecure_randomness_collective_flip::{Pallet, Storage} = 1,
 		Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent} = 2,
 		Sudo: pallet_sudo::{Pallet, Call, Config<T>, Storage, Event<T>} = 3,
 		Scheduler: pallet_scheduler::{Pallet, Call, Storage, Event<T>} = 4,
@@ -1537,7 +1488,6 @@ construct_runtime!(
 		SetheumOracle: module_oracle::<Instance1>::{Pallet, Storage, Call, Event<T>} = 21,
 		OperatorMembershipSetheum: pallet_membership::<Instance4>::{Pallet, Call, Storage, Event<T>, Config<T>} = 22,
 
-// SERP
 // AuctionManager: auction_manager::{Pallet, Storage, Call, Event<T>, ValidateUnsigned} = 23,
 // Loans: module_loans::{Pallet, Storage, Call, Event<T>} = 24,
 // Setmint: serp_setmint::{Pallet, Storage, Call, Event<T>} = 25,

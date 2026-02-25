@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -365,7 +365,7 @@ pub mod module {
 			let who = ensure_signed(origin)?;
 			let debit_amount: Amount = debit_transfer.try_into().map_err(|_| ArithmeticError::Overflow)?;
 			let negative_debit = debit_amount.checked_neg().ok_or(ArithmeticError::Overflow)?;
-// Adds USSD to user account momentarily to adjust loan
+// Adds SEUSD to user account momentarily to adjust loan
 			<T as module_cdp_engine::Config>::EcdpUssdTreasury::issue_debit(&who, debit_transfer, true)?;
 
 			<module_cdp_engine::Pallet<T>>::adjust_position(&who, from_currency, Zero::zero(), negative_debit)?;
@@ -449,7 +449,7 @@ impl<T: Config> EcdpUssdManager<T::AccountId, CurrencyId, Amount, Balance> for P
 
 	fn get_current_collateral_ratio(who: &T::AccountId, currency_id: CurrencyId) -> Option<Ratio> {
 		let EcdpPosition { collateral, debit } = <module_ecdp_loans::Pallet<T>>::positions(currency_id, who);
-		let stable_currency_id = T::GetUSSDCurrencyId::get();
+		let stable_currency_id = T::GetSEUSDCurrencyId::get();
 
 		T::PriceSource::get_relative_price(currency_id, stable_currency_id).map(|price| {
 			<module_cdp_engine::Pallet<T>>::calculate_collateral_ratio(currency_id, collateral, debit, price)

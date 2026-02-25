@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -26,21 +26,21 @@ use module_benchmarking::runtime_benchmarks;
 use sp_runtime::traits::One;
 use sp_std::vec;
 
-const SETUSD: CurrencyId = GetSetUSDId::get();
+const SEUSD: CurrencyId = GetSetUSDId::get();
 
 runtime_benchmarks! {
 	{ Runtime, module_prices }
 
 	lock_price {
 // feed price
-		feed_price(vec![(SETUSD, Price::one())])?;
-	}: _(RawOrigin::Root, SETUSD)
+		feed_price(vec![(SEUSD, Price::one())])?;
+	}: _(RawOrigin::Root, SEUSD)
 
 	unlock_price {
 // feed price
-		feed_price(vec![(SETUSD, Price::one())])?;
-		Prices::lock_price(Origin::root(), SETUSD)?;
-	}: _(RawOrigin::Root, SETUSD)
+		feed_price(vec![(SEUSD, Price::one())])?;
+		Prices::lock_price(Origin::root(), SEUSD)?;
+	}: _(RawOrigin::Root, SEUSD)
 }
 
 #[cfg(test)]

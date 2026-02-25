@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -50,7 +50,7 @@ impl Task {
 /// can be used to restart the task.
     pub async fn stopped(&mut self) -> NodeIndex {
         if self.task.stopped().await.is_err() {
-            debug!(target: "aleph-party", "Authority task failed for {:?}", self.node_id);
+            debug!(target: "setbft-party", "Authority task failed for {:?}", self.node_id);
         }
         self.node_id
     }
@@ -86,28 +86,28 @@ impl Subtasks {
     async fn stop(self) -> Result<(), ()> {
 // both member and aggregator are implicitly using forwarder,
 // so we should force them to exit first to avoid any panics, i.e. `send on closed channel`
-        debug!(target: "aleph-party", "Started to stop all tasks");
+        debug!(target: "setbft-party", "Started to stop all tasks");
         let mut result = Ok(());
         if self.member.stop().await.is_err() {
-            warn!(target: "aleph-party", "Member stopped with en error");
+            warn!(target: "setbft-party", "Member stopped with en error");
             result = Err(());
         }
-        trace!(target: "aleph-party", "Member stopped");
+        trace!(target: "setbft-party", "Member stopped");
         if self.aggregator.stop().await.is_err() {
-            warn!(target: "aleph-party", "Aggregator stopped with en error");
+            warn!(target: "setbft-party", "Aggregator stopped with en error");
             result = Err(());
         }
-        trace!(target: "aleph-party", "Aggregator stopped");
+        trace!(target: "setbft-party", "Aggregator stopped");
         if self.refresher.stop().await.is_err() {
-            warn!(target: "aleph-party", "Refresher stopped with en error");
+            warn!(target: "setbft-party", "Refresher stopped with en error");
             result = Err(());
         }
-        trace!(target: "aleph-party", "Refresher stopped");
+        trace!(target: "setbft-party", "Refresher stopped");
         if self.data_store.stop().await.is_err() {
-            warn!(target: "aleph-party", "DataStore stopped with en error");
+            warn!(target: "setbft-party", "DataStore stopped with en error");
             result = Err(());
         }
-        trace!(target: "aleph-party", "DataStore stopped");
+        trace!(target: "setbft-party", "DataStore stopped");
         result
     }
 
@@ -115,13 +115,13 @@ impl Subtasks {
     pub async fn wait_completion(mut self) -> Result<(), ()> {
         let result = tokio::select! {
             _ = &mut self.exit => Ok(()),
-            res = self.member.stopped() => { debug!(target: "aleph-party", "Member stopped early"); res },
-            res = self.aggregator.stopped() => { debug!(target: "aleph-party", "Aggregator stopped early"); res },
-            res = self.refresher.stopped() => { debug!(target: "aleph-party", "Refresher stopped early"); res },
-            res = self.data_store.stopped() => { debug!(target: "aleph-party", "DataStore stopped early"); res },
+            res = self.member.stopped() => { debug!(target: "setbft-party", "Member stopped early"); res },
+            res = self.aggregator.stopped() => { debug!(target: "setbft-party", "Aggregator stopped early"); res },
+            res = self.refresher.stopped() => { debug!(target: "setbft-party", "Refresher stopped early"); res },
+            res = self.data_store.stopped() => { debug!(target: "setbft-party", "DataStore stopped early"); res },
         };
         let stop_result = self.stop().await;
-        debug!(target: "aleph-party", "Stopped all processes");
+        debug!(target: "setbft-party", "Stopped all processes");
         result.and(stop_result)
     }
 }

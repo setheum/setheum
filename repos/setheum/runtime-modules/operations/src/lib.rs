@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -24,7 +24,6 @@
 extern crate core;
 
 mod impls;
-mod traits;
 
 #[cfg(test)]
 mod tests;
@@ -46,11 +45,11 @@ pub mod pallet {
     use frame_system::{ensure_signed, pallet_prelude::OriginFor};
 
     use crate::{
-        traits::{
-            AccountInfoProvider, BalancesProvider, BondedStashProvider, ContractInfoProvider,
-            NextKeysSessionProvider,
-        },
         STORAGE_VERSION,
+    };
+    use module_traits::{
+        AccountInfoProvider, BalancesProvider, BondedStashProvider, ContractInfoProvider,
+        NextKeysSessionProvider,
     };
 
     #[pallet::config]
@@ -87,7 +86,7 @@ pub mod pallet {
     impl<T: Config> Pallet<T> {
         /// An account can have an underflow or overflow of a `consumers` counter.
         /// Expected consumers counter depends on a chain runtime,
-        /// but specifically for AlephNode runtime is as follows:
+        /// but specifically for SetBFTNode runtime is as follows:
         /// +1 consumers if reserved > 0 || frozen > 0
         /// +1 if the account is a contract one
         /// +1 consumers for a controller account that is in session.next_keys

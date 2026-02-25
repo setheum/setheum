@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -81,7 +81,7 @@ impl frame_system::Config for Test {
 pub const DOLLARS: Balance = 1_000_000_000_000_000_000; // 18 DECIMALS
 
 parameter_types! {
-	pub const MaxNativeTokenExistentialDeposit: Balance = DOLLARS * 100; // 100 SEE
+	pub const MaxNativeTokenExistentialDeposit: Balance = DOLLARS * 100; // 100 SEU
 }
 
 parameter_types! {
@@ -290,7 +290,6 @@ impl SerpTreasury<AccountId> for MockSerpTreasury {
 		unimplemented!()
 	}
 
-/// deposit reserve asset (Setter (SETR)) to serp treasury by `who`
 	fn deposit_setter(
 		_from: &AccountId,
 		_amount: Balance
@@ -308,18 +307,15 @@ impl SerpTreasury<AccountId> for MockSerpTreasury {
 	}
 }
 
-pub const SEE: CurrencyId = CurrencyId::Token(TokenSymbol::SEE);
-pub const SERP: CurrencyId = CurrencyId::Token(TokenSymbol::SERP);
-pub const SETUSD: CurrencyId = CurrencyId::Token(TokenSymbol::SETUSD);
-pub const SETR: CurrencyId = CurrencyId::Token(TokenSymbol::SETR);
-pub const LP_SETM_SETUSD: CurrencyId =
-	CurrencyId::DexShare(DexShare::Token(TokenSymbol::SEE), DexShare::Token(TokenSymbol::SETUSD));
+pub const SEU: CurrencyId = CurrencyId::Token(TokenSymbol::SEU);
+pub const SEUSD: CurrencyId = CurrencyId::Token(TokenSymbol::SEUSD);
+pub const LP_SETM_SEUSD: CurrencyId =
+	CurrencyId::DexShare(DexShare::Token(TokenSymbol::SEU), DexShare::Token(TokenSymbol::SEUSD));
 
 parameter_types! {
-	pub const GetNativeCurrencyId: CurrencyId = SEE;
+	pub const GetNativeCurrencyId: CurrencyId = SEU;
 	pub StableCurrencyIds: Vec<CurrencyId> = vec![
-		SETR,
-		SETUSD,
+		SEUSD,
 	];
 }
 
@@ -380,7 +376,7 @@ impl module_nft::Config for Test {
 
 parameter_types! {
 	pub const TransactionByteFee: Balance = 10;
-		pub DefaultFeeSwapPathList: Vec<Vec<CurrencyId>> = vec![vec![CurrencyId::Token(TokenSymbol::SETUSD), CurrencyId::Token(TokenSymbol::SEE)]];
+		pub DefaultFeeSwapPathList: Vec<Vec<CurrencyId>> = vec![vec![CurrencyId::Token(TokenSymbol::SEUSD), CurrencyId::Token(TokenSymbol::SEU)]];
 	pub MaxSwapSlippageComparedToOracle: Ratio = Ratio::one();
 }
 
@@ -578,8 +574,7 @@ impl module_evm::Config for Test {
 parameter_types! {
 	pub SetUSDFixedPrice: Price = Price::saturating_from_rational(1, 1); // $1
 	pub SetterFixedPrice: Price = Price::saturating_from_rational(1, 10); // $0.1(10 cents)
-	pub const GetSetUSDId: CurrencyId = SETUSD;
-	pub const SetterCurrencyId: CurrencyId = SETR;
+	pub const GetSetUSDId: CurrencyId = SEUSD;
 }
 
 ord_parameter_types! {
@@ -621,19 +616,18 @@ pub fn bob_evm_addr() -> EvmAddress {
 }
 
 pub fn setm_evm_address() -> EvmAddress {
-	EvmAddress::try_from(SEE).unwrap()
+	EvmAddress::try_from(SEU).unwrap()
 }
 
 pub fn setusd_evm_address() -> EvmAddress {
-	EvmAddress::try_from(SETUSD).unwrap()
+	EvmAddress::try_from(SEUSD).unwrap()
 }
 
 pub fn serp_evm_address() -> EvmAddress {
-	EvmAddress::try_from(SERP).unwrap()
 }
 
 pub fn lp_setm_setusd_evm_address() -> EvmAddress {
-	EvmAddress::try_from(LP_SETM_SETUSD).unwrap()
+	EvmAddress::try_from(LP_SETM_SEUSD).unwrap()
 }
 
 pub fn erc20_address_not_exists() -> EvmAddress {
@@ -739,15 +733,13 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
 		assert_ok!(Currencies::update_balance(
 			Origin::root(),
 			ALICE,
-			SERP,
 			1_000_000_000_000
 		));
-		assert_ok!(Currencies::update_balance(Origin::root(), ALICE, SETUSD, 1_000_000_000));
+		assert_ok!(Currencies::update_balance(Origin::root(), ALICE, SEUSD, 1_000_000_000));
 
 		assert_ok!(Currencies::update_balance(
 			Origin::root(),
 			MockAddressMapping::get_account_id(&alice_evm_addr()),
-			SERP,
 			1_000
 		));
 	});

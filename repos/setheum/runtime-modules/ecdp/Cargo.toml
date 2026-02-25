@@ -15,7 +15,7 @@ sp-core = { workspace = true }
 frame-support = { workspace = true }
 frame-system = { workspace = true }
 sp-std = { workspace = true }
-module-ecdp-ussd-engine = { workspace = true }
+module-ecdp-seusd-engine = { workspace = true }
 module-ecdp-loans = { workspace = true }
 module-support = { workspace = true }
 primitives = { workspace = true }
@@ -28,7 +28,7 @@ pallet-timestamp = { workspace = true, features = ["std"] }
 module-currencies = { workspace = true, features = ["std"] }
 module-traits = { workspace = true, features = ["std"] }
 module-tokens = { workspace = true, features = ["std"] }
-module-ecdp-ussd-treasury = { workspace = true, features = ["std"] }
+module-ecdp-seusd-treasury = { workspace = true, features = ["std"] }
 module-evm-accounts = { workspace = true, features = ["std"] }
 module-evm = { workspace = true, features = ["std"] }
 module-evm-bridge = { workspace = true, features = ["std"] }
@@ -36,7 +36,7 @@ module-evm-bridge = { workspace = true, features = ["std"] }
 [features]
 default = ["std"]
 std = [
-	"module-ecdp-ussd-engine/std",
+	"module-ecdp-seusd-engine/std",
 	"parity-scale-codec/std",
 	"frame-support/std",
 	"frame-system/std",
@@ -49,7 +49,7 @@ std = [
 	"module-support/std",
 ]
 try-runtime = [
-	"module-ecdp-ussd-engine/try-runtime",
+	"module-ecdp-seusd-engine/try-runtime",
 	"frame-support/try-runtime",
 	"frame-system/try-runtime",
 	"module-ecdp-loans/try-runtime",

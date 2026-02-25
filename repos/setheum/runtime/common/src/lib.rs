@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -51,7 +51,6 @@ pub use precompile::{
 	StateRentPrecompile,
 };
 pub use primitives::{
-	currency::{TokenInfo, SEE, SERP, DNAR, HELP, SETR, SETUSD},
 	AccountId,
 };
 
@@ -161,15 +160,15 @@ pub fn microcent(currency_id: CurrencyId) -> Balance {
 	millicent(currency_id) // 1000
 }
 
-// The nanoscent is only for currencies that have at least up to 12 decimals like the SEE
-// 12 decimals = 1 Trillion nanocents
-// 1 Trillion NANOCENTS = 1 DOLLAR
+// The nanoscent is only for currencies that have at least up to 18 decimals like the SEU
+// 18 decimals = 1 Quintillion nanocents
+// 1 Quintillion NANOCENTS = 1 DOLLAR
 pub fn nanocent(currency_id: CurrencyId) -> Balance {
-	microcent(currency_id) // 10000
+	microcent(currency_id) // 1000000
 }
 
 pub fn deposit(items: u32, bytes: u32) -> Balance {
-	items as Balance * 1_000 * cent(SEE) + (bytes as Balance) * 100 * millicent(SEE)
+	items as Balance * 1_000 * cent(SEU) + (bytes as Balance) * 100 * millicent(SEU)
 }
 
 pub type ShuraCouncilInstance = pallet_collective::Instance1;

@@ -26,8 +26,8 @@ pallet-xcm = { workspace = true }
 xcm = { workspace = true }
 xcm-executor = { workspace = true }
 
-module-traits = { package = "module-traits", path = "../../runtime-modules/traits", default-features = false}
-module-xcm-support = { package = "module-xcm-support", path = "../xcm-support", default-features = false }
+module-traits = { workspace = true }
+module-xcm-support = { workspace = true }
 
 [dev-dependencies]
 # substrate
@@ -46,8 +46,8 @@ polkadot-runtime-common = { workspace = true, features = ["std"] }
 xcm-builder = { workspace = true, features = ["std"] }
 xcm-simulator = { workspace = true }
 
-module-tokens = { package = "module-tokens", path = "../../runtime-modules/tokens" }
-module-xcm = { package = "module-xcm", path = "../xcm" }
+module-tokens = { workspace = true }
+module-xcm = { workspace = true }
 module-xcm-mock-message-queue = { package = "module-xcm-mock-message-queue", path = "../xcm-mock-message-queue" }
 
 [features]

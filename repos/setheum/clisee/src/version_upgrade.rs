@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-use setheum_client::{pallets::aleph::AlephSudoApi, RootConnection};
+use setheum_client::{pallets::setbft::SetBFTSudoApi, RootConnection};
 use primitives::SessionIndex;
 
 use crate::commands::{ExtrinsicState, Version};

@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -31,7 +31,7 @@ use sp_runtime::traits::{Block as SubstrateBlock, Header as SubstrateHeader};
 
 use crate::{
     setbft_primitives::{
-        Block, BlockNumber, Hash as SetBFTHash, Header as SetBFTHeader, ALEPH_ENGINE_ID,
+        Block, BlockNumber, Hash as SetBFTHash, Header as SetBFTHeader, SETBFT_ENGINE_ID,
     },
     block::{
         substrate::{Justification, LOG_TARGET},
@@ -150,7 +150,7 @@ impl SubstrateChainStatus {
             .backend
             .blockchain()
             .justifications(header.hash())?
-            .and_then(|j| j.into_justification(ALEPH_ENGINE_ID))
+            .and_then(|j| j.into_justification(SETBFT_ENGINE_ID))
         {
             Some(justification) => justification,
             None => return Ok(None),

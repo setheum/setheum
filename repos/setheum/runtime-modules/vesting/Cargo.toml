@@ -11,16 +11,16 @@ repository.workspace = true
 [dependencies]
 scale-info = { workspace = true }
 serde = { workspace = true, optional = true }
-parity-scale-codec = {  version = "3.0.0", default-features = false, features = ["max-encoded-len"] }
+parity-scale-codec = { workspace = true, features = ["max-encoded-len"] }
 sp-runtime = { workspace = true }
 sp-io = { workspace = true }
 sp-std = { workspace = true }
 frame-support = { workspace = true }
 frame-system = { workspace = true }
 
-primitives = { package = "setheum-primitives", path = "../../primitives", default-features = false }
+primitives = { workspace = true }
 support = { package = "module-support", path = "../support", default-features = false }
-module-traits = { package = "module-traits", path = "../traits", default-features = false }
+module-traits = { workspace = true }
 
 [dev-dependencies]
 sp-core = { workspace = true, features = ["std"] }

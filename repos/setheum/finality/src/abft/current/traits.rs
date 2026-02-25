@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -20,17 +20,17 @@
 
 use crate::{
     block::{Header, HeaderVerifier, UnverifiedHeader},
-    data_io::{AlephData, ChainInfoProvider, DataProvider, OrderedDataInterpreter},
+    data_io::{SetBFTData, ChainInfoProvider, DataProvider, OrderedDataInterpreter},
 };
 
 #[async_trait::async_trait]
-impl<UH: UnverifiedHeader> current_aleph_bft::DataProvider<AlephData<UH>> for DataProvider<UH> {
-    async fn get_data(&mut self) -> Option<AlephData<UH>> {
+impl<UH: UnverifiedHeader> current_setbft_bft::DataProvider<SetBFTData<UH>> for DataProvider<UH> {
+    async fn get_data(&mut self) -> Option<SetBFTData<UH>> {
         DataProvider::get_data(self).await
     }
 }
 
-impl<CIP, H, V> current_aleph_bft::FinalizationHandler<AlephData<H::Unverified>>
+impl<CIP, H, V> current_setbft_bft::FinalizationHandler<SetBFTData<H::Unverified>>
     for OrderedDataInterpreter<CIP, H, V>
 where
     CIP: ChainInfoProvider,
@@ -39,8 +39,8 @@ where
 {
     fn data_finalized(
         &mut self,
-        data: AlephData<H::Unverified>,
-        _creator: current_aleph_bft::NodeIndex,
+        data: SetBFTData<H::Unverified>,
+        _creator: current_setbft_bft::NodeIndex,
     ) {
         OrderedDataInterpreter::data_finalized(self, data)
     }

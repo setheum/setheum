@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -223,7 +223,7 @@ impl<C: ConnectionApi + AsConnection> CommitteeManagementApi for C {
         at: Option<BlockHash>,
     ) -> anyhow::Result<Result<SessionCommittee<AccountId>, SessionValidatorError>> {
         let method = "state_call";
-        let api_method = "AlephSessionApi_predict_session_committee";
+        let api_method = "SetBFTSessionApi_predict_session_committee";
         let params = rpc_params![api_method, Bytes(session.encode()), at];
 
         self.rpc_call(method.to_string(), params).await

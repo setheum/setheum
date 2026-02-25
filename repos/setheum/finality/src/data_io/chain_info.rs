@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -30,7 +30,7 @@ use crate::{
     BlockId,
 };
 
-const LOG_TARGET: &str = "aleph-data-store";
+const LOG_TARGET: &str = "setbft-data-store";
 
 pub trait ChainInfoProvider: Send + Sync + 'static {
     fn is_block_imported(&mut self, block: &BlockId) -> bool;

@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -20,28 +20,28 @@
 
 use crate::{
     block::{Block, UnverifiedHeader},
-    data_io::{AlephData, UnvalidatedAlephProposal},
+    data_io::{SetBFTData, UnvalidatedSetBFTProposal},
     testing::mocks::{TBlock, THeader},
 };
 
 pub fn unvalidated_proposal_from_headers(
     mut headers: Vec<THeader>,
-) -> UnvalidatedAlephProposal<THeader> {
+) -> UnvalidatedSetBFTProposal<THeader> {
     let head = headers.pop().unwrap();
     let tail = headers
         .into_iter()
         .map(|header| header.id().hash())
         .collect();
-    UnvalidatedAlephProposal::new(head, tail)
+    UnvalidatedSetBFTProposal::new(head, tail)
 }
 
-pub fn aleph_data_from_blocks(blocks: Vec<TBlock>) -> AlephData<THeader> {
+pub fn setbft_data_from_blocks(blocks: Vec<TBlock>) -> SetBFTData<THeader> {
     let headers = blocks.into_iter().map(|b| b.header().clone()).collect();
-    aleph_data_from_headers(headers)
+    setbft_data_from_headers(headers)
 }
 
-pub fn aleph_data_from_headers(headers: Vec<THeader>) -> AlephData<THeader> {
-    AlephData {
+pub fn setbft_data_from_headers(headers: Vec<THeader>) -> SetBFTData<THeader> {
+    SetBFTData {
         head_proposal: unvalidated_proposal_from_headers(headers),
     }
 }

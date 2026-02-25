@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -101,7 +101,6 @@ fn unauthorize_all_should_work() {
 	ExtBuilder::default().build().execute_with(|| {
 		System::set_block_number(1);
 		assert_ok!(EcdpModule::authorize(RuntimeOrigin::signed(ALICE), BTC, BOB));
-		assert_ok!(EcdpModule::authorize(RuntimeOrigin::signed(ALICE), EDF, CAROL));
 		assert_eq!(PalletBalances::reserved_balance(ALICE), 200);
 		assert_ok!(EcdpModule::unauthorize_all(RuntimeOrigin::signed(ALICE)));
 		assert_eq!(PalletBalances::reserved_balance(ALICE), 0);
@@ -114,7 +113,6 @@ fn unauthorize_all_should_work() {
 			Error::<Runtime>::NoPermission
 		);
 		assert_noop!(
-			EcdpModule::check_authorization(&ALICE, &BOB, EDF),
 			Error::<Runtime>::NoPermission
 		);
 	});
@@ -261,7 +259,6 @@ fn transfer_debit_works() {
 		));
 		assert_ok!(EcdpUssdEngineModule::set_collateral_params(
 			RuntimeOrigin::signed(ALICE),
-			EDF,
 			Change::NewValue(Some(Rate::saturating_from_rational(1, 100000))),
 			Change::NewValue(Some(Ratio::saturating_from_rational(3, 2))),
 			Change::NewValue(Some(Rate::saturating_from_rational(2, 10))),
@@ -274,45 +271,34 @@ fn transfer_debit_works() {
 		assert_eq!(EcdpLoansModule::positions(BTC, ALICE).collateral, 100);
 		assert_eq!(EcdpLoansModule::positions(BTC, ALICE).debit, 500);
 
-		assert_ok!(EcdpModule::adjust_loan(RuntimeOrigin::signed(ALICE), EDF, 100, 500));
-		assert_eq!(EcdpLoansModule::positions(EDF, ALICE).collateral, 100);
-		assert_eq!(EcdpLoansModule::positions(EDF, ALICE).debit, 500);
 
 // Will not work for account with no open CDP
 		assert_noop!(
-			EcdpModule::transfer_debit(RuntimeOrigin::signed(BOB), BTC, EDF, 1000),
 			ArithmeticError::Underflow
 		);
 // Won't work when transfering more debit than is present
 		assert_noop!(
-			EcdpModule::transfer_debit(RuntimeOrigin::signed(ALICE), BTC, EDF, 10_000),
 			ArithmeticError::Underflow
 		);
 // Below minimum collateral threshold for the BTC CDP
 		assert_noop!(
-			EcdpModule::transfer_debit(RuntimeOrigin::signed(ALICE), BTC, EDF, 500),
 			module_cdp_engine::Error::<Runtime>::BelowRequiredCollateralRatio
 		);
 // Too large of a transfer
 		assert_noop!(
-			EcdpModule::transfer_debit(RuntimeOrigin::signed(ALICE), BTC, EDF, u128::MAX),
 			ArithmeticError::Overflow
 		);
 // Won't work for currency that is not collateral
 		assert_noop!(
-			EcdpModule::transfer_debit(RuntimeOrigin::signed(ALICE), BTC, SEE, 50),
+			EcdpModule::transfer_debit(RuntimeOrigin::signed(ALICE), BTC, SEU, 50),
 			module_cdp_engine::Error::<Runtime>::InvalidCollateralType
 		);
 
-		assert_ok!(EcdpModule::transfer_debit(RuntimeOrigin::signed(ALICE), BTC, EDF, 50));
 		System::assert_last_event(RuntimeEvent::EcdpModule(crate::Event::<Runtime>::TransferDebit {
 			from_currency: BTC,
-			to_currency: EDF,
 			amount: 50,
 		}));
 
-		assert_eq!(EcdpLoansModule::positions(EDF, ALICE).debit, 550);
-		assert_eq!(EcdpLoansModule::positions(EDF, ALICE).collateral, 100);
 
 		assert_eq!(EcdpLoansModule::positions(BTC, ALICE).debit, 450);
 		assert_eq!(EcdpLoansModule::positions(BTC, ALICE).collateral, 100);
@@ -320,7 +306,7 @@ fn transfer_debit_works() {
 }
 
 #[test]
-fn transfer_debit_no_ussd() {
+fn transfer_debit_no_seusd() {
 	ExtBuilder::default().build().execute_with(|| {
 		System::set_block_number(1);
 		assert_ok!(EcdpUssdEngineModule::set_collateral_params(
@@ -334,7 +320,6 @@ fn transfer_debit_no_ussd() {
 		));
 		assert_ok!(EcdpUssdEngineModule::set_collateral_params(
 			RuntimeOrigin::signed(ALICE),
-			EDF,
 			Change::NewValue(Some(Rate::saturating_from_rational(1, 100000))),
 			Change::NewValue(Some(Ratio::saturating_from_rational(3, 2))),
 			Change::NewValue(Some(Rate::saturating_from_rational(2, 10))),
@@ -347,14 +332,10 @@ fn transfer_debit_no_ussd() {
 		assert_eq!(EcdpLoansModule::positions(BTC, ALICE).collateral, 100);
 		assert_eq!(EcdpLoansModule::positions(BTC, ALICE).debit, 500);
 
-		assert_ok!(EcdpModule::adjust_loan(RuntimeOrigin::signed(ALICE), EDF, 100, 500));
-		assert_eq!(EcdpLoansModule::positions(EDF, ALICE).collateral, 100);
-		assert_eq!(EcdpLoansModule::positions(EDF, ALICE).debit, 500);
 
-		assert_eq!(Currencies::free_balance(USSD, &ALICE), 100);
-		assert_ok!(Currencies::transfer(RuntimeOrigin::signed(ALICE), BOB, USSD, 100));
-		assert_eq!(Currencies::free_balance(USSD, &ALICE), 0);
-		assert_ok!(EcdpModule::transfer_debit(RuntimeOrigin::signed(ALICE), BTC, EDF, 5));
-		assert_eq!(Currencies::free_balance(USSD, &ALICE), 0);
+		assert_eq!(Currencies::free_balance(SEUSD, &ALICE), 100);
+		assert_ok!(Currencies::transfer(RuntimeOrigin::signed(ALICE), BOB, SEUSD, 100));
+		assert_eq!(Currencies::free_balance(SEUSD, &ALICE), 0);
+		assert_eq!(Currencies::free_balance(SEUSD, &ALICE), 0);
 	});
 }

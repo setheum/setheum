@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -61,7 +61,7 @@ pub mod module {
 	pub trait Config: frame_system::Config {
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 
-/// Currency type for deposit/withdraw collateral assets to/from USSD Loans module
+/// Currency type for deposit/withdraw collateral assets to/from SEUSD Loans module
 		type Currency: MultiCurrencyExtended<
 			Self::AccountId,
 			CurrencyId = CurrencyId,
@@ -72,7 +72,7 @@ pub mod module {
 /// Risk manager is used to limit the debit size of CDP.
 		type EcdpUssdRiskManager: EcdpUssdRiskManager<Self::AccountId, CurrencyId, Balance, Balance>;
 
-/// CDP treasury for issuing/burning USSD and debit value adjustment.
+/// CDP treasury for issuing/burning SEUSD and debit value adjustment.
 		type EcdpUssdTreasury: EcdpUssdTreasury<Self::AccountId, Balance = Balance, CurrencyId = CurrencyId>;
 
 /// The loan's module id, keep all collaterals of CDPs.
@@ -317,7 +317,6 @@ impl<T: Config> Pallet<T> {
 
 // TODO:[src/lib.rs:0] - Remove this from this module and add it to `EcdpLoans` module.
 // Use the collateral amount (of a position that has fulfilled the `EcdpPositionCloudCreditRequirements` -
-// this is only offered for SETR) as the shares for Cloud Credit.
 //
 // T::OnUpdateLoan::happened(&(who.clone(), currency_id, collateral_adjustment, p.collateral));
 			

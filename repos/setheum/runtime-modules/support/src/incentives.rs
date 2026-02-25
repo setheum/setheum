@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,15 +44,13 @@ use sp_std::prelude::*;
 
 /// PoolId for various rewards pools
 // Pool types:
-// 1. EcdpSetrLiquidityRewards: record the shares and rewards for Setter (SETR)) ECDP users who are staking LP tokens.
-// 2. EcdpUssdLiquidityRewards: record the shares and rewards for Slick USD (USSD) ECDP users who are staking LP tokens.
+// 2. EcdpUssdLiquidityRewards: record the shares and rewards for Setheum USD (SEUSD) ECDP users who are staking LP tokens.
 // 3. EdfisLiquidityRewards: record the shares and rewards for Edfis makers who are staking LP token.
 #[derive(Encode, Decode, Clone, Copy, PartialEq, Eq, RuntimeDebug, TypeInfo)]
 pub enum PoolId {
-/// Rewards and shares pool for Setter (SETR)) ECDP users who are staking LP token(LPCurrencyId)
 	EcdpSetrLiquidityRewards(CurrencyId),
 
-/// Rewards and shares pool for Slick USD (USSD) ECDP users who are staking LP token(LPCurrencyId)
+/// Rewards and shares pool for Setheum USD (SEUSD) ECDP users who are staking LP token(LPCurrencyId)
 	EcdpUssdLiquidityRewards(CurrencyId),
 
 /// Rewards and shares pool for Edfis market makers who stake LP token(LPCurrencyId)

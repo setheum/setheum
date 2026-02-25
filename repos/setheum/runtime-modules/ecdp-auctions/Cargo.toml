@@ -25,7 +25,7 @@ primitives = { workspace = true }
 sp-core = { workspace = true, features = ["std"] }
 pallet-balances = { workspace = true, features = ["std"] }
 module-auction = { workspace = true, features = ["std"] }
-module-ecdp-ussd-treasury = { workspace = true, features = ["std"] }
+module-ecdp-seusd-treasury = { workspace = true, features = ["std"] }
 module-edfis-legacy = { workspace = true, features = ["std"] }
 module-tokens = { workspace = true, features = ["std"] }
 

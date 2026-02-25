@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -124,25 +124,20 @@ impl EnsureOrigin<RuntimeOrigin> for EnsureAliceOrBob {
 	}
 }
 
-pub const SEE: CurrencyId = CurrencyId::Token(TokenSymbol::SEE);
-pub const EDF: CurrencyId = CurrencyId::Token(TokenSymbol::edf);
+pub const SEU: CurrencyId = CurrencyId::Token(TokenSymbol::SEU);
 
 parameter_types! {
-	pub const GetNativeCurrencyId: CurrencyId = SEE;
-	pub const GetDEFCurrencyId: CurrencyId = EDF;
+	pub const GetNativeCurrencyId: CurrencyId = SEU;
 }
 
 impl Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type MultiCurrency = Tokens;
 	type GetNativeCurrencyId = GetNativeCurrencyId;
-	type GetEDFCurrencyId = GetEDFCurrencyId;
 	type MinNativeVestedTransfer = ConstU64<5>;
-	type MinEDFVestedTransfer = ConstU64<5>;
 	type VestedTransferOrigin = EnsureAliceOrBob;
 	type WeightInfo = ();
 	type MaxNativeVestingSchedules = ConstU32<2>;
-	type MaxEDFVestingSchedules = ConstU32<2>;
 }
 
 type Block = frame_system::mocking::MockBlock<Runtime>;
@@ -168,10 +163,8 @@ impl Default for ExtBuilder {
 	fn default() -> Self {
 		Self {
 			balances: vec![
-				(ALICE, SEE, 100),
-				(ALICE, EDF, 100),
-				(CHARLIE, SEE, 50)
-				(CHARLIE, EDF, 50)
+				(ALICE, SEU, 100),
+				(CHARLIE, SEU, 50)
 			],
 		}
 	}
@@ -192,10 +185,8 @@ impl ExtBuilder {
 		vesting::GenesisConfig::<Runtime> {
 			vesting: vec![
 // who, start, period, period_count, per_period
-				(CHARLIE, SEE, 2, 3, 1, 5),
-				(CHARLIE, SEE, 2 + 3, 3, 3, 5),
-				(CHARLIE, EDF, 2, 3, 1, 5),
-				(CHARLIE, EDF, 2 + 3, 3, 3, 5),
+				(CHARLIE, SEU, 2, 3, 1, 5),
+				(CHARLIE, SEU, 2 + 3, 3, 3, 5),
 			],
 		}
 		.assimilate_storage(&mut t)

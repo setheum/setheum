@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,7 +44,6 @@ mod mock;
 mod tests;
 
 mod impls;
-mod traits;
 
 use frame_support::{
     sp_runtime::BoundToRuntimeAppPublic,
@@ -75,7 +74,7 @@ pub mod pallet {
     use sp_std::marker::PhantomData;
 
     use super::*;
-    use crate::traits::NextSessionAuthorityProvider;
+    use module_traits::NextSessionAuthorityProvider;
 
     #[pallet::config]
     pub trait Config: frame_system::Config {
@@ -83,7 +82,7 @@ pub mod pallet {
         type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
         type SessionInfoProvider: SessionInfoProvider<BlockNumberFor<Self>>;
         type SessionManager: SessionManager<<Self as frame_system::Config>::AccountId>;
-        type NextSessionAuthorityProvider: NextSessionAuthorityProvider<Self>;
+        type NextSessionAuthorityProvider: NextSessionAuthorityProvider<Self::AuthorityId>;
     }
 
     #[pallet::event]
