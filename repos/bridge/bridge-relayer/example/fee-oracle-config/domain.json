@@ -1,0 +1,18 @@
+{
+  "domains": [
+    {
+      "id": 1,
+      "name": "ethereum",
+      "baseCurrencyFullName": "ether",
+      "baseCurrencySymbol": "eth",
+      "addressPrefix": "0x"
+    },
+    {
+      "id": 2,
+      "name": "polygon",
+      "baseCurrencyFullName": "matic",
+      "baseCurrencySymbol": "matic",
+      "addressPrefix": "0x"
+    }
+  ]
+}

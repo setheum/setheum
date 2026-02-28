@@ -1,0 +1,192 @@
+warning: profile package spec `flate2` in profile `dev` did not match any packages
+
+help: a package with a similar name exists: `blake2`
+warning: profile package spec `insta` in profile `dev` did not match any packages
+
+help: a package with a similar name exists: `instant`
+warning: profile package spec `librocksdb-sys` in profile `dev` did not match any packages
+warning: profile package spec `libz-sys` in profile `dev` did not match any packages
+
+help: a package with a similar name exists: `dirs-sys`
+warning: profile package spec `similar` in profile `dev` did not match any packages
+
+help: a package with a similar name exists: `simba`
+warning: unused import: `sp_staking::StakingAccount`
+ --> runtime-modules/traits/src/operations.rs:9:5
+  |
+9 | use s...ngAccount;
+  |     ^...^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `module-traits` (lib) generated 1 warning (run `cargo fix --lib -p module-traits` to apply 1 suggestion)
+warning: unused imports: `IdentifyAccount`, `MultiSignature`, and `Verify`
+  --> primitives/src/setbft.rs:35:14
+   |
+35 |     traits::{...ifyAccount, Verify},
+   |              ...^^^^^^^^^^  ^^^^^^
+36 |     ...iSignature, Perquintill,
+   |     ...^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `BlockNumber`
+  --> primitives/src/setbft.rs:41:24
+   |
+41 | ...d, BlockNumber, S...
+   |       ^^^^^^^^^^^
+
+warning: unused imports: `DispatchError` and `DispatchResult`
+  --> primitives/src/edfis_launchpad.rs:25:2
+   |
+25 |     ...patchError, ...atchResult, R...
+   |     ...^^^^^^^^^^  ...^^^^^^^^^^
+
+warning: unused import: `crate`
+  --> primitives/src/currency.rs:22:5
+   |
+22 | use crate::*;
+   |     ^^^^^
+
+warning: `setheum-primitives` (lib) generated 4 warnings (run `cargo fix --lib -p setheum-primitives` to apply 3 suggestions)
+    Checking module-support v0.9.81-dev (/home/balqaasem/setheum/repos/setheum/runtime-modules/support)
+error[E0432]: unresolved import `primitives::evm`
+  --> runtime-modules/support/src/evm.rs:41:2
+   |
+41 |     evm::{CallInfo, EvmAddress},
+   |     ^^^ could not find `evm` in `primitives`
+
+error[E0432]: unresolved import `primitives::evm`
+  --> runtime-modules/support/src/mocks.rs:44:2
+   |
+44 |     evm::{EvmAddress, H160_POSITION_...
+   |     ^^^ could not find `evm` in `primitives`
+
+warning: unused imports: `Fees` and `Nonce`
+  --> runtime-modules/support/src/lib.rs:44:68
+   |
+44 | ...yId, Fees, Multiplier, Nonce, Res...
+   |         ^^^^              ^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `Serialize`
+  --> runtime-modules/support/src/lib.rs:50:26
+   |
+50 | use serde::{Deserialize, Serialize};
+   |                          ^^^^^^^^^
+
+warning: unused imports: `Eq` and `PartialEq`
+  --> runtime-modules/support/src/edfis_launchpad.rs:43:8
+   |
+43 |     cmp::{Eq, PartialEq},
+   |           ^^  ^^^^^^^^^
+
+warning: unused import: `ensure`
+  --> runtime-modules/support/src/edfis_swap.rs:38:21
+   |
+38 | use frame_support::{ensure, traits::...
+   |                     ^^^^^^
+
+warning: unused imports: `Deserialize` and `Serialize`
+  --> runtime-modules/support/src/edfis_swap.rs:42:13
+   |
+42 | use serde::{Deserialize, Serialize};
+   |             ^^^^^^^^^^^  ^^^^^^^^^
+
+warning: unused import: `DispatchResult`
+  --> runtime-modules/support/src/edfis_swap.rs:44:33
+   |
+44 | ...chError, DispatchResult, RuntimeD...
+   |             ^^^^^^^^^^^^^^
+
+warning: unused import: `ensure`
+  --> runtime-modules/support/src/edfis_swap_legacy.rs:38:21
+   |
+38 | use frame_support::{ensure, traits::...
+   |                     ^^^^^^
+
+warning: unused imports: `Deserialize` and `Serialize`
+  --> runtime-modules/support/src/edfis_swap_legacy.rs:42:13
+   |
+42 | use serde::{Deserialize, Serialize};
+   |             ^^^^^^^^^^^  ^^^^^^^^^
+
+warning: unexpected `cfg` condition value: `try-runtime`
+  --> runtime-modules/support/src/migration.rs:50:15
+   |
+50 |         #[cfg(feature = "try-runtime")]
+   |               ^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: expected values for `feature` are: `default`, `serde`, and `std`
+   = help: consider adding `try-runtime` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: `#[warn(unexpected_cfgs)]` on by default
+
+warning: unexpected `cfg` condition value: `try-runtime`
+  --> runtime-modules/support/src/migration.rs:55:15
+   |
+55 |         #[cfg(feature = "try-runtime")]
+   |               ^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: expected values for `feature` are: `default`, `serde`, and `std`
+   = help: consider adding `try-runtime` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unused import: `DispatchResult`
+  --> runtime-modules/support/src/mocks.rs:49:81
+   |
+49 | ...chError, DispatchResult};
+   |             ^^^^^^^^^^^^^^
+
+warning: ambiguous glob re-exports
+  --> runtime-modules/support/src/lib.rs:73:9
+   |
+73 | pub use crate::edfis_swap::*;
+   |         ^^^^^^^^^^^^^^^^^^^^ the name `SwapManager` in the type namespace is first re-exported here
+74 | pub use crate::edfis_swap_legacy::*;
+   |         --------------------------- but the name `SwapManager` in the type namespace is also re-exported here
+   |
+   = note: `#[warn(ambiguous_glob_reexports)]` on by default
+
+warning: ambiguous glob re-exports
+  --> runtime-modules/support/src/lib.rs:73:9
+   |
+73 | pub use crate::edfis_swap::*;
+   |         ^^^^^^^^^^^^^^^^^^^^ the name `Swap` in the type namespace is first re-exported here
+74 | pub use crate::edfis_swap_legacy::*;
+   |         --------------------------- but the name `Swap` in the type namespace is also re-exported here
+
+warning: ambiguous glob re-exports
+  --> runtime-modules/support/src/lib.rs:73:9
+   |
+73 | pub use crate::edfis_swap::*;
+   |         ^^^^^^^^^^^^^^^^^^^^ the name `SpecificJointsSwap` in the type namespace is first re-exported here
+74 | pub use crate::edfis_swap_legacy::*;
+   |         --------------------------- but the name `SpecificJointsSwap` in the type namespace is also re-exported here
+
+warning: ambiguous glob re-exports
+  --> runtime-modules/support/src/lib.rs:73:9
+   |
+73 | pub use crate::edfis_swap::*;
+   |         ^^^^^^^^^^^^^^^^^^^^ the name `SwapLimit` in the type namespace is first re-exported here
+74 | pub use crate::edfis_swap_legacy::*;
+   |         --------------------------- but the name `SwapLimit` in the type namespace is also re-exported here
+
+warning: ambiguous glob re-exports
+  --> runtime-modules/support/src/lib.rs:73:9
+   |
+73 | pub use crate::edfis_swap::*;
+   |         ^^^^^^^^^^^^^^^^^^^^ the name `SwapError` in the type namespace is first re-exported here
+74 | pub use crate::edfis_swap_legacy::*;
+   |         --------------------------- but the name `SwapError` in the type namespace is also re-exported here
+
+warning: unused import: `crate::edfis_swap_legacy::*`
+  --> runtime-modules/support/src/lib.rs:74:9
+   |
+74 | pub use crate::edfis_swap_legacy::*;
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For more information about this error, try `rustc --explain E0432`.
+warning: `module-support` (lib) generated 17 warnings
+error: could not compile `module-support` (lib) due to 2 previous errors; 17 warnings emitted

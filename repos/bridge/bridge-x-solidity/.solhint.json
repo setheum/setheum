@@ -1,0 +1,26 @@
+{
+  "extends": "solhint:default",
+  "rules": {
+    "explicit-types": "error",
+    "no-unused-import": "error",
+    "no-unused-vars": "warn",
+    "payable-fallback": "error",
+    "quotes": "error",
+    "const-name-snakecase": "error",
+    "contract-name-camelcase": "error",
+    "event-name-camelcase": "error",
+    "func-name-mixedcase": "error",
+    "imports-on-top": "error",
+    "visibility-modifier-order": "error",
+    "func-visibility": [
+      "error",
+      {
+        "ignoreConstructors": true
+      }
+    ],
+    "reentrancy": "error",
+    "avoid-sha3": "error",
+    "avoid-throw": "error",
+    "avoid-tx-origin": "error"
+  }
+}
