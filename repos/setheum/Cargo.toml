@@ -15,6 +15,15 @@ members = [
 	"runtime-modules/elections",
 	"runtime-modules/evm",
 	"runtime-modules/evm-bridge",
+	"runtime-modules/bridge",
+	"runtime-modules/bridge-access-segregator",
+	"runtime-modules/bridge-basic-fee-handler",
+	"runtime-modules/bridge-fee-handler-router",
+	"runtime-modules/bridge-forwarder",
+	"runtime-modules/bridge-parachain-info",
+	"runtime-modules/bridge-percentage-fee-handler",
+	"runtime-modules/bridge-traits",
+	"runtime-modules/bridge-xcm",
 	"runtime-modules/evm-manager",
 	"runtime-modules/evm-utility",
 	"runtime-modules/idle-scheduler",
@@ -242,6 +251,15 @@ module-evm-utility = { path = "runtime-modules/evm-utility", default-features = 
 module-evm = { path = "runtime-modules/evm", default-features = false }
 module-currencies = { path = "runtime-modules/currencies", default-features = false }
 module-evm-bridge = { path = "runtime-modules/evm-bridge", default-features = false }
+module-bridge = { path = "runtime-modules/bridge", default-features = false }
+module-bridge-access-segregator = { path = "runtime-modules/bridge-access-segregator", default-features = false }
+module-bridge-basic-fee-handler = { path = "runtime-modules/bridge-basic-fee-handler", default-features = false }
+module-bridge-fee-handler-router = { path = "runtime-modules/bridge-fee-handler-router", default-features = false }
+module-bridge-parachain-info = { path = "runtime-modules/bridge-parachain-info", default-features = false }
+module-bridge-forwarder = { path = "runtime-modules/bridge-forwarder", default-features = false }
+module-bridge-percentage-fee-handler = { path = "runtime-modules/bridge-percentage-fee-handler", default-features = false }
+module-bridge-traits = { path = "runtime-modules/bridge-traits", default-features = false }
+module-bridge-xcm = { path = "runtime-modules/bridge-xcm", default-features = false }
 module-support = { path = "runtime-modules/support", default-features = false }
 module-transaction-payment = { path = "runtime-modules/transaction-payment", default-features = false }
 module-idle-scheduler = { path = "runtime-modules/idle-scheduler", default-features = false }

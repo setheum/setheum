@@ -22,8 +22,8 @@
 
 use std::{hash::Hash as StdHash, marker::PhantomData};
 
-use current_setbft_aggregator::NetworkError as CurrentNetworkError;
-use legacy_setbft_aggregator::NetworkError as LegacyNetworkError;
+use setbft_aggregator::NetworkError as CurrentNetworkError;
+use setbft_aggregator::NetworkError as LegacyNetworkError;
 use parity_scale_codec::{Decode, Encode};
 
 use crate::{
@@ -59,14 +59,14 @@ impl AsRef<[u8]> for SignableTypedHash {
 }
 
 pub type LegacyRmcNetworkData =
-    legacy_setbft_aggregator::RmcNetworkData<Hash, Signature, SignatureSet<Signature>>;
+    setbft_aggregator::RmcNetworkData<Hash, Signature, SignatureSet<Signature>>;
 pub type CurrentRmcNetworkData =
-    current_setbft_aggregator::RmcNetworkData<SignableTypedHash, Signature, SignatureSet<Signature>>;
+    setbft_aggregator::RmcNetworkData<SignableTypedHash, Signature, SignatureSet<Signature>>;
 
 pub type LegacyAggregator<N> =
-    legacy_setbft_aggregator::IO<Hash, NetworkWrapper<LegacyRmcNetworkData, N>, Keychain>;
+    setbft_aggregator::IO<Hash, NetworkWrapper<LegacyRmcNetworkData, N>, Keychain>;
 
-pub type CurrentAggregator<N> = current_setbft_aggregator::IO<
+pub type CurrentAggregator<N> = setbft_aggregator::IO<
     SignableTypedHash,
     NetworkWrapper<CurrentRmcNetworkData, N>,
     Keychain,
@@ -102,7 +102,7 @@ where
         );
         let rmc_handler = legacy_set_bft_rmc::Handler::new(multikeychain.clone());
         let rmc_service = legacy_set_bft_rmc::Service::new(scheduler, rmc_handler);
-        let aggregator = legacy_setbft_aggregator::BlockSignatureAggregator::new();
+        let aggregator = setbft_aggregator::BlockSignatureAggregator::new();
         let aggregator_io =
             LegacyAggregator::<LN>::new(NetworkWrapper::new(rmc_network), rmc_service, aggregator);
 
@@ -117,7 +117,7 @@ where
         );
         let rmc_handler = current_set_bft_rmc::Handler::new(multikeychain.clone());
         let rmc_service = current_set_bft_rmc::Service::new(scheduler, rmc_handler);
-        let aggregator = current_setbft_aggregator::HashSignatureAggregator::new();
+        let aggregator = setbft_aggregator::HashSignatureAggregator::new();
         let aggregator_io =
             CurrentAggregator::<CN>::new(NetworkWrapper::new(rmc_network), rmc_service, aggregator);
 
@@ -166,28 +166,7 @@ impl<D: Data, N: Network<D>> NetworkWrapper<D, N> {
 }
 
 #[async_trait::async_trait]
-impl<T, D> legacy_setbft_aggregator::ProtocolSink<D> for NetworkWrapper<D, T>
-where
-    T: Network<D>,
-    D: Data,
-{
-    async fn next(&mut self) -> Option<D> {
-        self.0.next().await
-    }
-
-    fn send(
-        &self,
-        data: D,
-        recipient: legacy_set_bft::Recipient,
-    ) -> Result<(), LegacyNetworkError> {
-        self.0.send(data, recipient.into()).map_err(|e| match e {
-            SendError::SendFailed => LegacyNetworkError::SendFail,
-        })
-    }
-}
-
-#[async_trait::async_trait]
-impl<T, D> current_setbft_aggregator::ProtocolSink<D> for NetworkWrapper<D, T>
+impl<T, D> setbft_aggregator::ProtocolSink<D> for NetworkWrapper<D, T>
 where
     T: Network<D>,
     D: Data,

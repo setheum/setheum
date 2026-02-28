@@ -18,8 +18,7 @@ legacy-set-bft-rmc = { package = "set-bft-rmc", path = "../../../set-bft/rmc" }
 
 network-clique = { workspace = true }
 primitives = { workspace = true }
-legacy-setbft-aggregator = { package = "aggregator", path = "../aggregator" }
-current-setbft-aggregator = { path = "../aggregator", package = "aggregator" }
+setbft-aggregator = { package = "aggregator", path = "../aggregator" }
 finality-rate-limiter = { package = "finality-rate-limiter", path = "../rate-limiter" }
 fake-runtime-api = { workspace = true, features = ["std"] }
 module-setbft-runtime-api = { workspace = true, features = ["std"] }
