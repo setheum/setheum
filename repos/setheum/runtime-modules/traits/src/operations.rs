@@ -107,7 +107,7 @@ where
     }
 
     fn get_stash(controller: &Self::AccountId) -> Option<Self::AccountId> {
-        pallet_staking::Pallet::<T>::ledger(StakingAccount::Controller(controller.clone()))
+        pallet_staking::Pallet::<T>::ledger(sp_staking::StakingAccount::Controller(controller.clone()))
             .ok()
             .map(|ledger| ledger.stash)
     }

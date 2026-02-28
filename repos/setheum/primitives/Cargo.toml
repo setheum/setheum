@@ -30,9 +30,10 @@ sp-consensus-aura = { workspace = true }
 frame-support = { workspace = true }
 
 module-traits = { workspace = true }
+pallet-session = { workspace = true }
 
-# module-evm-utility = { workspace = true }
-# module-evm-utility-macro = { workspace = true }
+module-evm-utility = { workspace = true }
+module-evm-utility-macro = { workspace = true }
 
 [dev-dependencies]
 serde_json = { workspace = true, features = ["std"] }
@@ -57,8 +58,9 @@ std = [
 	"frame-support/std",
 
 	"module-traits/std",
+	"pallet-session/std",
 
-	# "module-evm-utility/std",
+	"module-evm-utility/std",
 ]
 evm-tests = []
 short_session = []

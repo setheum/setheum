@@ -35,31 +35,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use frame_support::sp_runtime::{RuntimeAppPublic};
-use primitives::AuthorityId;
-use sp_std::prelude::*;
-
-/// Authorities provider, used only as default value in case of missing this information in our pallet. This can
-/// happen for the session after runtime upgraded.
 pub trait NextSessionAuthorityProvider<AuthorityId> {
     fn next_authorities() -> Vec<AuthorityId>;
 }
 
 pub struct SessionNextSessionAuthorityProvider<T>(sp_std::marker::PhantomData<T>);
-
-impl<T> NextSessionAuthorityProvider<T::AuthorityId> for SessionNextSessionAuthorityProvider<T>
-where
-    T: pallet_session::Config,
-{
-    fn next_authorities() -> Vec<T::AuthorityId> {
-        let next: Option<Vec<_>> = pallet_session::Pallet::<T>::queued_keys()
-            .iter()
-            .map(|(_, key)| key.get(AuthorityId::ID))
-            .collect();
-
-        next.unwrap_or_else(|| {
-            log::error!(target: "module_setbft", "Missing next session keys");
-            vec![]
-        })
-    }
-}

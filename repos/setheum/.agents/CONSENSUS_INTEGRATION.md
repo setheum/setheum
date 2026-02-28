@@ -55,6 +55,8 @@ This document outlines the implementation plan and task progress for integrating
 - [x] Analyze Astar Unified Accounts.
 - [x] Analyze Acala EVM Native Tokens.
 - [/] Integrate Frontier EVM (Standardizing on SDK `stable2506`).
+    - [x] Restore `primitives::evm` and its dependencies.
+    - [x] Stabilize `module-support` and resolve build errors
 - [ ] Implement Unified Address Mapping with 18-decimal support.
 - [ ] Implement Native Currency Precompiles for SEU/SEUSD (Hybrid EVM).
 - [x] Update `primitives/src/evm.rs` for new 18-decimal standard.

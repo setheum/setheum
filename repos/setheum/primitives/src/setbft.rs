@@ -29,6 +29,7 @@ pub use sp_runtime::{
     generic,
     traits::ConstU32,
     BoundedVec, ConsensusEngineId, OpaqueExtrinsic as UncheckedExtrinsic, Perbill,
+    traits::OpaqueKeys,
 };
 use sp_runtime::{
     traits::{IdentifyAccount, Verify},
@@ -387,5 +388,22 @@ pub mod staking {
                 }
             )*
         };
+    }
+}
+
+impl<T> module_traits::NextSessionAuthorityProvider<AuthorityId> for module_traits::SessionNextSessionAuthorityProvider<T>
+where
+    T: pallet_session::Config,
+{
+    fn next_authorities() -> Vec<AuthorityId> {
+        let next: Option<Vec<AuthorityId>> = pallet_session::Pallet::<T>::queued_keys()
+            .iter()
+            .map(|(_, key)| key.get(KEY_TYPE))
+            .collect();
+
+        next.unwrap_or_else(|| {
+            log::error!(target: "module_setbft", "Missing next session keys");
+            vec![]
+        })
     }
 }

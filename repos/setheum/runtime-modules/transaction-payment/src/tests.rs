@@ -128,15 +128,15 @@ fn enable_dex_and_tx_fee_pool() {
 		SEU,
 		(init_balance * 100).unique_saturated_into(),
 	));
-		let ed = (<Currencies as MultiCurrency<AccountId>>::minimum_balance(token.clone())).unique_saturated_into();
+	let treasure_balance = Currencies::free_balance(SEU, &treasury_account);
+	if treasure_balance < 100000 {
 		assert_ok!(Currencies::update_balance(
 			RuntimeOrigin::root(),
 			treasury_account.clone(),
-			token.clone(),
-			ed,
+			SEU,
+			100000.unique_saturated_into(),
 		));
-	});
-
+	}
 	let alice_balance = Currencies::free_balance(SEU, &ALICE);
 	if alice_balance < 100000 {
 		assert_ok!(Currencies::update_balance(
@@ -147,7 +147,7 @@ fn enable_dex_and_tx_fee_pool() {
 		));
 	}
 
-// enable dex
+	// enable dex
 	assert_ok!(EdfisSwapLegacyModule::add_liquidity(
 		RuntimeOrigin::signed(ALICE),
 		SEU,
@@ -167,23 +167,23 @@ fn enable_dex_and_tx_fee_pool() {
 	));
 	assert_eq!(EdfisSwapLegacyModule::get_liquidity_pool(SEU, SEUSD), (10000, 1000));
 
+	let tokens = vec![SEUSD];
+	for token in tokens.iter() {
 		assert_ok!(Pallet::<Runtime>::enable_charge_fee_pool(
 			RuntimeOrigin::signed(ALICE),
 			*token,
 			FeePoolSize::get(),
 			crate::mock::LowerSwapThreshold::get()
 		));
-	});
-
-// validate tx fee pool works
+		// validate tx fee pool works
 		let ed = (<Currencies as MultiCurrency<AccountId>>::minimum_balance(token.clone())).unique_saturated_into();
 		let sub_account: AccountId = <Runtime as Config>::PalletId::get().into_sub_account_truncating(token.clone());
 		assert_eq!(Currencies::free_balance(token.clone(), &treasury_account), 0);
 		assert_eq!(Currencies::free_balance(token.clone(), &sub_account), ed);
 		assert_eq!(Currencies::free_balance(SEU, &sub_account), init_balance);
-	});
+	}
 
-// manual set the exchange rate for simplify calculation
+	// manual set the exchange rate for simplify calculation
 	TokenExchangeRate::<Runtime>::insert(SEUSD, Ratio::saturating_from_rational(10, 1));
 	assert_eq!(edf_rate, Ratio::saturating_from_rational(1, 10));
 }

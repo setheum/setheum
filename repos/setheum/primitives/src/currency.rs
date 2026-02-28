@@ -22,7 +22,7 @@
 use crate::*;
 // use bstringify::bstringify;
 use num_enum::{IntoPrimitive, TryFromPrimitive};
-use parity_scale_codec::{Decode, Encode, MaxEncodedLen};
+use parity_scale_codec::{Decode, Encode, MaxEncodedLen, DecodeWithMemTracking};
 use scale_info::TypeInfo;
 use sp_runtime::RuntimeDebug;
 use sp_std::prelude::*;
@@ -164,13 +164,11 @@ create_currency_id! {
 //
 // 0 - 19: Setheum native tokens
 // 20 - 255: Reserved for future usage
-	#[derive(Encode, Decode, Eq, PartialEq, Copy, Clone, RuntimeDebug, PartialOrd, Ord, TypeInfo, MaxEncodedLen, Serialize, Deserialize)]
+	#[derive(Encode, Decode, DecodeWithMemTracking, Eq, PartialEq, Copy, Clone, RuntimeDebug, PartialOrd, Ord, TypeInfo, MaxEncodedLen, Serialize, Deserialize)]
 	#[repr(u8)]
 	pub enum TokenSymbol {
 // 0 - 100: Reserved for Setheum Native Assets
-// Primary Protocol Tokens
 		SEU("Setheum", 18) = 0,
-// Stablecoin Tokens
 		SEUSD("Setheum USD", 18) = 1,
 	}
 }
@@ -197,6 +195,7 @@ pub type Erc20Id = u32;
 	Ord,
 	TypeInfo,
 	MaxEncodedLen,
+	DecodeWithMemTracking,
 	Serialize,
 	Deserialize,
 )]
@@ -219,6 +218,7 @@ pub enum DexShare {
 	Ord,
 	TypeInfo,
 	MaxEncodedLen,
+	DecodeWithMemTracking,
 	Serialize,
 	Deserialize,
 )]
@@ -374,15 +374,3 @@ pub struct AssetMetadata<Balance> {
 	pub minimal_balance: Balance,
 }
 
-impl TryFrom<CurrencyId> for EvmAddress {
-	type Error = ();
-
-	fn try_from(val: CurrencyId) -> Result<Self, Self::Error> {
-		match val {
-			CurrencyId::Erc20(address) => Ok(address),
-			CurrencyId::Token(_) => Err(()),
-			CurrencyId::ForeignAsset(_) => Err(()),
-			CurrencyId::DexShare(..) => Err(()),
-		}
-	}
-}
