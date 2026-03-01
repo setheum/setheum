@@ -1556,7 +1556,7 @@ construct_runtime!(
 		// CommitteeManagement: module_committee_management::{Pallet, Call, Storage, Event<T>} = 57,
 		// Operations: module_operations::{Pallet, Call, Storage, Event<T>} = 58,
 		Auction: module_auction::{Pallet, Call, Storage, Event<T>} = 56,
-//		Move: pallet_move::{Pallet, Call, Storage, Event<T>} = 57,
+		Move: pallet_move::{Pallet, Call, Storage, Event<T>} = 57,
 	}
 );
 

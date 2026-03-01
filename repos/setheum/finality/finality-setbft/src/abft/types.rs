@@ -51,66 +51,22 @@ pub enum Recipient {
     Node(NodeIndex),
 }
 
-impl From<legacy_set_bft::Recipient> for Recipient {
-    fn from(recipient: legacy_set_bft::Recipient) -> Self {
+impl From<set_bft::Recipient> for Recipient {
+    fn from(recipient: set_bft::Recipient) -> Self {
         match recipient {
-            legacy_set_bft::Recipient::Everyone => Recipient::Everyone,
-            legacy_set_bft::Recipient::Node(id) => Recipient::Node(id.into()),
+            set_bft::Recipient::Everyone => Recipient::Everyone,
+            set_bft::Recipient::Node(id) => Recipient::Node(id.into()),
         }
     }
 }
 
-impl From<current_set_bft::Recipient> for Recipient {
-    fn from(recipient: current_set_bft::Recipient) -> Self {
-        match recipient {
-            current_set_bft::Recipient::Everyone => Recipient::Everyone,
-            current_set_bft::Recipient::Node(id) => Recipient::Node(id.into()),
-        }
-    }
-}
-
-// Currently the traits for legacy and current match, so only one implementation needed.
-impl From<NodeCount> for legacy_set_bft::NodeCount {
-    fn from(count: NodeCount) -> Self {
-        legacy_set_bft::NodeCount(count.0)
-    }
-}
-
-// Currently the traits for legacy and current match, so only one implementation needed.
-impl From<legacy_set_bft::NodeCount> for NodeCount {
-    fn from(count: legacy_set_bft::NodeCount) -> Self {
-        Self(count.0)
-    }
-}
-
-// Currently the traits for legacy and current match, so only one implementation needed.
-impl From<NodeIndex> for legacy_set_bft::NodeIndex {
-    fn from(idx: NodeIndex) -> Self {
-        legacy_set_bft::NodeIndex(idx.0)
-    }
-}
-
-// Currently the traits for legacy and current match, so only one implementation needed.
-impl From<legacy_set_bft::NodeIndex> for NodeIndex {
-    fn from(idx: legacy_set_bft::NodeIndex) -> Self {
-        Self(idx.0)
-    }
-}
-
-impl From<Recipient> for current_set_bft::Recipient {
+impl From<Recipient> for set_bft::Recipient {
     fn from(recipient: Recipient) -> Self {
         match recipient {
-            Recipient::Everyone => current_set_bft::Recipient::Everyone,
-            Recipient::Node(idx) => current_set_bft::Recipient::Node(idx.into()),
+            Recipient::Everyone => set_bft::Recipient::Everyone,
+            Recipient::Node(idx) => set_bft::Recipient::Node(idx.into()),
         }
     }
 }
 
-impl From<Recipient> for legacy_set_bft::Recipient {
-    fn from(recipient: Recipient) -> Self {
-        match recipient {
-            Recipient::Everyone => legacy_set_bft::Recipient::Everyone,
-            Recipient::Node(idx) => legacy_set_bft::Recipient::Node(idx.into()),
-        }
-    }
-}
+

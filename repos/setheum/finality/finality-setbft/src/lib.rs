@@ -18,6 +18,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+extern crate set_bft as current_set_bft;
+extern crate set_bft as legacy_set_bft;
+extern crate set_bft_rmc as current_set_bft_rmc;
+extern crate set_bft_rmc as legacy_set_bft_rmc;
+
 use std::{fmt::Debug, hash::Hash, path::PathBuf, sync::Arc};
 
 use derive_more::Display;
@@ -48,12 +53,10 @@ use crate::{
         CurrentNetworkData, Keychain, LegacyNetworkData, NodeCount, NodeIndex, Recipient,
         SignatureSet, SpawnHandle, CURRENT_VERSION, LEGACY_VERSION,
     },
-    aggregation::{CurrentRmcNetworkData, LegacyRmcNetworkData},
+    aggregation::RmcNetworkData,
     block::UnverifiedHeader,
-    compatibility::{Version, Versioned},
     network::data::split::Split,
     session::{SessionBoundaries, SessionBoundaryInfo, SessionId},
-    VersionedTryFromError::{ExpectedNewGotOld, ExpectedOldGotNew},
 };
 
 mod abft;
@@ -105,105 +108,7 @@ pub struct MillisecsPerBlock(pub u64);
 #[derive(Copy, Clone, Debug, Default, Eq, PartialEq, Hash, Ord, PartialOrd, Encode, Decode)]
 pub struct UnitCreationDelay(pub u64);
 
-type LegacySplitData<UH> = Split<LegacyNetworkData<UH>, LegacyRmcNetworkData>;
-type CurrentSplitData<UH> = Split<CurrentNetworkData<UH>, CurrentRmcNetworkData>;
-
-impl<UH: UnverifiedHeader> Versioned for LegacyNetworkData<UH> {
-    const VERSION: Version = Version(LEGACY_VERSION);
-}
-
-impl<UH: UnverifiedHeader> Versioned for CurrentNetworkData<UH> {
-    const VERSION: Version = Version(CURRENT_VERSION);
-}
-
-/// The main purpose of this data type is to enable a seamless transition between protocol versions at the Network level. It
-/// provides a generic implementation of the Decode and Encode traits (LE byte representation) by prepending byte
-/// representations for provided type parameters with their version (they need to implement the `Versioned` trait). If one
-/// provides data types that declares equal versions, the first data type parameter will have priority while decoding. Keep in
-/// mind that in such case, `decode` might fail even if the second data type would be able decode provided byte representation.
-#[derive(Clone)]
-pub enum VersionedEitherMessage<L, R> {
-    Left(L),
-    Right(R),
-}
-
-impl<L: Versioned + Decode, R: Versioned + Decode> Decode for VersionedEitherMessage<L, R> {
-    fn decode<I: parity_scale_codec::Input>(
-        input: &mut I,
-    ) -> Result<Self, parity_scale_codec::Error> {
-        let version = Version::decode(input)?;
-        if version == L::VERSION {
-            return Ok(VersionedEitherMessage::Left(L::decode(input)?));
-        }
-        if version == R::VERSION {
-            return Ok(VersionedEitherMessage::Right(R::decode(input)?));
-        }
-        Err("Invalid version while decoding VersionedEitherMessage".into())
-    }
-}
-
-impl<L: Versioned + Encode, R: Versioned + Encode> Encode for VersionedEitherMessage<L, R> {
-    fn encode_to<T: Output + ?Sized>(&self, dest: &mut T) {
-        match self {
-            VersionedEitherMessage::Left(left) => {
-                L::VERSION.encode_to(dest);
-                left.encode_to(dest);
-            }
-            VersionedEitherMessage::Right(right) => {
-                R::VERSION.encode_to(dest);
-                right.encode_to(dest);
-            }
-        }
-    }
-
-    fn size_hint(&self) -> usize {
-        match self {
-            VersionedEitherMessage::Left(left) => L::VERSION.size_hint() + left.size_hint(),
-            VersionedEitherMessage::Right(right) => R::VERSION.size_hint() + right.size_hint(),
-        }
-    }
-}
-
-type VersionedNetworkData<UH> = VersionedEitherMessage<LegacySplitData<UH>, CurrentSplitData<UH>>;
-
-#[derive(Debug, Display, Clone)]
-pub enum VersionedTryFromError {
-    ExpectedNewGotOld,
-    ExpectedOldGotNew,
-}
-
-impl<UH: UnverifiedHeader> TryFrom<VersionedNetworkData<UH>> for LegacySplitData<UH> {
-    type Error = VersionedTryFromError;
-
-    fn try_from(value: VersionedNetworkData<UH>) -> Result<Self, Self::Error> {
-        Ok(match value {
-            VersionedEitherMessage::Left(data) => data,
-            VersionedEitherMessage::Right(_) => return Err(ExpectedOldGotNew),
-        })
-    }
-}
-impl<UH: UnverifiedHeader> TryFrom<VersionedNetworkData<UH>> for CurrentSplitData<UH> {
-    type Error = VersionedTryFromError;
-
-    fn try_from(value: VersionedNetworkData<UH>) -> Result<Self, Self::Error> {
-        Ok(match value {
-            VersionedEitherMessage::Left(_) => return Err(ExpectedNewGotOld),
-            VersionedEitherMessage::Right(data) => data,
-        })
-    }
-}
-
-impl<UH: UnverifiedHeader> From<LegacySplitData<UH>> for VersionedNetworkData<UH> {
-    fn from(data: LegacySplitData<UH>) -> Self {
-        VersionedEitherMessage::Left(data)
-    }
-}
-
-impl<UH: UnverifiedHeader> From<CurrentSplitData<UH>> for VersionedNetworkData<UH> {
-    fn from(data: CurrentSplitData<UH>) -> Self {
-        VersionedEitherMessage::Right(data)
-    }
-}
+pub type SplitData<UH> = Split<NetworkData<UH>, RmcNetworkData>;
 
 pub trait ClientForSetBFT<B, BE>:
     LockImportRun<B, BE>

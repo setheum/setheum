@@ -6875,6 +6875,7 @@ dependencies = [
  "sp-io 41.0.1",
  "sp-runtime 42.0.0",
  "sp-std 14.0.0",
+ "sp-storage 22.0.0",
 ]
 
 [[package]]
@@ -7488,6 +7489,7 @@ dependencies = [
  "frame-support",
  "frame-system",
  "module-traits",
+ "module-utilities",
  "parity-scale-codec 3.7.5",
  "scale-info",
  "serde",

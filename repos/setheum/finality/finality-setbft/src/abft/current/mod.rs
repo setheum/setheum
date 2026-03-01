@@ -20,7 +20,7 @@
 
 use std::time::Duration;
 
-use current_set_bft::{create_config, default_delay_config, Config, LocalIO, Terminator};
+use set_bft::{create_config, default_delay_config, Config, LocalIO, Terminator};
 use log::debug;
 use network_clique::SpawnHandleExt;
 
@@ -59,9 +59,18 @@ pub fn run_member<UH, ADN>(
     multikeychain: Keychain,
     config: Config,
     network: WrappedNetwork<UH, ADN>,
-    data_provider: impl current_set_bft::DataProvider<Output = SetBFTData<UH>> + 'static,
-    ordered_data_interpreter: impl current_set_bft::UnitFinalizationHandler<
-        Data = SetBFTData<UH>,
+pub fn run_session<UH: UnverifiedHeader>(
+    config: Config,
+    local_io: LocalIO<
+        SetBFTData<UH>,
+        Hasher,
+        DataProvider<UH>,
+        impl set_bft::DataProvider<Output = SetBFTData<UH>> + 'static,
+        impl set_bft::UnitFinalizationHandler<
+            Data = SetBFTData<UH>,
+            Hasher = Hasher,
+        >,
+    >,
         Hasher = Hasher,
     >,
     backup: ABFTBackup,
@@ -87,7 +96,7 @@ where
         let spawn_handle = spawn_handle.clone();
         async move {
             debug!(target: "setbft-party", "Running the member task for {:?}", session_id);
-            current_set_bft::run_session(
+            set_bft::run_session(
                 config,
                 local_io,
                 network,

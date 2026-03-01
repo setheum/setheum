@@ -58,8 +58,8 @@ impl<D: Data, DN: Network<D>> NetworkWrapper<D, DN> {
 }
 
 #[async_trait::async_trait]
-impl<D: Data, DN: Network<D> + 'static> current_set_bft::Network<D> for NetworkWrapper<D, DN> {
-    fn send(&self, data: D, recipient: current_set_bft::Recipient) {
+impl<D: Data, DN: Network<D> + 'static> set_bft::Network<D> for NetworkWrapper<D, DN> {
+    fn send(&self, data: D, recipient: set_bft::Recipient) {
         NetworkWrapper::send(self, data, recipient)
     }
 
@@ -68,13 +68,4 @@ impl<D: Data, DN: Network<D> + 'static> current_set_bft::Network<D> for NetworkW
     }
 }
 
-#[async_trait::async_trait]
-impl<D: Data, DN: Network<D>> legacy_set_bft::Network<D> for NetworkWrapper<D, DN> {
-    fn send(&self, data: D, recipient: legacy_set_bft::Recipient) {
-        NetworkWrapper::send(self, data, recipient)
-    }
 
-    async fn next_event(&mut self) -> Option<D> {
-        NetworkWrapper::next_event(self).await
-    }
-}

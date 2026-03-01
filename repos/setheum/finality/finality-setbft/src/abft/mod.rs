@@ -29,7 +29,6 @@
 mod common;
 mod crypto;
 mod current;
-mod legacy;
 mod network;
 mod traits;
 mod types;
@@ -39,13 +38,9 @@ use std::fmt::Debug;
 use set_bft_crypto::{PartialMultisignature, Signature as AbftSignature};
 pub use crypto::Keychain;
 pub use current::{
-    create_setbft_config as current_create_setbft_config, run_member as run_current_member,
-    NetworkData as CurrentNetworkData, PerformanceService as CurrentPerformanceService,
-    PerformanceServiceIO as CurrentPerformanceServiceIO, VERSION as CURRENT_VERSION,
-};
-pub use legacy::{
-    create_setbft_config as legacy_create_setbft_config, run_member as run_legacy_member,
-    NetworkData as LegacyNetworkData, VERSION as LEGACY_VERSION,
+    create_setbft_config, run_member,
+    NetworkData, PerformanceService,
+    PerformanceServiceIO, VERSION,
 };
 pub use network::NetworkWrapper;
 use parity_scale_codec::{Decode, Encode};
@@ -115,14 +110,13 @@ impl From<SignatureSet<Signature>> for PrimitivesSignatureSet<AuthoritySignature
     }
 }
 
-// Currently the traits for legacy and current match, so only one implementation needed.
-impl<S: AbftSignature> legacy_set_bft::PartialMultisignature for SignatureSet<S> {
+impl<S: AbftSignature> set_bft::PartialMultisignature for SignatureSet<S> {
     type Signature = S;
 
     fn add_signature(
         self,
         signature: &Self::Signature,
-        index: legacy_set_bft::NodeIndex,
+        index: set_bft::NodeIndex,
     ) -> Self {
         SignatureSet::add_signature(self, signature, index.into())
     }
