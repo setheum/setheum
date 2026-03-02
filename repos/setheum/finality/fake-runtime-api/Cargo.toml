@@ -27,13 +27,28 @@ sp-transaction-pool = { workspace = true }
 sp-session = { workspace = true }
 sp-inherents = { workspace = true }
 
-primitives = { workspace = true }
-module-setbft-runtime-api = { workspace = true }
+primitives = { workspace = true , default-features = false }
+module-setbft-runtime-api = { workspace = true , default-features = false }
 
 [features]
 default = ["std"]
 std = [
     "primitives/std",
     "module-setbft-runtime-api/std",
+    "sp-api/std",
+    "sp-core/std",
+    "sp-std/std",
+    "sp-runtime/std",
+    "sp-consensus-aura/std",
+    "frame-support/std",
+    "frame-system-rpc-runtime-api/std",
+    "pallet-transaction-payment/std",
+    "pallet-transaction-payment-rpc-runtime-api/std",
+    "sp-version/std",
+    "sp-block-builder/std",
+    "sp-offchain/std",
+    "sp-transaction-pool/std",
+    "sp-session/std",
+    "sp-inherents/std",
 ]
 short_session = []

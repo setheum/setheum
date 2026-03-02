@@ -25,7 +25,7 @@ use crate::{
 };
 
 #[async_trait::async_trait]
-impl<UH: UnverifiedHeader> current_set_bft::DataProvider for DataProvider<UH> {
+impl<UH: UnverifiedHeader> set_bft::DataProvider for DataProvider<UH> {
     type Output = SetBFTData<UH>;
 
     async fn get_data(&mut self) -> Option<SetBFTData<UH>> {
@@ -33,7 +33,7 @@ impl<UH: UnverifiedHeader> current_set_bft::DataProvider for DataProvider<UH> {
     }
 }
 
-impl<CIP, H, V> current_set_bft::FinalizationHandler<SetBFTData<H::Unverified>>
+impl<CIP, H, V> set_bft::FinalizationHandler<SetBFTData<H::Unverified>>
     for OrderedDataInterpreter<CIP, H, V>
 where
     CIP: ChainInfoProvider,

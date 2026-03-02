@@ -18,10 +18,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-extern crate set_bft as current_set_bft;
-extern crate set_bft as legacy_set_bft;
-extern crate set_bft_rmc as current_set_bft_rmc;
-extern crate set_bft_rmc as legacy_set_bft_rmc;
+extern crate set_bft;
+extern crate set_bft_rmc;
 
 use std::{fmt::Debug, hash::Hash, path::PathBuf, sync::Arc};
 

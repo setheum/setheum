@@ -27,7 +27,7 @@ use crate::{
 };
 
 pub type NetworkData<UH> =
-    current_set_bft::NetworkData<Hasher, SetBFTData<UH>, Signature, SignatureSet<Signature>>;
+    set_bft::NetworkData<Hasher, SetBFTData<UH>, Signature, SignatureSet<Signature>>;
 
 impl<UH: UnverifiedHeader> SetBFTNetworkMessage<UH> for NetworkData<UH> {
     fn included_data(&self) -> Vec<SetBFTData<UH>> {
