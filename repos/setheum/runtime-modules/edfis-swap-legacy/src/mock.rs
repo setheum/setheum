@@ -125,7 +125,6 @@ pub struct MockOnLiquidityPoolUpdated;
 impl Happened<(TradingPair, Balance, Balance)> for MockOnLiquidityPoolUpdated {
 	fn happened(info: &(TradingPair, Balance, Balance)) {
 		let (trading_pair, new_pool_0, new_pool_1) = info;
-		}
 	}
 }
 

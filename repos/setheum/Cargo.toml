@@ -1,4 +1,3 @@
-cargo-features = ["resolver"]
 
 [workspace]
 members = [
@@ -169,7 +168,7 @@ futures-timer = { version = "3.0" }
 hash-db = { version = "0.16", default-features = false }
 hex = { version = "0.4", default-features = false }
 hex-literal = { version = "0.4.1" }
-impl-trait-for-tuples = { version = "0.2.2" }
+impl-trait-for-tuples = { version = "0.2.3" }
 ink = { version = "5.0.0-rc" }
 ip_network = { version = "0.4" }
 jsonrpc-core = { version = "15.1.0" }

@@ -26,7 +26,7 @@ pub mod setbft;
 pub mod bonding;
 pub mod currency;
 pub mod edfis_launchpad;
-// pub mod evm;
+pub mod evm;
 pub mod nft;
 pub mod signature;
 pub mod task;
@@ -47,7 +47,7 @@ use sp_runtime::{
 use sp_std::prelude::*;
 
 pub use currency::{CurrencyId, DexShare, TokenSymbol};
-// pub use evm::{convert_decimals_from_evm, convert_decimals_to_evm};
+pub use evm::{convert_decimals_from_evm, convert_decimals_to_evm};
 
 #[cfg(test)]
 mod tests;
@@ -220,5 +220,6 @@ pub enum ReserveIdentifier {
 
 /// Convert any type that implements Into<U256> into byte representation ([u8, 32])
 pub fn to_bytes<T: Into<U256>>(value: T) -> [u8; 32] {
-	Into::<[u8; 32]>::into(value.into())
+	let value: U256 = value.into();
+	value.to_big_endian()
 }

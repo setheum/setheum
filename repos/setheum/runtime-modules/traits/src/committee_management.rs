@@ -5,6 +5,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 use frame_support::pallet_prelude::Get;
+use frame_support::traits::RewardsReporter;
 use sp_staking::{EraIndex, SessionIndex};
 use sp_std::vec::Vec;
 

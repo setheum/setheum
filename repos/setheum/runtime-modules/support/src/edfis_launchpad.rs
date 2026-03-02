@@ -35,12 +35,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use codec::{Decode, Encode};
+use primitives::{Balance, CurrencyId, edfis_launchpad::CampaignInfo};
 use sp_runtime::{
 	DispatchError, DispatchResult,
 };
 use sp_std::{
 	cmp::{Eq, PartialEq},
+	prelude::*,
 };
 
 /// Abstraction over th Launchpad Proposal system.

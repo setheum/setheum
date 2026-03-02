@@ -237,7 +237,9 @@ pub fn decode_gas_price(gas_price: u64, gas_limit: u64, tx_fee_per_gas: u128) ->
 			.checked_mul(gas_limit)?
 			.checked_mul(tip_number)?
 			.checked_div(10)? // percentage
-			.checked_div(1)? // SEU decimal is 18, ETH decimal is 18\n			.into();\n	}
+			.checked_div(1)? // SEU decimal is 18, ETH decimal is 18
+			.into();
+	}
 
 // valid_until max is u32::MAX.
 	let valid_until: u32 = Into::<u128>::into(actual_gas_price)

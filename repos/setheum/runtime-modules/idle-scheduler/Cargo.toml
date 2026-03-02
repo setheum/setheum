@@ -8,7 +8,7 @@ edition = "2018"
 [dependencies]
 serde = { workspace = true, optional = true }
 scale-info = { workspace = true, features = ["derive"] }
-codec = { package = "parity-scale-codec", version = "2.2.0", default-features = false }
+codec = { package = "parity-scale-codec", version = "3.6.5", default-features = false }
 sp-runtime = { workspace = true }
 sp-std = { workspace = true }
 frame-support = { workspace = true }

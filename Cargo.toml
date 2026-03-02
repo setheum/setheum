@@ -3,6 +3,5 @@ members = [
     "repos/setheum",
     "repos/sheyth",
     "repos/set-bft",
-    "repos/cargo-sheyth",
 ]
 resolver = "2"
