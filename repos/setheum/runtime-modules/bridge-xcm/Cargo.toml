@@ -63,8 +63,8 @@ cumulus-pallet-xcm = { git = "https://github.com/paritytech/polkadot-sdk.git", b
 cumulus-primitives-utility = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
 
 # Local
-module-bridge-traits = { path = "../bridge-traits" }
-module-bridge-parachain-info = { path = "../bridge-parachain-info" }
+module-bridge-traits = { path = "../bridge-traits" , default-features = false }
+module-bridge-parachain-info = { path = "../bridge-parachain-info" , default-features = false }
 
 env_logger = "0.10.2"
 

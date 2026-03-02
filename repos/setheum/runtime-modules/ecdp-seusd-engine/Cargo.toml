@@ -8,33 +8,33 @@ homepage.workspace = true
 repository.workspace = true
 
 [dependencies]
-log = { workspace = true }
-rand_chacha = { workspace = true }
+log = { workspace = true , default-features = false }
+rand_chacha = { workspace = true , default-features = false }
 parity-scale-codec = { workspace = true }
 scale-info = { workspace = true }
 frame-support = { workspace = true }
 frame-system = { workspace = true }
 sp-application-crypto = { workspace = true }
-module-traits = { workspace = true }
-module-utilities = { workspace = true }
+module-traits = { workspace = true , default-features = false }
+module-utilities = { workspace = true , default-features = false }
 sp-io = { workspace = true }
 sp-runtime = { workspace = true }
 sp-std = { workspace = true }
-module-support = { workspace = true }
-module-ecdp-loans = { workspace = true }
-primitives = { workspace = true }
+module-support = { workspace = true , default-features = false }
+module-ecdp-loans = { workspace = true , default-features = false }
+primitives = { workspace = true , default-features = false }
 
 [dev-dependencies]
 sp-core = { workspace = true, features = ["std"] }
 pallet-balances = { workspace = true, features = ["std"] }
 pallet-timestamp = { workspace = true, features = ["std"] }
-module-currencies = { workspace = true, features = ["std"] }
-module-edfis_swap_legacy = { workspace = true, features = ["std"] }
-module-ecdp-seusd-treasury = { workspace = true, features = ["std"] }
-module-evm-accounts = { workspace = true, features = ["std"] }
-module-tokens = { workspace = true, features = ["std"] }
-module-evm = { workspace = true, features = ["std"] }
-module-evm-bridge = { workspace = true, features = ["std"] }
+module-currencies = { workspace = true, features = ["std"] , default-features = false }
+module-edfis_swap_legacy = { workspace = true, features = ["std"] , default-features = false }
+module-ecdp-seusd-treasury = { workspace = true, features = ["std"] , default-features = false }
+module-evm-accounts = { workspace = true, features = ["std"] , default-features = false }
+module-tokens = { workspace = true, features = ["std"] , default-features = false }
+module-evm = { workspace = true, features = ["std"] , default-features = false }
+module-evm-bridge = { workspace = true, features = ["std"] , default-features = false }
 
 [features]
 default = ["std"]

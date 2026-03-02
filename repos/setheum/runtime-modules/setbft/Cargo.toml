@@ -10,7 +10,7 @@ repository.workspace = true
 [dependencies]
 parity-scale-codec = { workspace = true }
 scale-info = { workspace = true }
-log = { workspace = true }
+log = { workspace = true , default-features = false }
 
 frame-support = { workspace = true }
 frame-system = { workspace = true }
@@ -18,7 +18,7 @@ pallet-session = { workspace = true }
 sp-std = { workspace = true }
 sp-runtime = { workspace = true }
 
-primitives = { workspace = true }
+primitives = { workspace = true , default-features = false }
 
 [dev-dependencies]
 pallet-balances = { workspace = true }

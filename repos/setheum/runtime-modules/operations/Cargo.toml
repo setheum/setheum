@@ -10,7 +10,7 @@ repository.workspace = true
 [dependencies]
 parity-scale-codec = { workspace = true, features = ["derive"] }
 scale-info = { workspace = true, features = ["derive"] }
-log = { workspace = true }
+log = { workspace = true , default-features = false }
 
 frame-support = { workspace = true }
 frame-system = { workspace = true }

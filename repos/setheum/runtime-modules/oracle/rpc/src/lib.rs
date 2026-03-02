@@ -43,7 +43,7 @@ use sp_blockchain::HeaderBackend;
 use sp_runtime::{generic::BlockId, traits::Block as BlockT};
 pub use module_oracle_runtime_api::OracleApi as OracleRuntimeApi;
 
-#[rpc]
+#[rpc(server)]
 pub trait OracleApi<BlockHash, DataProviderId, CurrencyId, TimeStampedPrice> {
 	#[rpc(name = "oracle_getValue")]
 	fn get_value(

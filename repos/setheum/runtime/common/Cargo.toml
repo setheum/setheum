@@ -7,29 +7,29 @@ edition = "2021"
 
 [dependencies]
 static_assertions = "1.1.0"
-num_enum = { workspace = true }
-serde = { workspace = true, optional = true }
+num_enum = { workspace = true , default-features = false }
+serde = { workspace = true, optional = true , default-features = false }
 codec = { package = "parity-scale-codec", version = "2.0.0", default-features = false }
-ethabi = { workspace = true }
+ethabi = { workspace = true , default-features = false }
 sp-std = { workspace = true }
 sp-core = { workspace = true }
 sp-runtime = { workspace = true }
 frame-support = { workspace = true }
 frame-system = { workspace = true }
 pallet-scheduler = { workspace = true }
-log = { workspace = true }
+log = { workspace = true , default-features = false }
 pallet-collective = { workspace = true }
 pallet-membership = { workspace = true }
 
-module-oracle = { workspace = true }
-module-traits = { workspace = true }
+module-oracle = { workspace = true , default-features = false }
+module-traits = { workspace = true , default-features = false }
 
-module-evm = { workspace = true }
+module-evm = { workspace = true , default-features = false }
 
-module-support = { workspace = true }
-module-transaction-payment = { workspace = true }
-primitives = { workspace = true }
-primitives-proc-macro = { path = "../../primitives/proc-macro" }
+module-support = { workspace = true , default-features = false }
+module-transaction-payment = { workspace = true , default-features = false }
+primitives = { workspace = true , default-features = false }
+primitives-proc-macro = { path = "../../primitives/proc-macro" , default-features = false }
 
 [dev-dependencies]
 serde_json = "1.0.41"
@@ -40,16 +40,16 @@ pallet-balances = { workspace = true }
 pallet-proxy = { workspace = true }
 pallet-utility = { workspace = true }
 
-module-tokens = { workspace = true }
-# module-nft = { path = "../../runtime-modules/module-nft" }
+module-tokens = { workspace = true , default-features = false }
+# module-nft = { path = "../../runtime-modules/module-nft" , default-features = false }
 
-module-currencies = { workspace = true }
-module-evm-bridge = { workspace = true }
-module-evm-manager = { workspace = true }
-module-nft = { path = "../../runtime-modules/nft" }
-# module-dex = { path = "../../runtime-modules/defi/setswap/dex" }
-module-prices = { path = "../../runtime-modules/prices" }
-module-transaction-payment = { workspace = true }
+module-currencies = { workspace = true , default-features = false }
+module-evm-bridge = { workspace = true , default-features = false }
+module-evm-manager = { workspace = true , default-features = false }
+module-nft = { path = "../../runtime-modules/nft", default-features = false }
+# module-dex = { path = "../../runtime-modules/defi/setswap/dex" , default-features = false }
+module-prices = { path = "../../runtime-modules/prices", default-features = false }
+module-transaction-payment = { workspace = true , default-features = false }
 
 [features]
 default = ["std"]

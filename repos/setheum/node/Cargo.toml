@@ -31,12 +31,12 @@ frame-benchmarking-cli = { workspace = true, optional = true }
 pallet-transaction-payment-rpc = { workspace = true }
 sc-chain-spec = { workspace = true }
 sc-basic-authorship = { workspace = true }
-sc-cli = { workspace = true, optional = true, features = ['wasmtime'] }
+sc-cli = { workspace = true, optional = true }
 sc-client-api = { workspace = true }
-sc-executor = { workspace = true, features = ['wasmtime'] }
+sc-executor = { workspace = true }
 sc-rpc = { workspace = true }
 sc-rpc-api = { workspace = true }
-sc-service = { workspace = true, optional = true, features = ['wasmtime'] }
+sc-service = { workspace = true, optional = true }
 sc-transaction-pool = { workspace = true }
 sc-transaction-pool-api = { workspace = true }
 sc-telemetry = { workspace = true }
@@ -54,9 +54,9 @@ substrate-frame-rpc-system = { workspace = true }
 sc-keystore = { workspace = true }
 sp-keystore = { workspace = true }
 
-sp-finality-grandpa = { workspace = true }
-sc-finality-grandpa = { workspace = true }
-sc-finality-grandpa-rpc = { workspace = true }
+sp-consensus-grandpa = { workspace = true }
+sc-consensus-grandpa = { workspace = true }
+sc-consensus-grandpa-rpc = { workspace = true }
 
 sp-consensus = { workspace = true }
 sp-consensus-babe = { workspace = true }
@@ -67,7 +67,7 @@ sc-consensus-manual-seal = { workspace = true }
 sc-consensus-epochs = { workspace = true }
 sc-consensus-slots = { workspace = true }
 
-node-runtime = { git = "https:/github.com/paritytech/substrate", branch = "polkadot-v0.9.10" }
+
 
 module-oracle-rpc = { path = "../runtime-modules/oracle/rpc" }
 
@@ -82,8 +82,7 @@ setheum-primitives = { path = "../primitives" }
 setheum-runtime = { workspace = true }
 
 [features]
-default = [ "wasmtime", "cli" ]
-wasmtime = [ "sc-cli/wasmtime" ]
+default = [ "cli" ]
 cli = [
 	"sp-core",
 	"sc-cli",
@@ -91,8 +90,7 @@ cli = [
 	"frame-benchmarking-cli",
 ]
 runtime-benchmarks = [
-	'setheum-runtime/runtime-benchmarks',
-	'node-runtime/runtime-benchmarks'
+	'setheum-runtime/runtime-benchmarks'
 ]
 with-ethereum-compatibility = [
 	"setheum-runtime/with-ethereum-compatibility"

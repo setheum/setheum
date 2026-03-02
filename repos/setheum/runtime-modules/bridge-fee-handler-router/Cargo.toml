@@ -33,9 +33,9 @@ frame-system = { git = "https://github.com/paritytech/polkadot-sdk.git", branch 
 pallet-balances = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
 pallet-assets = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
 
-module-bridge-access-segregator = { path = "../bridge-access-segregator" }
-module-bridge-basic-fee-handler = { path = "../bridge-basic-fee-handler" }
-module-bridge-traits = { path = "../bridge-traits" }
+module-bridge-access-segregator = { path = "../bridge-access-segregator" , default-features = false }
+module-bridge-basic-fee-handler = { path = "../bridge-basic-fee-handler" , default-features = false }
+module-bridge-traits = { path = "../bridge-traits" , default-features = false }
 
 [features]
 default = ["std"]

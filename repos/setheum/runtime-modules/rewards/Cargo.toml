@@ -10,7 +10,7 @@ repository.workspace = true
 [dependencies]
 parity-scale-codec = { workspace = true }
 scale-info = { workspace = true }
-serde = { workspace = true, optional = true }
+serde = { workspace = true, optional = true , default-features = false }
 
 frame-benchmarking = { workspace = true, optional = true }
 frame-support = { workspace = true }

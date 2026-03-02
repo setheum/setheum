@@ -16,14 +16,14 @@ sp-std = { workspace = true }
 frame-support = { workspace = true }
 frame-system = { workspace = true }
 
-primitives = { workspace = true }
+primitives = { workspace = true , default-features = false }
 support = { package = "module-support", path = "../support", default-features = false }
-module-traits = { workspace = true }
+module-traits = { workspace = true , default-features = false }
 
 [dev-dependencies]
 sp-core = { workspace = true, features = ["std"] }
 pallet-balances = { workspace = true }
-module-tokens = { workspace = true }
+module-tokens = { workspace = true , default-features = false }
 
 [features]
 default = ["std"]

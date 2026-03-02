@@ -9,9 +9,9 @@ repository.workspace = true
 
 [dependencies]
 parity-scale-codec = { workspace = true, features = ["max-encoded-len"] }
-log = { workspace = true }
+log = { workspace = true , default-features = false }
 scale-info = { workspace = true }
-serde = { workspace = true, optional = true }
+serde = { workspace = true, optional = true , default-features = false }
 
 frame-benchmarking = { workspace = true, optional = true }
 frame-support = { workspace = true }
@@ -20,11 +20,11 @@ sp-arithmetic = { workspace = true }
 sp-runtime = { workspace = true }
 sp-std = { workspace = true }
 
-module-traits = { workspace = true }
+module-traits = { workspace = true , default-features = false }
 
 [dev-dependencies]
 pallet-elections-phragmen = { workspace = true, features = ["std"] }
-pallet-treasury = { workspace = true, features = ["std"] }
+pallet-treasury = { workspace = true, default-features = false }
 sp-core = { workspace = true, features = ["std"] }
 sp-io = { workspace = true, features = ["std"] }
 sp-staking = { workspace = true, features = ["std"] }
