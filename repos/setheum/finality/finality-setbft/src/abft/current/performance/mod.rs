@@ -25,4 +25,4 @@ mod service;
 
 pub use service::{Service, ServiceIO};
 
-type Batch<UH> = Vec<current_set_bft::OrderedUnit<SetBFTData<UH>, Hasher>>;
+type Batch<UH> = Vec<set_bft::OrderedUnit<SetBFTData<UH>, Hasher>>;

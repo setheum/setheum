@@ -79,7 +79,7 @@ impl<H: SpHash> Wrapper<H> {
     }
 }
 
-impl<H: SpHash> current_set_bft::Hasher for Wrapper<H> {
+impl<H: SpHash> set_bft::Hasher for Wrapper<H> {
     type Hash = OrdForHash<H::Output>;
 
     fn hash(s: &[u8]) -> Self::Hash {
@@ -87,13 +87,7 @@ impl<H: SpHash> current_set_bft::Hasher for Wrapper<H> {
     }
 }
 
-impl<H: SpHash> legacy_set_bft::Hasher for Wrapper<H> {
-    type Hash = OrdForHash<H::Output>;
 
-    fn hash(s: &[u8]) -> Self::Hash {
-        Wrapper::<H>::hash(s)
-    }
-}
 
 /// A wrapper for spawning tasks in a way compatible with SetBFT.
 #[derive(Clone)]
@@ -135,7 +129,7 @@ impl SpawnHandleT for SpawnHandle {
     }
 }
 
-impl current_set_bft::SpawnHandle for SpawnHandle {
+impl set_bft::SpawnHandle for SpawnHandle {
     fn spawn(&self, name: &'static str, task: impl Future<Output = ()> + Send + 'static) {
         SpawnHandleT::spawn(self, name, task)
     }
@@ -144,21 +138,9 @@ impl current_set_bft::SpawnHandle for SpawnHandle {
         &self,
         name: &'static str,
         task: impl Future<Output = ()> + Send + 'static,
-    ) -> current_set_bft::TaskHandle {
+    ) -> set_bft::TaskHandle {
         SpawnHandleExt::spawn_essential(self, name, task)
     }
 }
 
-impl legacy_set_bft::SpawnHandle for SpawnHandle {
-    fn spawn(&self, name: &'static str, task: impl Future<Output = ()> + Send + 'static) {
-        SpawnHandleT::spawn(self, name, task)
-    }
 
-    fn spawn_essential(
-        &self,
-        name: &'static str,
-        task: impl Future<Output = ()> + Send + 'static,
-    ) -> legacy_set_bft::TaskHandle {
-        SpawnHandleExt::spawn_essential(self, name, task)
-    }
-}

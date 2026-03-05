@@ -1,0 +1,116 @@
+{
+  "relayer": {
+    "mpcConfig": {
+      "port": "9000",
+      "keysharePath": "/cfg/keyshares/0.keyshare",
+      "frostKeysharePath": "/cfg/keyshares/0-frost.keyshare",
+      "key": "CAASpwkwggSjAgEAAoIBAQDVGgUufcOR+u/KjuifMbWbEy4F18250ua3/+PO2eSn/mNRhPp2KCWZJcbVvcvfmsrUG9rJC9DMeUZqttTGSF4/ZaNzzvW0b3Ij2NsI9F+R9HKfsbak8NT8z4nLlWF6V2JuZAD8papG+S60k97278kTPIDZZ+S1ZzH/ViFG/5eu26bNylU27AjL4tTRivXSW6hqlem/RnuPdHNtHqBmw2pAAsV/CZJjmibsk6wQJAMH5/o453rW5v2Ntc0rkGH0leszk9DUJoALr/623MP4re4ZsNPIoZE+ieU4sbM0d8vkbxs4BRcnAa075X8dX8KTl88MiA+AxW9nkW+X2Sn0XI1/AgMBAAECggEBAMNghduoJoRSo0L9Xz2FX9F79jgZMV7rg+iyzXQ6xa9YRkrZNqDaEg6lWfVhe+fYjZmGqEKneJnfnrX8Rnw8oVxSnVdyKkdx3h4LllZRZsX0bpsHXkM/IqdeyCFFJgf60h4Pxe/dG47SqwWYhVW1Zo8ia6fn3wKKSIanuv7TG4iN4Zd1T+joPF9ACq5zYqVBN0nwHTTrMdBjwWOo8jguLXwRgNw1j2qTcTfDvhfkHKXNVm2QMul8DOWZOpHPnFdp1pPu6lAuHyDUvfbA3RLIh2T//iuSWNiHw1bYXhQMcOeB0rqhISEE/qFNHC/9lzCqVoDTP4YfU0SV0ezx4Vgu9zECgYEA8K++vpfezsBEEvtl5iG2NfvqypC6rQrrt4WWEgvskRrNRY4NUeXC3CJpH6ItOwruIv0NTQz10RoH+d6m7isOoUHCSHKFVcePdDcFJXlQf8WN99vFATB39ItfL+fepLqKSZ8+dh59pq+76ewdvStZXhV3Idjcx3L/D2RIVj0nzUUCgYEA4qj6cCOUfEyeE2YIOJ0+iP3GUPu90pNWTpS5R8UE7GBgHCSqBlNpIcoaOzDVJWN30OYVoyBBxfYaTGx5L5adMCtQCUaSuYlCb0Sd8L6v5cnKNXm9Mdd7L19y9RamGdzGS4pkkatG8Gzod3DESXbcEYg5djn/8meeirFoDV6IsfMCgYAH7sLqpTbCubOErKR/IT1QKi1i38JHUcTTF6QKlDoHzkpVsIjf2iLB/qBYWpADEiknHhACKhsv+RuqMJxv3RtuVSyCFsQuP5WKzwVsZsMwcuJq+ONVVrOda7qHaaz84OkN5CG64uZhSAl5fD6+rV8UqsBybSNZr4CYkUWREhLtwQKBgHEGIhvZIin5arnxnxfcEVrucP3hCn7+yYLV1q5bKGFWjZZ7Ee2lmj8nMH1jlGXYe97HXPLDGwlD90k0rhl02V0zu+1kK7YpI9+oL7nk3IGRZivUUOuRr/OnfQOKD7nFxXvVvuCEsBMju6gTq02W35Y+f6jcsyyFTyGJ5YEFKtTRAoGAG/7OBEetoNyWTvMQ6w5HjQkz66n05DoUKFJ44T6ia1vlZCacZ5F7T1S0eMo3zlUp8F/Kz1VxmG3UlsiX3RMf9qiOh+HFIGI6lAtNojHn4jdXpCxTRHecu9GDmds8/7MLemJvoJ4oo3I1n/PyEA9fUMJn07MTGMAABw2IkcOS0dw=",
+      "topologyConfiguration": {
+        "path": ".",
+        "url": "test.url",
+        "encryptionKey": "test-enc-key"
+      },
+      "commHealthCheckInterval": "24h"
+    },
+    "opentelemetryCollectorURL": "http://otel-collector:4318",
+    "UploaderConfig":{
+      "URL":"http://ipfs0:5001/api/v0/add"
+    }
+  },
+  "domains": [
+  {
+      "id": 1,
+      "name": "evm1",
+      "type": "evm",
+      "endpoint": "ws://evm1-1:8545",
+      "bridge": "0x6CdE2Cd82a4F8B74693Ff5e194c19CA08c2d1c68",
+      "retry": "0xAD825082B91980E7C8908652269c96a47D687cC5",
+      "handlers": [
+        {
+          "type": "erc20",
+          "address": "0xC2D334e2f27A9dB2Ed8C4561De86C1A00EBf6760"
+        },
+        {
+          "type": "erc721",
+          "address": "0xF28c11CB14C6d2B806f99EA8b138F65e74a1Ed66"
+        },
+        {
+          "type": "erc1155",
+          "address": "0xE54Dc792c226AEF99D6086527b98b36a4ADDe56a"
+        },
+        {
+          "type": "permissionlessGeneric",
+          "address": "0x94e9070f0354b69E7FB583134A820949A390D341"
+        }
+      ],
+      "gasLimit": 9000000,
+      "maxGasPrice": 20000000000,
+      "blockConfirmations": 2,
+      "key": "a5fca6b6b7ac1be2e8f8f39e7c38722216c655a1c4504c29e43ebb7e21f14937"
+    },
+    {
+      "id": 2,
+      "name": "evm2",
+      "type": "evm",
+      "endpoint": "ws://evm2-1:8545",
+      "bridge": "0x6CdE2Cd82a4F8B74693Ff5e194c19CA08c2d1c68",
+      "retry": "0xAD825082B91980E7C8908652269c96a47D687cC5",
+      "handlers": [
+        {
+          "type": "erc20",
+          "address": "0xC2D334e2f27A9dB2Ed8C4561De86C1A00EBf6760"
+        },
+        {
+          "type": "erc721",
+          "address": "0xF28c11CB14C6d2B806f99EA8b138F65e74a1Ed66"
+        },
+        {
+          "type": "erc1155",
+          "address": "0xE54Dc792c226AEF99D6086527b98b36a4ADDe56a"
+        },
+        {
+          "type": "permissionlessGeneric",
+          "address": "0x94e9070f0354b69E7FB583134A820949A390D341"
+        }
+      ],
+      "gasLimit": 9000000,
+      "maxGasPrice": 20000000000,
+      "blockConfirmations": 2,
+      "key": "a5fca6b6b7ac1be2e8f8f39e7c38722216c655a1c4504c29e43ebb7e21f14937"
+    },
+    {
+      "id": 3,
+      "chainID": 5,
+      "name": "substrate1",
+      "type": "substrate",
+      "startBlock": 5,
+      "endpoint": "ws://substrate-pallet:9944",
+      "tip": 0,
+      "blockConfirmations": 2,
+      "key": "//Alice",
+      "substrateNetwork": 0
+    },
+    {
+      "id": 4,
+      "name": "bitcoin",
+      "type": "btc",
+      "startBlock": 100,
+      "feeAddress": "mkHS9ne12qx9pS9VojpwU5xtRd4T7X7ZUt",
+      "endpoint": "bitcoin:18443",
+      "mempoolUrl": "http://mempool-stub:8882",
+      "blockConfirmations": 1,
+      "network": "regtest",
+      "username": "user",
+      "password": "password",
+      "resources": [
+        {
+          "address": "bcrt1pdf5c3q35ssem2l25n435fa69qr7dzwkc6gsqehuflr3euh905l2sjyr5ek",
+          "resourceId": "0x0000000000000000000000000000000000000000000000000000000000001000",
+          "script": "51206a698882348433b57d549d6344f74500fcd13ad8d2200cdf89f8e39e5cafa7d5",
+          "tweak": "c82aa6ae534bb28aaafeb3660c31d6a52e187d8f05d48bb6bdb9b733a9b42212",
+          "feeAmount": "10000000"
+        }
+      ]
+    }
+  ]
+}

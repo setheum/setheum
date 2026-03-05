@@ -18,7 +18,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-use current_set_bft::{NodeCount, NodeMap, Round};
+use set_bft::{NodeCount, NodeMap, Round};
 
 use crate::{abft::current::performance::Batch, setbft_primitives::RawScore, UnverifiedHeader};
 
@@ -64,7 +64,7 @@ impl Scorer {
 mod tests {
     use std::iter;
 
-    use current_set_bft::{NodeCount, OrderedUnit, Round};
+    use set_bft::{NodeCount, OrderedUnit, Round};
 
     use super::Scorer;
     use crate::{block::mock::MockHeader, data_io::SetBFTData, Hasher};

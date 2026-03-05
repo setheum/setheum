@@ -1,0 +1,30 @@
+on: [pull_request]
+name: Linter check
+
+jobs:
+  lint-solidity:
+    name: Lint Solidity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
+
+      - run: yarn install --frozen-lockfile --non-interactive
+
+      - name: Run linter
+        run: yarn run lint:solidity
+
+  lint-typescript:
+    name: Lint Typescript
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
+
+      - run: yarn install --frozen-lockfile --non-interactive
+      - name: Run linter
+        run: yarn run lint:typescript

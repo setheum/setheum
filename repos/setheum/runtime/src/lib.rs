@@ -1018,6 +1018,19 @@ impl module_evm::Config for Runtime {
 	}
 }
 
+parameter_types! {
+	pub const MoveWeightInfo: () = ();
+}
+
+impl pallet_move::Config for Runtime {
+	type RuntimeEvent = Event;
+	type WeightInfo = ();
+	type Currency = Balances;
+	type CurrencyBalance = Balance;
+	type MultisigReqExpireTime = frame_support::traits::ConstU32<100>;
+	type MaxScriptSigners = frame_support::traits::ConstU32<8>;
+}
+
 impl module_evm_bridge::Config for Runtime {
 	type EVM = EVM;
 }
@@ -1542,6 +1555,8 @@ construct_runtime!(
 		// Elections: module_elections::{Pallet, Call, Storage, Event<T>} = 56,
 		// CommitteeManagement: module_committee_management::{Pallet, Call, Storage, Event<T>} = 57,
 		// Operations: module_operations::{Pallet, Call, Storage, Event<T>} = 58,
+		Auction: module_auction::{Pallet, Call, Storage, Event<T>} = 56,
+		Move: pallet_move::{Pallet, Call, Storage, Event<T>} = 57,
 	}
 );
 

@@ -20,7 +20,7 @@
 
 use std::collections::HashMap;
 
-use current_set_bft::NodeCount;
+use set_bft::NodeCount;
 use futures::{
     channel::{mpsc, oneshot},
     StreamExt,
@@ -47,7 +47,7 @@ use crate::{
 struct FinalizationWrapper<UH, FH>
 where
     UH: UnverifiedHeader,
-    FH: current_set_bft::FinalizationHandler<SetBFTData<UH>>,
+    FH: set_bft::FinalizationHandler<SetBFTData<UH>>,
 {
     finalization_handler: FH,
     batches_for_scorer: mpsc::UnboundedSender<Batch<UH>>,
@@ -56,7 +56,7 @@ where
 impl<UH, FH> FinalizationWrapper<UH, FH>
 where
     UH: UnverifiedHeader,
-    FH: current_set_bft::FinalizationHandler<SetBFTData<UH>>,
+    FH: set_bft::FinalizationHandler<SetBFTData<UH>>,
 {
     fn new(finalization_handler: FH, batches_for_scorer: mpsc::UnboundedSender<Batch<UH>>) -> Self {
         FinalizationWrapper {
@@ -66,10 +66,10 @@ where
     }
 }
 
-impl<UH, FH> current_set_bft::UnitFinalizationHandler for FinalizationWrapper<UH, FH>
+impl<UH, FH> set_bft::UnitFinalizationHandler for FinalizationWrapper<UH, FH>
 where
     UH: UnverifiedHeader,
-    FH: current_set_bft::FinalizationHandler<SetBFTData<UH>>,
+    FH: set_bft::FinalizationHandler<SetBFTData<UH>>,
 {
     type Data = SetBFTData<UH>;
     type Hasher = Hasher;
@@ -130,10 +130,10 @@ where
         metrics: ScoreMetrics,
     ) -> (
         Self,
-        impl current_set_bft::UnitFinalizationHandler<Data = SetBFTData<UH>, Hasher = Hasher>,
+        impl set_bft::UnitFinalizationHandler<Data = SetBFTData<UH>, Hasher = Hasher>,
     )
     where
-        FH: current_set_bft::FinalizationHandler<SetBFTData<UH>>,
+        FH: set_bft::FinalizationHandler<SetBFTData<UH>>,
     {
         let ServiceIO {
             hashes_for_aggregator,

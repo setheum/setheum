@@ -22,8 +22,8 @@
 
 use std::{hash::Hash as StdHash, marker::PhantomData};
 
-use current_setbft_aggregator::NetworkError as CurrentNetworkError;
-use legacy_setbft_aggregator::NetworkError as LegacyNetworkError;
+use setbft_aggregator::NetworkError as CurrentNetworkError;
+use setbft_aggregator::NetworkError as LegacyNetworkError;
 use parity_scale_codec::{Decode, Encode};
 
 use crate::{
@@ -58,102 +58,54 @@ impl AsRef<[u8]> for SignableTypedHash {
     }
 }
 
-pub type LegacyRmcNetworkData =
-    legacy_setbft_aggregator::RmcNetworkData<Hash, Signature, SignatureSet<Signature>>;
-pub type CurrentRmcNetworkData =
-    current_setbft_aggregator::RmcNetworkData<SignableTypedHash, Signature, SignatureSet<Signature>>;
+pub type RmcNetworkData =
+    setbft_aggregator::RmcNetworkData<SignableTypedHash, Signature, SignatureSet<Signature>>;
 
-pub type LegacyAggregator<N> =
-    legacy_setbft_aggregator::IO<Hash, NetworkWrapper<LegacyRmcNetworkData, N>, Keychain>;
-
-pub type CurrentAggregator<N> = current_setbft_aggregator::IO<
+pub type AggregatorIO<N> = setbft_aggregator::IO<
     SignableTypedHash,
-    NetworkWrapper<CurrentRmcNetworkData, N>,
+    NetworkWrapper<RmcNetworkData, N>,
     Keychain,
 >;
 
-enum EitherAggregator<CN, LN>
+/// Wrapper on the aggregator
+pub struct Aggregator<N>
 where
-    LN: Network<LegacyRmcNetworkData>,
-    CN: Network<CurrentRmcNetworkData>,
+    N: Network<RmcNetworkData>,
 {
-    Current(Box<CurrentAggregator<CN>>),
-    Legacy(Box<LegacyAggregator<LN>>),
+    agg: AggregatorIO<N>,
 }
 
-/// Wrapper on the aggregator, which is either current or legacy one. Depending on the inner variant
-/// it behaves runs the legacy one or the current.
-pub struct Aggregator<CN, LN>
+impl<N> Aggregator<N>
 where
-    LN: Network<LegacyRmcNetworkData>,
-    CN: Network<CurrentRmcNetworkData>,
+    N: Network<RmcNetworkData>,
 {
-    agg: EitherAggregator<CN, LN>,
-}
-
-impl<'a, CN, LN> Aggregator<CN, LN>
-where
-    LN: Network<LegacyRmcNetworkData>,
-    CN: Network<CurrentRmcNetworkData>,
-{
-    pub fn new_legacy(multikeychain: &Keychain, rmc_network: LN) -> Self {
-        let scheduler = legacy_set_bft_rmc::DoublingDelayScheduler::new(
+    pub fn new(multikeychain: &Keychain, rmc_network: N) -> Self {
+        let scheduler = set_bft_rmc::DoublingDelayScheduler::new(
             tokio::time::Duration::from_millis(500),
         );
-        let rmc_handler = legacy_set_bft_rmc::Handler::new(multikeychain.clone());
-        let rmc_service = legacy_set_bft_rmc::Service::new(scheduler, rmc_handler);
-        let aggregator = legacy_setbft_aggregator::BlockSignatureAggregator::new();
+        let rmc_handler = set_bft_rmc::Handler::new(multikeychain.clone());
+        let rmc_service = set_bft_rmc::Service::new(scheduler, rmc_handler);
+        let aggregator = setbft_aggregator::HashSignatureAggregator::new();
         let aggregator_io =
-            LegacyAggregator::<LN>::new(NetworkWrapper::new(rmc_network), rmc_service, aggregator);
+            AggregatorIO::<N>::new(NetworkWrapper::new(rmc_network), rmc_service, aggregator);
 
         Self {
-            agg: EitherAggregator::Legacy(Box::new(aggregator_io)),
-        }
-    }
-
-    pub fn new_current(multikeychain: &Keychain, rmc_network: CN) -> Self {
-        let scheduler = current_set_bft_rmc::DoublingDelayScheduler::new(
-            tokio::time::Duration::from_millis(500),
-        );
-        let rmc_handler = current_set_bft_rmc::Handler::new(multikeychain.clone());
-        let rmc_service = current_set_bft_rmc::Service::new(scheduler, rmc_handler);
-        let aggregator = current_setbft_aggregator::HashSignatureAggregator::new();
-        let aggregator_io =
-            CurrentAggregator::<CN>::new(NetworkWrapper::new(rmc_network), rmc_service, aggregator);
-
-        Self {
-            agg: EitherAggregator::Current(Box::new(aggregator_io)),
+            agg: aggregator_io,
         }
     }
 
     pub async fn start_aggregation(&mut self, h: SignableTypedHash) {
-        use SignableTypedHash::*;
-        match &mut self.agg {
-            EitherAggregator::Current(agg) => agg.start_aggregation(h).await,
-            EitherAggregator::Legacy(agg) => match h {
-                Block(h) => agg.start_aggregation(h).await,
-                Performance(_) => { /* should never happen, but ignoring is fine */ }
-            },
-        }
+        self.agg.start_aggregation(h).await
     }
 
     pub async fn next_multisigned_hash(
         &mut self,
     ) -> Option<(SignableTypedHash, SignatureSet<Signature>)> {
-        match &mut self.agg {
-            EitherAggregator::Current(agg) => agg.next_multisigned_hash().await,
-            EitherAggregator::Legacy(agg) => agg
-                .next_multisigned_hash()
-                .await
-                .map(|(h, sig)| (SignableTypedHash::Block(h), sig)),
-        }
+         self.agg.next_multisigned_hash().await
     }
 
     pub fn status_report(&self) {
-        match &self.agg {
-            EitherAggregator::Current(agg) => agg.status_report(),
-            EitherAggregator::Legacy(agg) => agg.status_report(),
-        }
+        self.agg.status_report()
     }
 }
 
@@ -166,7 +118,7 @@ impl<D: Data, N: Network<D>> NetworkWrapper<D, N> {
 }
 
 #[async_trait::async_trait]
-impl<T, D> legacy_setbft_aggregator::ProtocolSink<D> for NetworkWrapper<D, T>
+impl<T, D> setbft_aggregator::ProtocolSink<D> for NetworkWrapper<D, T>
 where
     T: Network<D>,
     D: Data,
@@ -178,28 +130,7 @@ where
     fn send(
         &self,
         data: D,
-        recipient: legacy_set_bft::Recipient,
-    ) -> Result<(), LegacyNetworkError> {
-        self.0.send(data, recipient.into()).map_err(|e| match e {
-            SendError::SendFailed => LegacyNetworkError::SendFail,
-        })
-    }
-}
-
-#[async_trait::async_trait]
-impl<T, D> current_setbft_aggregator::ProtocolSink<D> for NetworkWrapper<D, T>
-where
-    T: Network<D>,
-    D: Data,
-{
-    async fn next(&mut self) -> Option<D> {
-        self.0.next().await
-    }
-
-    fn send(
-        &self,
-        data: D,
-        recipient: current_set_bft::Recipient,
+        recipient: set_bft::Recipient,
     ) -> Result<(), CurrentNetworkError> {
         self.0.send(data, recipient.into()).map_err(|e| match e {
             SendError::SendFailed => CurrentNetworkError::SendFail,

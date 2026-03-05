@@ -21,6 +21,7 @@ sp-application-crypto = { workspace = true }
 sp-io = { workspace = true }
 
 module-traits = { workspace = true }
+module-utilities = { version = "0.9.81-dev", path = "../utilities" }
 
 [dev-dependencies]
 sp-core = { workspace = true, features = ["std"] }

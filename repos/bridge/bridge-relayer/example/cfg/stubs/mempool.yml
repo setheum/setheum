@@ -1,0 +1,17 @@
+- request:
+    url: /api/address/bcrt1pdf5c3q35ssem2l25n435fa69qr7dzwkc6gsqehuflr3euh905l2sjyr5ek/utxo
+    method: GET
+  response:
+    headers:
+      content-type: application/json
+    body: >
+      [{"txid":"16e57c77dcb150039a237721ee8d7e2d8d5515fc2a40d2cd3e959e88b436d903","vout":0,"value":5000000000}]
+
+- request:
+    url: /api/v1/fees/recommended
+    method: GET
+  response:
+    headers:
+      content-type: application/json
+    body: >
+      {"fastestFee":15,"halfHourFee":10,"hourFee":1,"economyFee":10,"minimumFee":5}

@@ -69,17 +69,17 @@ impl Keychain {
 }
 
 // Currently the traits for legacy and current match, so only one implementation needed.
-impl legacy_set_bft::Index for Keychain {
-    fn index(&self) -> legacy_set_bft::NodeIndex {
+impl set_bft::Index for Keychain {
+    fn index(&self) -> set_bft::NodeIndex {
         Keychain::index(self).into()
     }
 }
 
 // Currently the traits for legacy and current match, so only one implementation needed.
-impl legacy_set_bft::Keychain for Keychain {
+impl set_bft::Keychain for Keychain {
     type Signature = Signature;
 
-    fn node_count(&self) -> legacy_set_bft::NodeCount {
+    fn node_count(&self) -> set_bft::NodeCount {
         Keychain::node_count(self).into()
     }
 
@@ -87,13 +87,13 @@ impl legacy_set_bft::Keychain for Keychain {
         Keychain::sign(self, msg)
     }
 
-    fn verify(&self, msg: &[u8], sgn: &Signature, index: legacy_set_bft::NodeIndex) -> bool {
+    fn verify(&self, msg: &[u8], sgn: &Signature, index: set_bft::NodeIndex) -> bool {
         Keychain::verify(self, msg, sgn, index)
     }
 }
 
 // Currently the traits for legacy and current match, so only one implementation needed.
-impl legacy_set_bft::MultiKeychain for Keychain {
+impl set_bft::MultiKeychain for Keychain {
     // Using `SignatureSet` is slow, but Substrate has not yet implemented aggregation.
     // We probably should do this for them at some point.
     type PartialMultisignature = SignatureSet<Signature>;
@@ -101,9 +101,9 @@ impl legacy_set_bft::MultiKeychain for Keychain {
     fn bootstrap_multi(
         &self,
         signature: &Signature,
-        index: legacy_set_bft::NodeIndex,
+        index: set_bft::NodeIndex,
     ) -> Self::PartialMultisignature {
-        legacy_set_bft::PartialMultisignature::add_signature(
+        set_bft::PartialMultisignature::add_signature(
             SignatureSet(set_bft_crypto::SignatureSet::with_size(
                 set_bft_crypto::Keychain::node_count(self),
             )),
