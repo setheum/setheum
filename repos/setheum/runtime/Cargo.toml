@@ -15,47 +15,47 @@ targets = ['x86_64-unknown-linux-gnu']
 substrate-wasm-builder = { workspace = true , default-features = false }
 
 [dependencies]
-codec = { package = "parity-scale-codec", version = "2.0.0", default-features = false, features = ['derive'] }
-smallvec = "1.4.0"
+codec = { package = "parity-scale-codec", workspace = true, default-features = false, features = ['derive'] }
+smallvec = { workspace = true }
 hex-literal = { workspace = true, optional = true , default-features = false }
 serde = { workspace = true, optional = true, features = ['derive'] , default-features = false }
-serde_json = "1.0.60"
+serde_json = { workspace = true, default-features = false }
 hex = { workspace = true, optional = true , default-features = false }
 evm = { version = "0.30.1", optional = true, default-features = false }
 log = { workspace = true , default-features = false }
 
 # Substrate dependencies
-frame-benchmarking = { workspace = true, optional = true }
-frame-executive = { workspace = true }
-frame-support = { workspace = true }
-frame-system = { workspace = true }
-frame-system-benchmarking = { workspace = true, optional = true }
-frame-system-rpc-runtime-api = { workspace = true }
-frame-election-provider-support = { workspace = true }
-pallet-balances = { workspace = true }
-pallet-grandpa = { workspace = true }
-pallet-indices = { workspace = true }
-pallet-bounties = { workspace = true }
-pallet-collective = { workspace = true }
-pallet-insecure-randomness-collective-flip = { workspace = true }
-pallet-democracy = { workspace = true }
-pallet-membership = { workspace = true }
-pallet-multisig = { workspace = true }
-pallet-proxy = { workspace = true }
-pallet-recovery = { workspace = true }
-pallet-scheduler = { workspace = true }
-pallet-sudo = { workspace = true }
-pallet-tips = { workspace = true }
-pallet-timestamp = { workspace = true }
-pallet-transaction-payment = { workspace = true }
-pallet-transaction-payment-rpc-runtime-api = { workspace = true }
+frame-benchmarking = { workspace = true, optional = true, default-features = false }
+frame-executive = { workspace = true, default-features = false }
+frame-support = { workspace = true, default-features = false }
+frame-system = { workspace = true, default-features = false }
+frame-system-benchmarking = { workspace = true, optional = true, default-features = false }
+frame-system-rpc-runtime-api = { workspace = true, default-features = false }
+frame-election-provider-support = { workspace = true, default-features = false }
+pallet-balances = { workspace = true, default-features = false }
+pallet-grandpa = { workspace = true, default-features = false }
+pallet-indices = { workspace = true, default-features = false }
+pallet-bounties = { workspace = true, default-features = false }
+pallet-collective = { workspace = true, default-features = false }
+pallet-insecure-randomness-collective-flip = { workspace = true, default-features = false }
+pallet-democracy = { workspace = true, default-features = false }
+pallet-membership = { workspace = true, default-features = false }
+pallet-multisig = { workspace = true, default-features = false }
+pallet-proxy = { workspace = true, default-features = false }
+pallet-recovery = { workspace = true, default-features = false }
+pallet-scheduler = { workspace = true, default-features = false }
+pallet-sudo = { workspace = true, default-features = false }
+pallet-tips = { workspace = true, default-features = false }
+pallet-timestamp = { workspace = true, default-features = false }
+pallet-transaction-payment = { workspace = true, default-features = false }
+pallet-transaction-payment-rpc-runtime-api = { workspace = true, default-features = false }
 sp-api = { workspace = true, default-features = false }
 sp-application-crypto = { workspace = true, default-features = false }
 sp-block-builder = { workspace = true, default-features = false }
 sp-core = { workspace = true, default-features = false }
 sp-inherents = { workspace = true, default-features = false }
-pallet-treasury = { workspace = true }
-pallet-utility = { workspace = true }
+pallet-treasury = { workspace = true, default-features = false }
+pallet-utility = { workspace = true, default-features = false }
 sp-io = { workspace = true, default-features = false }
 sp-offchain = { workspace = true, default-features = false }
 sp-runtime = { workspace = true, default-features = false }
