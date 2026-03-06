@@ -1,4 +1,5 @@
 [toolchain]
-channel = "nightly-2026-02-18"
-targets = ["wasm32-unknown-unknown"]
-profile = "default" # include rustfmt, clippy
+channel = "1.88.0"
+components = ["rust-src", "rustfmt", "clippy"]
+targets = ["wasm32v1-none", "x86_64-unknown-linux-gnu"]
+profile = "minimal"
