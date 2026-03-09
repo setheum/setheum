@@ -18,10 +18,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-#![cfg_attr(not(feature = "std"), no_std)]
 
 use parity_scale_codec::{Decode, Encode};
 use scale_info::TypeInfo;
+#[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};
 pub use sp_consensus_aura::sr25519::AuthorityId as AuraId;
 use sp_core::crypto::KeyTypeId;
@@ -123,7 +123,8 @@ pub enum ElectionOpenness {
 }
 
 /// Represent desirable size of a committee in a session
-#[derive(Decode, Encode, TypeInfo, Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Decode, Encode, TypeInfo, Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub struct CommitteeSeats {
 /// Size of reserved validators in a session
     pub reserved_seats: u32,
@@ -156,7 +157,8 @@ pub trait FinalityCommitteeManager<T> {
 }
 
 /// Configurable parameters for ban validator mechanism
-#[derive(Decode, Encode, TypeInfo, Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Decode, Encode, TypeInfo, Debug, Clone, PartialEq, Eq)]
+#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub struct BanConfig {
 /// performance ratio threshold in a session
 /// calculated as ratio of number of blocks produced to expected number of blocks for a single validator
@@ -304,7 +306,8 @@ pub trait ValidatorProvider {
     fn current_era_committee_size() -> CommitteeSeats;
 }
 
-#[derive(Decode, Encode, TypeInfo, Clone, Serialize, Deserialize)]
+#[derive(Decode, Encode, TypeInfo, Clone)]
+#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub struct SessionValidators<T> {
     pub committee: Vec<T>,
     pub non_committee: Vec<T>,
@@ -403,7 +406,98 @@ where
 
         next.unwrap_or_else(|| {
             log::error!(target: "module_setbft", "Missing next session keys");
-            vec![]
+            sp_std::vec![]
         })
+    }
+}
+
+pub type ScoreNonce = u32;
+pub type RawScore = sp_std::vec::Vec<u16>;
+
+#[derive(PartialEq, parity_scale_codec::Decode, parity_scale_codec::Encode, scale_info::TypeInfo, Debug, Clone)]
+pub struct Score {
+    pub session_id: SessionIndex,
+    pub nonce: ScoreNonce,
+    pub points: RawScore,
+}
+
+pub mod crypto {
+    use core::marker::PhantomData;
+
+    use parity_scale_codec::{Decode, Encode};
+    use scale_info::TypeInfo;
+    use sp_runtime::RuntimeAppPublic;
+    use sp_std::vec::Vec;
+
+    use super::AuthoritySignature;
+
+    #[derive(PartialEq, Decode, Encode, TypeInfo, Debug, Clone)]
+    pub struct IndexedSignature<S> {
+        pub index: u64,
+        pub signature: S,
+    }
+
+    #[derive(PartialEq, Decode, Encode, TypeInfo, Debug, Clone)]
+    pub struct SignatureSet<S>(pub Vec<IndexedSignature<S>>);
+
+    #[cfg_attr(feature = "std", derive(Hash))]
+    #[derive(PartialEq, Eq, Clone, Debug, Decode, Encode, TypeInfo)]
+    pub struct Signature(pub AuthoritySignature);
+
+    impl From<AuthoritySignature> for Signature {
+        fn from(authority_signature: AuthoritySignature) -> Signature {
+            Signature(authority_signature)
+        }
+    }
+
+    impl From<Signature> for AuthoritySignature {
+        fn from(signature: Signature) -> AuthoritySignature {
+            signature.0
+        }
+    }
+
+    #[derive(PartialEq, Clone, Debug, Default, Decode, Encode, TypeInfo)]
+    pub struct AuthorityVerifier<AID, S> {
+        authorities: Vec<AID>,
+        _phantom: PhantomData<S>,
+    }
+
+    impl<AID: RuntimeAppPublic<Signature = S>, S> AuthorityVerifier<AID, S> {
+        pub fn new(authorities: Vec<AID>) -> Self {
+            AuthorityVerifier {
+                authorities,
+                _phantom: PhantomData,
+            }
+        }
+
+        pub fn verify(&self, msg: &Vec<u8>, sgn: &S, index: u64) -> bool {
+            match self.authorities.get(index as usize) {
+                Some(authority) => authority.verify(msg, sgn),
+                None => false,
+            }
+        }
+
+        pub fn node_count(&self) -> usize {
+            self.authorities.len()
+        }
+
+        fn threshold(&self) -> usize {
+            2 * self.node_count() / 3 + 1
+        }
+
+        pub fn is_complete(
+            verifier: &AuthorityVerifier<AID, S>,
+            msg: &Vec<u8>,
+            partial: &SignatureSet<S>,
+        ) -> bool {
+            let signature_count = partial.0.len();
+            if signature_count < verifier.threshold() {
+                return false;
+            }
+            partial
+                .0
+                .iter()
+                .all(|i_sgn| verifier.verify(msg, &i_sgn.signature, i_sgn.index))
+        }
     }
 }

@@ -19,6 +19,7 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 use parity_scale_codec::{Decode, Encode};
+#[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};
 use crate::currency::CurrencyId;
 use sp_runtime::{
@@ -26,6 +27,7 @@ use sp_runtime::{
 };
 use sp_std::{
 	cmp::{Eq, PartialEq},
+	vec::Vec,
 };
 
 /// Launchpad Campaign ID

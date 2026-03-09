@@ -142,7 +142,7 @@ pub fn initial_unit_collection<'a, H: Hasher, D: Data, MK: MultiKeychain>(
 
 /// A trivial start that doesn't actually perform the initial unit collection.
 #[cfg(not(feature = "initial_unit_collection"))]
-pub fn initial_unit_collection(
+pub fn initial_unit_collection<'a, H: Hasher, D: Data, MK: MultiKeychain>(
     _keychain: &'a MK,
     _validator: &'a Validator<MK>,
     _messages_for_network: Sender<UnitMessageTo<H, D, MK::Signature>>,
@@ -150,9 +150,9 @@ pub fn initial_unit_collection(
     starting_round_from_backup: Round,
     _responses_from_network: Receiver<CollectionResponse<H, D, MK>>,
     _request_delay: DelaySchedule,
-) -> Result<impl Future<Output = ()>, ()> {
-    if let Err(e) = starting_round_sender.send(Some(starting_round_from_backup)) {
-        error!(target: LOG_TARGET, "Unable to send the starting round: {}", e);
+) -> Result<impl Future<Output = ()> + 'a, ()> {
+    if let Err(_) = starting_round_sender.send(Some(starting_round_from_backup)) {
+        log::error!(target: LOG_TARGET, "Unable to send the starting round");
         return Err(());
     }
     Ok(async {})

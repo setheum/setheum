@@ -48,7 +48,7 @@ pallet-message-queue = { git = "https://github.com/paritytech/polkadot-sdk.git",
 # Polkadot
 xcm = { package = "staging-xcm", git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
 xcm-executor = { package = "staging-xcm-executor", git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
-xcm-simulator = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
+xcm-simulator = { workspace = true, default-features = false }
 xcm-builder = { package = "staging-xcm-builder", git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
 polkadot-parachain-primitives = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
 polkadot-runtime-common = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }

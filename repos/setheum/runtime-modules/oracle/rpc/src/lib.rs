@@ -38,6 +38,7 @@
 use std::sync::Arc;
 use jsonrpc_core::{Error, ErrorCode, Result};
 use jsonrpc_derive::rpc;
+use sp_runtime::codec::Codec;
 use sp_api::ProvideRuntimeApi;
 use sp_blockchain::HeaderBackend;
 use sp_runtime::{generic::BlockId, traits::Block as BlockT};
@@ -81,9 +82,9 @@ where
 	Block: BlockT,
 	C: Send + Sync + 'static + ProvideRuntimeApi<Block> + HeaderBackend<Block>,
 	C::Api: OracleRuntimeApi<Block, DataProviderId, CurrencyId, TimeStampedPrice>,
-	DataProviderId: codec::Codec + Send + Sync + 'static,
-	CurrencyId: codec::Codec + Send + Sync + 'static,
-	TimeStampedPrice: codec::Codec + Send + Sync + 'static,
+	DataProviderId: Codec + Send + Sync + 'static,
+	CurrencyId: Codec + Send + Sync + 'static,
+	TimeStampedPrice: Codec + Send + Sync + 'static,
 {
 	fn get_value(
 		&self,

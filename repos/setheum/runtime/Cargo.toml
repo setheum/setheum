@@ -15,7 +15,7 @@ targets = ['x86_64-unknown-linux-gnu']
 substrate-wasm-builder = { workspace = true , default-features = false }
 
 [dependencies]
-codec = { package = "parity-scale-codec", workspace = true, default-features = false, features = ['derive'] }
+codec = { package = "parity-scale-codec", version = "3.7.5", default-features = false, features = ['derive'] }
 smallvec = { workspace = true }
 hex-literal = { workspace = true, optional = true , default-features = false }
 serde = { workspace = true, optional = true, features = ['derive'] , default-features = false }
@@ -33,7 +33,7 @@ frame-system-benchmarking = { workspace = true, optional = true, default-feature
 frame-system-rpc-runtime-api = { workspace = true, default-features = false }
 frame-election-provider-support = { workspace = true, default-features = false }
 pallet-balances = { workspace = true, default-features = false }
-pallet-grandpa = { workspace = true, default-features = false }
+# pallet-grandpa = { workspace = true, default-features = false }
 pallet-indices = { workspace = true, default-features = false }
 pallet-bounties = { workspace = true, default-features = false }
 pallet-collective = { workspace = true, default-features = false }
@@ -73,7 +73,7 @@ pallet-staking-reward-curve = { workspace = true, default-features = false }
 pallet-authorship = { workspace = true, default-features = false }
 pallet-aura = { workspace = true, default-features = false }
 sp-consensus-aura = { workspace = true, default-features = false }
-sp-consensus-babe = { workspace = true, default-features = false }
+# sp-consensus-babe = { workspace = true, default-features = false }
 pallet-im-online = { workspace = true, default-features = false }
 pallet-offences = { workspace = true, default-features = false }
 sp-authority-discovery = { workspace = true, default-features = false }
@@ -136,7 +136,7 @@ std = [
 	"pallet-bounties/std",
 	"pallet-collective/std",
 	"pallet-democracy/std",
-	'pallet-grandpa/std',
+# 	'pallet-grandpa/std',
 	"pallet-indices/std",
 	"pallet-membership/std",
 	"pallet-multisig/std",
@@ -156,7 +156,7 @@ std = [
 	"pallet-authorship/std",
 	"pallet-aura/std",
 	"sp-consensus-aura/std",
-	"sp-consensus-babe/std",
+# 	"sp-consensus-babe/std",
 	"sp-authority-discovery/std",
 	"pallet-authority-discovery/std",
 	"pallet-im-online/std",

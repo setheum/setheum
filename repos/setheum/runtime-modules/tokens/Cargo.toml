@@ -24,7 +24,7 @@ module-traits = { workspace = true , default-features = false }
 
 [dev-dependencies]
 pallet-elections-phragmen = { workspace = true, features = ["std"] }
-pallet-treasury = { workspace = true, default-features = false }
+pallet-treasury = { workspace = true, features = ["std"] }
 sp-core = { workspace = true, features = ["std"] }
 sp-io = { workspace = true, features = ["std"] }
 sp-staking = { workspace = true, features = ["std"] }
@@ -39,7 +39,7 @@ std = [
 	"module-traits/std",
 	"parity-scale-codec/std",
 	"scale-info/std",
-	"serde",
+	"serde/std",
 	"sp-arithmetic/std",
 	"sp-runtime/std",
 	"sp-std/std",

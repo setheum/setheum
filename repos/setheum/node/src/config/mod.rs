@@ -18,15 +18,33 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-mod cli;
-mod config;
-mod executor;
+use crate::Cli;
 
-mod rpc;
-mod service;
+mod pruning;
+mod sync;
 
-pub use cli::{Cli, Subcommand};
-pub use config::Validator as ConfigValidator;
-#[cfg(any(feature = "runtime-benchmarks", feature = "setheum-native-runtime"))]
-pub use executor::executor::ExecutorDispatch;
-pub use service::{new_authority, new_partial, ServiceComponents};
+use pruning::PruningConfigValidator;
+use sync::SyncConfigValidator;
+
+/// Validate and modify the configuration to make it conform to our assumptions.
+pub struct Validator {
+    pruning: PruningConfigValidator,
+    sync: SyncConfigValidator,
+}
+
+impl Validator {
+    /// Modifies the settings.
+    pub fn process(cli: &mut Cli) -> Self {
+        Validator {
+            pruning: PruningConfigValidator::process(cli),
+            sync: SyncConfigValidator::process(cli),
+        }
+    }
+
+    /// Warns the user about the modified settings.
+    pub fn report(self) {
+        let Validator { pruning, sync } = self;
+        pruning.report();
+        sync.report();
+    }
+}

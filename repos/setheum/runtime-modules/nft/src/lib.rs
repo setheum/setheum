@@ -102,7 +102,7 @@ pub struct TokenInfo<AccountId, Data, TokenMetadataOf> {
 	pub data: Data,
 }
 
-#[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq, TypeInfo, Serialize, Deserialize)]
+#[derive(Encode, Decode, DecodeWithMemTracking, Clone, RuntimeDebug, PartialEq, Eq, TypeInfo, Serialize, Deserialize)]
 pub struct ClassData<Balance> {
 	/// Deposit reserved to create token class
 	pub deposit: Balance,
@@ -112,7 +112,7 @@ pub struct ClassData<Balance> {
 	pub attributes: Attributes,
 }
 
-#[derive(Encode, Decode, Clone, RuntimeDebug, PartialEq, Eq, TypeInfo, Serialize, Deserialize)]
+#[derive(Encode, Decode, DecodeWithMemTracking, Clone, RuntimeDebug, PartialEq, Eq, TypeInfo, Serialize, Deserialize)]
 pub struct TokenData<Balance> {
 	/// Deposit reserved to create token
 	pub deposit: Balance,
@@ -800,13 +800,13 @@ impl<T: Config> Inspect<T::AccountId> for Pallet<T> {
 
 	fn attribute(collection: &Self::CollectionId, item: &Self::ItemId, key: &[u8]) -> Option<Vec<u8>> {
 		Self::tokens(collection, item).and_then(|t| {
-			t.data.attributes.iter().find(|(k, _)| k == key).map(|(_, v)| v.clone())
+			t.data.attributes.iter().find(|(k, _)| k.as_slice() == key).map(|(_, v)| v.clone())
 		})
 	}
 
 	fn collection_attribute(collection: &Self::CollectionId, key: &[u8]) -> Option<Vec<u8>> {
 		Self::classes(collection).and_then(|c| {
-			c.data.attributes.iter().find(|(k, _)| k == key).map(|(_, v)| v.clone())
+			c.data.attributes.iter().find(|(k, _)| k.as_slice() == key).map(|(_, v)| v.clone())
 		})
 	}
 }
@@ -819,7 +819,7 @@ impl<T: Config> Transfer<T::AccountId> for Pallet<T> {
 	) -> DispatchResult {
 		let token_info = Self::tokens(collection, item).ok_or(Error::<T>::TokenIdNotFound)?;
 		let from = token_info.owner;
-		Self::do_transfer(from, destination.clone(), (*collection, *item))
+		Self::transfer_token(&from, destination, (*collection, *item))
 	}
 }
 

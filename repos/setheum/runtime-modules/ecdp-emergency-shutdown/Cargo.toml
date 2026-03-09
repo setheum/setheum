@@ -30,7 +30,7 @@ module-tokens = { workspace = true , default-features = false }
 default = ["std"]
 std = [
 	"scale-info/std",
-	"serde",
+	"serde/std",
 	"parity-scale-codec/std",
 	"sp-runtime/std",
 	"sp-std/std",

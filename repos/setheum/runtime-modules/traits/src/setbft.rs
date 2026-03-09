@@ -35,6 +35,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+use sp_std::vec::Vec;
+
 pub trait NextSessionAuthorityProvider<AuthorityId> {
     fn next_authorities() -> Vec<AuthorityId>;
 }

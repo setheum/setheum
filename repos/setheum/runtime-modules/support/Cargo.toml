@@ -36,7 +36,7 @@ std = [
 	"module-tokens/std",
 	"primitives/std",
 	"scale-info/std",
-	"serde",
+	"serde/std",
 	"sp-core/std",
 	"sp-io/std",
 	"sp-runtime/std",

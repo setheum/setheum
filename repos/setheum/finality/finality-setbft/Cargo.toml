@@ -69,8 +69,8 @@ sp-runtime = { workspace = true }
 sp-timestamp = { workspace = true }
 
 [dev-dependencies]
-substrate-test-runtime-client = { workspace = true , default-features = false }
-substrate-test-runtime = { workspace = true , default-features = false }
+# substrate-test-runtime-client = { workspace = true , default-features = false }
+# substrate-test-runtime = { workspace = true , default-features = false }
 substrate-test-client = { workspace = true , default-features = false }
 sc-block-builder = { workspace = true }
 sc-basic-authorship = { workspace = true }
