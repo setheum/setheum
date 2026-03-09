@@ -50,7 +50,7 @@ use crate::{
 };
 
 type WrappedNetwork<H, ADN> = NetworkWrapper<
-    current_set_bft::NetworkData<Hasher, SetBFTData<H>, Signature, SignatureSet<Signature>>,
+    set_bft::NetworkData<Hasher, SetBFTData<H>, Signature, SignatureSet<Signature>>,
     ADN,
 >;
 
@@ -59,18 +59,9 @@ pub fn run_member<UH, ADN>(
     multikeychain: Keychain,
     config: Config,
     network: WrappedNetwork<UH, ADN>,
-pub fn run_session<UH: UnverifiedHeader>(
-    config: Config,
-    local_io: LocalIO<
-        SetBFTData<UH>,
-        Hasher,
-        DataProvider<UH>,
-        impl set_bft::DataProvider<Output = SetBFTData<UH>> + 'static,
-        impl set_bft::UnitFinalizationHandler<
-            Data = SetBFTData<UH>,
-            Hasher = Hasher,
-        >,
-    >,
+    data_provider: impl set_bft::DataProvider<Output = SetBFTData<UH>> + 'static,
+    ordered_data_interpreter: impl set_bft::UnitFinalizationHandler<
+        Data = SetBFTData<UH>,
         Hasher = Hasher,
     >,
     backup: ABFTBackup,

@@ -9,10 +9,10 @@ repository.workspace = true
 
 
 [dependencies]
-futures = { workspace = true }
-log = { workspace = true }
-tokio = { workspace = true, features = ["time", "sync", "macros", "rt-multi-thread"] }
+futures = { workspace = true , default-features = false }
+log = { workspace = true , default-features = false }
+tokio = { workspace = true, features = ["time", "sync", "macros", "rt-multi-thread"] , default-features = false }
 
 [dev-dependencies]
-parking_lot = { workspace = true }
-rand = { workspace = true, features = ["std", "std_rng"] }
+parking_lot = { workspace = true , default-features = false }
+rand = { workspace = true, features = ["std", "std_rng"] , default-features = false }

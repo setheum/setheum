@@ -6,17 +6,17 @@ edition = "2021"
 license = "Apache-2.0 OR MIT"
 
 [dependencies]
-ethereum-types = { workspace = true }
+ethereum-types = { workspace = true , default-features = false }
 frame-support = { workspace = true }
 jsonrpc-core = "15.1.0"
 jsonrpc-derive = "15.1.0"
-module-evm = { workspace = true }
-module-evm-rpc-runtime-api = { path = "runtime_api" }
+module-evm = { workspace = true , default-features = false }
+module-evm-rpc-runtime-api = { path = "runtime_api" , default-features = false }
 pallet-transaction-payment-rpc-runtime-api = { workspace = true }
 rustc-hex = "2.1.0"
 sc-rpc-api = { workspace = true }
-serde = { workspace = true }
-serde_json = { workspace = true }
+serde = { workspace = true , default-features = false }
+serde_json = { workspace = true , default-features = false }
 sp-runtime = { workspace = true }
 sp-std = { workspace = true }
 sp-api = { workspace = true }

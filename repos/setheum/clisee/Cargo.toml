@@ -6,7 +6,7 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0"
-clap = { workspace = true, features = ["derive"] }
+clap = { workspace = true, features = ["derive"] , default-features = false }
 codec = { package = 'parity-scale-codec', version = "3.0.0", features = ['derive'] }
 contract-metadata = "3.2.0"
 contract-transcode = "3.2.0"
@@ -15,16 +15,16 @@ env_logger = "0.8"
 hex = "0.4.3"
 ink_metadata = { version = "4.3.0", features = ["derive"] }
 log = "0.4"
-serde = { workspace = true, features = ["derive"] }
+serde = { workspace = true, features = ["derive"] , default-features = false }
 serde_json = "1.0.81"
 
-tokio = { workspace = true, features = ["full"] }
+tokio = { workspace = true, features = ["full"] , default-features = false }
 
 pallet-staking = { workspace = true }
 sp-core = { workspace = true, features = ["full_crypto"] }
 
-setheum_client = { path = "../setheum-client" }
-primitives = { workspace = true }
+setheum_client = { path = "../setheum-client" , default-features = false }
+primitives = { workspace = true , default-features = false }
 
 [features]
 default = ["std"]

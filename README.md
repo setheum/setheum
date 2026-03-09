@@ -64,8 +64,6 @@ Mise handles all common development tasks:
 - **PRDoc Generation**: `mise run prdoc:generate`
 - **Clean artifacts**: `mise run clean`
 
-A [Makefile](./Makefile) is also provided as a proxy for these commands, so you can still use `make build`, `make test`, etc.
-
 ## License
 
 Different parts of this monorepo are licensed differently (GPLv3, Apache 2.0, or MIT). See [LICENSES.md](./LICENSES.md) for the full breakdown of which license applies to each project.

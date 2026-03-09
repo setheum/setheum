@@ -211,7 +211,7 @@ pub mod module {
 		) -> DispatchResult {
 			let from = ensure_signed(origin)?;
 			let to = T::Lookup::lookup(dest)?;
-			<Self as MultiCurrency<T::AccountId>>::transfer(currency_id, &from, &to, amount)
+			<Self as MultiCurrency<T::AccountId>>::transfer(currency_id, &from, &to, amount, ExistenceRequirement::AllowDeath)
 		}
 
 /// Transfer some native currency to another account.
@@ -227,7 +227,7 @@ pub mod module {
 		) -> DispatchResult {
 			let from = ensure_signed(origin)?;
 			let to = T::Lookup::lookup(dest)?;
-			<T::NativeCurrency as BasicCurrency<_>>::transfer(&from, &to, amount)
+			<T::NativeCurrency as BasicCurrency<_>>::transfer(&from, &to, amount, ExistenceRequirement::AllowDeath)
 		}
 
 /// Update amount of account `who` under `currency_id`.
@@ -429,9 +429,9 @@ impl<T: Config> MultiCurrency<T::AccountId> for Pallet<T> {
 				)?;
 			}
 			id if id == T::GetNativeCurrencyId::get() => {
-				<T::NativeCurrency as BasicCurrency<_>>::transfer(from, to, amount)?
+				<T::NativeCurrency as BasicCurrency<_>>::transfer(from, to, amount, ExistenceRequirement::AllowDeath)?
 			}
-			_ => <T::MultiCurrency as MultiCurrency<_>>::transfer(currency_id, from, to, amount)?,
+			_ => <T::MultiCurrency as MultiCurrency<_>>::transfer(currency_id, from, to, amount, ExistenceRequirement::AllowDeath)?,
 		}
 
 		Self::deposit_event(Event::Transferred {
@@ -521,8 +521,8 @@ impl<T: Config> MultiCurrency<T::AccountId> for Pallet<T> {
 				});
 				Ok(())
 			}
-			id if id == T::GetNativeCurrencyId::get() => <T::NativeCurrency as BasicCurrency<_>>::withdraw(who, amount),
-			_ => <T::MultiCurrency as MultiCurrency<_>>::withdraw(currency_id, who, amount),
+			id if id == T::GetNativeCurrencyId::get() => <T::NativeCurrency as BasicCurrency<_>>::withdraw(who, amount, ExistenceRequirement::AllowDeath),
+			_ => <T::MultiCurrency as MultiCurrency<_>>::withdraw(currency_id, who, amount, ExistenceRequirement::AllowDeath),
 		}
 	}
 
@@ -1063,7 +1063,7 @@ impl<T: Config> fungibles::Mutate<T::AccountId> for Pallet<T> {
 		match asset_id {
 			CurrencyId::Erc20(_) => {
 // Event is deposited in `fn transfer`
-				<Self as MultiCurrency<_>>::transfer(asset_id, source, dest, amount).map(|_| amount)
+				<Self as MultiCurrency<_>>::transfer(asset_id, source, dest, amount, ExistenceRequirement::AllowDeath).map(|_| amount)
 			}
 			id if id == T::GetNativeCurrencyId::get() => {
 				<T::NativeCurrency as fungible::Mutate<_>>::transfer(source, dest, amount, preservation).map(|actual| {
@@ -1686,7 +1686,7 @@ where
 		if by_amount.is_positive() {
 			Self::deposit(who, by_balance)
 		} else {
-			Self::withdraw(who, by_balance)
+			Self::withdraw(who, by_balance, ExistenceRequirement::AllowDeath)
 		}
 	}
 }
@@ -1965,6 +1965,7 @@ impl<T: Config> TransferAll<T::AccountId> for Pallet<T> {
 			source,
 			dest,
 			<T::NativeCurrency as BasicCurrency<_>>::free_balance(source),
+			ExistenceRequirement::AllowDeath
 		)
 	}
 }
@@ -1986,9 +1987,9 @@ where
 		let _ = match currency_id {
 			CurrencyId::Erc20(_) => Ok(()),
 			id if id == T::GetNativeCurrencyId::get() => {
-				<T::NativeCurrency as BasicCurrency<_>>::transfer(who, &GetAccountId::get(), amount)
+				<T::NativeCurrency as BasicCurrency<_>>::transfer(who, &GetAccountId::get(), amount, ExistenceRequirement::AllowDeath)
 			}
-			_ => <T::MultiCurrency as MultiCurrency<_>>::transfer(currency_id, who, &GetAccountId::get(), amount),
+			_ => <T::MultiCurrency as MultiCurrency<_>>::transfer(currency_id, who, &GetAccountId::get(), amount, ExistenceRequirement::AllowDeath),
 		};
 	}
 }

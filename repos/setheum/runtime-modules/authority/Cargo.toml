@@ -10,7 +10,7 @@ edition = "2021"
 [dependencies]
 parity-scale-codec = { workspace = true }
 scale-info = { workspace = true }
-serde = { workspace = true, optional = true }
+serde = { workspace = true, optional = true , default-features = false }
 
 frame-benchmarking = { workspace = true, optional = true }
 frame-support = { workspace = true }
@@ -22,7 +22,7 @@ sp-std = { workspace = true }
 
 [dev-dependencies]
 pallet-preimage = { workspace = true, features = ["std"] }
-pallet-scheduler = { workspace = true, features = ["std"] }
+pallet-scheduler = { workspace = true, default-features = false }
 pallet-root-testing = { workspace = true, features = ["std"] }
 sp-io = { workspace = true, features = ["std"] }
 

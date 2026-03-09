@@ -45,7 +45,7 @@ use sp_runtime::traits::Block as BlockT;
 
 pub use module_evm_rpc_runtime_api::EVMRuntimeRPCApi;
 
-#[rpc]
+#[rpc(server)]
 pub trait EVMApiServer {
     #[rpc(name = "evm_placeholder")]
     fn placeholder(&self) -> Result<String>;

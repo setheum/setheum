@@ -10,8 +10,8 @@ repository.workspace = true
 [dependencies]
 parity-scale-codec = { workspace = true, features = ["derive"] }
 scale-info = { workspace = true, features = ["derive"] }
-rand = { workspace = true }
-rand_pcg = { workspace = true }
+rand = { workspace = true , default-features = false }
+rand_pcg = { workspace = true , default-features = false }
 
 frame-election-provider-support = { workspace = true }
 frame-support = { workspace = true }
@@ -25,7 +25,7 @@ sp-runtime = { workspace = true }
 sp-staking = { workspace = true }
 sp-std = { workspace = true }
 
-primitives = { workspace = true }
+primitives = { workspace = true , default-features = false }
 
 [features]
 default = ["std"]

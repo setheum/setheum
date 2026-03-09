@@ -16,10 +16,10 @@ frame-system = { workspace = true }
 sp-std = { workspace = true }
 
 pallet-xcm = { workspace = true }
-xcm = { workspace = true }
+xcm = { workspace = true , default-features = false }
 
 [dev-dependencies]
-xcm-executor  = { workspace = true, features = ["std"] }
+xcm-executor  = { workspace = true, features = ["std"] , default-features = false }
 
 [features]
 default = [ "std" ]

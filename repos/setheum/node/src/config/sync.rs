@@ -18,15 +18,34 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-mod cli;
-mod config;
-mod executor;
+use log::warn;
+use sc_cli::arg_enums::SyncMode;
 
-mod rpc;
-mod service;
+use crate::Cli;
 
-pub use cli::{Cli, Subcommand};
-pub use config::Validator as ConfigValidator;
-#[cfg(any(feature = "runtime-benchmarks", feature = "setheum-native-runtime"))]
-pub use executor::executor::ExecutorDispatch;
-pub use service::{new_authority, new_partial, ServiceComponents};
+/// Modifies the sync config to ensure only full sync is used.
+pub struct SyncConfigValidator {
+    overwritten: Option<SyncMode>,
+}
+
+impl SyncConfigValidator {
+    /// Modifies the settings.
+    pub fn process(cli: &mut Cli) -> Self {
+        let overwritten = match cli.run.network_params.sync {
+            SyncMode::Full => None,
+            mode => Some(mode),
+        };
+        cli.run.network_params.sync = SyncMode::Full;
+        SyncConfigValidator { overwritten }
+    }
+
+    /// Warns the user if they attempted to use a sync setting other than full.
+    pub fn report(self) {
+        if let Some(mode) = self.overwritten {
+            warn!(
+                "Only full sync mode is supported, ignoring request for {:?} mode.",
+                mode
+            );
+        }
+    }
+}

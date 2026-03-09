@@ -11,9 +11,9 @@ repository.workspace = true
 targets = ["x86_64-unknown-linux-gnu"]
 
 [dependencies]
-impl-trait-for-tuples = { workspace = true }
-ethereum-types = { workspace = true }
-num_enum = { workspace = true }
+impl-trait-for-tuples = { workspace = true , default-features = false }
+ethereum-types = { workspace = true , default-features = false }
+num_enum = { workspace = true , default-features = false }
 
 parity-scale-codec = { workspace = true }
 scale-info = { workspace = true }
@@ -24,14 +24,14 @@ sp-runtime = { workspace = true }
 sp-std = { workspace = true }
 sp-io = { workspace = true }
 
-module-evm = { workspace = true }
-module-evm-utility-macro = { workspace = true }
-module-support = { workspace = true }
-primitives = { workspace = true }
+module-evm = { workspace = true , default-features = false }
+module-evm-utility-macro = { workspace = true , default-features = false }
+module-support = { workspace = true , default-features = false }
+primitives = { workspace = true , default-features = false }
 
 [dev-dependencies]
-serde_json = { workspace = true, features = ["std"] }
-hex = { workspace = true, features = ["std"] }
+serde_json = { workspace = true, features = ["std"] , default-features = false }
+hex = { workspace = true, features = ["std"] , default-features = false }
 pallet-balances = { workspace = true, features = ["std"] }
 pallet-timestamp = { workspace = true, features = ["std"] }
 

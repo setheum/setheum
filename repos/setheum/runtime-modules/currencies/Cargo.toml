@@ -18,21 +18,21 @@ sp-std = { workspace = true }
 frame-support = { workspace = true }
 frame-system = { workspace = true }
 
-module-traits = { workspace = true }
+module-traits = { workspace = true , default-features = false }
 
-primitives = { workspace = true }
-module-support = { workspace = true }
+primitives = { workspace = true , default-features = false }
+module-support = { workspace = true , default-features = false }
 
 [dev-dependencies]
-serde_json = { workspace = true, features = ["std"] }
-hex = { workspace = true, features = ["std"] }
-hex-literal = { workspace = true }
+serde_json = { workspace = true, features = ["std"] , default-features = false }
+hex = { workspace = true, features = ["std"] , default-features = false }
+hex-literal = { workspace = true , default-features = false }
 sp-core = { workspace = true, features = ["std"] }
 pallet-balances = { workspace = true, features = ["std"] }
 pallet-timestamp = { workspace = true, features = ["std"] }
-module-tokens = { workspace = true, features = ["std"] }
-# module-evm = { workspace = true, features = ["std"] }
-# module-evm-bridge = { workspace = true, features = ["std"] }
+module-tokens = { workspace = true, features = ["std"] , default-features = false }
+# module-evm = { workspace = true, features = ["std"] , default-features = false }
+# module-evm-bridge = { workspace = true, features = ["std"] , default-features = false }
 
 [features]
 default = ["std"]

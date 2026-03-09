@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Afsall Labs.
+// Copyright (C) 2019-Present Setheum Developers.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -18,19 +18,33 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-use crate::{
-    abft::SignatureSet,
-    block::UnverifiedHeader,
-    crypto::Signature,
-    data_io::{SetBFTData, SetBFTNetworkMessage},
-    Hasher,
-};
+use crate::Cli;
 
-pub type NetworkData<UH> =
-    legacy_set_bft::NetworkData<Hasher, SetBFTData<UH>, Signature, SignatureSet<Signature>>;
+mod pruning;
+mod sync;
 
-impl<UH: UnverifiedHeader> SetBFTNetworkMessage<UH> for NetworkData<UH> {
-    fn included_data(&self) -> Vec<SetBFTData<UH>> {
-        self.included_data()
+use pruning::PruningConfigValidator;
+use sync::SyncConfigValidator;
+
+/// Validate and modify the configuration to make it conform to our assumptions.
+pub struct Validator {
+    pruning: PruningConfigValidator,
+    sync: SyncConfigValidator,
+}
+
+impl Validator {
+    /// Modifies the settings.
+    pub fn process(cli: &mut Cli) -> Self {
+        Validator {
+            pruning: PruningConfigValidator::process(cli),
+            sync: SyncConfigValidator::process(cli),
+        }
+    }
+
+    /// Warns the user about the modified settings.
+    pub fn report(self) {
+        let Validator { pruning, sync } = self;
+        pruning.report();
+        sync.report();
     }
 }

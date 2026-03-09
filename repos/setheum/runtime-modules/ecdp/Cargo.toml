@@ -15,23 +15,23 @@ sp-core = { workspace = true }
 frame-support = { workspace = true }
 frame-system = { workspace = true }
 sp-std = { workspace = true }
-module-ecdp-seusd-engine = { workspace = true }
-module-ecdp-loans = { workspace = true }
-module-support = { workspace = true }
-primitives = { workspace = true }
+module-ecdp-seusd-engine = { workspace = true , default-features = false }
+module-ecdp-loans = { workspace = true , default-features = false }
+module-support = { workspace = true , default-features = false }
+primitives = { workspace = true , default-features = false }
 
 [dev-dependencies]
 sp-io = { workspace = true, features = ["std"] }
 sp-core = { workspace = true, features = ["std"] }
 pallet-balances = { workspace = true, features = ["std"] }
 pallet-timestamp = { workspace = true, features = ["std"] }
-module-currencies = { workspace = true, features = ["std"] }
-module-traits = { workspace = true, features = ["std"] }
-module-tokens = { workspace = true, features = ["std"] }
-module-ecdp-seusd-treasury = { workspace = true, features = ["std"] }
-module-evm-accounts = { workspace = true, features = ["std"] }
-module-evm = { workspace = true, features = ["std"] }
-module-evm-bridge = { workspace = true, features = ["std"] }
+module-currencies = { workspace = true, features = ["std"] , default-features = false }
+module-traits = { workspace = true, features = ["std"] , default-features = false }
+module-tokens = { workspace = true, features = ["std"] , default-features = false }
+module-ecdp-seusd-treasury = { workspace = true, features = ["std"] , default-features = false }
+module-evm-accounts = { workspace = true, features = ["std"] , default-features = false }
+module-evm = { workspace = true, features = ["std"] , default-features = false }
+module-evm-bridge = { workspace = true, features = ["std"] , default-features = false }
 
 [features]
 default = ["std"]

@@ -37,6 +37,7 @@ pub use testing::*;
 
 use parity_scale_codec::{Decode, Encode, MaxEncodedLen};
 use scale_info::TypeInfo;
+#[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};
 use sp_core::U256;
 use sp_runtime::{
@@ -132,8 +133,9 @@ pub use sp_runtime::OpaqueExtrinsic as UncheckedExtrinsic;
 pub type Multiplier = FixedU128;
 
 #[derive(
-	Encode, Decode, Eq, PartialEq, Copy, Clone, RuntimeDebug, PartialOrd, Ord, TypeInfo, Serialize, Deserialize,
+	Encode, Decode, Eq, PartialEq, Copy, Clone, RuntimeDebug, PartialOrd, Ord, TypeInfo,
 )]
+#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub enum AuthoritysOriginId {
 	Root,
 	Treasury,
@@ -145,16 +147,18 @@ pub enum AuthoritysOriginId {
 }
 
 #[derive(
-	Encode, Decode, Eq, PartialEq, Copy, Clone, RuntimeDebug, PartialOrd, Ord, TypeInfo, Serialize, Deserialize,
+	Encode, Decode, Eq, PartialEq, Copy, Clone, RuntimeDebug, PartialOrd, Ord, TypeInfo,
 )]
+#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub enum DataProviderId {
 	Aggregated = 0,
 	Setheum = 1,
 }
 
 #[derive(
-	Encode, Eq, PartialEq, Copy, Clone, RuntimeDebug, PartialOrd, Ord, TypeInfo, MaxEncodedLen, Serialize, Deserialize,
+	Encode, Eq, PartialEq, Copy, Clone, RuntimeDebug, PartialOrd, Ord, TypeInfo, MaxEncodedLen,
 )]
+#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub struct TradingPair(CurrencyId, CurrencyId);
 
 impl TradingPair {
@@ -223,3 +227,5 @@ pub fn to_bytes<T: Into<U256>>(value: T) -> [u8; 32] {
 	let value: U256 = value.into();
 	value.to_big_endian()
 }
+
+pub use setbft::*;

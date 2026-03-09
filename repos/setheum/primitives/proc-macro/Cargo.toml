@@ -9,7 +9,7 @@ edition = "2021"
 proc-macro = true
 
 [dependencies]
-syn = { workspace = true, features = ["full", "fold"] }
+syn = { workspace = true, features = ["full", "fold"] , default-features = false }
 quote = "1.0"
 proc-macro2 = "1.0"
-tiny-keccak = { workspace = true, features = ["keccak"] }
+tiny-keccak = { workspace = true, features = ["keccak"] , default-features = false }

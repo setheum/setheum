@@ -25,23 +25,35 @@ structopt = '0.3.8'
 serde = { workspace = true, features = ["derive"] }
 serde_json = "1.0.68"
 
+parity-scale-codec = { workspace = true, features = ["derive"] }
+log = { workspace = true }
+futures = { workspace = true }
+static_assertions = { workspace = true }
+thiserror = { workspace = true }
+fake-runtime-api = { workspace = true, features = ["std"] }
+jsonrpsee = { workspace = true, features = ["server"] }
+
 # Substrate dependencies
 frame-benchmarking = { workspace = true }
 frame-benchmarking-cli = { workspace = true, optional = true }
 pallet-transaction-payment-rpc = { workspace = true }
 sc-chain-spec = { workspace = true }
 sc-basic-authorship = { workspace = true }
-sc-cli = { workspace = true, optional = true, features = ['wasmtime'] }
+sc-cli = { workspace = true, optional = true }
 sc-client-api = { workspace = true }
-sc-executor = { workspace = true, features = ['wasmtime'] }
+sc-client-db = { workspace = true }
+sc-executor = { workspace = true }
 sc-rpc = { workspace = true }
 sc-rpc-api = { workspace = true }
-sc-service = { workspace = true, optional = true, features = ['wasmtime'] }
+sc-service = { workspace = true, optional = true }
 sc-transaction-pool = { workspace = true }
 sc-transaction-pool-api = { workspace = true }
 sc-telemetry = { workspace = true }
+sc-network = { workspace = true }
+sc-network-sync = { workspace = true }
 sp-std = { workspace = true }
 sp-api = { workspace = true }
+sp-arithmetic = { workspace = true }
 sp-block-builder = { workspace = true }
 sp-blockchain = { workspace = true }
 sp-core = { workspace = true, optional = true }
@@ -54,12 +66,7 @@ substrate-frame-rpc-system = { workspace = true }
 sc-keystore = { workspace = true }
 sp-keystore = { workspace = true }
 
-sp-finality-grandpa = { workspace = true }
-sc-finality-grandpa = { workspace = true }
-sc-finality-grandpa-rpc = { workspace = true }
-
 sp-consensus = { workspace = true }
-sp-consensus-babe = { workspace = true }
 sc-consensus = { workspace = true }
 sc-consensus-aura = { workspace = true }
 sp-consensus-aura = { workspace = true }
@@ -67,7 +74,7 @@ sc-consensus-manual-seal = { workspace = true }
 sc-consensus-epochs = { workspace = true }
 sc-consensus-slots = { workspace = true }
 
-node-runtime = { git = "https:/github.com/paritytech/substrate", branch = "polkadot-v0.9.10" }
+
 
 module-oracle-rpc = { path = "../runtime-modules/oracle/rpc" }
 
@@ -78,21 +85,26 @@ evm-rpc = { path = "../runtime-modules/evm/rpc" }
 
 setheum-primitives = { path = "../primitives" }
 
+finality-setbft = { workspace = true }
+module-setbft-runtime-api = { workspace = true }
+
 # runtime
-setheum-runtime = { workspace = true }
+setheum-runtime = { workspace = true, default-features = false }
 
 [features]
-default = [ "wasmtime", "cli" ]
-wasmtime = [ "sc-cli/wasmtime" ]
+default = [ "cli", "std" ]
 cli = [
+	"std",
 	"sp-core",
 	"sc-cli",
 	"sc-service",
 	"frame-benchmarking-cli",
 ]
 runtime-benchmarks = [
-	'setheum-runtime/runtime-benchmarks',
-	'node-runtime/runtime-benchmarks'
+	'setheum-runtime/runtime-benchmarks'
+]
+std = [
+	'setheum-runtime/std'
 ]
 with-ethereum-compatibility = [
 	"setheum-runtime/with-ethereum-compatibility"

@@ -8,23 +8,23 @@ homepage.workspace = true
 repository.workspace = true
 
 [dependencies]
-rate-limiter = { workspace = true }
+rate-limiter = { workspace = true , default-features = false }
 
-async-trait = { workspace = true }
-bytes = { workspace = true }
+async-trait = { workspace = true , default-features = false }
+bytes = { workspace = true , default-features = false }
 parity-scale-codec = { workspace = true, features = ["std", "derive"] }
-derive_more = { workspace = true }
-env_logger = { workspace = true }
-futures = { workspace = true }
-futures-timer = { workspace = true }
-hash-db = { workspace = true }
-ip_network = { workspace = true }
-log = { workspace = true }
-lru = { workspace = true }
-rand = { workspace = true }
-serde = { workspace = true }
-substrate-prometheus-endpoint = { workspace = true }
-tiny-bip39 = { workspace = true }
+derive_more = { workspace = true , default-features = false }
+env_logger = { workspace = true , default-features = false }
+futures = { workspace = true , default-features = false }
+futures-timer = { workspace = true , default-features = false }
+hash-db = { workspace = true , default-features = false }
+ip_network = { workspace = true , default-features = false }
+log = { workspace = true , default-features = false }
+lru = { workspace = true , default-features = false }
+rand = { workspace = true , default-features = false }
+serde = { workspace = true , default-features = false }
+substrate-prometheus-endpoint = { workspace = true , default-features = false }
+tiny-bip39 = { workspace = true , default-features = false }
 tokio = { workspace = true, features = [
     "sync",
     "macros",
@@ -35,5 +35,5 @@ tokio = { workspace = true, features = [
 ] }
 
 [dev-dependencies]
-set-bft-types = { workspace = true }
-set-bft-mock = { workspace = true }
+set-bft-types = { workspace = true , default-features = false }
+set-bft-mock = { workspace = true , default-features = false }

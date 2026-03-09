@@ -8,8 +8,8 @@ homepage.workspace = true
 repository.workspace = true
 
 [dependencies]
-log = { workspace = true }
-hex-literal = { workspace = true }
+log = { workspace = true , default-features = false }
+hex-literal = { workspace = true , default-features = false }
 parity-scale-codec = { workspace = true }
 scale-info = { workspace = true }
 frame-support = { workspace = true }
@@ -17,15 +17,15 @@ frame-system = { workspace = true }
 sp-core = { workspace = true }
 sp-runtime = { workspace = true }
 sp-std = { workspace = true }
-module-support = { workspace = true }
+module-support = { workspace = true , default-features = false }
 
 [dev-dependencies]
 sp-io = { workspace = true, features = ["std"] }
 pallet-balances = { workspace = true, features = ["std"] }
-module-tokens = { workspace = true, features = ["std"] }
-module-traits = { workspace = true, features = ["std"] }
-primitives = { workspace = true, features = ["std"] }
-smallvec = { workspace = true }
+module-tokens = { workspace = true, features = ["std"] , default-features = false }
+module-traits = { workspace = true, features = ["std"] , default-features = false }
+primitives = { workspace = true, features = ["std"] , default-features = false }
+smallvec = { workspace = true , default-features = false }
 
 [features]
 default = ["std"]

@@ -89,7 +89,6 @@ pub mod module {
 
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(crate) fn deposit_event)]
-	#[pallet::metadata(T::AccountId = "AccountId", BalanceOf<T> = "Balance", CurrencyId = "CurrencyId")]
 	pub enum Event<T: Config> {
 /// Drop Airdrop
 		Airdrop {

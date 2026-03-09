@@ -11,7 +11,7 @@ repository.workspace = true
 proc-macro = true
 
 [dependencies]
-quote = { workspace = true }
-syn = { workspace = true, features = ["full", "fold", "extra-traits", "visit"] }
-proc-macro2 = { workspace = true }
-module-evm-utility = { workspace = true, features = ["std"] }
+quote = { workspace = true , default-features = false }
+syn = { workspace = true, features = ["full", "fold", "extra-traits", "visit"] , default-features = false }
+proc-macro2 = { workspace = true , default-features = false }
+module-evm-utility = { workspace = true, features = ["std"] , default-features = false }

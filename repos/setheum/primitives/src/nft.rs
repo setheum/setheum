@@ -33,7 +33,7 @@ pub type Attributes = BTreeMap<Vec<u8>, Vec<u8>>;
 
 #[bitflags]
 #[repr(u8)]
-#[derive(Encode, Decode, Clone, Copy, RuntimeDebug, PartialEq, Eq, TypeInfo)]
+#[derive(Encode, Decode, parity_scale_codec::DecodeWithMemTracking, Clone, Copy, RuntimeDebug, PartialEq, Eq, TypeInfo)]
 pub enum ClassProperty {
 /// Is token transferable
 	Transferable = 0b00000001,
@@ -47,6 +47,8 @@ pub enum ClassProperty {
 
 #[derive(Clone, Copy, PartialEq, Default, RuntimeDebug, Serialize, Deserialize)]
 pub struct Properties(pub BitFlags<ClassProperty>);
+
+impl parity_scale_codec::DecodeWithMemTracking for Properties {}
 
 impl Eq for Properties {}
 impl Encode for Properties {

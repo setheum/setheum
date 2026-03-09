@@ -7,11 +7,11 @@ edition = "2021"
 
 [dependencies]
 anyhow = "^1.0"
-clap = { workspace = true, features = ["derive"] }
+clap = { workspace = true, features = ["derive"] , default-features = false }
 env_logger = "0.11.1"
-futures = { workspace = true, features = ["alloc"] }
+futures = { workspace = true, features = ["alloc"] , default-features = false }
 log = "0.4"
 subxt = "0.30.1"
-tokio = { workspace = true, features = ["full"] }
+tokio = { workspace = true, features = ["full"] , default-features = false }
 
-setheum_client = { path = "../../../interfaces/setheum-client" }
+setheum_client = { path = "../../../interfaces/setheum-client" , default-features = false }

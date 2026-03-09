@@ -35,49 +35,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use rate_limiter::{RateLimiter, SleepingRateLimiter};
+use rate_limiter::{RateLimitedAsyncRead, SharedRateLimiter};
 use tokio::io::AsyncRead;
-
 use crate::{ConnectionInfo, Data, Dialer, Listener, PeerAddressInfo, Splittable, Splitted};
 
-pub struct RateLimitedAsyncRead<Read> {
-    rate_limiter: RateLimiter,
-    read: Read,
-}
-
-impl<Read> RateLimitedAsyncRead<Read> {
-    pub fn new(read: Read, rate_limiter: RateLimiter) -> Self {
-        Self { rate_limiter, read }
-    }
-}
-
-impl<Read: AsyncRead + Unpin> AsyncRead for RateLimitedAsyncRead<Read> {
-    fn poll_read(
-        self: std::pin::Pin<&mut Self>,
-        cx: &mut std::task::Context<'_>,
-        buf: &mut tokio::io::ReadBuf<'_>,
-    ) -> std::task::Poll<std::io::Result<()>> {
-        let this = self.get_mut();
-        let read = std::pin::Pin::new(&mut this.read);
-        this.rate_limiter.rate_limit(read, cx, buf)
-    }
-}
+// RateLimitedAsyncRead is imported from rate-limiter.
+// We implement ConnectionInfo for it.
 
 impl<Read: ConnectionInfo> ConnectionInfo for RateLimitedAsyncRead<Read> {
     fn peer_address_info(&self) -> PeerAddressInfo {
-        self.read.peer_address_info()
+        self.inner().peer_address_info()
     }
 }
 
 /// Implementation of the [Dialer] trait governing all returned [Dialer::Connection] instances by a rate-limiting wrapper.
-#[derive(Clone)]
 pub struct RateLimitingDialer<D> {
     dialer: D,
-    rate_limiter: SleepingRateLimiter,
+    rate_limiter: SharedRateLimiter,
+}
+
+impl<D: Clone> Clone for RateLimitingDialer<D> {
+    fn clone(&self) -> Self {
+        Self {
+            dialer: self.dialer.clone(),
+            rate_limiter: self.rate_limiter.share(),
+        }
+    }
 }
 
 impl<D> RateLimitingDialer<D> {
-    pub fn new(dialer: D, rate_limiter: SleepingRateLimiter) -> Self {
+    pub fn new(dialer: D, rate_limiter: SharedRateLimiter) -> Self {
         Self {
             dialer,
             rate_limiter,
@@ -103,7 +90,7 @@ where
         let connection = self.dialer.connect(address).await?;
         let (sender, receiver) = connection.split();
         Ok(Splitted(
-            RateLimitedAsyncRead::new(receiver, RateLimiter::new(self.rate_limiter.clone())),
+            RateLimitedAsyncRead::new(receiver, self.rate_limiter.share()),
             sender,
         ))
     }
@@ -112,11 +99,11 @@ where
 /// Implementation of the [Listener] trait governing all returned [Listener::Connection] instances by a rate-limiting wrapper.
 pub struct RateLimitingListener<L> {
     listener: L,
-    rate_limiter: SleepingRateLimiter,
+    rate_limiter: SharedRateLimiter,
 }
 
 impl<L> RateLimitingListener<L> {
-    pub fn new(listener: L, rate_limiter: SleepingRateLimiter) -> Self {
+    pub fn new(listener: L, rate_limiter: SharedRateLimiter) -> Self {
         Self {
             listener,
             rate_limiter,
@@ -136,7 +123,7 @@ impl<L: Listener + Send> Listener for RateLimitingListener<L> {
         let connection = self.listener.accept().await?;
         let (sender, receiver) = connection.split();
         Ok(Splitted(
-            RateLimitedAsyncRead::new(receiver, RateLimiter::new(self.rate_limiter.clone())),
+            RateLimitedAsyncRead::new(receiver, self.rate_limiter.share()),
             sender,
         ))
     }

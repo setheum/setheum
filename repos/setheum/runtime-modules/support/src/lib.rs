@@ -47,15 +47,21 @@ use sp_runtime::{
 };
 use sp_std::{prelude::*, result::Result};
 use xcm::prelude::*;
+#[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize, Debug)]
+use parity_scale_codec::{Decode, Encode};
+use scale_info::TypeInfo;
+
+#[derive(Clone, PartialEq, Eq, sp_runtime::RuntimeDebug, Encode, Decode, TypeInfo)]
+#[cfg_attr(feature = "std", derive(Deserialize))]
 pub struct AirdropEntry {
     pub account: AccountId,
     pub amount: Balance,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Clone, PartialEq, Eq, sp_runtime::RuntimeDebug, Encode, Decode, TypeInfo)]
+#[cfg_attr(feature = "std", derive(Deserialize))]
 pub struct AirdropList(pub Vec<AirdropEntry>);
 
 pub mod bounded;
@@ -64,6 +70,7 @@ pub mod edfis_launchpad;
 pub mod edfis_swap;
 pub mod edfis_swap_legacy;
 pub mod evm;
+pub mod incentives;
 pub mod migration;
 pub mod mocks;
 
@@ -71,8 +78,9 @@ pub use crate::bounded::*;
 // pub use crate::ecdp::*;
 pub use crate::edfis_launchpad::*;
 pub use crate::edfis_swap::*;
-pub use crate::edfis_swap_legacy::*;
+// pub use crate::edfis_swap_legacy::*;
 pub use crate::evm::*;
+pub use crate::incentives::*;
 pub use crate::migration::*;
 
 pub type Price = FixedU128;

@@ -8,25 +8,25 @@ homepage.workspace = true
 repository.workspace = true
 
 [dependencies]
-log = { workspace = true }
+log = { workspace = true , default-features = false }
 parity-scale-codec = { workspace = true }
 scale-info = { workspace = true }
 sp-runtime = { workspace = true }
 frame-support = { workspace = true }
 frame-system = { workspace = true }
 sp-std = { workspace = true }
-module-traits = { workspace = true }
-module-support ={ workspace = true }
-primitives = { workspace = true }
+module-traits = { workspace = true , default-features = false }
+module-support ={ workspace = true , default-features = false }
+primitives = { workspace = true , default-features = false }
 
 [dev-dependencies]
 sp-core = { workspace = true, features = ["std"] }
 sp-io = { workspace = true, features = ["std"] }
 pallet-balances = { workspace = true, features = ["std"] }
-module-currencies = { workspace = true, features = ["std"] }
-module-auction = { workspace = true, features = ["std"] }
-module-edfis_swap_legacy = { workspace = true, features = ["std"] }
-module-tokens = { workspace = true, features = ["std"] }
+module-currencies = { workspace = true, features = ["std"] , default-features = false }
+module-auction = { workspace = true, features = ["std"] , default-features = false }
+module-edfis_swap_legacy = { workspace = true, features = ["std"] , default-features = false }
+module-tokens = { workspace = true, features = ["std"] , default-features = false }
 
 [features]
 default = ["std"]
