@@ -270,7 +270,7 @@ impl Config for TestRuntime {
     type ValidatorExtractor = Staking;
     type FinalityCommitteeManager = SetBFT;
     type SessionPeriod = SessionPeriod;
-    type AbftScoresProvider = SetBFT;
+    type SbftScoresProvider = SetBFT;
 }
 
 pub fn active_era() -> EraIndex {

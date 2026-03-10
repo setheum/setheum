@@ -23,7 +23,7 @@ use std::collections::HashMap;
 use parity_scale_codec::Encode;
 
 use crate::{
-    abft::NodeCount,
+    sbft::NodeCount,
     crypto::{AuthorityPen, AuthorityVerifier},
     network::{
         session::{AuthData, Authentication},

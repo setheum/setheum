@@ -39,8 +39,9 @@
 #![allow(clippy::unused_unit)]
 #![allow(clippy::type_complexity)]
 
-use frame_support::{pallet_prelude::*, transactional, PalletId, traits::Get};
+use frame_support::{pallet_prelude::*, transactional, PalletId, traits::{Get, ExistenceRequirement}};
 use frame_system::pallet_prelude::*;
+use frame_system::pallet_prelude::BlockNumberFor;
 use module_traits::{MultiCurrency, MultiCurrencyExtended};
 use primitives::{AccountId, Balance, CurrencyId};
 use module_support::AirdropList;
@@ -62,7 +63,7 @@ pub mod module {
 
 	#[pallet::config]
 	pub trait Config: frame_system::Config {
-		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 
 /// The Currency for managing assets.
 		type MultiCurrency: MultiCurrencyExtended<Self::AccountId, CurrencyId = CurrencyId, Balance = Balance>;
@@ -106,7 +107,7 @@ pub mod module {
 	pub struct Pallet<T>(PhantomData<T>);
 
 	#[pallet::hooks]
-	impl<T: Config> Hooks<T::BlockNumber> for Pallet<T> {}
+	impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
 
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
@@ -116,7 +117,7 @@ pub mod module {
 ///
 /// - `currency_id`: `CurrencyId` airdrop currency type.
 /// - `airdrop_list`: airdrop accounts and respective amounts in Vec<(T::AccountId, Balance)> format.
-		#[pallet::weight((100_000_000 as Weight, DispatchClass::Operational))]
+		#[pallet::weight((Weight::from_parts(100_000_000, 0), DispatchClass::Operational))]
 		#[transactional]
 		pub fn make_airdrop(
 			origin: OriginFor<T>,
@@ -140,8 +141,9 @@ pub mod module {
 ///
 /// - `currency_id`: `CurrencyId` airdrop currency type.
 /// - `airdrop_list_json`: airdrop accounts and respective amounts in json format as a byte vector.
-        #[pallet::weight((100_000_000 as Weight, DispatchClass::Operational))]
+        #[pallet::weight((Weight::from_parts(100_000_000, 0), DispatchClass::Operational))]
         #[transactional]
+        #[cfg(feature = "std")]
         pub fn make_airdrop_with_json(
             origin: OriginFor<T>,
             currency_id: CurrencyId,
@@ -159,13 +161,24 @@ pub mod module {
             Self::do_make_airdrop(who, currency_id, airdrop_entries)?;
             Ok(())
         }
+
+        #[pallet::weight((Weight::from_parts(100_000_000, 0), DispatchClass::Operational))]
+        #[transactional]
+        #[cfg(not(feature = "std"))]
+        pub fn make_airdrop_with_json(
+            _origin: OriginFor<T>,
+            _currency_id: CurrencyId,
+            _airdrop_list_json: Vec<u8>,
+        ) -> DispatchResult {
+            Err(Error::<T>::InvalidJson.into())
+        }
     }
 }
 
 impl<T: Config> Pallet<T> {
 /// Get account of Airdrop module.
 	pub fn account_id() -> T::AccountId {
-		T::PalletId::get().into_account()
+		T::PalletId::get().into_account_truncating()
 	}
 
 	fn do_make_airdrop(who: T::AccountId, currency_id: CurrencyId, airdrop_list: Vec<(T::AccountId, Balance)>) -> DispatchResult {
@@ -175,7 +188,7 @@ impl<T: Config> Pallet<T> {
                 if !processed_accounts.insert(beneficiary) {
                     return TransactionOutcome::Rollback(Err(Error::<T>::DuplicateAccounts.into()));
                 }
-                let transfer_result = T::MultiCurrency::transfer(currency_id, &who, beneficiary, *amount);
+                let transfer_result = T::MultiCurrency::transfer(currency_id, &who, beneficiary, *amount, ExistenceRequirement::AllowDeath);
                 if transfer_result.is_err() {
                     return TransactionOutcome::Rollback(Err(transfer_result.err().unwrap()));
                 }
@@ -184,6 +197,7 @@ impl<T: Config> Pallet<T> {
         })
     }
 	
+	#[cfg(feature = "std")]
 	fn parse_airdrop_json(airdrop_list_json: Vec<u8>) -> Result<Vec<(T::AccountId, Balance)>, Error<T>> {
 		let airdrop_list: AirdropList = serde_json::from_slice(&airdrop_list_json)
 			.map_err(|_| Error::<T>::InvalidJson)?;

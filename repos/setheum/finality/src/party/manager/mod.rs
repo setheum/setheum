@@ -29,7 +29,7 @@ use sp_application_crypto::RuntimeAppPublic;
 use sp_runtime::traits::{Block as BlockT, Header as HeaderT};
 
 use crate::{
-    abft::{
+    sbft::{
         current_create_setbft_config, legacy_create_setbft_config, run_current_member,
         run_legacy_member, SpawnHandle,
     },
@@ -56,7 +56,7 @@ use crate::{
         session::{SessionManager, SessionSender},
     },
     party::{
-        backup::ABFTBackup, manager::aggregator::AggregatorVersion, traits::NodeSessionManager,
+        backup::SBFTBackup, manager::aggregator::AggregatorVersion, traits::NodeSessionManager,
     },
     sync::JustificationSubmissions,
     AuthorityId, BlockId, CurrentRmcNetworkData, Keychain, LegacyRmcNetworkData, NodeIndex,
@@ -72,7 +72,7 @@ pub use authority::{Subtasks, Task as AuthorityTask};
 pub use task::{Handle, Runnable, Task, TaskCommon};
 
 use crate::{
-    abft::{CURRENT_VERSION, LEGACY_VERSION},
+    sbft::{CURRENT_VERSION, LEGACY_VERSION},
     block::{BlockchainEvents, HeaderBackend},
     sync::{LegacyRequestBlocks, RequestBlocks},
 };
@@ -109,7 +109,7 @@ where
     aggregator_io: aggregator::IO<JS>,
     multikeychain: Keychain,
     exit_rx: oneshot::Receiver<()>,
-    backup: ABFTBackup,
+    backup: SBFTBackup,
 }
 
 pub struct NodeSessionManagerImpl<H, C, HB, BBS, B, RB, SM, JS, V>
@@ -338,7 +338,7 @@ where
         authorities: &[AuthorityId],
         node_id: NodeIndex,
         exit_rx: oneshot::Receiver<()>,
-        backup: ABFTBackup,
+        backup: SBFTBackup,
     ) -> Subtasks {
         debug!(target: "afa", "Authority task {:?}", session_id);
 
@@ -464,7 +464,7 @@ where
         &self,
         session: SessionId,
         node_id: NodeIndex,
-        backup: ABFTBackup,
+        backup: SBFTBackup,
         authorities: &[AuthorityId],
     ) -> AuthorityTask {
         let (exit, exit_rx) = futures::channel::oneshot::channel();

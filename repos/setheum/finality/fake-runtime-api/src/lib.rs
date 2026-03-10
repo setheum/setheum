@@ -220,7 +220,7 @@ pub mod fake_runtime {
                 unimplemented!()
             }
 
-            fn submit_abft_score(_score: Score, _signature: SignatureSet<AuthoritySignature>) -> Option<()>{
+            fn submit_sbft_score(_score: Score, _signature: SignatureSet<AuthoritySignature>) -> Option<()>{
                 unimplemented!()
             }
         }

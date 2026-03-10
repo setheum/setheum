@@ -31,7 +31,7 @@ impl ScoreMetrics {
         match registry {
             Some(registry) => Ok(ScoreMetrics::Prometheus {
                 my_score: register(
-                    Gauge::new("my_abft_score", "My abft score observed in last batch")?,
+                    Gauge::new("my_sbft_score", "My sbft score observed in last batch")?,
                     &registry,
                 )?,
             }),

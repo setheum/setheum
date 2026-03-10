@@ -624,7 +624,7 @@ pub mod module {
 		#[pallet::call_index(4)]
 		#[pallet::weight({
 			let dispatch_info = call.get_dispatch_info();
-			(T::WeightInfo::with_fee_currency().saturating_add(dispatch_info.weight), dispatch_info.class,)
+			(T::WeightInfo::with_fee_currency().saturating_add(dispatch_info.call_weight), dispatch_info.class,)
 		})]
 		pub fn with_fee_currency(
 			origin: OriginFor<T>,
@@ -667,7 +667,7 @@ where
 		let dispatch_info = <Extrinsic as GetDispatchInfo>::get_dispatch_info(&unchecked_extrinsic);
 
 		let partial_fee = Self::compute_fee(len, &dispatch_info, 0u32.into());
-		let DispatchInfo { weight, class, .. } = dispatch_info;
+		let DispatchInfo { call_weight: weight, class, .. } = dispatch_info;
 
 		RuntimeDispatchInfo {
 			weight,
@@ -691,7 +691,7 @@ where
 		info: &DispatchInfoOf<CallOf<T>>,
 		tip: PalletBalanceOf<T>,
 	) -> FeeDetails<PalletBalanceOf<T>> {
-		Self::compute_fee_raw(len, info.weight, tip, info.pays_fee, info.class)
+		Self::compute_fee_raw(len, info.call_weight, tip, info.pays_fee, info.class)
 	}
 
 /// Compute the final fee value for a particular transaction.
@@ -914,8 +914,6 @@ where
 		if let Some(amount) = Self::check_native_is_not_enough(who, fee, reason) {
 // native asset is not enough
 
-// charge fee by currency.
-			Self::charge_fee_currency(who, amount, fee_currency_id).map(|(_, surplus)| surplus)?;
 
 			let fee_surplus = T::AlternativeFeeSurplus::get().mul_ceil(fee);
 			let fee_amount = fee_surplus.saturating_add(amount);
@@ -997,7 +995,7 @@ where
 
 // use fix rate to calculate the amount of supply asset that equal to native asset.
 		let supply_account = rate.saturating_mul_int(amount);
-		T::MultiCurrency::transfer(supply_currency_id, who, &sub_account, supply_account)?;
+		T::MultiCurrency::transfer(supply_currency_id, who, &sub_account, supply_account, ExistenceRequirement::KeepAlive)?;
 		T::Currency::transfer(&sub_account, who, amount, ExistenceRequirement::KeepAlive)?;
 		Ok(())
 	}
@@ -1053,6 +1051,7 @@ where
 			&treasury_account,
 			&sub_account,
 			T::MultiCurrency::minimum_balance(currency_id),
+			ExistenceRequirement::KeepAlive,
 		)?;
 		T::Currency::transfer(
 			&treasury_account,
@@ -1087,7 +1086,7 @@ where
 		let foreign_amount: Balance = T::MultiCurrency::free_balance(currency_id, &sub_account);
 		let native_amount: Balance = T::Currency::free_balance(&sub_account);
 
-		T::MultiCurrency::transfer(currency_id, &sub_account, &treasury_account, foreign_amount)?;
+		T::MultiCurrency::transfer(currency_id, &sub_account, &treasury_account, foreign_amount, ExistenceRequirement::AllowDeath)?;
 		T::Currency::transfer(
 			&sub_account,
 			&treasury_account,
@@ -1113,9 +1112,9 @@ where
 pub struct BuyWeightRateOfTransactionFeePool<T, C>(sp_std::marker::PhantomData<(T, C)>);
 impl<T: Config, C> BuyWeightRate for BuyWeightRateOfTransactionFeePool<T, C>
 where
-	C: Convert<MultiLocation, Option<CurrencyId>>,
+	C: Convert<xcm::v5::Location, Option<CurrencyId>>,
 {
-	fn calculate_rate(multi_location: MultiLocation) -> Option<Ratio> {
+	fn calculate_rate(multi_location: xcm::v5::Location) -> Option<Ratio> {
 		C::convert(multi_location).and_then(TokenExchangeRate::<T>::get)
 	}
 }
@@ -1146,7 +1145,7 @@ where
 ///
 /// Operational transactions will receive an additional priority bump, so that they are normally
 /// considered before regular transactions.
-#[derive(Encode, Decode, Clone, Eq, PartialEq, TypeInfo)]
+#[derive(Encode, Decode, DecodeWithMemTracking, Clone, Eq, PartialEq, TypeInfo)]
 #[scale_info(skip_type_params(T))]
 pub struct ChargeTransactionPayment<T: Config + Send + Sync>(#[codec(compact)] pub PalletBalanceOf<T>);
 
@@ -1235,13 +1234,13 @@ where
 
 // TODO: Take into account all dimensions of weight
 		let max_block_weight = max_block_weight.ref_time();
-		let info_weight = info.weight.ref_time();
+		let info_weight = info.call_weight.ref_time();
 
 		let bounded_weight = info_weight.clamp(1, max_block_weight);
 		let bounded_length = (len as u64).clamp(1, max_block_length);
 
 		let max_tx_per_block_weight = max_block_weight; // bounded_weight;
-		let max_tx_per_block_length = max_block_length; // bounded_length;
+		let max_tx_per_block_length = *T::BlockLength::get().max.get(info.class) as u64; // bounded_length;
 // Given our current knowledge this value is going to be in a reasonable range - i.e.
 // less than 10^9 (2^30), so multiplying by the `tip` value is unlikely to overflow the
 // balance type. We still use saturating ops obviously, but the point is to end up with some
@@ -1352,10 +1351,10 @@ where
 			let mut refund = refund_fee;
 			let mut actual_tip = tip;
 
-			if !tip.is_zero() && !info.weight.is_zero() {
+			if !tip.is_zero() && !info.call_weight.is_zero() {
 // tip_pre_weight * unspent_weight
 				let refund_tip = tip
-					.checked_div(info.weight.ref_time().saturated_into::<PalletBalanceOf<T>>())
+					.checked_div(info.call_weight.ref_time().saturated_into::<PalletBalanceOf<T>>())
 					.expect("checked is non-zero; qed")
 					.saturating_mul(
 						post_info

@@ -31,7 +31,7 @@ use crate::{
     primitives ::BlockNumber,
     oneshot,
     party::{
-        backup::ABFTBackup,
+        backup::SBFTBackup,
         manager::AuthorityTask,
         traits::{ChainState, NodeSessionManager},
     },
@@ -119,7 +119,7 @@ impl NodeSessionManager for Arc<MockNodeSessionManager> {
         &self,
         session: SessionId,
         node_id: NodeIndex,
-        _backup: ABFTBackup,
+        _backup: SBFTBackup,
         _authorities: &[AuthorityId],
     ) -> AuthorityTask {
         self.insert(self.validator_session_started.clone(), session);

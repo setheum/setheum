@@ -18,12 +18,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-//! Main purpose of this module is to be able to use two different versions of the abft crate.
+//! Main purpose of this module is to be able to use two different versions of the sbft crate.
 //! Older version is referred to as 'Legacy' while newer as 'Current'.
-//! We achieve this by hiding types & traits from abft crates behind our owns. In case of traits we
+//! We achieve this by hiding types & traits from sbft crates behind our owns. In case of traits we
 //! implement both current and legacy ones. In case of types we implement trait `From` to be able
-//! convert them at the 'glueing' spot to the abft library. Current and legacy versions are marked
-//! by numbers. Whenever we upgrade to next version of abft we need to increment and mark each version
+//! convert them at the 'glueing' spot to the sbft library. Current and legacy versions are marked
+//! by numbers. Whenever we upgrade to next version of sbft we need to increment and mark each version
 //! version accordingly.
 
 mod common;
@@ -35,7 +35,7 @@ mod types;
 
 use std::fmt::Debug;
 
-use set_bft_crypto::{PartialMultisignature, Signature as AbftSignature};
+use set_bft_crypto::{PartialMultisignature, Signature as SbftSignature};
 pub use crypto::Keychain;
 pub use current::{
     create_setbft_config, run_member,
@@ -53,7 +53,7 @@ pub use types::{NodeCount, NodeIndex, Recipient};
 
 use crate::crypto::Signature;
 
-const LOG_TARGET: &str = "setbft-abft";
+const LOG_TARGET: &str = "setbft-sbft";
 
 /// Wrapper for `SignatureSet` to be able to implement both legacy and current `PartialMultisignature` trait.
 /// Inner `SignatureSet` is imported from `set_bft_crypto` with fixed version for compatibility reasons:
@@ -81,7 +81,7 @@ impl<S: Clone> SignatureSet<S> {
 
     pub fn add_signature(self, signature: &S, index: NodeIndex) -> Self
     where
-        S: AbftSignature,
+        S: SbftSignature,
     {
         SignatureSet(self.0.add_signature(signature, index.into()))
     }
@@ -110,7 +110,7 @@ impl From<SignatureSet<Signature>> for PrimitivesSignatureSet<AuthoritySignature
     }
 }
 
-impl<S: AbftSignature> set_bft::PartialMultisignature for SignatureSet<S> {
+impl<S: SbftSignature> set_bft::PartialMultisignature for SignatureSet<S> {
     type Signature = S;
 
     fn add_signature(

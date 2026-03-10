@@ -33,7 +33,7 @@ use network_clique::{Network as CliqueNetwork, PublicKey};
 use tokio::time::{self, Instant};
 
 use crate::{
-    abft::Recipient,
+    sbft::Recipient,
     crypto::{AuthorityPen, AuthorityVerifier},
     network::{
         address_cache::ValidatorAddressCacheUpdater,

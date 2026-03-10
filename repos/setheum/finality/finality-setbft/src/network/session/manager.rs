@@ -28,7 +28,7 @@ use futures::channel::mpsc;
 use log::{debug, info};
 
 use crate::{
-    abft::Recipient,
+    sbft::Recipient,
     crypto::{AuthorityPen, AuthorityVerifier},
     network::{
         address_cache::{ValidatorAddressCacheUpdater, ValidatorAddressingInfo},

@@ -20,7 +20,7 @@
 
 use std::collections::BTreeSet;
 
-use module_setbft::AbftScores;
+use module_setbft::SbftScores;
 use primitives::{BanInfo, BannedValidators, Score};
 
 use crate::{
@@ -212,7 +212,7 @@ fn ban_underperforming_finalizers() {
                 nonce: 1,
                 points,
             };
-            AbftScores::<TestRuntime>::insert(session_index, score);
+            SbftScores::<TestRuntime>::insert(session_index, score);
             underperf_count += 1;
             session_index += 1;
         }

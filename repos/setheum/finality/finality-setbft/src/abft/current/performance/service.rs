@@ -30,7 +30,7 @@ use parity_scale_codec::Encode;
 use sp_runtime::traits::Hash as _;
 
 use crate::{
-    abft::{
+    sbft::{
         current::performance::{scorer::Scorer, Batch},
         LOG_TARGET,
     },
@@ -81,12 +81,12 @@ where
             }
         }
         if let Err(err) = self.batches_for_scorer.unbounded_send(batch) {
-            warn!(target: LOG_TARGET, "Failed to send ABFT batch to performance scoring: {}.", err);
+            warn!(target: LOG_TARGET, "Failed to send SBFT batch to performance scoring: {}.", err);
         }
     }
 }
 
-/// A service computing the performance score of ABFT nodes based on batches of ordered units.
+/// A service computing the performance score of SBFT nodes based on batches of ordered units.
 pub struct Service<UH, RA>
 where
     UH: UnverifiedHeader,
@@ -95,7 +95,7 @@ where
     my_index: usize,
     session_id: SessionId,
     score_submission_period: u32,
-    batches_from_abft: mpsc::UnboundedReceiver<Batch<UH>>,
+    batches_from_sbft: mpsc::UnboundedReceiver<Batch<UH>>,
     hashes_for_aggregator: mpsc::UnboundedSender<Hash>,
     signatures_from_aggregator: mpsc::UnboundedReceiver<(Hash, SignatureSet<AuthoritySignature>)>,
     runtime_api: RA,
@@ -117,7 +117,7 @@ where
     RA: RuntimeApi,
 {
     /// Create a new service, together with a unit finalization handler that should be passed to
-    /// ABFT. It will wrap the provided finalization handler and call it in the background.
+    /// SBFT. It will wrap the provided finalization handler and call it in the background.
     #[allow(clippy::too_many_arguments)]
     pub fn new<FH>(
         my_index: usize,
@@ -139,13 +139,13 @@ where
             hashes_for_aggregator,
             signatures_from_aggregator,
         } = io;
-        let (batches_for_us, batches_from_abft) = mpsc::unbounded();
+        let (batches_for_us, batches_from_sbft) = mpsc::unbounded();
         (
             Service {
                 my_index,
                 session_id,
                 score_submission_period,
-                batches_from_abft,
+                batches_from_sbft,
                 hashes_for_aggregator,
                 signatures_from_aggregator,
                 runtime_api,
@@ -179,11 +179,11 @@ where
         let mut batch_counter = 1;
         loop {
             tokio::select! {
-                maybe_batch = self.batches_from_abft.next() => {
+                maybe_batch = self.batches_from_sbft.next() => {
                     let points = match maybe_batch {
                         Some(batch) => self.scorer.process_batch(batch),
                         None => {
-                            error!(target: LOG_TARGET, "Batches' channel closed, ABFT performance scoring terminating.");
+                            error!(target: LOG_TARGET, "Batches' channel closed, SBFT performance scoring terminating.");
                             break;
                         },
                     };
@@ -191,7 +191,7 @@ where
                     if batch_counter % self.score_submission_period == 0 {
                         let score = self.make_score(points);
                         let score_hash = Hashing::hash_of(&score.encode());
-                        debug!(target: LOG_TARGET, "Gathering signature under ABFT score: {:?}.", score);
+                        debug!(target: LOG_TARGET, "Gathering signature under SBFT score: {:?}.", score);
                         self.pending_scores.insert(score_hash, score);
                         if let Err(e) = self.hashes_for_aggregator.unbounded_send(score_hash) {
                             error!(target: LOG_TARGET, "Failed to send score hash to signature aggregation: {}.", e);
@@ -205,7 +205,7 @@ where
                         Some((hash, signature)) => {
                             match self.pending_scores.remove(&hash) {
                                 Some(score) => {
-                                    if let Err(e) = self.runtime_api.submit_abft_score(score, signature) {
+                                    if let Err(e) = self.runtime_api.submit_sbft_score(score, signature) {
                                         warn!(target: LOG_TARGET, "Failed to submit performance score to chain: {}.", e);
                                     }
                                 },
@@ -215,13 +215,13 @@ where
                             }
                         },
                         None => {
-                            error!(target: LOG_TARGET, "Signatures' channel closed, ABFT performance scoring terminating.");
+                            error!(target: LOG_TARGET, "Signatures' channel closed, SBFT performance scoring terminating.");
                             break;
                         },
                     }
                 }
                 _ = &mut exit => {
-                    debug!(target: LOG_TARGET, "ABFT performance scoring task received exit signal. Terminating.");
+                    debug!(target: LOG_TARGET, "SBFT performance scoring task received exit signal. Terminating.");
                     break;
                 }
             }

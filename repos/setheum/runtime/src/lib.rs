@@ -1713,51 +1713,13 @@ impl_runtime_apis! {
 		}
 	}
 
-	impl sp_consensus_babe::BabeApi<Block> for Runtime {
-		fn configuration() -> sp_consensus_babe::BabeGenesisConfiguration {
-			sp_consensus_babe::BabeGenesisConfiguration {
-				slot_duration: Babe::slot_duration(),
-				epoch_length: EpochDuration::get(),
-				c: BABE_GENESIS_EPOCH_CONFIG.c,
-				genesis_authorities: Babe::authorities(),
-				randomness: Babe::randomness(),
-				allowed_slots: BABE_GENESIS_EPOCH_CONFIG.allowed_slots,
-			}
+	impl sp_consensus_aura::AuraApi<Block, AuraId> for Runtime {
+		fn slot_duration() -> sp_consensus_aura::SlotDuration {
+			sp_consensus_aura::SlotDuration::from_millis(Aura::slot_duration())
 		}
 
-		fn current_epoch_start() -> sp_consensus_babe::Slot {
-			Babe::current_epoch_start()
-		}
-
-		fn current_epoch() -> sp_consensus_babe::Epoch {
-			Babe::current_epoch()
-		}
-
-		fn next_epoch() -> sp_consensus_babe::Epoch {
-			Babe::next_epoch()
-		}
-
-		fn generate_key_ownership_proof(
-			_slot_number: sp_consensus_babe::Slot,
-			authority_id: sp_consensus_babe::AuthorityId,
-			) -> Option<sp_consensus_babe::OpaqueKeyOwnershipProof> {
-			use codec::Encode;
-
-			Historical::prove((sp_consensus_babe::KEY_TYPE, authority_id))
-				.map(|p| p.encode())
-				.map(sp_consensus_babe::OpaqueKeyOwnershipProof::new)
-		}
-
-		fn submit_report_equivocation_unsigned_extrinsic(
-			equivocation_proof: sp_consensus_babe::EquivocationProof<<Block as BlockT>::Header>,
-			key_owner_proof: sp_consensus_babe::OpaqueKeyOwnershipProof,
-			) -> Option<()> {
-			let key_owner_proof = key_owner_proof.decode()?;
-
-			Babe::submit_unsigned_equivocation_report(
-				equivocation_proof,
-				key_owner_proof,
-				)
+		fn authorities() -> Vec<AuraId> {
+			Aura::authorities().to_vec()
 		}
 	}
 
@@ -1779,33 +1741,64 @@ impl_runtime_apis! {
 		}
 	}
 
-	impl fg_primitives::GrandpaApi<Block> for Runtime {
-		fn grandpa_authorities() -> GrandpaAuthorityList {
-			Grandpa::grandpa_authorities()
+	impl primitives::SetBFTSessionApi<Block> for Runtime {
+		fn millisecs_per_block() -> u64 {
+			primitives::setbft::MILLISECS_PER_BLOCK
 		}
 
-		fn current_set_id() -> fg_primitives::SetId {
-			Grandpa::current_set_id()
+		fn session_period() -> u32 {
+			primitives::setbft::DEFAULT_SESSION_PERIOD
 		}
 
-		fn submit_report_equivocation_unsigned_extrinsic(
-			_equivocation_proof: fg_primitives::EquivocationProof<
-				<Block as BlockT>::Hash,
-				NumberFor<Block>,
-			>,
-			_key_owner_proof: fg_primitives::OpaqueKeyOwnershipProof,
-		) -> Option<()> {
-			None
+		fn authorities() -> Vec<primitives::setbft::AuthorityId> {
+			SetBFT::authorities()
 		}
 
-		fn generate_key_ownership_proof(
-			_set_id: fg_primitives::SetId,
-			_authority_id: GrandpaId,
-		) -> Option<fg_primitives::OpaqueKeyOwnershipProof> {
-// NOTE: this is the only implementation possible since we've
-// defined our key owner proof type as a bottom type (i.e. a type
-// with no values).
-			None
+		fn next_session_authorities() -> Result<Vec<primitives::setbft::AuthorityId>, primitives::setbft::ApiError> {
+			let next_authorities = SetBFT::next_authorities();
+			if next_authorities.is_empty() {
+				return Err(primitives::setbft::ApiError::DecodeKey);
+			}
+			Ok(next_authorities)
+		}
+
+		fn authority_data() -> primitives::setbft::SessionAuthorityData {
+			primitives::setbft::SessionAuthorityData::new(SetBFT::authorities(), SetBFT::emergency_finalizer())
+		}
+
+		fn next_session_authority_data() -> Result<primitives::setbft::SessionAuthorityData, primitives::setbft::ApiError> {
+			Ok(primitives::setbft::SessionAuthorityData::new(
+				Self::next_session_authorities()?,
+				SetBFT::queued_emergency_finalizer(),
+			))
+		}
+
+		fn finality_version() -> primitives::Version {
+			SetBFT::finality_version()
+		}
+
+		fn next_session_finality_version() -> primitives::Version {
+			SetBFT::next_session_finality_version()
+		}
+
+		fn predict_session_committee(
+			session: primitives::setbft::SessionIndex,
+		) -> Result<primitives::setbft::SessionCommittee<AccountId>, primitives::setbft::SessionValidatorError> {
+			CommitteeManagement::predict_session_committee_for_session(session)
+		}
+
+		fn next_session_aura_authorities() -> Vec<(AccountId, AuraId)> {
+			let queued_keys = pallet_session::QueuedKeys::<Runtime>::get();
+			queued_keys
+				.into_iter()
+				.filter_map(|(account_id, keys)| {
+					keys.get(sp_application_crypto::key_types::AURA).map(|key| (account_id, key))
+				})
+				.collect()
+		}
+
+		fn key_owner(key: primitives::setbft::AuthorityId) -> Option<AccountId> {
+			Session::key_owner(primitives::setbft::KEY_TYPE, key.as_ref())
 		}
 	}
 

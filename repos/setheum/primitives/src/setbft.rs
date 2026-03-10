@@ -38,7 +38,7 @@ use sp_runtime::{
 pub use sp_staking::{EraIndex, SessionIndex};
 use sp_std::vec::Vec;
 
-use crate::{AccountId, BlockNumber, SessionCount, Version};
+use crate::{AccountId, Balance, BlockNumber, SessionCount, Version};
 
 pub const KEY_TYPE: KeyTypeId = KeyTypeId(*b"seth");
 
@@ -83,7 +83,8 @@ pub const DEFAULT_SESSIONS_PER_ERA: SessionIndex = 96;
 
 
 
-/// Address Encoding (SS58Prefix - 42 is the basic substrate standard - 258 is Setheum's registry proposal)
+/// Address Encoding (SS58Prefix - 42 is the basic substrate standard)
+/// TODO: change this to 258 - 258 is Setheum's Prefix
 pub const ADDRESSES_ENCODING: u8 = 42;
 pub const DEFAULT_UNIT_CREATION_DELAY: u64 = 300;
 
@@ -116,14 +117,14 @@ pub struct SessionCommittee<T> {
 }
 
 /// Openness of the process of the elections
-#[derive(Decode, Encode, TypeInfo, Debug, Clone, PartialEq, Eq)]
+#[derive(Decode, Encode, TypeInfo, Debug, Clone, PartialEq, Eq, parity_scale_codec::MaxEncodedLen, parity_scale_codec::DecodeWithMemTracking)]
 pub enum ElectionOpenness {
     Permissioned,
     Permissionless,
 }
 
 /// Represent desirable size of a committee in a session
-#[derive(Decode, Encode, TypeInfo, Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Decode, Encode, TypeInfo, Debug, Clone, Copy, PartialEq, Eq, parity_scale_codec::MaxEncodedLen, parity_scale_codec::DecodeWithMemTracking)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub struct CommitteeSeats {
 /// Size of reserved validators in a session
@@ -156,24 +157,59 @@ pub trait FinalityCommitteeManager<T> {
     fn on_next_session_finality_committee(committee: Vec<T>);
 }
 
+pub trait SbftScoresProvider {
+    fn scores_for_session(session_id: SessionIndex) -> Option<Score>;
+    fn clear_scores();
+    fn clear_nonce();
+}
+
 /// Configurable parameters for ban validator mechanism
 #[derive(Decode, Encode, TypeInfo, Debug, Clone, PartialEq, Eq)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
-pub struct BanConfig {
-/// performance ratio threshold in a session
-/// calculated as ratio of number of blocks produced to expected number of blocks for a single validator
-    pub minimal_expected_performance: Perbill,
-/// how many bad uptime sessions force validator to be removed from the committee
+pub struct FinalityBanConfig {
+    /// Number representing how many rounds a parent of a head of an sbft round is allowed to be behind the head.
+    pub minimal_expected_performance: u16,
+    /// How many bad sessions force validator to be removed from the committee
     pub underperformed_session_count_threshold: SessionCount,
-/// underperformed session counter is cleared every subsequent `clean_session_counter_delay` sessions
+    /// how many eras a validator is banned for
+    pub ban_period: EraIndex,
+    /// underperformed session counter is cleared every subsequent `clean_session_counter_delay` sessions
     pub clean_session_counter_delay: SessionCount,
-/// how many eras a validator is banned for
+}
+
+pub const DEFAULT_FINALITY_BAN_MINIMAL_EXPECTED_PERFORMANCE: u16 = 11;
+// The value of the following param effectively turns off bans and rewords.
+pub const DEFAULT_FINALITY_BAN_SESSION_COUNT_THRESHOLD: SessionCount = SessionCount::MAX;
+
+impl Default for FinalityBanConfig {
+    fn default() -> Self {
+        FinalityBanConfig {
+            minimal_expected_performance: DEFAULT_FINALITY_BAN_MINIMAL_EXPECTED_PERFORMANCE,
+            underperformed_session_count_threshold: DEFAULT_FINALITY_BAN_SESSION_COUNT_THRESHOLD,
+            ban_period: DEFAULT_BAN_PERIOD,
+            clean_session_counter_delay: DEFAULT_CLEAN_SESSION_COUNTER_DELAY,
+        }
+    }
+}
+
+/// Configurable parameters for ban validator mechanism related to block production
+#[derive(Decode, Encode, TypeInfo, Debug, Clone, PartialEq, Eq)]
+#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
+pub struct ProductionBanConfig {
+    /// performance ratio threshold in a session
+    /// calculated as ratio of number of blocks produced to expected number of blocks for a single validator
+    pub minimal_expected_performance: Perbill,
+    /// how many bad uptime sessions force validator to be removed from the committee
+    pub underperformed_session_count_threshold: SessionCount,
+    /// underperformed session counter is cleared every subsequent `clean_session_counter_delay` sessions
+    pub clean_session_counter_delay: SessionCount,
+    /// how many eras a validator is banned for
     pub ban_period: EraIndex,
 }
 
-impl Default for BanConfig {
+impl Default for ProductionBanConfig {
     fn default() -> Self {
-        BanConfig {
+        ProductionBanConfig {
             minimal_expected_performance: DEFAULT_BAN_MINIMAL_EXPECTED_PERFORMANCE,
             underperformed_session_count_threshold: DEFAULT_BAN_SESSION_COUNT_THRESHOLD,
             clean_session_counter_delay: DEFAULT_CLEAN_SESSION_COUNTER_DELAY,
@@ -185,11 +221,13 @@ impl Default for BanConfig {
 /// Represent any possible reason a validator can be removed from the committee due to
 #[derive(PartialEq, Eq, Clone, Encode, Decode, TypeInfo, Debug)]
 pub enum BanReason {
-/// Validator has been removed from the committee due to insufficient uptime in a given number
-/// of sessions
-    InsufficientUptime(u32),
+    /// Validator has been removed from the committee due to insufficient production in a given number of sessions
+    InsufficientProduction(u32),
 
-/// Any arbitrary reason
+    /// Validator has been removed from the committee due to insufficient sbft performance in a given number of sessions
+    InsufficientFinalization(u32),
+
+    /// Any arbitrary reason
     OtherReason(BoundedVec<u8, ConstU32<DEFAULT_BAN_REASON_LENGTH>>),
 }
 
@@ -304,6 +342,8 @@ pub trait ValidatorProvider {
     fn current_era_validators() -> EraValidators<Self::AccountId>;
 /// returns committee seats for the current era.
     fn current_era_committee_size() -> CommitteeSeats;
+/// returns the elected validators for the given era.
+    fn elected_validators(era: sp_staking::EraIndex) -> Vec<Self::AccountId>;
 }
 
 #[derive(Decode, Encode, TypeInfo, Clone)]
@@ -337,6 +377,12 @@ pub trait BannedValidators {
 pub trait EraManager {
 /// new era has been planned
     fn on_new_era(era: EraIndex);
+}
+
+/// Provides the current total issuance.
+pub trait TotalIssuanceProvider {
+    /// Get the current total issuance.
+    fn get() -> Balance;
 }
 
 pub mod staking {

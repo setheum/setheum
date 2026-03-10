@@ -47,8 +47,8 @@ pub trait RuntimeApi: Clone + Send + Sync + 'static {
     fn next_aura_authorities(&self, at: BlockHash)
         -> Result<Vec<(AccountId, AuraId)>, Self::Error>;
 
-    /// Submits a signed ABFT performance score.
-    fn submit_abft_score(
+    /// Submits a signed SBFT performance score.
+    fn submit_sbft_score(
         &self,
         score: Score,
         signature: SignatureSet<AuthoritySignature>,
@@ -179,7 +179,7 @@ impl Display for ApiError {
                 write!(f, "storage value not found under {}{}", pallet, item)
             }
             DecodeError(error) => write!(f, "decode error: {:?}", error),
-            ScoreSubmissionFailure => write!(f, "failed to submit ABFT score"),
+            ScoreSubmissionFailure => write!(f, "failed to submit SBFT score"),
             CallFailed => write!(f, "a call to the runtime failed"),
         }
     }
@@ -211,7 +211,7 @@ where
             .collect())
     }
 
-    fn submit_abft_score(
+    fn submit_sbft_score(
         &self,
         score: Score,
         signature: SignatureSet<AuthoritySignature>,
@@ -224,7 +224,7 @@ where
                 .offchain_transaction_pool(block_hash),
         );
 
-        match runtime_api.submit_abft_score(block_hash, score, signature) {
+        match runtime_api.submit_sbft_score(block_hash, score, signature) {
             Ok(Some(())) => Ok(()),
             Ok(None) => Err(ApiError::ScoreSubmissionFailure),
             Err(_) => Err(ApiError::CallFailed),

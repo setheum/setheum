@@ -52,16 +52,20 @@ use crate::{
     ConnectionApi, Pair, RootConnection, SessionIndex, SudoCall, TxStatus, Version,
 };
 
+use crate::primitives::Score;
+
 // TODO replace docs with link to pallet setbft docs, once they are published
 /// Pallet setbft API which does not require sudo.
 #[async_trait::async_trait]
 pub trait SetBFTApi {
-/// Gets the current finality version.
+    /// Gets the current finality version.
     async fn finality_version(&self, at: Option<BlockHash>) -> Version;
-/// Gets the finality version for the next session.
+    /// Gets the finality version for the next session.
     async fn next_session_finality_version(&self, at: Option<BlockHash>) -> Version;
-/// Gets the emergency finalizer
+    /// Gets the emergency finalizer
     async fn emergency_finalizer(&self, at: Option<BlockHash>) -> Option<[u8; 32]>;
+    /// Gets the SBFT score for a given session.
+    async fn sbft_scores(&self, session_id: SessionIndex, at: Option<BlockHash>) -> Option<Score>;
 }
 
 /// Pallet setbft API that requires sudo.
@@ -128,6 +132,12 @@ impl<C: ConnectionApi> SetBFTApi for C {
         self.get_storage_entry_maybe(&addrs, at)
             .await
             .map(|public| public.0 .0)
+    }
+
+    async fn sbft_scores(&self, session_id: SessionIndex, at: Option<BlockHash>) -> Option<Score> {
+        let addrs = api::storage().setbft().sbft_scores(session_id);
+
+        self.get_storage_entry_maybe(&addrs, at).await
     }
 }
 

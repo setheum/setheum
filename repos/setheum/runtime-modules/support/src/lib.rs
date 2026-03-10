@@ -52,15 +52,16 @@ use serde::{Deserialize, Serialize};
 
 use parity_scale_codec::{Decode, Encode};
 use scale_info::TypeInfo;
+use frame_support::pallet_prelude::DecodeWithMemTracking;
 
-#[derive(Clone, PartialEq, Eq, sp_runtime::RuntimeDebug, Encode, Decode, TypeInfo)]
+#[derive(Clone, PartialEq, Eq, sp_runtime::RuntimeDebug, Encode, Decode, TypeInfo, DecodeWithMemTracking)]
 #[cfg_attr(feature = "std", derive(Deserialize))]
 pub struct AirdropEntry {
     pub account: AccountId,
     pub amount: Balance,
 }
 
-#[derive(Clone, PartialEq, Eq, sp_runtime::RuntimeDebug, Encode, Decode, TypeInfo)]
+#[derive(Clone, PartialEq, Eq, sp_runtime::RuntimeDebug, Encode, Decode, TypeInfo, DecodeWithMemTracking)]
 #[cfg_attr(feature = "std", derive(Deserialize))]
 pub struct AirdropList(pub Vec<AirdropEntry>);
 

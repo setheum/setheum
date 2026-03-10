@@ -27,7 +27,7 @@ use sp_consensus_aura::AuraApi;
 use sp_runtime::traits::{Block, Header};
 
 use crate::{
-    abft::NodeIndex,
+    sbft::NodeIndex,
     runtime_api::RuntimeApi,
     session::{SessionBoundaryInfo, SessionId},
     session_map::{AuthorityProvider, AuthorityProviderImpl},

@@ -27,7 +27,7 @@ use log::warn;
 use parity_scale_codec::{Decode, DecodeAll, Encode, Error as CodecError, Input as CodecInput};
 
 use crate::{
-    abft::SignatureSet,
+    sbft::SignatureSet,
     crypto::{Signature, SignatureV1},
     justification::{SetBFTJustification, LOG_TARGET},
     Version,

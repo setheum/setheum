@@ -27,7 +27,7 @@ use sp_keystore::Error as KeystoreError;
 use sp_runtime::RuntimeAppPublic;
 
 use crate::{
-    abft::{NodeCount, NodeIndex, SignatureSet},
+    sbft::{NodeCount, NodeIndex, SignatureSet},
     primitives ::{AuthorityId, AuthoritySignature, KEY_TYPE},
 };
 
@@ -170,7 +170,7 @@ mod tests {
     use sp_keystore::Keystore as _;
 
     use super::*;
-    use crate::abft::NodeIndex;
+    use crate::sbft::NodeIndex;
 
     fn generate_keys(names: &[String]) -> (Vec<AuthorityPen>, AuthorityVerifier) {
         let key_store = Arc::new(LocalKeystore::in_memory());

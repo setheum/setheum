@@ -53,7 +53,7 @@ pub trait PeerId: Debug + Clone + Hash + Eq {}
 impl<T: Debug + Clone + Hash + Eq> PeerId for T {}
 
 /// An interface for submitting additional justifications to the justification sync.
-/// Chiefly ones created by ABFT, but others will also be handled appropriately.
+/// Chiefly ones created by SBFT, but others will also be handled appropriately.
 /// The block corresponding to the submitted `Justification` MUST be obtained and
 /// imported into the Substrate database by the user, as soon as possible.
 pub trait JustificationSubmissions<J: Justification>: Clone + Send + 'static {
@@ -64,7 +64,7 @@ pub trait JustificationSubmissions<J: Justification>: Clone + Send + 'static {
 }
 
 /// An interface for requesting specific blocks from the block sync.
-/// Required by the data availability mechanism in ABFT.
+/// Required by the data availability mechanism in SBFT.
 pub trait RequestBlocks<UH: UnverifiedHeader>: Clone + Send + Sync + 'static {
     type Error: Display;
 

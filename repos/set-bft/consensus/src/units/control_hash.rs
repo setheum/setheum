@@ -126,7 +126,7 @@ impl<H: Hasher> ControlHash<H> {
             .map(|(node_index, &round)| UnitCoord::new(round, node_index))
     }
 
-    /// Returns number of all members in abft consensus
+    /// Returns number of all members in sbft consensus
     pub fn n_members(&self) -> NodeCount {
         self.parents.size()
     }

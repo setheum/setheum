@@ -24,8 +24,10 @@ use rand_pcg::Pcg32;
 use sp_staking::EraIndex;
 use sp_std::{collections::btree_set::BTreeSet, vec::Vec};
 
+use primitives::ValidatorProvider;
+
 use crate::{
-    traits::ValidatorProvider, CommitteeSize, Config, CurrentEraValidators, NextEraCommitteeSize,
+    CommitteeSize, Config, CurrentEraValidators, NextEraCommitteeSize,
     NextEraNonReservedValidators, NextEraReservedValidators, Pallet,
 };
 
@@ -84,5 +86,8 @@ impl<T: Config + pallet_staking::Config> primitives::ValidatorProvider for Palle
     }
     fn current_era_committee_size() -> CommitteeSeats {
         CommitteeSize::<T>::get()
+    }
+    fn elected_validators(era: sp_staking::EraIndex) -> Vec<Self::AccountId> {
+        pallet_staking::ErasStakersOverview::<T>::iter_key_prefix(era).collect()
     }
 }
