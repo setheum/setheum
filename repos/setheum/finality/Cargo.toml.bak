@@ -8,7 +8,7 @@ homepage.workspace = true
 repository.workspace = true
 
 [dependencies]
-# fixed version to 'freeze' some types used in abft, mainly `SignatureSet` used in justification and signature aggregation
+# fixed version to 'freeze' some types used in sbft, mainly `SignatureSet` used in justification and signature aggregation
 setbft-bft-crypto = { workspace = true }
 
 current-setbft-bft = { package = "setbft-bft", version = "0.33" }

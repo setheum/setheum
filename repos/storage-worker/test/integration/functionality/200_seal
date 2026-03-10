@@ -1,0 +1,79 @@
+#!/bin/bash
+function _seal()
+{
+    local filesize=$((RANDOM % 17 + 1))m
+    local filename=${filesize}.$(date +%N)${RANDOM}
+    $GEN_RANDOM_DATA ${filesize} $datadir/$filename
+    if [ $? -ne 0 ]; then
+        verbose ERROR "generate random data failed!"
+        exit 1
+    fi
+    local cid_l=$(seal $datadir/$filename)
+    rm $datadir/$filename
+    if [ ${#cid_l} -ne 46 ]; then
+        verbose ERROR "seal file failed!"
+        exit 1
+    fi
+    (
+      flock -w 30 200
+      echo $cid_l >> $syncfile
+    ) 200>$LOCKFILE
+}
+
+function _store_meta()
+{
+    validate_file
+    store_metadata
+}
+
+function seal_exit()
+{
+    # Delete test files
+    for cid in $(cat $syncfile); do
+        delete_file $cid &>/dev/null
+    done
+
+    rm -rf $tmpdir
+}
+
+########## MAIN BODY ##########
+# basic variable
+basedir=$(cd `dirname $0`;pwd)
+instdir=$(cd $basedir/..;pwd)
+scriptdir=$instdir/scripts
+datadir=$instdir/data
+tmpdir=$basedir/tmp
+TMPFILE=$tmpdir/TMPFILE.$(date +%N)${RANDOM}
+LOCKFILE=$tmpdir/LOCKFILE
+syncfile=$tmpdir/syncfile
+
+mkdir -p $tmpdir
+
+trap 'seal_exit' EXIT
+
+. $scriptdir/utils.sh
+
+
+timeout=300
+
+true > $syncfile
+### Seal some file
+data_size=10
+i=0
+while [ $((i++)) -lt $data_size ]; do
+    _seal &
+done
+# Wait seal task finish
+while [ $(cat $syncfile | wc -l) -lt ${data_size} ] && [ $timeout -gt 0 ]; do
+    sleep 1
+    ((timeout--))
+done
+
+### Check seal result
+get_file_info_valid &>$TMPFILE
+for cid in $(cat $syncfile); do
+    if ! grep $cid $TMPFILE &>/dev/null; then
+        verbose ERROR "Seal file failed!Cannot find sealed hash." n
+        exit 1
+    fi
+done

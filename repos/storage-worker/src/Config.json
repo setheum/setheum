@@ -1,0 +1,17 @@
+{
+    "base_path" : "/opt/crust/crust-sworker/<VERSION>/sworker_base_path",
+    "base_url" : "http://0.0.0.0:12222/api/v0",
+    "chain" : {
+        "account_id" : "069686d23c8e0170553dddca0c36a659c6fc39fa0d5148f1ba1cc95ec4d4c414",
+        "address" : "cTGVGrFB8suPunnTNEYzDaRdQNPC9QeAGeJDHzs9KXWcM7Wkb",
+        "backup" : "{\"encoded\":\"G6l6RC1kWmpIPMgMiUNc9psNwdC7ej0AprgcK6MfJOUAgAAAAQAAAAgAAAD+yayzRW06k1rj4mdPq1KciRiXCItbJucJWanamLURB1PfIcOuxol6zZX6jaKjFFCPAjD6eriU1ZioVaji5KW5VLNRo4V6r03kFYp68tAX7EOl1X5O/sMyu/9+2n6/qMuilIF5knw6mgJC5ajCGmEbPIMVnOXytc//dgHN0z2sVhTtnKZxHYvKCk/143UFo0tv8dFh3oTXbZKR908A\",\"encoding\":{\"content\":[\"pkcs8\",\"sr25519\"],\"type\":[\"scrypt\",\"xsalsa20-poly1305\"],\"version\":\"3\"},\"address\":\"cTGVGrFB8suPunnTNEYzDaRdQNPC9QeAGeJDHzs9KXWcM7Wkb\",\"meta\":{\"genesisHash\":\"0x8b404e7ed8789d813982b9cb4c8b664c05b3fbf433309f603af014ec9ce56a8c\",\"isHardware\":false,\"name\":\"yo\",\"tags\":[],\"whenCreated\":1626234897533}}",
+        "base_url" : "http://127.0.0.1:56666/api/v1",
+        "password" : "123456"
+    },
+    "data_path" : ["/opt/crust/crust-sworker/<VERSION>/sworker_base_path/data"],
+    "ipfs_url" :  "http://0.0.0.0:5001/api/v0",
+    "dcap" : {
+        "base_url" : "https://dcap-attestation.crust.network",
+        "report_path" : "/attestation/report"
+    }
+}

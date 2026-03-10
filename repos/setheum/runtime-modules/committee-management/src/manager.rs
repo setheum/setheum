@@ -21,7 +21,7 @@
 use frame_system::pallet_prelude::BlockNumberFor;
 use log::debug;
 use pallet_session::SessionManager;
-use primitives::{AbftScoresProvider, EraManager, FinalityCommitteeManager, SessionCommittee};
+use primitives::{SbftScoresProvider, EraManager, FinalityCommitteeManager, SessionCommittee};
 use rand::{prelude::SliceRandom, SeedableRng};
 use rand_pcg::Pcg32;
 use sp_runtime::traits::Get;
@@ -174,7 +174,7 @@ where
             result.deconstruct()
         );
 
-        C::AbftScoresProvider::clear_nonce();
+        C::SbftScoresProvider::clear_nonce();
     }
 
     fn start_session(start_index: SessionIndex) {

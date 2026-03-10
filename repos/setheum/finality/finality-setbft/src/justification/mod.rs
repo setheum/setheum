@@ -22,7 +22,7 @@ use parity_scale_codec::{Decode, Encode};
 use sp_runtime::Justification;
 
 use crate::{
-    abft::SignatureSet,
+    sbft::SignatureSet,
     setbft_primitives::{AuthoritySignature, SETBFT_ENGINE_ID},
     crypto::Signature,
 };

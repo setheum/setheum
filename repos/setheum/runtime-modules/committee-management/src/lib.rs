@@ -83,7 +83,7 @@ pub mod pallet {
     };
     use frame_system::{ensure_root, pallet_prelude::OriginFor};
     use primitives::{
-        AbftScoresProvider, BanHandler, BanReason, BlockCount, FinalityCommitteeManager,
+        SbftScoresProvider, BanHandler, BanReason, BlockCount, FinalityCommitteeManager,
         SessionCount, SessionValidators, ValidatorProvider,
     };
     use sp_runtime::{Perbill, Perquintill};
@@ -110,7 +110,7 @@ pub mod pallet {
         /// Something that handles removal of the validators
         type ValidatorExtractor: ValidatorExtractor<AccountId = Self::AccountId>;
         type FinalityCommitteeManager: FinalityCommitteeManager<Self::AccountId>;
-        type AbftScoresProvider: AbftScoresProvider;
+        type SbftScoresProvider: SbftScoresProvider;
         /// Nr of blocks in the session.
         #[pallet::constant]
         type SessionPeriod: Get<u32>;

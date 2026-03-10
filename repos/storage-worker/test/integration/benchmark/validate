@@ -1,0 +1,79 @@
+#!/bin/bash
+function get_exec_time()
+{
+    local cmd=$1
+    local start_time=$(date +%s%N)
+    eval $cmd &>/dev/null
+    local end_time=$(date +%s%N)
+    echo $((end_time - start_time))
+}
+
+function validate_exit()
+{
+    rm -rf $tmpdir
+}
+
+########## MAIN BODY ##########
+# basic variable
+basedir=$(cd `dirname $0`;pwd)
+instdir=$(cd $basedir/..;pwd)
+scriptdir=$instdir/scripts
+datadir=$instdir/data
+testdir=$instdir/test_app
+testconfigfile=$testdir/etc/Config.json
+testfiledir=$testdir/files
+tmpdir=$basedir/tmp
+TMPFILE=$tmpdir/TMPFILE.$(date +%N)${RANDOM}
+
+mkdir -p $tmpdir
+
+trap 'validate_exit' EXIT
+
+. $scriptdir/utils.sh
+
+declare -A ans
+i=0
+
+file_num=$(get_config ".benchmark|.file_num")
+srd_num=$(get_config ".benchmark|.srd_num")
+cid=$(get_config ".benchmark|.cid1g")
+
+### Seal file and validate
+hash=$(seal_by_cid $cid)
+step_num=5000
+cur_num=1000
+phase_file_num=20000
+while [ $cur_num -le $phase_file_num ]; do
+    test_add_file $step_num &>/dev/null
+    ans["file:$cur_num"]=$(get_exec_time "validate_file_bench &>/dev/null")
+    ((cur_num += step_num))
+done
+test_add_file $((file_num - phase_file_num)) &>/dev/null
+ans["file:$((file_num - phase_file_num))"]=$(get_exec_time "validate_file_bench &>/dev/null")
+
+# Remove previous srd
+get_workload &>$TMPFILE
+if [ $? -ne 0 ]; then
+    verbose ERROR "get workload failed!" n
+    exit 1
+fi
+p_srd_num=$(cat $TMPFILE | jq '.srd|.srd_complete')
+srd "-$p_srd_num" &>/dev/null
+
+# Srd task
+srd_real_sync 1
+step_num=1000
+cur_num=1000
+phase_srd_num=20000
+while [ $cur_num -le $phase_srd_num ]; do
+    srd $step_num &>/dev/null
+    ans["srd:${cur_num}G"]=$(get_exec_time "validate_srd_bench &>/dev/null")
+    ((cur_num += step_num))
+done
+srd $srd_num
+ans["srd:${srd_num}G"]=$(get_exec_time "validate_srd_bench &>/dev/null")
+
+
+### Print srd information
+benchmark_output "validate benchmark result:\n\n(VALIDATE_INFO TIME)\n" \
+    "1" "$(declare -p ans)"

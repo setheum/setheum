@@ -19,7 +19,7 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 use crate::{
-    abft::SignatureSet,
+    sbft::SignatureSet,
     crypto::Signature,
     data_io::legacy::{SetBFTData, SetBFTNetworkMessage},
     Hasher,

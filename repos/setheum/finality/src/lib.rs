@@ -48,7 +48,7 @@ use substrate_prometheus_endpoint::Registry;
 use tokio::time::Duration;
 
 use crate::{
-    abft::{
+    sbft::{
         CurrentNetworkData, Keychain, LegacyNetworkData, NodeCount, NodeIndex, Recipient,
         SignatureSet, SpawnHandle, CURRENT_VERSION, LEGACY_VERSION,
     },
@@ -61,7 +61,7 @@ use crate::{
     VersionedTryFromError::{ExpectedNewGotOld, ExpectedOldGotNew},
 };
 
-mod abft;
+mod sbft;
 mod aggregation;
 mod base_protocol;
 mod block;
@@ -290,7 +290,7 @@ impl<T> Default for ChannelProvider<T> {
     }
 }
 
-type Hasher = abft::HashWrapper<BlakeTwo256>;
+type Hasher = sbft::HashWrapper<BlakeTwo256>;
 
 #[derive(Clone)]
 pub struct RateLimiterConfig {

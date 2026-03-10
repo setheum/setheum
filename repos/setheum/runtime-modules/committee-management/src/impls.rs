@@ -21,7 +21,7 @@
 use log::info;
 use parity_scale_codec::Encode;
 use primitives::{
-    AbftScoresProvider, BanHandler, BanInfo, BanReason, BannedValidators, CommitteeSeats,
+    SbftScoresProvider, BanHandler, BanInfo, BanReason, BannedValidators, CommitteeSeats,
     EraValidators, SessionCommittee, SessionValidatorError, SessionValidators, ValidatorProvider,
 };
 use sp_runtime::{traits::Get, Perbill, Perquintill};
@@ -371,7 +371,7 @@ impl<T: Config> Pallet<T> {
 
         let is_underperforming = |score| score > minimal_expected_performance;
 
-        let finalizers_perf = T::AbftScoresProvider::scores_for_session(session_id)
+        let finalizers_perf = T::SbftScoresProvider::scores_for_session(session_id)
             .map(|score| score.points)
             .unwrap_or(vec![minimal_expected_performance; finalizers.len()])
             .into_iter()
@@ -449,7 +449,7 @@ impl<T: Config> Pallet<T> {
                 "Clearing UnderperformedFinalizerSessionCount"
             );
             let _result = UnderperformedFinalizerSessionCount::<T>::clear(u32::MAX, None);
-            T::AbftScoresProvider::clear_scores();
+            T::SbftScoresProvider::clear_scores();
         }
     }
 

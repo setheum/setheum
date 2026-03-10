@@ -1,0 +1,83 @@
+#!/bin/bash
+function get_exec_time()
+{
+    local cmd=$1
+    local start_time=$(date +%s%N)
+    eval $cmd &>/dev/null
+    local end_time=$(date +%s%N)
+    $cmd -${srd_size} &>/dev/null
+    sleep 15
+    echo $((end_time - start_time))
+}
+
+function check_path()
+{
+    local disk=""
+    local ret=0
+    declare -A disk_2_path_m
+    for disk in $(df -h | awk '{print $6}' | sed 1d | xargs -I {} findmnt {} -o SOURCE | grep -v SOURCE); do
+        disk_2_path_m[$disk]=""
+    done
+    for path in ${srd_paths[@]}; do
+        mkdir -p $path
+        disk=$(df $path | tail -n 1 | awk '{print $1}')
+        if [ x"${disk_2_path_m[$disk]}" != x"" ]; then
+            verbose WARN "$path is in same disk with ${disk_2_path_m[$disk]}"
+            ret=1
+        fi
+        disk_2_path_m[$path]=$path
+    done
+
+    return $ret
+}
+
+function srd_exit()
+{
+    rm -rf $tmpdir
+}
+
+########## MAIN BODY ##########
+# basic variable
+basedir=$(cd `dirname $0`;pwd)
+instdir=$(cd $basedir/..;pwd)
+scriptdir=$instdir/scripts
+testdir=$instdir/test_app
+testconfigfile=$testdir/etc/Config.json
+configfile=$instdir/config/config.json
+tmpdir=$basedir/tmp
+
+mkdir -p $tmpdir
+
+trap 'srd_exit' EXIT
+
+. $scriptdir/utils.sh
+
+declare -A ans
+paths=$(get_config ".benchmark|.srd_paths")
+srd_paths=($(parse_json_array "$paths"))
+
+### Check path
+if ! check_path; then
+    verbose ERROR "check srd path failed!"
+    exit 1
+fi
+
+### Add disk
+srd_size=$(get_config ".benchmark|.srd_bench_num")
+if ! [[ $srd_size =~ ^[1-9][0-9]*$ ]]; then
+    verbose ERROR "srd size must be number type!"
+    exit 1
+fi
+i=1
+path_json="["
+for path in ${srd_paths[@]}; do
+    ans["$i"]=$(get_exec_time "srd_real_sync $srd_size")
+    path_json="$path_json\"$path\","
+    ((i++))
+done
+path_json=${path_json:0:${#path_json}-1}
+path_json="${path_json}]"
+
+### Print srd information
+benchmark_output "srd size:${srd_size}G benchmark result:\n\n(DISK_NUM TIME)\n" \
+    "1" "$(declare -p ans)"

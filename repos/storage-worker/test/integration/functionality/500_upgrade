@@ -1,0 +1,74 @@
+#!/bin/bash
+function kill_current()
+{
+    kill -9 $newsworkerpid &>/dev/null
+    wait $newsworkerpid &>/dev/null
+}
+
+function success_exit()
+{
+    ### Delete file
+    test_delete_file_unsafe $(get_workload | jq '.files|.[]|.num' | awk '{sum+=$1} END{print sum}')
+
+    ### Delete srd
+    srd -$(get_workload | jq '.srd|.srd_complete')
+}
+
+########## MAIN BODY ##########
+# basic variable
+basedir=$(cd `dirname $0`;pwd)
+instdir=$(cd $basedir/..;pwd)
+scriptdir=$instdir/scripts
+sworkerlog=$instdir/sworker.log
+srd_num=51200
+file_num=40000
+
+. $scriptdir/utils.sh
+
+trap 'kill_current' INT
+trap 'success_exit' EXIT
+
+
+cd $testdir
+srd $srd_num &
+test_add_file $file_num &>/dev/null &
+validate_add_proof &>/dev/null
+sleep 10
+wl_info=$(get_workload)
+org_srd_complete=$(echo $wl_info | jq '.srd|.srd_complete')
+org_file_num=$(echo $wl_info | jq '.file|.valid')
+./bin/crust-sworker -c etc/Config.json --offline --debug --upgrade &>${sworkerlog}2 &
+newsworkerpid=$!
+oldsworkerpid=$(cat $sworkerpidfile)
+sleep 20
+while : ; do
+    x1=$(ps --pid $newsworkerpid --no-headers | wc -l)
+    x2=$(ps --pid $oldsworkerpid --no-headers | wc -l)
+    [ $((x1+x2)) -ne 2 ] && { sleep 20; break; } 
+    sleep 1
+done
+cd - &>/dev/null
+if [ $x1 -eq 1 ]; then
+    echo $newsworkerpid > $sworkerpidfile
+    # Change current block height
+    block_height=$(cat $reportheightfile &>/dev/null)
+    [ x"$block_height" = x"" ] && { block_height=0; }
+    ((block_height+=ERA_LENGTH))
+    echo $block_height > $reportheightfile
+    # Compare workload information
+    res=0
+    wl_info=$(get_workload)
+    cur_srd_complete=$(echo $wl_info | jq '.srd|.srd_complete')
+    cur_file_num=$(echo $wl_info | jq '.file|.valid')
+    if [ $org_srd_complete -gt $cur_srd_complete ]; then
+        verbose ERROR "upgrade srd number, before:$org_srd_complete, after:$cur_srd_complete"
+        res=1
+    fi
+    if [ x"$org_file_num" != x"$cur_file_num" ]; then
+        verbose ERROR "upgrade file number, before:$org_file_num, after:$cur_file_num"
+        res=1
+    fi
+    exit $res
+else
+    exit 1
+fi

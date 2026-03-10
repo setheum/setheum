@@ -30,7 +30,6 @@ use sp_core::H160;
 
 pub type EvmAddress = H160;
 
-#[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};
 
 macro_rules! create_currency_id {
@@ -166,7 +165,7 @@ create_currency_id! {
 // 0 - 19: Setheum native tokens
 // 20 - 255: Reserved for future usage
 	#[derive(Encode, Decode, DecodeWithMemTracking, Eq, PartialEq, Copy, Clone, RuntimeDebug, PartialOrd, Ord, TypeInfo, MaxEncodedLen)]
-	#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
+	#[derive(Serialize, Deserialize)]
 	#[repr(u8)]
 	pub enum TokenSymbol {
 // 0 - 100: Reserved for Setheum Native Assets
@@ -199,7 +198,8 @@ pub type Erc20Id = u32;
 	MaxEncodedLen,
 	DecodeWithMemTracking,
 )]
-#[cfg_attr(feature = "std", derive(Serialize, Deserialize), serde(rename_all = "camelCase"))]
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub enum DexShare {
 	Token(TokenSymbol),
 	Erc20(EvmAddress),
@@ -220,7 +220,8 @@ pub enum DexShare {
 	MaxEncodedLen,
 	DecodeWithMemTracking,
 )]
-#[cfg_attr(feature = "std", derive(Serialize, Deserialize), serde(rename_all = "camelCase"))]
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub enum CurrencyId {
 	Token(TokenSymbol),
 	DexShare(DexShare, DexShare),

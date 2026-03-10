@@ -1,0 +1,30 @@
+######## Global Settings #########
+inst_dir=../../
+
+include $(inst_dir)/buildenv.mk
+
+define addTestFunctions
+	enc_cpp_fun="\\\nbool ecall_test_enclave_unit()\n{\n\treturn test_enclave_unit();\n}"; \
+	enc_cpp_inc="#include \"EncalveTestEntrance.h\""; \
+	enc_edl_fun="\\\t\t// For test\n\t\tpublic bool ecall_test_enclave_unit();\n"; \
+	enc_edl_inc="\\\tinclude \"stdbool.h\""; \
+	sed -i "$$ a $$enc_cpp_fun" src/enclave/Enclave.cpp; \
+	sed -i "1 i $$enc_cpp_inc" src/enclave/Enclave.cpp; \
+	sed -i "/\btrusted\b {/a $$enc_edl_fun" src/enclave/Enclave.edl; \
+	sed -i "/\benclave\b {/a $$enc_edl_inc" src/enclave/Enclave.edl
+endef
+
+.PHONY: test build-all
+test: build-all
+	@./src/$(Test_Target)
+
+build-all:
+	@cp -r $(inst_dir)/src ./ && cp -r enclave src/ && cp $(inst_dir)/buildenv.mk ./
+	@cp *.cpp src/ && cp *.h src/
+	@$(call addTestFunctions)
+	@$(MAKE) -C src/ clean --no-print-directory
+	@$(MAKE) TFLAG=1 -C src/ all --no-print-directory -j4
+
+.PHONY: clean
+clean:
+	@rm -rf $(Test_Target) $(Test_Objects) src buildenv.mk VERSION

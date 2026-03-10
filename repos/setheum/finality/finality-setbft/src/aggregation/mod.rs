@@ -27,7 +27,7 @@ use setbft_aggregator::NetworkError as LegacyNetworkError;
 use parity_scale_codec::{Decode, Encode};
 
 use crate::{
-    abft::SignatureSet,
+    sbft::SignatureSet,
     setbft_primitives::Hash,
     crypto::Signature,
     network::{
@@ -44,7 +44,7 @@ use crate::{
 pub enum SignableTypedHash {
     /// The hash corresponds to a block.
     Block(Hash),
-    /// The hash corresponds to an ABFT performance report.
+    /// The hash corresponds to an SBFT performance report.
     Performance(Hash),
 }
 

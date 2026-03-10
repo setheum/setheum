@@ -1,0 +1,123 @@
+#!/bin/bash
+function _seal()
+{
+    local filesize=$((RANDOM % 2 + 1))m
+    $GEN_RANDOM_DATA ${filesize} $datadir/$filesize
+    if [ $? -ne 0 ]; then
+        verbose ERROR "generate random data failed!"
+        exit 1
+    fi
+    local cid_l=$(seal $datadir/$filesize)
+    rm $datadir/$filesize
+    if [ ${#cid_l} -ne 46 ]; then
+        verbose ERROR "seal file failed!"
+        exit 1
+    fi
+    echo $cid_l
+}
+
+function _delete_file()
+{
+    local cid=$1
+    delete_file $cid
+    (
+        flock -w 30 200
+        local cur_del_acc=$(cat $concurrent_del_acc_file)
+        ((cur_del_acc++))
+        echo $cur_del_acc > $concurrent_del_acc_file
+    ) 200>$deleteLockFile
+}
+
+function _store_meta()
+{
+    validate_file
+    store_metadata
+}
+
+function seal_exit()
+{
+    rm -rf $tmpdir
+}
+
+########## MAIN BODY ##########
+# basic variable
+basedir=$(cd `dirname $0`;pwd)
+instdir=$(cd $basedir/..;pwd)
+scriptdir=$instdir/scripts
+datadir=$instdir/data
+tmpdir=$basedir/tmp
+deleteLockFile=$tmpdir/deleteLockFile
+TMPFILE=$tmpdir/TMPFILE.$(date +%N)${RANDOM}
+
+mkdir -p $tmpdir
+
+trap 'seal_exit' EXIT
+
+. $scriptdir/utils.sh
+
+
+declare -A cid_2_use_m
+total_num=60
+i=0
+
+# Clean previous files
+test_delete_file_unsafe $file_limit &>/dev/null
+# Seal some file
+while [ $i -lt $total_num ]; do
+    # Randomly seal file
+    _seal &>$TMPFILE
+    cid=$(cat $TMPFILE 2>/dev/null)
+    if [ x"$cid" != x"" ] && [ ${#cid} -ge 46 ]; then
+        cid=${cid:0:46}
+        cid_2_use_m[$cid]=0
+    else
+        verbose ERROR "Cannot get wrong sealed cid($cid)!" n
+        exit 1
+    fi
+    ((i++))
+done
+
+# Delete valid file sequently
+seq_del_num=10
+i=0
+for cid in ${!cid_2_use_m[@]}; do
+    if [ $i -ge $seq_del_num ]; then
+        break
+    fi
+    delete_file $cid &>/dev/null
+    if [ $? -ne 0 ]; then
+        verbose ERROR "delete file sequently failed!" n
+        exit 1
+    fi
+    cid_2_use_m[$cid]=1
+    if get_file_info_valid | grep "$cid" &>/dev/null; then
+        verbose ERROR "delete file:$cid failed!Find cid in workload" n
+        exit 1
+    fi
+    ((i++))
+done
+
+# Delete confirmed file concurrently
+concurrent_del_acc_file=$tmpdir/del_acc_file
+echo 0 > $concurrent_del_acc_file
+delete_arry=()
+acc=0
+for cid in ${!cid_2_use_m[@]}; do
+    if [ ${cid_2_use_m[$cid]} -eq 0 ]; then
+        _delete_file $cid &>/dev/null &
+        delete_arry[$acc]=$cid
+        ((acc++))
+    fi
+done
+
+while [ $(cat $concurrent_del_acc_file) -lt $((total_num - seq_del_num)) ]; do
+    sleep 1
+done
+
+get_file_info_valid > $TMPFILE
+for cid in ${delete_arry[@]}; do
+    if grep "$cid" $TMPFILE &>/dev/null; then
+        verbose ERROR "delete file concurrently failed!" n
+        exit 1
+    fi
+done
