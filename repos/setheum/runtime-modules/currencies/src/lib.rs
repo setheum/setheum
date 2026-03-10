@@ -47,7 +47,7 @@ use frame_support::{
 			WithdrawConsequence,
 		},
 		BalanceStatus as Status, Currency as PalletCurrency, ExistenceRequirement, Get, Imbalance,
-		LockableCurrency as PalletLockableCurrency, ReservableCurrency as PalletReservableCurrency, WithdrawReasons,
+		LockableCurrency as PalletLockableCurrency, ReservableCurrency as PalletReservableCurrency, NamedReservableCurrency as PalletNamedReservableCurrency, WithdrawReasons,
 	},
 	transactional,
 };
@@ -1758,7 +1758,7 @@ where
 impl<T, AccountId, Currency, Amount, Moment, ReserveIdentifier>
 	NamedBasicReservableCurrency<AccountId, ReserveIdentifier> for BasicCurrencyAdapter<T, Currency, Amount, Moment>
 where
-	Currency: PalletReservableCurrency<AccountId, ReserveIdentifier = ReserveIdentifier>,
+	Currency: PalletReservableCurrency<AccountId> + PalletNamedReservableCurrency<AccountId, ReserveIdentifier = ReserveIdentifier>,
 	T: Config,
 {
 	fn slash_reserved_named(id: &ReserveIdentifier, who: &AccountId, value: Self::Balance) -> Self::Balance {
