@@ -64,7 +64,6 @@ members = [
 	"runtime/common",
 
 	"runtime-modules/authority",
-	"runtime-modules/gradually-update",
 	"runtime-modules/payments",
 	"runtime-modules/unknown-tokens",
 	"runtime-modules/xcm-support",
