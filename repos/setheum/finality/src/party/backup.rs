@@ -29,7 +29,7 @@ use std::{
 
 use log::debug;
 
-const BACKUP_FILE_EXTENSION: &str = ".abfts";
+const BACKUP_FILE_EXTENSION: &str = ".sbfts";
 
 #[derive(Debug)]
 pub enum BackupLoadError {
@@ -63,9 +63,9 @@ impl std::error::Error for BackupLoadError {}
 
 pub type Saver = Box<dyn Write + Send + Sync>;
 pub type Loader = Box<dyn Read + Send + Sync>;
-pub type ABFTBackup = (Saver, Loader);
+pub type SBFTBackup = (Saver, Loader);
 
-/// Find all `*.abfts` files at `session_path` and return their indexes sorted, if all are present.
+/// Find all `*.sbfts` files at `session_path` and return their indexes sorted, if all are present.
 fn get_session_backup_idxs(session_path: &Path) -> Result<Vec<usize>, BackupLoadError> {
     fs::create_dir_all(session_path)?;
     let mut session_backups: Vec<_> = fs::read_dir(session_path)?
@@ -109,14 +109,14 @@ fn get_next_path(session_path: &Path, session_idxs: &[usize]) -> PathBuf {
 /// Current directory structure (this is an implementation detail, not part of the public API):
 ///   backup-stash/      - the main directory, backup_path/--backup-saving-path
 ///   `-- 18723/         - subdirectory for the current session
-///       |-- 0.abfts    - files containing data
-///       |-- 1.abfts    - each restart after a crash will cause another one to be created
-///       |-- 2.abfts    - these numbers count up sequentially
-///       `-- 3.abfts
+///       |-- 0.sbfts    - files containing data
+///       |-- 1.sbfts    - each restart after a crash will cause another one to be created
+///       |-- 2.sbfts    - these numbers count up sequentially
+///       `-- 3.sbfts
 pub fn rotate(
     backup_path: Option<PathBuf>,
     session_id: u32,
-) -> Result<ABFTBackup, BackupLoadError> {
+) -> Result<SBFTBackup, BackupLoadError> {
     debug!(target: "setbft-party", "Loading SetBFT backup for session {:?}", session_id);
     let session_path = if let Some(path) = backup_path {
         path.join(format!("{session_id}"))

@@ -30,7 +30,7 @@ use sp_application_crypto::RuntimeAppPublic;
 use sp_runtime::traits::{Block as BlockT, Header as HeaderT};
 
 use crate::{
-    abft::{
+    sbft::{
         current_create_setbft_config, legacy_create_setbft_config, run_current_member,
         run_legacy_member, CurrentPerformanceService, CurrentPerformanceServiceIO, SpawnHandle,
     },
@@ -53,7 +53,7 @@ use crate::{
         session::{SessionManager, SessionSender},
     },
     party::{
-        backup::ABFTBackup, manager::aggregator::AggregatorVersion, traits::NodeSessionManager,
+        backup::SBFTBackup, manager::aggregator::AggregatorVersion, traits::NodeSessionManager,
         LOG_TARGET,
     },
     runtime_api::RuntimeApi,
@@ -71,7 +71,7 @@ pub use authority::{Subtasks, Task as AuthorityTask};
 pub use task::{Handle, NoopRunnable, Runnable, Task, TaskCommon};
 
 use crate::{
-    abft::{CURRENT_VERSION, LEGACY_VERSION},
+    sbft::{CURRENT_VERSION, LEGACY_VERSION},
     block::{BlockchainEvents, HeaderBackend},
     sync::RequestBlocks,
 };
@@ -112,7 +112,7 @@ where
     aggregator_io: aggregator::IO<JS>,
     multikeychain: Keychain,
     exit_rx: oneshot::Receiver<()>,
-    backup: ABFTBackup,
+    backup: SBFTBackup,
 }
 
 pub struct NodeSessionManagerImpl<H, C, HB, BBS, B, RB, SM, JS, V, RA>
@@ -263,7 +263,7 @@ where
             task::task(
                 subtask_common.clone(),
                 NoopRunnable,
-                "noop abft performance",
+                "noop sbft performance",
             ),
             aggregator::task(
                 subtask_common.clone(),
@@ -314,7 +314,7 @@ where
             self.verifier.clone(),
             session_boundaries.clone(),
         );
-        let (abft_performance, abft_batch_handler) = CurrentPerformanceService::new(
+        let (sbft_performance, sbft_batch_handler) = CurrentPerformanceService::new(
             node_id.into(),
             n_members,
             session_id,
@@ -350,10 +350,10 @@ where
                 consensus_config,
                 setbft_network.into(),
                 data_provider,
-                abft_batch_handler,
+                sbft_batch_handler,
                 backup,
             ),
-            task::task(subtask_common.clone(), abft_performance, "abft performance"),
+            task::task(subtask_common.clone(), sbft_performance, "sbft performance"),
             aggregator::task(
                 subtask_common.clone(),
                 self.header_backend.clone(),
@@ -375,7 +375,7 @@ where
         authorities: &[AuthorityId],
         node_id: NodeIndex,
         exit_rx: oneshot::Receiver<()>,
-        backup: ABFTBackup,
+        backup: SBFTBackup,
     ) -> Subtasks {
         debug!(target: LOG_TARGET, "Authority task {:?}", session_id);
 
@@ -510,7 +510,7 @@ where
         session: SessionId,
         score_submission_period: u32,
         node_id: NodeIndex,
-        backup: ABFTBackup,
+        backup: SBFTBackup,
         authorities: &[AuthorityId],
     ) -> AuthorityTask {
         let (exit, exit_rx) = futures::channel::oneshot::channel();

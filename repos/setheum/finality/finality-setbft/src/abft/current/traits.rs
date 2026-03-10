@@ -18,7 +18,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-//! Implementations and definitions of traits used in current abft
+//! Implementations and definitions of traits used in current sbft
 use crate::{
     block::{Header, HeaderVerifier, UnverifiedHeader},
     data_io::{SetBFTData, ChainInfoProvider, DataProvider, OrderedDataInterpreter},

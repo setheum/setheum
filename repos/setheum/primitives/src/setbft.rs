@@ -83,7 +83,8 @@ pub const DEFAULT_SESSIONS_PER_ERA: SessionIndex = 96;
 
 
 
-/// Address Encoding (SS58Prefix - 42 is the basic substrate standard - 258 is Setheum's registry proposal)
+/// Address Encoding (SS58Prefix - 42 is the basic substrate standard)
+/// TODO: change this to 258 - 258 is Setheum's Prefix
 pub const ADDRESSES_ENCODING: u8 = 42;
 pub const DEFAULT_UNIT_CREATION_DELAY: u64 = 300;
 
@@ -156,7 +157,7 @@ pub trait FinalityCommitteeManager<T> {
     fn on_next_session_finality_committee(committee: Vec<T>);
 }
 
-pub trait AbftScoresProvider {
+pub trait SbftScoresProvider {
     fn scores_for_session(session_id: SessionIndex) -> Option<Score>;
     fn clear_scores();
     fn clear_nonce();
@@ -166,7 +167,7 @@ pub trait AbftScoresProvider {
 #[derive(Decode, Encode, TypeInfo, Debug, Clone, PartialEq, Eq)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub struct FinalityBanConfig {
-    /// Number representing how many rounds a parent of a head of an abft round is allowed to be behind the head.
+    /// Number representing how many rounds a parent of a head of an sbft round is allowed to be behind the head.
     pub minimal_expected_performance: u16,
     /// How many bad sessions force validator to be removed from the committee
     pub underperformed_session_count_threshold: SessionCount,
@@ -223,7 +224,7 @@ pub enum BanReason {
     /// Validator has been removed from the committee due to insufficient production in a given number of sessions
     InsufficientProduction(u32),
 
-    /// Validator has been removed from the committee due to insufficient abft performance in a given number of sessions
+    /// Validator has been removed from the committee due to insufficient sbft performance in a given number of sessions
     InsufficientFinalization(u32),
 
     /// Any arbitrary reason

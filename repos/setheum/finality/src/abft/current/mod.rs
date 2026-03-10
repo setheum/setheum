@@ -31,7 +31,7 @@ pub use network::NetworkData;
 
 pub use crate::primitives ::{BlockHash, BlockNumber, CURRENT_FINALITY_VERSION as VERSION};
 use crate::{
-    abft::{
+    sbft::{
         common::{unit_creation_delay_fn, MAX_ROUNDS, SESSION_LEN_LOWER_BOUND_MS},
         NetworkWrapper,
     },
@@ -41,7 +41,7 @@ use crate::{
     network::data::Network,
     oneshot,
     party::{
-        backup::ABFTBackup,
+        backup::SBFTBackup,
         manager::{Task, TaskCommon},
     },
     CurrentNetworkData, Hasher, Keychain, NodeIndex, SessionId, SignatureSet, UnitCreationDelay,
@@ -59,7 +59,7 @@ pub fn run_member<H, C, ADN, V>(
     network: WrappedNetwork<H::Unverified, ADN>,
     data_provider: impl current_setbft_bft::DataProvider<SetBFTData<H::Unverified>> + Send + 'static,
     ordered_data_interpreter: OrderedDataInterpreter<SubstrateChainInfoProvider<H, C>, H, V>,
-    backup: ABFTBackup,
+    backup: SBFTBackup,
 ) -> Task
 where
     H: Header,

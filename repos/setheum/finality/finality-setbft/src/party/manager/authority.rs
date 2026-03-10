@@ -60,7 +60,7 @@ impl Task {
 pub struct Subtasks {
     exit: oneshot::Receiver<()>,
     member: PureTask,
-    abft_performance: PureTask,
+    sbft_performance: PureTask,
     aggregator: PureTask,
     refresher: PureTask,
     data_store: PureTask,
@@ -71,7 +71,7 @@ impl Subtasks {
     pub fn new(
         exit: oneshot::Receiver<()>,
         member: PureTask,
-        abft_performance: PureTask,
+        sbft_performance: PureTask,
         aggregator: PureTask,
         refresher: PureTask,
         data_store: PureTask,
@@ -79,7 +79,7 @@ impl Subtasks {
         Subtasks {
             exit,
             member,
-            abft_performance,
+            sbft_performance,
             aggregator,
             refresher,
             data_store,
@@ -89,7 +89,7 @@ impl Subtasks {
     async fn stop(self) -> Result<(), ()> {
         // both member and aggregator are implicitly using forwarder,
         // so we should force them to exit first to avoid any panics, i.e. `send on closed channel`
-        // abft_performance also uses aggregator, so it should be stopped before that
+        // sbft_performance also uses aggregator, so it should be stopped before that
         debug!(target: "setbft-party", "Started to stop all tasks");
         let mut result = Ok(());
         if self.member.stop().await.is_err() {
@@ -97,11 +97,11 @@ impl Subtasks {
             result = Err(());
         }
         trace!(target: "setbft-party", "Member stopped");
-        if self.abft_performance.stop().await.is_err() {
-            warn!(target: "setbft-party", "ABFT performance scorer stopped with en error");
+        if self.sbft_performance.stop().await.is_err() {
+            warn!(target: "setbft-party", "SBFT performance scorer stopped with en error");
             result = Err(());
         }
-        trace!(target: "setbft-party", "ABFT performance scorer stopped");
+        trace!(target: "setbft-party", "SBFT performance scorer stopped");
         if self.aggregator.stop().await.is_err() {
             warn!(target: "setbft-party", "Aggregator stopped with en error");
             result = Err(());
@@ -125,7 +125,7 @@ impl Subtasks {
         let result = tokio::select! {
             _ = &mut self.exit => Ok(()),
             res = self.member.stopped() => { debug!(target: "setbft-party", "Member stopped early"); res },
-            res = self.abft_performance.stopped() => { debug!(target: "setbft-party", "ABFT performance scorer stopped early"); res },
+            res = self.sbft_performance.stopped() => { debug!(target: "setbft-party", "SBFT performance scorer stopped early"); res },
             res = self.aggregator.stopped() => { debug!(target: "setbft-party", "Aggregator stopped early"); res },
             res = self.refresher.stopped() => { debug!(target: "setbft-party", "Refresher stopped early"); res },
             res = self.data_store.stopped() => { debug!(target: "setbft-party", "DataStore stopped early"); res },

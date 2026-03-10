@@ -18,7 +18,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-//! Types common for current & legacy abft used across finality-setbft
+//! Types common for current & legacy sbft used across finality-setbft
 
 use derive_more::{From, Into};
 use parity_scale_codec::{Decode, Encode, Error, Input, Output};

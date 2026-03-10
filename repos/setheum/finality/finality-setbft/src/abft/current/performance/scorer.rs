@@ -20,9 +20,9 @@
 
 use set_bft::{NodeCount, NodeMap, Round};
 
-use crate::{abft::current::performance::Batch, setbft_primitives::RawScore, UnverifiedHeader};
+use crate::{sbft::current::performance::Batch, setbft_primitives::RawScore, UnverifiedHeader};
 
-/// Scoring ABFT performance based on returned ordered unit batches.
+/// Scoring SBFT performance based on returned ordered unit batches.
 pub struct Scorer {
     newest_unit_by: NodeMap<Round>,
 }

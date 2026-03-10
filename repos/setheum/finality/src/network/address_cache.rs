@@ -26,7 +26,7 @@ use primitives::AccountId;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    abft::NodeIndex, idx_to_account::ValidatorIndexToAccountIdConverter, session::SessionId,
+    sbft::NodeIndex, idx_to_account::ValidatorIndexToAccountIdConverter, session::SessionId,
 };
 
 /// Network details for a given validator in a given session.

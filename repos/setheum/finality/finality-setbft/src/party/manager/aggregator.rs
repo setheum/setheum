@@ -30,7 +30,7 @@ use log::{debug, error, trace};
 use tokio::time;
 
 use crate::{
-    abft::SignatureSet,
+    sbft::SignatureSet,
     aggregation::{Aggregator, SignableTypedHash},
     setbft_primitives::{
         crypto::SignatureSet as PrimitivesSignatureSet, AuthoritySignature, BlockHash, Hash,

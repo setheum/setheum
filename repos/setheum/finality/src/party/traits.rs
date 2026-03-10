@@ -24,7 +24,7 @@ use async_trait::async_trait;
 
 use crate::{
     primitives ::BlockNumber,
-    party::{backup::ABFTBackup, manager::AuthorityTask},
+    party::{backup::SBFTBackup, manager::AuthorityTask},
     AuthorityId, NodeIndex, SessionId,
 };
 
@@ -46,7 +46,7 @@ pub trait NodeSessionManager {
         &self,
         session: SessionId,
         node_id: NodeIndex,
-        backup: ABFTBackup,
+        backup: SBFTBackup,
         authorities: &[AuthorityId],
     ) -> AuthorityTask;
 

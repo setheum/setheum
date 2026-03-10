@@ -24,7 +24,7 @@ use current_setbft_aggregator::NetworkError as CurrentNetworkError;
 use legacy_setbft_aggregator::NetworkError as LegacyNetworkError;
 
 use crate::{
-    abft::SignatureSet,
+    sbft::SignatureSet,
     primitives ::BlockHash,
     crypto::Signature,
     mpsc,

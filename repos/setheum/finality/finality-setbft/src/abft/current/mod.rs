@@ -33,7 +33,7 @@ pub use performance::{Service as PerformanceService, ServiceIO as PerformanceSer
 
 pub use crate::setbft_primitives::CURRENT_FINALITY_VERSION as VERSION;
 use crate::{
-    abft::{
+    sbft::{
         common::{unit_creation_delay_fn, MAX_ROUNDS, SESSION_LEN_LOWER_BOUND_MS},
         NetworkWrapper,
     },
@@ -43,7 +43,7 @@ use crate::{
     network::data::Network,
     oneshot,
     party::{
-        backup::ABFTBackup,
+        backup::SBFTBackup,
         manager::{Task, TaskCommon},
     },
     CurrentNetworkData, Hasher, Keychain, NodeIndex, SessionId, SignatureSet, UnitCreationDelay,
@@ -64,7 +64,7 @@ pub fn run_member<UH, ADN>(
         Data = SetBFTData<UH>,
         Hasher = Hasher,
     >,
-    backup: ABFTBackup,
+    backup: SBFTBackup,
 ) -> Task
 where
     UH: UnverifiedHeader,

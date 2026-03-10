@@ -18,14 +18,14 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-mod abft_score;
+mod sbft_score;
 mod best_block;
 mod finality_rate;
 mod slo;
 mod timing;
 pub mod transaction_pool;
 
-pub use abft_score::ScoreMetrics;
+pub use sbft_score::ScoreMetrics;
 pub use slo::{run_metrics_service, SloMetrics};
 pub use timing::{Checkpoint, DefaultClock};
 pub type TimingBlockMetrics = timing::TimingBlockMetrics<DefaultClock>;

@@ -30,7 +30,7 @@ pub use network::NetworkData;
 use super::common::{sanity_check_round_delays, unit_creation_delay_fn, MAX_ROUNDS};
 pub use crate::primitives ::{BlockHash, BlockNumber, LEGACY_FINALITY_VERSION as VERSION};
 use crate::{
-    abft::NetworkWrapper,
+    sbft::NetworkWrapper,
     block::{Header, HeaderBackend},
     data_io::{
         legacy::{SetBFTData, OrderedDataInterpreter},
@@ -39,7 +39,7 @@ use crate::{
     network::data::Network,
     oneshot,
     party::{
-        backup::ABFTBackup,
+        backup::SBFTBackup,
         manager::{Task, TaskCommon},
     },
     Keychain, LegacyNetworkData, NodeIndex, SessionId, UnitCreationDelay,
@@ -52,7 +52,7 @@ pub fn run_member<H, C, ADN>(
     network: NetworkWrapper<LegacyNetworkData, ADN>,
     data_provider: impl legacy_setbft_bft::DataProvider<SetBFTData> + Send + 'static,
     ordered_data_interpreter: OrderedDataInterpreter<SubstrateChainInfoProvider<H, C>>,
-    backup: ABFTBackup,
+    backup: SBFTBackup,
 ) -> Task
 where
     H: Header,
