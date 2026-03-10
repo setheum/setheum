@@ -1,0 +1,27 @@
+{
+    "data_path" : ["/disk_test"],
+    "functionality" : {
+        "srd_size": 16,
+        "srd_max_per_turn": 800,
+        "file_arry": "1m 2m 4m 8m",
+        "srd_limit": 512000,
+        "file_limit": 400000,
+        "validate": {
+            "srd_num": 20,
+            "deleted_srd": 5,
+            "file_num": 100,
+            "deleted_file": 16
+        }
+    },
+    "benchmark" : {
+        "cid1g" : "Qmb529vcV8PzhnSigcfGEXd22fyJZMKBKiP1owzNpDtD9H",
+        "srd_max_per_turn": 800,
+        "srd_bench_num" : 10,
+        "srd_num" : 204800,
+        "file_num" : 20000
+    },
+    "performance" : {
+        "srd_num" : 204800,
+        "file_num" : 200000
+    }
+}

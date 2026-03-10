@@ -30,12 +30,7 @@ serde = { workspace = true }
 [features]
 default = []
 short_session = [
-    "setheum-runtime/short_session",
     "primitives/short_session",
 ]
-enable_treasury_proposals = [
-    "setheum-runtime/enable_treasury_proposals"
-]
-try-runtime = [
-    "setheum-runtime/try-runtime",
-]
+
+

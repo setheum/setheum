@@ -1,0 +1,110 @@
+#!/bin/bash
+function restart_exit()
+{
+    local cur_sworkerpid=$(ps -ef | grep -v grep | grep "\b${sworkerpid}\b" | awk '{print $2}')
+    if [ x"$cur_sworkerpid" = x"$sworkerpid" ]; then
+        kill -9 $sworkerpid &>/dev/null
+        wait $sworkerpid &>/dev/null
+    fi
+    rm -rf $tmpdir
+}
+
+function deal_ret()
+{
+    local ret=$1
+    local info=$2
+    restart_ret=$(($restart_ret|$ret))
+
+    if [ $ret -ne 0 ]; then
+        verbose ERROR "$info"
+        return $ret
+    else
+        verbose INFO "$info"
+        return $ret
+    fi
+}
+
+########## MAIN BODY ##########
+# basic variable
+basedir=$(cd `dirname $0`;pwd)
+instdir=$(cd $basedir/..;pwd)
+scriptdir=$instdir/scripts
+datadir=$instdir/data
+errfile=$scriptdir/err.log
+tmpdir=$basedir/tmp
+TMPFILE=$tmpdir/TMPFILE.$(date +%N)${RANDOM}
+sworkerlog=$instdir/sworker.log
+restart_ret=0
+
+trap "restart_exit" EXIT
+
+mkdir -p $tmpdir
+
+. $scriptdir/utils.sh
+
+
+### Add limit srd and file
+srd_limit=$(get_config '.functionality|.srd_limit')
+file_limit=$(get_config '.functionality|.file_limit')
+srd $srd_limit &>/dev/null
+if [ $? -ne 0 ]; then
+    verbose ERROR "add srd failed."
+    exit 1
+fi
+test_add_file $file_limit &>/dev/null
+if [ $? -ne 0 ]; then
+    verbose ERROR "add file failed."
+    exit 1
+fi
+store_metadata &>/dev/null
+
+### Restart crust-sworker
+sworkerpid=$(cat $sworkerpidfile)
+kill -9 $sworkerpid &>/dev/null
+wait $sworkerpid &>/dev/null
+sleep 3
+cd $testdir
+verbose INFO "Restarting crust-sworker..." h
+./bin/crust-sworker -c etc/Config.json --offline --debug &>$sworkerlog &
+sworkerpid=$!
+echo $sworkerpid > $sworkerpidfile
+sleep 10
+while true; do
+    curl -s $baseurl/workload 2>$errfile 1>$TMPFILE
+    if [ $? -eq 0 ] ; then
+        break
+    elif ! ps -ef | grep -v grep | grep $sworkerpid &>/dev/null; then
+        verbose ERROR "failed" t
+        verbose ERROR "start crust sworker failed! Please check $errfile for details."
+        kill -9 $sworkerpid
+        exit 1
+    fi
+    sleep 1
+done
+if ! ps -ef | grep -v grep | grep $sworkerpid &>/dev/null; then
+    verbose ERROR "failed" t
+    exit 1
+fi
+verbose INFO "success" t
+cd - &>/dev/null
+
+# Re-test
+get_workload &>/dev/null
+deal_ret $? "get workload failed!" > $TMPFILE
+report_work &>/dev/null
+deal_ret $? "report workload failed!" > $TMPFILE
+srd 100 &>/dev/null
+deal_ret $? "srd 100 failed!" > $TMPFILE
+srd -50 &>/dev/null
+deal_ret $? "srd -50 failed!" > $TMPFILE
+store_metadata &>/dev/null
+deal_ret $? "store metadata failed!" > $TMPFILE
+get_workload &>/dev/null
+deal_ret $? "get workload again failed!" > $TMPFILE
+report_work &>/dev/null
+deal_ret $? "report workload again failed!" > $TMPFILE
+
+if [ $restart_ret -ne 0 ]; then
+    verbose ERROR "Test failed after restart!" n
+    exit 1
+fi

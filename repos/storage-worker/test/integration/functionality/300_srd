@@ -1,0 +1,52 @@
+#!/bin/bash
+function _store_meta()
+{
+    validate_file
+    store_metadata
+}
+
+function seal_exit()
+{
+    rm -rf $tmpdir
+}
+
+########## MAIN BODY ##########
+# basic variable
+basedir=$(cd `dirname $0`;pwd)
+instdir=$(cd $basedir/..;pwd)
+scriptdir=$instdir/scripts
+datadir=$instdir/data
+tmpdir=$basedir/tmp
+TMPFILE=$tmpdir/TMPFILE.$(date +%N)${RANDOM}
+
+mkdir -p $tmpdir
+
+trap 'seal_exit' EXIT
+
+. $scriptdir/utils.sh
+
+
+declare -A hash_2_use_m
+data_arry=($(ls $datadir))
+data_size=${#data_arry[@]}
+
+srd_num=$(get_config ".functionality|.srd_size")
+
+# Remove previous srd
+get_workload &>$TMPFILE
+if [ $? -ne 0 ]; then
+    verbose ERROR "get workload failed!" n
+    exit 1
+fi
+p_srd_num=$(cat $TMPFILE | jq '.srd|.srd_complete')
+srd_real_sync "-$p_srd_num" &>/dev/null
+
+# Srd task
+srd_real_sync $srd_num &>/dev/null
+_store_meta &>/dev/null
+get_workload &>$TMPFILE
+srd_real=$(cat $TMPFILE | jq '.srd|.srd_complete')
+if [ x"$srd_real" != x"$srd_num" ]; then
+    verbose ERROR "srd failed!Wrong result, expected:$srd_num, real:$(cat $TMPFILE | jq '.srd|.srd_complete')" n
+    exit 1
+fi

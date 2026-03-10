@@ -1,0 +1,102 @@
+#!/bin/bash
+function _seal()
+{
+    local filesize=$1
+    $GEN_RANDOM_DATA ${filesize} $datadir/$filesize
+    if [ $? -ne 0 ]; then
+        verbose ERROR "generate random data failed!"
+        exit 1
+    fi
+    local cid_l=$(seal $datadir/$filesize)
+    rm $datadir/$filesize
+    if [ ${#cid_l} -ne 46 ]; then
+        verbose ERROR "seal file failed!"
+        exit 1
+    fi
+    echo $cid_l
+}
+
+function report_exit()
+{
+    rm -rf $tmpdir
+
+    ### Delete file
+    test_delete_file_unsafe $(get_workload | jq '.files|.[]|.num' | awk '{sum+=$1} END{print sum}')
+}
+
+########## MAIN BODY ##########
+# basic variable
+basedir=$(cd `dirname $0`;pwd)
+instdir=$(cd $basedir/..;pwd)
+scriptdir=$instdir/scripts
+datadir=$instdir/data
+tmpdir=$basedir/tmp
+TMPFILE=$tmpdir/TMPFILE.$(date +%N)${RANDOM}
+
+mkdir -p $tmpdir
+
+trap 'report_exit' EXIT
+
+. $scriptdir/utils.sh
+
+
+srd_num=$(get_config ".functionality|.srd_size")
+srd_max_per_turn=$(get_config ".functionality|.srd_max_per_turn")
+file_arry=($(get_config ".functionality|.file_arry"))
+added_fn_e=${#file_arry[@]}
+tmp_num=0
+
+
+# Ignore previous infact
+report_work &>/dev/null
+report_work_result &>/dev/null
+
+# Get workload
+get_workload &>$TMPFILE
+if [ $? -ne 0 ]; then
+    verbose ERROR "Get workload failed!" n
+    exit 1
+fi
+workload=$(cat $TMPFILE)
+
+# Delete previous srd
+srd -$(echo $workload | jq '.srd|.srd_complete' | sed 's/"//g' 2>/dev/null) &>/dev/null
+
+# Make srd volunm
+srd $srd_num
+
+# Delete previous file
+clean_file
+# Make file volunm
+for filesize in ${file_arry[@]}; do
+    _seal $filesize &>$TMPFILE
+    if [ $? -ne 0 ]; then
+        verbose ERROR "seal file failed!" n
+        exit 1
+    fi
+done
+validate_file &>/dev/null
+
+# Report work report
+report_work &>$TMPFILE
+if [ $? -ne 0 ]; then
+    verbose ERROR "get work report failed!" n
+    exit 1
+fi
+res=$(cat $TMPFILE)
+# Get report info
+ret=0
+added_fn=$(echo $res | jq '.added_files | .[] | .cid' | wc -l 2>/dev/null)
+deleted_fn=$(echo $res | jq '.deleted_files | .[] | .cid' | wc -l 2>/dev/null)
+reserved=$(echo $res | jq -r '.reserved' 2>/dev/null)
+reserved_e=$((srd_num * 1024 * 1024 * 1024))
+if [ x"$reserved" != x"$reserved_e" ]; then
+    verbose ERROR "srd number is wrong!expect:${reserved_e}, real:${reserved}" n
+    ret=1
+fi
+if [ x"$added_fn" != x"$added_fn_e" ]; then
+    verbose ERROR "added file number is wrong!expect:$added_fn_e, real:$added_fn" n
+    ret=1
+fi
+
+exit $ret

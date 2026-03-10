@@ -1,0 +1,84 @@
+#!/bin/bash
+function _seal()
+{
+    local filesize=$((RANDOM % 17 + 1))m
+    $GEN_RANDOM_DATA ${filesize} $datadir/$filesize
+    if [ $? -ne 0 ]; then
+        verbose ERROR "generate random data failed!"
+        return 1
+    fi
+    local cid_l=$(seal $datadir/$filesize)
+    rm $datadir/$filesize
+    if [ ${#cid_l} -ne 46 ]; then
+        return 1
+    fi
+}
+
+function _clean()
+{
+    local file_num=$file_limit
+    _test_delete_file_unsafe $file_limit
+    report_work &>/dev/null
+    validate_file &>/dev/null
+    srd -${srd_limit}
+}
+
+function _test_add_file()
+{
+    local num=$1
+    test_add_file $num &>/dev/null
+    if [ $? -ne 0 ]; then
+        verbose ERROR "add file failed!!" n
+        exit 1
+    fi
+}
+
+function _test_delete_file_unsafe()
+{
+    local num=$1
+    test_delete_file_unsafe $num &>/dev/null
+    if [ $? -ne 0 ]; then
+        verbose ERROR "delete file real failed!" n
+        exit 1
+    fi
+}
+
+########## MAIN BODY ##########
+# basic variable
+basedir=$(cd `dirname $0`;pwd)
+instdir=$(cd $basedir/..;pwd)
+scriptdir=$instdir/scripts
+datadir=$instdir/data
+tmpdir=$basedir/tmp
+TMPFILE=$tmpdir/TMPFILE.$(date +%N)${RANDOM}
+
+mkdir -p $tmpdir
+
+trap '_clean' EXIT
+
+. $scriptdir/utils.sh
+
+srd_limit=$(get_config '.functionality|.srd_limit')
+file_limit=$(get_config '.functionality|.file_limit')
+
+### Seal file upper limit
+_test_add_file $file_limit
+svalid_num=$(get_workload | jq '.files|.valid|.num')
+_seal 2>/dev/null
+evalid_num=$(get_workload | jq '.files|.valid|.num')
+if [ $evalid_num -gt $svalid_num ]; then
+    verbose ERROR "test file upper limit failed!"
+    exit 1
+fi
+
+### Srd upper limit
+srd "$srd_limit"
+cur_srd_num=$(get_workload | jq '.srd|.srd_complete')
+! is_number $cur_srd_num && { verbose ERROR "Get current srd number failed!"; exit 1; }
+srd 32
+new_srd_num=$(get_workload | jq '.srd|.srd_complete')
+! is_number $new_srd_num && { verbose ERROR "Get new srd number failed!"; exit 1; }
+if [ $new_srd_num -gt $cur_srd_num ]; then
+    verbose ERROR "test srd upper limit failed!"
+    exit 1
+fi

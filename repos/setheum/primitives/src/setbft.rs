@@ -38,7 +38,7 @@ use sp_runtime::{
 pub use sp_staking::{EraIndex, SessionIndex};
 use sp_std::vec::Vec;
 
-use crate::{AccountId, BlockNumber, SessionCount, Version};
+use crate::{AccountId, Balance, BlockNumber, SessionCount, Version};
 
 pub const KEY_TYPE: KeyTypeId = KeyTypeId(*b"seth");
 
@@ -117,14 +117,14 @@ pub struct SessionCommittee<T> {
 }
 
 /// Openness of the process of the elections
-#[derive(Decode, Encode, TypeInfo, Debug, Clone, PartialEq, Eq)]
+#[derive(Decode, Encode, TypeInfo, Debug, Clone, PartialEq, Eq, parity_scale_codec::MaxEncodedLen, parity_scale_codec::DecodeWithMemTracking)]
 pub enum ElectionOpenness {
     Permissioned,
     Permissionless,
 }
 
 /// Represent desirable size of a committee in a session
-#[derive(Decode, Encode, TypeInfo, Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Decode, Encode, TypeInfo, Debug, Clone, Copy, PartialEq, Eq, parity_scale_codec::MaxEncodedLen, parity_scale_codec::DecodeWithMemTracking)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub struct CommitteeSeats {
 /// Size of reserved validators in a session
@@ -342,6 +342,8 @@ pub trait ValidatorProvider {
     fn current_era_validators() -> EraValidators<Self::AccountId>;
 /// returns committee seats for the current era.
     fn current_era_committee_size() -> CommitteeSeats;
+/// returns the elected validators for the given era.
+    fn elected_validators(era: sp_staking::EraIndex) -> Vec<Self::AccountId>;
 }
 
 #[derive(Decode, Encode, TypeInfo, Clone)]
