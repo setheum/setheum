@@ -9,9 +9,9 @@ edition = "2021"
 
 [dependencies]
 parity-scale-codec = { workspace = true }
-log = { workspace = true }
+log = { workspace = true , default-features = false }
 scale-info = { workspace = true }
-serde = { workspace = true, optional = true }
+serde = { workspace = true, optional = true , default-features = false }
 
 # substrate
 frame-support = { workspace = true }
@@ -21,34 +21,34 @@ sp-runtime = { workspace = true }
 sp-std = { workspace = true }
 
 # polkadot
-parachains-common = { workspace = true, optional = true }
+parachains-common = { workspace = true, optional = true , default-features = false }
 pallet-xcm = { workspace = true }
-xcm = { workspace = true }
-xcm-executor = { workspace = true }
+xcm = { workspace = true , default-features = false }
+xcm-executor = { workspace = true , default-features = false }
 
-module-traits = { package = "module-traits", path = "../../runtime-modules/traits", default-features = false}
-module-xcm-support = { package = "module-xcm-support", path = "../xcm-support", default-features = false }
+module-traits = { workspace = true , default-features = false }
+module-xcm-support = { workspace = true , default-features = false }
 
 [dev-dependencies]
 # substrate
 pallet-balances = { workspace = true, features = ["std"] }
 sp-core = { workspace = true, features = ["std"] }
-# pallet-message-queue = { workspace = true, features = ["std"] }
+# pallet-message-queue = { workspace = true, features = ["std"] , default-features = false }
 
 # cumulus
-cumulus-pallet-xcm = { workspace = true, features = ["std"] }
-cumulus-primitives-core = { workspace = true, features = ["std"] }
+cumulus-pallet-xcm = { workspace = true, features = ["std"] , default-features = false }
+cumulus-primitives-core = { workspace = true, features = ["std"] , default-features = false }
 
 # polkadot
-polkadot-parachain-primitives = { workspace = true, features = ["std"] }
-polkadot-runtime-parachains = { workspace = true, features = ["std"] }
-polkadot-runtime-common = { workspace = true, features = ["std"] }
-xcm-builder = { workspace = true, features = ["std"] }
-xcm-simulator = { workspace = true }
+polkadot-parachain-primitives = { workspace = true, features = ["std"] , default-features = false }
+polkadot-runtime-parachains = { workspace = true, features = ["std"] , default-features = false }
+polkadot-runtime-common = { workspace = true, features = ["std"] , default-features = false }
+xcm-builder = { workspace = true, features = ["std"] , default-features = false }
+xcm-simulator = { workspace = true , default-features = false }
 
-module-tokens = { package = "module-tokens", path = "../../runtime-modules/tokens" }
-module-xcm = { package = "module-xcm", path = "../xcm" }
-module-xcm-mock-message-queue = { package = "module-xcm-mock-message-queue", path = "../xcm-mock-message-queue" }
+module-tokens = { workspace = true , default-features = false }
+module-xcm = { workspace = true , default-features = false }
+module-xcm-mock-message-queue = { package = "module-xcm-mock-message-queue", path = "../xcm-mock-message-queue" , default-features = false }
 
 [features]
 default = [ "std" ]
@@ -78,7 +78,6 @@ runtime-benchmarks = [
 	"parachains-common/runtime-benchmarks",
 	"sp-runtime/runtime-benchmarks",
 	"xcm-executor/runtime-benchmarks",
-	"xcm/runtime-benchmarks",
 ]
 try-runtime = [
 	"frame-support/try-runtime",

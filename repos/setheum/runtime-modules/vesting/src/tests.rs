@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -49,11 +49,11 @@ use sp_runtime::TokenError;
 fn vesting_from_chain_spec_works() {
 	ExtBuilder::default().build().execute_with(|| {
 		assert_ok!(Tokens::ensure_can_withdraw(
-			SEE,
+			SEU,
 			&CHARLIE,
 			10
 		));
-		assert!(Tokens::ensure_can_withdraw(SEE, &CHARLIE, 11).is_err());
+		assert!(Tokens::ensure_can_withdraw(SEU, &CHARLIE, 11).is_err());
 
 		assert_eq!(
 			Vesting::native_vesting_schedules(&CHARLIE),
@@ -75,21 +75,21 @@ fn vesting_from_chain_spec_works() {
 
 		System::set_block_number(13);
 
-		assert_ok!(Vesting::claim(RuntimeOrigin::signed(CHARLIE), SEE));
+		assert_ok!(Vesting::claim(RuntimeOrigin::signed(CHARLIE), SEU));
 
 		assert_ok!(Tokens::ensure_can_withdraw(
-			SEE,
+			SEU,
 			&CHARLIE,
 			25
 		));
-		assert!(Tokens::ensure_can_withdraw(SEE, &CHARLIE, 26).is_err());
+		assert!(Tokens::ensure_can_withdraw(SEU, &CHARLIE, 26).is_err());
 
 		System::set_block_number(14);
 
-		assert_ok!(Vesting::claim(RuntimeOrigin::signed(CHARLIE), SEE));
+		assert_ok!(Vesting::claim(RuntimeOrigin::signed(CHARLIE), SEU));
 
 		assert_ok!(Tokens::ensure_can_withdraw(
-			SEE,
+			SEU,
 			&CHARLIE,
 			30
 		));
@@ -109,7 +109,7 @@ fn vested_transfer_works() {
 		};
 		assert_ok!(Vesting::vested_transfer(
 			RuntimeOrigin::signed(ALICE),
-			SEE,
+			SEU,
 			BOB,
 			schedule.clone()
 		));
@@ -142,13 +142,13 @@ fn self_vesting() {
 		};
 
 		assert_noop!(
-			Vesting::vested_transfer(RuntimeOrigin::signed(ALICE), SEE, ALICE, bad_schedule),
+			Vesting::vested_transfer(RuntimeOrigin::signed(ALICE), SEU, ALICE, bad_schedule),
 			crate::Error::<Runtime>::InsufficientBalanceToLock
 		);
 
 		assert_ok!(Vesting::vested_transfer(
 			RuntimeOrigin::signed(ALICE),
-			SEE,
+			SEU,
 			ALICE,
 			schedule.clone()
 		));
@@ -171,7 +171,7 @@ fn add_new_vesting_schedule_merges_with_current_locked_balance_and_until() {
 			period_count: 2u32,
 			per_period: 10u64,
 		};
-		assert_ok!(Vesting::vested_transfer(RuntimeOrigin::signed(ALICE), SEE, BOB, schedule));
+		assert_ok!(Vesting::vested_transfer(RuntimeOrigin::signed(ALICE), SEU, BOB, schedule));
 
 		System::set_block_number(12);
 
@@ -183,13 +183,13 @@ fn add_new_vesting_schedule_merges_with_current_locked_balance_and_until() {
 		};
 		assert_ok!(Vesting::vested_transfer(
 			RuntimeOrigin::signed(ALICE),
-			SEE,
+			SEU,
 			BOB,
 			another_schedule
 		));
 
 		assert_eq!(
-			Tokens::locks(&BOB, SEE).get(0),
+			Tokens::locks(&BOB, SEU).get(0),
 			Some(&BalanceLock {
 				id: VESTING_LOCK_ID,
 				amount: 17u64,
@@ -207,8 +207,8 @@ fn cannot_use_fund_if_not_claimed() {
 			period_count: 1u32,
 			per_period: 50u64,
 		};
-		assert_ok!(Vesting::vested_transfer(RuntimeOrigin::signed(ALICE), SEE, BOB, schedule));
-		assert!(Tokens::ensure_can_withdraw(SEE, &BOB, 1).is_err());
+		assert_ok!(Vesting::vested_transfer(RuntimeOrigin::signed(ALICE), SEU, BOB, schedule));
+		assert!(Tokens::ensure_can_withdraw(SEU, &BOB, 1).is_err());
 	});
 }
 
@@ -222,7 +222,7 @@ fn vested_transfer_fails_if_zero_period_or_count() {
 			per_period: 100u64,
 		};
 		assert_noop!(
-			Vesting::vested_transfer(RuntimeOrigin::signed(ALICE), SEE, BOB, schedule),
+			Vesting::vested_transfer(RuntimeOrigin::signed(ALICE), SEU, BOB, schedule),
 			Error::<Runtime>::ZeroVestingPeriod
 		);
 
@@ -233,7 +233,7 @@ fn vested_transfer_fails_if_zero_period_or_count() {
 			per_period: 100u64,
 		};
 		assert_noop!(
-			Vesting::vested_transfer(RuntimeOrigin::signed(ALICE), SEE, BOB, schedule),
+			Vesting::vested_transfer(RuntimeOrigin::signed(ALICE), SEU, BOB, schedule),
 			Error::<Runtime>::ZeroVestingPeriodCount
 		);
 	});
@@ -249,7 +249,7 @@ fn vested_transfer_fails_if_transfer_err() {
 			per_period: 100u64,
 		};
 		assert_noop!(
-			Vesting::vested_transfer(RuntimeOrigin::signed(BOB), SEE, ALICE, schedule),
+			Vesting::vested_transfer(RuntimeOrigin::signed(BOB), SEU, ALICE, schedule),
 			TokenError::FundsUnavailable,
 		);
 	});
@@ -265,7 +265,7 @@ fn vested_transfer_fails_if_overflow() {
 			per_period: u64::MAX,
 		};
 		assert_noop!(
-			Vesting::vested_transfer(RuntimeOrigin::signed(ALICE), SEE, BOB, schedule),
+			Vesting::vested_transfer(RuntimeOrigin::signed(ALICE), SEU, BOB, schedule),
 			ArithmeticError::Overflow,
 		);
 
@@ -276,7 +276,7 @@ fn vested_transfer_fails_if_overflow() {
 			per_period: 1u64,
 		};
 		assert_noop!(
-			Vesting::vested_transfer(RuntimeOrigin::signed(ALICE), SEE, BOB, another_schedule),
+			Vesting::vested_transfer(RuntimeOrigin::signed(ALICE), SEU, BOB, another_schedule),
 			ArithmeticError::Overflow,
 		);
 	});
@@ -292,7 +292,7 @@ fn vested_transfer_fails_if_bad_origin() {
 			per_period: 100u64,
 		};
 		assert_noop!(
-			Vesting::vested_transfer(RuntimeOrigin::signed(CHARLIE), SEE, BOB, schedule),
+			Vesting::vested_transfer(RuntimeOrigin::signed(CHARLIE), SEU, BOB, schedule),
 			BadOrigin
 		);
 	});
@@ -307,28 +307,28 @@ fn claim_works() {
 			period_count: 2u32,
 			per_period: 10u64,
 		};
-		assert_ok!(Vesting::vested_transfer(RuntimeOrigin::signed(ALICE), SEE, BOB, schedule));
+		assert_ok!(Vesting::vested_transfer(RuntimeOrigin::signed(ALICE), SEU, BOB, schedule));
 
 		System::set_block_number(11);
 // remain locked if not claimed
-		assert!(Tokens::transfer(&BOB, &ALICE, SEE, 10).is_err());
+		assert!(Tokens::transfer(&BOB, &ALICE, SEU, 10).is_err());
 // unlocked after claiming
-		assert_ok!(Vesting::claim(RuntimeOrigin::signed(BOB), SEE));
+		assert_ok!(Vesting::claim(RuntimeOrigin::signed(BOB), SEU));
 		assert!(NativeVestingSchedules::<Runtime>::contains_key(BOB));
-		assert_ok!(Tokens::transfer(&BOB, &ALICE, SEE, 10));
+		assert_ok!(Tokens::transfer(&BOB, &ALICE, SEU, 10));
 // more are still locked
-		assert!(Tokens::transfer(&BOB, &ALICE, SEE, 1).is_err());
+		assert!(Tokens::transfer(&BOB, &ALICE, SEU, 1).is_err());
 
 		System::set_block_number(21);
 // claim more
-		assert_ok!(Vesting::claim(RuntimeOrigin::signed(BOB), SEE));
+		assert_ok!(Vesting::claim(RuntimeOrigin::signed(BOB), SEU));
 		assert!(!NativeVestingSchedules::<Runtime>::contains_key(BOB));
-		assert_ok!(Tokens::transfer(&BOB, &ALICE, SEE, 10));
+		assert_ok!(Tokens::transfer(&BOB, &ALICE, SEU, 10));
 // all used up
-		assert_eq!(Tokens::free_balance(SEE, &BOB), 0);
+		assert_eq!(Tokens::free_balance(SEU, &BOB), 0);
 
 // no locks anymore
-		assert_eq!(Tokens::locks(&BOB, SEE), vec![]);
+		assert_eq!(Tokens::locks(&BOB, SEU), vec![]);
 	});
 }
 
@@ -341,12 +341,12 @@ fn claim_for_works() {
 			period_count: 2u32,
 			per_period: 10u64,
 		};
-		assert_ok!(Vesting::vested_transfer(RuntimeOrigin::signed(ALICE), SEE, BOB, schedule));
+		assert_ok!(Vesting::vested_transfer(RuntimeOrigin::signed(ALICE), SEU, BOB, schedule));
 
-		assert_ok!(Vesting::claim_for(RuntimeOrigin::signed(ALICE), SEE, BOB));
+		assert_ok!(Vesting::claim_for(RuntimeOrigin::signed(ALICE), SEU, BOB));
 
 		assert_eq!(
-			Tokens::locks(&BOB, SEE).get(0),
+			Tokens::locks(&BOB, SEU).get(0),
 			Some(&BalanceLock {
 				id: VESTING_LOCK_ID,
 				amount: 20u64,
@@ -356,10 +356,10 @@ fn claim_for_works() {
 
 		System::set_block_number(21);
 
-		assert_ok!(Vesting::claim_for(RuntimeOrigin::signed(ALICE), SEE, BOB));
+		assert_ok!(Vesting::claim_for(RuntimeOrigin::signed(ALICE), SEU, BOB));
 
 // no locks anymore
-		assert_eq!(Tokens::locks(&BOB, SEE), vec![]);
+		assert_eq!(Tokens::locks(&BOB, SEU), vec![]);
 		assert!(!NativeVestingSchedules::<Runtime>::contains_key(&BOB));
 	});
 }
@@ -373,7 +373,7 @@ fn update_vesting_schedules_works() {
 			period_count: 2u32,
 			per_period: 10u64,
 		};
-		assert_ok!(Vesting::vested_transfer(RuntimeOrigin::signed(ALICE), SEE, BOB, schedule));
+		assert_ok!(Vesting::vested_transfer(RuntimeOrigin::signed(ALICE), SEU, BOB, schedule));
 
 		let updated_schedule = VestingSchedule {
 			start: 0u64,
@@ -383,39 +383,39 @@ fn update_vesting_schedules_works() {
 		};
 		assert_ok!(Vesting::update_vesting_schedules(
 			RuntimeOrigin::root(),
-			SEE,
+			SEU,
 			BOB,
 			vec![updated_schedule]
 		));
 
 		System::set_block_number(11);
-		assert_ok!(Vesting::claim(RuntimeOrigin::signed(BOB), SEE));
-		assert!(Tokens::transfer(&BOB, &ALICE, SEE, 1).is_err());
+		assert_ok!(Vesting::claim(RuntimeOrigin::signed(BOB), SEU));
+		assert!(Tokens::transfer(&BOB, &ALICE, SEU, 1).is_err());
 
 		System::set_block_number(21);
-		assert_ok!(Vesting::claim(RuntimeOrigin::signed(BOB), SEE));
-		assert_ok!(Tokens::transfer(&BOB, &ALICE, SEE, 10));
+		assert_ok!(Vesting::claim(RuntimeOrigin::signed(BOB), SEU));
+		assert_ok!(Tokens::transfer(&BOB, &ALICE, SEU, 10));
 
 // empty vesting schedules cleanup the storage and unlock the fund
 		assert!(NativeVestingSchedules::<Runtime>::contains_key(BOB));
 		assert_eq!(
-			Tokens::locks(&BOB, SEE).get(0),
+			Tokens::locks(&BOB, SEU).get(0),
 			Some(&BalanceLock {
 				id: VESTING_LOCK_ID,
 				amount: 10u64,
 			})
 		);
-		assert_ok!(Vesting::update_vesting_schedules(RuntimeOrigin::root(), SEE, BOB, vec![]));
+		assert_ok!(Vesting::update_vesting_schedules(RuntimeOrigin::root(), SEU, BOB, vec![]));
 		assert!(!NativeVestingSchedules::<Runtime>::contains_key(BOB));
-		assert_eq!(Tokens::locks(&BOB, SEE), vec![]);
+		assert_eq!(Tokens::locks(&BOB, SEU), vec![]);
 	});
 }
 
 #[test]
 fn update_vesting_schedules_fails_if_unexpected_existing_locks() {
 	ExtBuilder::default().build().execute_with(|| {
-		assert_ok!(Tokens::transfer(&ALICE, &BOB, SEE, 1));
-		Tokens::set_lock(*b"prelocks", SEE, &BOB, 0u64);
+		assert_ok!(Tokens::transfer(&ALICE, &BOB, SEU, 1));
+		Tokens::set_lock(*b"prelocks", SEU, &BOB, 0u64);
 	});
 }
 
@@ -429,7 +429,7 @@ fn vested_transfer_check_for_min() {
 			per_period: 3u64,
 		};
 		assert_noop!(
-			Vesting::vested_transfer(RuntimeOrigin::signed(BOB), SEE, ALICE, schedule),
+			Vesting::vested_transfer(RuntimeOrigin::signed(BOB), SEU, ALICE, schedule),
 			Error::<Runtime>::AmountLow
 		);
 	});
@@ -444,7 +444,7 @@ fn multiple_vesting_schedule_claim_works() {
 			period_count: 2u32,
 			per_period: 10u64,
 		};
-		assert_ok!(Vesting::vested_transfer(RuntimeOrigin::signed(ALICE), SEE, BOB, schedule.clone()));
+		assert_ok!(Vesting::vested_transfer(RuntimeOrigin::signed(ALICE), SEU, BOB, schedule.clone()));
 
 		let schedule2 = VestingSchedule {
 			start: 0u64,
@@ -452,23 +452,23 @@ fn multiple_vesting_schedule_claim_works() {
 			period_count: 3u32,
 			per_period: 10u64,
 		};
-		assert_ok!(Vesting::vested_transfer(RuntimeOrigin::signed(ALICE), SEE, BOB, schedule2.clone()));
+		assert_ok!(Vesting::vested_transfer(RuntimeOrigin::signed(ALICE), SEU, BOB, schedule2.clone()));
 
 		assert_eq!(Vesting::native_vesting_schedules(&BOB), vec![schedule, schedule2.clone()]);
 
 		System::set_block_number(21);
 
-		assert_ok!(Vesting::claim(RuntimeOrigin::signed(BOB, SEE)));
+		assert_ok!(Vesting::claim(RuntimeOrigin::signed(BOB, SEU)));
 
 		assert_eq!(Vesting::native_vesting_schedules(&BOB), vec![schedule2]);
 
 		System::set_block_number(31);
 
-		assert_ok!(Vesting::claim(RuntimeOrigin::signed(BOB, SEE)));
+		assert_ok!(Vesting::claim(RuntimeOrigin::signed(BOB, SEU)));
 
 		assert!(!NativeVestingSchedules::<Runtime>::contains_key(&BOB));
 
-		assert_eq!(Tokens::locks(&BOB, SEE), vec![]);
+		assert_eq!(Tokens::locks(&BOB, SEU), vec![]);
 	});
 }
 
@@ -481,11 +481,11 @@ fn exceeding_maximum_schedules_should_fail() {
 			period_count: 2u32,
 			per_period: 10u64,
 		};
-		assert_ok!(Vesting::vested_transfer(RuntimeOrigin::signed(ALICE), SEE, BOB, schedule.clone()));
-		assert_ok!(Vesting::vested_transfer(RuntimeOrigin::signed(ALICE), SEE, BOB, schedule.clone()));
+		assert_ok!(Vesting::vested_transfer(RuntimeOrigin::signed(ALICE), SEU, BOB, schedule.clone()));
+		assert_ok!(Vesting::vested_transfer(RuntimeOrigin::signed(ALICE), SEU, BOB, schedule.clone()));
 
 		let create = RuntimeCall::Vesting(crate::Call::<Runtime>::vested_transfer {
-			currency_id: SEE,
+			currency_id: SEU,
 			dest: BOB,
 			schedule: schedule.clone(),
 		});
@@ -497,7 +497,7 @@ fn exceeding_maximum_schedules_should_fail() {
 		let schedules = vec![schedule.clone(), schedule.clone(), schedule];
 
 		assert_noop!(
-			Vesting::update_vesting_schedules(RuntimeOrigin::root(), SEE, BOB, schedules),
+			Vesting::update_vesting_schedules(RuntimeOrigin::root(), SEU, BOB, schedules),
 			Error::<Runtime>::MaxNativeVestingSchedulesExceeded
 		);
 	});
@@ -521,34 +521,34 @@ fn cliff_vesting_works() {
 			amount: VESTING_AMOUNT,
 		};
 
-		assert_eq!(Tokens::free_balance(SEE, BOB), 0);
+		assert_eq!(Tokens::free_balance(SEU, BOB), 0);
 		assert_ok!(Vesting::vested_transfer(
 			RuntimeOrigin::signed(ALICE),
-			SEE,
+			SEU,
 			BOB,
 			cliff_schedule
 		));
-		assert_eq!(Tokens::free_balance(SEE, BOB), VESTING_AMOUNT);
-		assert_eq!(Tokens::locks(&BOB, SEE), vec![balance_lock.clone()]);
+		assert_eq!(Tokens::free_balance(SEU, BOB), VESTING_AMOUNT);
+		assert_eq!(Tokens::locks(&BOB, SEU), vec![balance_lock.clone()]);
 
 		for i in 1..VESTING_PERIOD {
 			System::set_block_number(i);
-			assert_ok!(Vesting::claim(RuntimeOrigin::signed(BOB), SEE));
-			assert_eq!(Tokens::free_balance(SEE, BOB), VESTING_AMOUNT);
-			assert_eq!(Tokens::locks(&BOB, SEE), vec![balance_lock.clone()]);
+			assert_ok!(Vesting::claim(RuntimeOrigin::signed(BOB), SEU));
+			assert_eq!(Tokens::free_balance(SEU, BOB), VESTING_AMOUNT);
+			assert_eq!(Tokens::locks(&BOB, SEU), vec![balance_lock.clone()]);
 			assert_noop!(
-				Tokens::transfer(&BOB, &CHARLIE, SEE, VESTING_AMOUNT),
+				Tokens::transfer(&BOB, &CHARLIE, SEU, VESTING_AMOUNT),
 				TokenError::Frozen,
 			);
 		}
 
 		System::set_block_number(VESTING_PERIOD);
-		assert_ok!(Vesting::claim(RuntimeOrigin::signed(BOB), SEE));
-		assert!(Tokens::locks(&BOB, SEE).is_empty());
+		assert_ok!(Vesting::claim(RuntimeOrigin::signed(BOB), SEU));
+		assert!(Tokens::locks(&BOB, SEU).is_empty());
 		assert_ok!(Tokens::transfer(
 			&BOB,
 			&CHARLIE,
-			SEE,
+			SEU,
 			VESTING_AMOUNT
 		));
 	});

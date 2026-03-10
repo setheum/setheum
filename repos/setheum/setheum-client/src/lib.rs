@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -87,8 +87,8 @@ pub use ::primitives::*;
 pub use setheum::api;
 pub use runtime_types::*;
 
-/// An alias for a pallet aleph keys.
-pub type AlephKeyPair = ed25519::Pair;
+/// An alias for a pallet setbft keys.
+pub type SetBFTKeyPair = ed25519::Pair;
 /// An alias for a type of a key pair that signs chain transactions.
 pub type RawKeyPair = sr25519::Pair;
 /// An alias for an account id type.
@@ -100,7 +100,7 @@ pub type BlockHash = H256;
 /// An alias for a transaction hash type.
 pub type TxHash = H256;
 /// An alias for an RPC client type.
-pub type SubxtClient = OnlineClient<AlephConfig>;
+pub type SubxtClient = OnlineClient<SetBFTConfig>;
 
 pub use connections::{
     AsConnection, AsSigned, Connection, ConnectionApi, RootConnection, SignedConnection,
@@ -108,9 +108,9 @@ pub use connections::{
 };
 
 /// An alias for a configuration of live chain, e.g. block index type, hash type.
-pub enum AlephConfig {}
+pub enum SetBFTConfig {}
 
-impl Config for AlephConfig {
+impl Config for SetBFTConfig {
     type Hash = <PolkadotConfig as Config>::Hash;
     type AccountId = AccountId;
     type Address = MultiAddress<Self::AccountId, u32>;
@@ -119,8 +119,8 @@ impl Config for AlephConfig {
     type Header = <PolkadotConfig as Config>::Header;
     type ExtrinsicParams = PolkadotExtrinsicParams<Self>;
 }
-type ParamsBuilder = subxt::config::polkadot::PolkadotExtrinsicParamsBuilder<AlephConfig>;
-type PairSigner = subxt::tx::PairSigner<AlephConfig, RawKeyPair>;
+type ParamsBuilder = subxt::config::polkadot::PolkadotExtrinsicParamsBuilder<SetBFTConfig>;
+type PairSigner = subxt::tx::PairSigner<SetBFTConfig, RawKeyPair>;
 
 /// Used for signing extrinsic payload
 pub struct KeyPair {
@@ -185,9 +185,9 @@ pub fn raw_keypair_from_string(seed: &str) -> RawKeyPair {
     sr25519::Pair::from_string(seed, None).expect("Can't create pair from seed value")
 }
 
-/// Converts given seed phrase to a ed25519 [`AlephKeyPair`] object.
+/// Converts given seed phrase to a ed25519 [`SetBFTKeyPair`] object.
 /// * `seed` - a 12 or 24 word seed phrase
-pub fn aleph_keypair_from_string(seed: &str) -> AlephKeyPair {
+pub fn setbft_keypair_from_string(seed: &str) -> SetBFTKeyPair {
     ed25519::Pair::from_string(seed, None).expect("Can't create pair from seed value")
 }
 

@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -237,7 +237,7 @@ pub fn decode_gas_price(gas_price: u64, gas_limit: u64, tx_fee_per_gas: u128) ->
 			.checked_mul(gas_limit)?
 			.checked_mul(tip_number)?
 			.checked_div(10)? // percentage
-			.checked_div(1_000_000)? // SEE decimal is 12, ETH decimal is 18
+			.checked_div(1)? // SEU decimal is 18, ETH decimal is 18
 			.into();
 	}
 
@@ -276,10 +276,10 @@ pub fn decode_gas_limit(gas_limit: u64) -> (u64, u32) {
 mod convert {
 	use sp_runtime::traits::{CheckedDiv, Saturating, Zero};
 
-/// Convert decimal between native(12) and EVM(18) and therefore the 1_000_000 conversion.
-	const DECIMALS_VALUE: u32 = 1_000_000u32;
+/// Convert decimal between native(18) and EVM(18) and therefore the 1 conversion.
+	const DECIMALS_VALUE: u32 = 1u32;
 
-/// Convert decimal from native(SEE 12) to EVM(18).
+/// Convert decimal from native(SEU 18) to EVM(18).
 	pub fn convert_decimals_to_evm<B: Zero + Saturating + From<u32>>(b: B) -> B {
 		if b.is_zero() {
 			return b;
@@ -287,7 +287,7 @@ mod convert {
 		b.saturating_mul(DECIMALS_VALUE.into())
 	}
 
-/// Convert decimal from EVM(18) to native(SEE 12).
+/// Convert decimal from EVM(18) to native(SEU 18).
 	pub fn convert_decimals_from_evm<B: Zero + Saturating + CheckedDiv + PartialEq + Copy + From<u32>>(
 		b: B,
 	) -> Option<B> {

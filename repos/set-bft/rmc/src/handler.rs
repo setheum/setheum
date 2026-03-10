@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,7 +36,7 @@
 // SOFTWARE.
 
 //! Reliable MultiCast - a primitive for Reliable Broadcast protocol.
-pub use aleph_bft_crypto::{
+pub use set_bft_crypto::{
     Indexed, MultiKeychain, Multisigned, PartialMultisignature, PartiallyMultisigned, Signable,
     Signed, UncheckedSigned,
 };
@@ -173,8 +173,8 @@ mod tests {
         handler::{Error, OnStartRmcResponse},
         Handler,
     };
-    use aleph_bft_crypto::{NodeCount, NodeIndex, PartiallyMultisigned, Signed};
-    use aleph_bft_mock::{BadSigning, Keychain, Signable};
+    use set_bft_crypto::{NodeCount, NodeIndex, PartiallyMultisigned, Signed};
+    use set_bft_mock::{BadSigning, Keychain, Signable};
 
     fn apply_signatures(
         handler: &mut Handler<Signable, Keychain>,

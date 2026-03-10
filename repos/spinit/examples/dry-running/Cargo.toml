@@ -1,9 +1,9 @@
 [package]
 license = "Apache-2.0 OR MIT"
 name = "dry-running"
-authors = ["Cardinal", "Aleph Zero Foundation", "Use Ink <ink@use.ink>"]
+authors = ["Afsall Labs", "Setheum Foundation">"]
 edition = "2021"
-homepage = "https://alephzero.org"
+homepage = "https://setheum.com"
 repository = "https://github.com/use-ink/drink"
 version = "0.1.0"
 

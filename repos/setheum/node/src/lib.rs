@@ -18,10 +18,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-#![allow(clippy::unused_unit)]
-#![allow(unused_parens)]
-#![allow(unused_imports)]
+mod cli;
+mod config;
+mod executor;
 
-pub mod chain_spec;
-pub mod service;
-pub mod rpc;
+mod rpc;
+mod service;
+
+pub use cli::{Cli, Subcommand};
+pub use config::Validator as ConfigValidator;
+#[cfg(any(feature = "runtime-benchmarks", feature = "setheum-native-runtime"))]
+pub use executor::executor::ExecutorDispatch;
+pub use service::{new_authority, new_partial, ServiceComponents};

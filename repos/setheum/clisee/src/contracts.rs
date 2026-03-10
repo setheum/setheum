@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@ use setheum_client::{
     pallet_contracts::wasm::CodeInfo,
     pallets::contract::{ContractsApi, ContractsUserApi},
     sp_weights::weight_v2::Weight,
-    waiting::{AlephWaiting, BlockStatus},
+    waiting::{SetBFTWaiting, BlockStatus},
     AccountId, Balance, CodeHash, Connection, SignedConnection, SignedConnectionApi, TxStatus,
 };
 use codec::{Compact, Decode};

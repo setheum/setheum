@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -55,16 +55,13 @@ pub type AccountId = u128;
 pub const ALICE: AccountId = 1;
 pub const BOB: AccountId = 2;
 pub const CAROL: AccountId = 3;
-pub const USSD: CurrencyId = CurrencyId::Token(TokenSymbol::USSD);
+pub const SEUSD: CurrencyId = CurrencyId::Token(TokenSymbol::SEUSD);
 pub const WBTC: CurrencyId = CurrencyId::ForeignAsset(255);
 
-pub const EDF: CurrencyId = CurrencyId::Token(TokenSymbol::EDF);
-pub const SEE: CurrencyId = CurrencyId::Token(TokenSymbol::SEE);
+pub const SEU: CurrencyId = CurrencyId::Token(TokenSymbol::SEU);
 
 parameter_types! {
-	pub static USSDWBTCPair: TradingPair = TradingPair::from_currency_ids(USSD, WBTC).unwrap();
-	pub static USSDEDFPair: TradingPair = TradingPair::from_currency_ids(USSD, EDF).unwrap();
-	pub static EDFWBTCPair: TradingPair = TradingPair::from_currency_ids(EDF, WBTC).unwrap();
+	pub static SEUSDWBTCPair: TradingPair = TradingPair::from_currency_ids(SEUSD, WBTC).unwrap();
 }
 
 mod edfis_swap {
@@ -119,20 +116,16 @@ parameter_types! {
 	pub const GetExchangeFee: (u32, u32) = (1, 100);
 	pub const EdfisSwapPalletId: PalletId = PalletId(*b"set/edfis");
 	pub AlternativeSwapPathJointList: Vec<Vec<CurrencyId>> = vec![
-		vec![EDF],
 	];
 }
 
 thread_local! {
-	pub static USSD_EDF_POOL_RECORD: RefCell<(Balance, Balance)> = RefCell::new((0, 0));
 }
 
 pub struct MockOnLiquidityPoolUpdated;
 impl Happened<(TradingPair, Balance, Balance)> for MockOnLiquidityPoolUpdated {
 	fn happened(info: &(TradingPair, Balance, Balance)) {
 		let (trading_pair, new_pool_0, new_pool_1) = info;
-		if *trading_pair == USSDEDFPair::get() {
-			USSD_EDF_POOL_RECORD.with(|v| *v.borrow_mut() = (*new_pool_0, *new_pool_1));
 		}
 	}
 }
@@ -152,12 +145,12 @@ impl Config for Runtime {
 }
 
 parameter_types! {
-	pub USSDJoint: Vec<Vec<CurrencyId>> = vec![vec![USSD]];
-	pub SEEJoint: Vec<Vec<CurrencyId>> = vec![vec![SEE]];
+	pub SEUSDJoint: Vec<Vec<CurrencyId>> = vec![vec![SEUSD]];
+	pub SEUJoint: Vec<Vec<CurrencyId>> = vec![vec![SEU]];
 }
 
-pub type USSDJointSwap = SpecificJointsSwap<EdfisSwapModule, USSDJoint>;
-pub type SEEJointSwap = SpecificJointsSwap<EdfisSwapModule, SEEJoint>;
+pub type SEUSDJointSwap = SpecificJointsSwap<EdfisSwapModule, SEUSDJoint>;
+pub type SEUJointSwap = SpecificJointsSwap<EdfisSwapModule, SEUJoint>;
 
 type Block = frame_system::mocking::MockBlock<Runtime>;
 
@@ -180,14 +173,12 @@ impl Default for ExtBuilder {
 	fn default() -> Self {
 		Self {
 			balances: vec![
-				(ALICE, SEE, 1_000_000_000_000_000_000u128),
-				(BOB, SEE, 1_000_000_000_000_000_000u128),
-				(ALICE, USSD, 1_000_000_000_000_000_000u128),
-				(BOB, USSD, 1_000_000_000_000_000_000u128),
+				(ALICE, SEU, 1_000_000_000_000_000_000u128),
+				(BOB, SEU, 1_000_000_000_000_000_000u128),
+				(ALICE, SEUSD, 1_000_000_000_000_000_000u128),
+				(BOB, SEUSD, 1_000_000_000_000_000_000u128),
 				(ALICE, WBTC, 1_000_000_000_000_000_000u128),
 				(BOB, WBTC, 1_000_000_000_000_000_000u128),
-				(ALICE, EDF, 1_000_000_000_000_000_000u128),
-				(BOB, EDF, 1_000_000_000_000_000_000u128),
 			],
 			initial_listing_trading_pairs: vec![],
 			initial_enabled_trading_pairs: vec![],
@@ -198,7 +189,6 @@ impl Default for ExtBuilder {
 
 impl ExtBuilder {
 	pub fn initialize_enabled_trading_pairs(mut self) -> Self {
-		self.initial_enabled_trading_pairs = vec![USSDEDFPair::get(), USSDWBTCPair::get(), EDFWBTCPair::get()];
 		self
 	}
 
@@ -206,9 +196,7 @@ impl ExtBuilder {
 		self.initial_added_liquidity_pools = vec![(
 			who,
 			vec![
-				(USSDEDFPair::get(), (1_000_000u128, 2_000_000u128)),
-				(USSDWBTCPair::get(), (1_000_000u128, 2_000_000u128)),
-				(EDFWBTCPair::get(), (1_000_000u128, 2_000_000u128)),
+				(SEUSDWBTCPair::get(), (1_000_000u128, 2_000_000u128)),
 			],
 		)];
 		self

@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -218,7 +218,7 @@ where
         let next_to_interface = self.next_to_interface.clone();
         let metrics = self.metrics.clone();
         self.spawn_handle
-            .spawn("aleph/clique_network_outgoing", async move {
+            .spawn("setbft/clique_network_outgoing", async move {
                 outgoing(
                     secret_key,
                     public_key,
@@ -245,7 +245,7 @@ where
         let next_to_interface = self.next_to_interface.clone();
         let metrics = self.metrics.clone();
         self.spawn_handle
-            .spawn("aleph/clique_network_incoming", async move {
+            .spawn("setbft/clique_network_incoming", async move {
                 incoming(
                     secret_key,
                     stream,

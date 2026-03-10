@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,12 +38,13 @@
 use std::sync::Arc;
 use jsonrpc_core::{Error, ErrorCode, Result};
 use jsonrpc_derive::rpc;
+use sp_runtime::codec::Codec;
 use sp_api::ProvideRuntimeApi;
 use sp_blockchain::HeaderBackend;
 use sp_runtime::{generic::BlockId, traits::Block as BlockT};
 pub use module_oracle_runtime_api::OracleApi as OracleRuntimeApi;
 
-#[rpc]
+#[rpc(server)]
 pub trait OracleApi<BlockHash, DataProviderId, CurrencyId, TimeStampedPrice> {
 	#[rpc(name = "oracle_getValue")]
 	fn get_value(
@@ -81,9 +82,9 @@ where
 	Block: BlockT,
 	C: Send + Sync + 'static + ProvideRuntimeApi<Block> + HeaderBackend<Block>,
 	C::Api: OracleRuntimeApi<Block, DataProviderId, CurrencyId, TimeStampedPrice>,
-	DataProviderId: codec::Codec + Send + Sync + 'static,
-	CurrencyId: codec::Codec + Send + Sync + 'static,
-	TimeStampedPrice: codec::Codec + Send + Sync + 'static,
+	DataProviderId: Codec + Send + Sync + 'static,
+	CurrencyId: Codec + Send + Sync + 'static,
+	TimeStampedPrice: Codec + Send + Sync + 'static,
 {
 	fn get_value(
 		&self,

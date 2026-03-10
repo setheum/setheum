@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,13 +39,13 @@ use crate::{
     units::{ControlHash, FullUnit, HashFor, Unit, UnitCoord, UnitWithParents, WrappedUnit},
     Hasher, NodeMap, SessionId,
 };
-use aleph_bft_rmc::NodeCount;
+use set_bft_rmc::NodeCount;
 use std::collections::HashMap;
 
 mod dag;
 mod parents;
 
-use aleph_bft_types::{Data, MultiKeychain, NodeIndex, OrderedUnit, Round, Signed};
+use set_bft_types::{Data, MultiKeychain, NodeIndex, OrderedUnit, Round, Signed};
 use dag::Dag;
 use parents::Reconstruction as ParentReconstruction;
 
@@ -280,7 +280,7 @@ mod test {
         units::{random_full_parent_units_up_to, Unit, UnitCoord, UnitWithParents},
         NodeCount, NodeIndex,
     };
-    use aleph_bft_types::{NodeMap, Round};
+    use set_bft_types::{NodeMap, Round};
     use rand::Rng;
     use std::collections::HashMap;
 

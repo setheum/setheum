@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 
 use std::time::Duration;
 
-use current_aleph_bft::{create_config, default_delay_config, Config, LocalIO, Terminator};
+use current_setbft_bft::{create_config, default_delay_config, Config, LocalIO, Terminator};
 use log::debug;
 use network_clique::SpawnHandleT;
 
@@ -37,7 +37,7 @@ use crate::{
     },
     block::{Header, HeaderBackend, HeaderVerifier},
     crypto::Signature,
-    data_io::{AlephData, OrderedDataInterpreter, SubstrateChainInfoProvider},
+    data_io::{SetBFTData, OrderedDataInterpreter, SubstrateChainInfoProvider},
     network::data::Network,
     oneshot,
     party::{
@@ -48,7 +48,7 @@ use crate::{
 };
 
 type WrappedNetwork<H, ADN> = NetworkWrapper<
-    current_aleph_bft::NetworkData<Hasher, AlephData<H>, Signature, SignatureSet<Signature>>,
+    current_setbft_bft::NetworkData<Hasher, SetBFTData<H>, Signature, SignatureSet<Signature>>,
     ADN,
 >;
 
@@ -57,7 +57,7 @@ pub fn run_member<H, C, ADN, V>(
     multikeychain: Keychain,
     config: Config,
     network: WrappedNetwork<H::Unverified, ADN>,
-    data_provider: impl current_aleph_bft::DataProvider<AlephData<H::Unverified>> + Send + 'static,
+    data_provider: impl current_setbft_bft::DataProvider<SetBFTData<H::Unverified>> + Send + 'static,
     ordered_data_interpreter: OrderedDataInterpreter<SubstrateChainInfoProvider<H, C>, H, V>,
     backup: ABFTBackup,
 ) -> Task
@@ -78,8 +78,8 @@ where
     let task = {
         let spawn_handle = spawn_handle.clone();
         async move {
-            debug!(target: "aleph-party", "Running the member task for {:?}", session_id);
-            current_aleph_bft::run_session(
+            debug!(target: "setbft-party", "Running the member task for {:?}", session_id);
+            current_setbft_bft::run_session(
                 config,
                 local_io,
                 network,
@@ -88,15 +88,15 @@ where
                 member_terminator,
             )
             .await;
-            debug!(target: "aleph-party", "Member task stopped for {:?}", session_id);
+            debug!(target: "setbft-party", "Member task stopped for {:?}", session_id);
         }
     };
 
-    let handle = spawn_handle.spawn_essential("aleph/consensus_session_member", task);
+    let handle = spawn_handle.spawn_essential("setbft/consensus_session_member", task);
     Task::new(handle, stop)
 }
 
-pub fn create_aleph_config(
+pub fn create_setbft_config(
     n_members: usize,
     node_id: NodeIndex,
     session_id: SessionId,
@@ -106,6 +106,6 @@ pub fn create_aleph_config(
     delay_config.unit_creation_delay = unit_creation_delay_fn(unit_creation_delay);
     match create_config(n_members.into(), node_id.into(), session_id.0 as u64, MAX_ROUNDS, delay_config, Duration::from_millis(SESSION_LEN_LOWER_BOUND_MS as u64)) {
         Ok(config) => config,
-        Err(_) => panic!("Incorrect setting of delays. Make sure the total AlephBFT session time is at least {} ms.", SESSION_LEN_LOWER_BOUND_MS),
+        Err(_) => panic!("Incorrect setting of delays. Make sure the total SetBFT session time is at least {} ms.", SESSION_LEN_LOWER_BOUND_MS),
     }
 }

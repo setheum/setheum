@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -92,7 +92,7 @@ pub trait TreasuryUserApi {
 /// Pallet treasury funcionality that is not directly related to any pallet call.
 #[async_trait::async_trait]
 pub trait TreasureApiExt {
-/// When `staking.payout_stakers` is done, what amount of SEE is transferred to.
+/// When `staking.payout_stakers` is done, what amount of SEU is transferred to.
 /// the treasury
     async fn possible_treasury_payout(&self) -> anyhow::Result<Balance>;
 }

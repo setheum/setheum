@@ -1,0 +1,65 @@
+{
+  "name": "@buildwithsygma/sygma-sdk",
+  "description": "Sygma SDK",
+  "main": "index.js",
+  "private": true,
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sygmaprotocol/sygma-sdk"
+  },
+  "packageManager": "yarn@4.0.1",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "lint": "yarn workspaces foreach -A run lint",
+    "clean": "yarn workspaces foreach -A run clean",
+    "build": "yarn run clean && yarn workspaces foreach -A -t run build:all",
+    "test": "yarn workspaces foreach -A run test:unit --ci --silent --coverage",
+    "core:build": "yarn workspace @buildwithsygma/core build:all",
+    "core:cleanDist": "yarn workspace @buildwithsygma/core clean",
+    "core:test": "yarn workspace @buildwithsygma/core test",
+    "core:lint": "yarn workspace @buildwithsygma/core lint",
+    "core:lint:fix": "yarn workspace @buildwithsygma/core lint:fix",
+    "core:test:unit": "yarn workspace @buildwithsygma/core test:unit",
+    "evm:build": "yarn workspace @buildwithsygma/evm build:all",
+    "evm:cleanDist": "yarn workspace @buildwithsygma/evm clean",
+    "evm:test": "yarn workspace @buildwithsygma/evm test",
+    "evm:lint": "yarn workspace @buildwithsygma/evm lint",
+    "evm:lint:fix": "yarn workspace @buildwithsygma/evm lint:fix",
+    "evm:test:unit": "yarn workspace @buildwithsygma/evm test:unit",
+    "bitcoin:build": "yarn workspace @buildwithsygma/bitcoin build:all",
+    "bitcoin:cleanDist": "yarn workspace @buildwithsygma/bitcoin clean",
+    "bitcoin:test": "yarn workspace @buildwithsygma/bitcoin test",
+    "bitcoin:lint": "yarn workspace @buildwithsygma/bitcoin lint",
+    "bitcoin:lint:fix": "yarn workspace @buildwithsygma/bitcoin lint:fix",
+    "substrate:build": "yarn workspace @buildwithsygma/substrate build:all",
+    "substrate:cleanDist": "yarn workspace @buildwithsygma/substrate clean",
+    "substrate:test": "yarn workspace @buildwithsygma/substrate test",
+    "substrate:lint": "yarn workspace @buildwithsygma/substrate lint",
+    "substrate:lint:fix": "yarn workspace @buildwithsygma/substrate lint:fix",
+    "substrate:test:unit": "yarn workspace @buildwithsygma/substrate test:unit",
+    "utils:build": "yarn workspace @buildwithsygma/utils build:all",
+    "utils:cleanDist": "yarn workspace @buildwithsygma/utils clean",
+    "utils:test": "yarn workspace @buildwithsygma/utils test",
+    "utils:lint": "yarn workspace @buildwithsygma/utils lint",
+    "utils:lint:fix": "yarn workspace @buildwithsygma/utils lint:fix",
+    "utils:test:unit": "yarn workspace @buildwithsygma/utils test:unit",
+    "docs": "typedoc"
+  },
+  "keywords": [],
+  "author": "Sygmaprotocol Product Team",
+  "license": "LGPL-3.0-or-later",
+  "workspaces": {
+    "packages": [
+      "packages/*",
+      "examples/*"
+    ]
+  },
+  "dependencies": {
+    "@chainsafe/eslint-config": "^2.2.4",
+    "eslint-plugin-require-extensions": "^0.1.3",
+    "typedoc": "^0.26.5"
+  }
+}

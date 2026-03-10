@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -35,7 +35,7 @@ use futures::{
 };
 use parity_scale_codec::{Decode, Encode, Output};
 use primitives as primitives ;
-use primitives::{AuthorityId, Block as AlephBlock, BlockHash, BlockNumber, Hash as AlephHash};
+use primitives::{AuthorityId, Block as SetBFTBlock, BlockHash, BlockNumber, Hash as SetBFTHash};
 use sc_client_api::{
     Backend, BlockBackend, BlockchainEvents, Finalizer, LockImportRun, StorageProvider,
 };
@@ -89,8 +89,8 @@ pub use crate::{
         substrate::{BlockImporter, Justification, JustificationTranslator, SubstrateChainStatus},
         BlockId,
     },
-    import::{AlephBlockImport, RedirectingBlockImport, TracingBlockImport},
-    justification::AlephJustification,
+    import::{SetBFTBlockImport, RedirectingBlockImport, TracingBlockImport},
+    justification::SetBFTJustification,
     metrics::{AllBlockMetrics, DefaultClock, FinalityRateMetrics, TimingBlockMetrics},
     network::{
         address_cache::{ValidatorAddressCache, ValidatorAddressingInfo},
@@ -101,7 +101,7 @@ pub use crate::{
     sync_oracle::SyncOracle,
 };
 
-/// Constant defining how often components of finality-aleph should report their state
+/// Constant defining how often components of finality-setbft should report their state
 const STATUS_REPORT_INTERVAL: Duration = Duration::from_secs(20);
 
 fn max_message_size(protocol: Protocol) -> u64 {
@@ -232,7 +232,7 @@ impl<UH: UnverifiedHeader> From<CurrentSplitData<UH>> for VersionedNetworkData<U
     }
 }
 
-pub trait ClientForAleph<B, BE>:
+pub trait ClientForSetBFT<B, BE>:
     LockImportRun<B, BE>
     + Finalizer<B, BE>
     + ProvideRuntimeApi<B>
@@ -248,7 +248,7 @@ where
 {
 }
 
-impl<B, BE, T> ClientForAleph<B, BE> for T
+impl<B, BE, T> ClientForSetBFT<B, BE> for T
 where
     BE: Backend<B>,
     B: Block,
@@ -294,13 +294,13 @@ type Hasher = abft::HashWrapper<BlakeTwo256>;
 
 #[derive(Clone)]
 pub struct RateLimiterConfig {
-/// Maximum bit-rate per node in bytes per second of the alephbft validator network.
-    pub alephbft_bit_rate_per_connection: usize,
+/// Maximum bit-rate per node in bytes per second of the setbftbft validator network.
+    pub setbftbft_bit_rate_per_connection: usize,
 }
 
-pub struct AlephConfig<C, SC, T> {
-    pub network: SubstrateNetwork<AlephBlock, AlephHash>,
-    pub network_event_stream: SubstrateNetworkEventStream<AlephBlock, AlephHash>,
+pub struct SetBFTConfig<C, SC, T> {
+    pub network: SubstrateNetwork<SetBFTBlock, SetBFTHash>,
+    pub network_event_stream: SubstrateNetworkEventStream<SetBFTBlock, SetBFTHash>,
     pub client: Arc<C>,
     pub chain_status: SubstrateChainStatus,
     pub import_queue_handle: BlockImporter,
@@ -308,7 +308,7 @@ pub struct AlephConfig<C, SC, T> {
     pub spawn_handle: SpawnHandle,
     pub keystore: Arc<LocalKeystore>,
     pub justification_channel_provider: ChannelProvider<Justification>,
-    pub block_rx: mpsc::UnboundedReceiver<AlephBlock>,
+    pub block_rx: mpsc::UnboundedReceiver<SetBFTBlock>,
     pub metrics: AllBlockMetrics,
     pub registry: Option<Registry>,
     pub session_period: SessionPeriod,

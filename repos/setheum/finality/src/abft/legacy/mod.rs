@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-use legacy_aleph_bft::{default_config, Config, LocalIO, Terminator};
+use legacy_setbft_bft::{default_config, Config, LocalIO, Terminator};
 use log::debug;
 use network_clique::SpawnHandleT;
 
@@ -33,7 +33,7 @@ use crate::{
     abft::NetworkWrapper,
     block::{Header, HeaderBackend},
     data_io::{
-        legacy::{AlephData, OrderedDataInterpreter},
+        legacy::{SetBFTData, OrderedDataInterpreter},
         SubstrateChainInfoProvider,
     },
     network::data::Network,
@@ -50,7 +50,7 @@ pub fn run_member<H, C, ADN>(
     multikeychain: Keychain,
     config: Config,
     network: NetworkWrapper<LegacyNetworkData, ADN>,
-    data_provider: impl legacy_aleph_bft::DataProvider<AlephData> + Send + 'static,
+    data_provider: impl legacy_setbft_bft::DataProvider<SetBFTData> + Send + 'static,
     ordered_data_interpreter: OrderedDataInterpreter<SubstrateChainInfoProvider<H, C>>,
     backup: ABFTBackup,
 ) -> Task
@@ -59,7 +59,7 @@ where
     C: HeaderBackend<H> + Send + 'static,
     ADN: Network<LegacyNetworkData> + 'static,
 {
-// Remove this check once one is implemented on the AlephBFT side.
+// Remove this check once one is implemented on the SetBFT side.
 // Checks that the total time of a session is at least 7 days.
     sanity_check_round_delays(
         config.max_round,
@@ -76,8 +76,8 @@ where
     let task = {
         let spawn_handle = spawn_handle.clone();
         async move {
-            debug!(target: "aleph-party", "Running the member task for {:?}", session_id);
-            legacy_aleph_bft::run_session(
+            debug!(target: "setbft-party", "Running the member task for {:?}", session_id);
+            legacy_setbft_bft::run_session(
                 config,
                 local_io,
                 network,
@@ -86,15 +86,15 @@ where
                 member_terminator,
             )
             .await;
-            debug!(target: "aleph-party", "Member task stopped for {:?}", session_id);
+            debug!(target: "setbft-party", "Member task stopped for {:?}", session_id);
         }
     };
 
-    let handle = spawn_handle.spawn_essential("aleph/consensus_session_member", task);
+    let handle = spawn_handle.spawn_essential("setbft/consensus_session_member", task);
     Task::new(handle, stop)
 }
 
-pub fn create_aleph_config(
+pub fn create_setbft_config(
     n_members: usize,
     node_id: NodeIndex,
     session_id: SessionId,

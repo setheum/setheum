@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -23,13 +23,13 @@ use std::{marker::PhantomData, sync::Arc};
 use sc_client_api::Backend;
 use sp_runtime::traits::{Block as BlockT, Header as HeaderT};
 
-use crate::{primitives ::BlockNumber, party::traits::ChainState, ClientForAleph};
+use crate::{primitives ::BlockNumber, party::traits::ChainState, ClientForSetBFT};
 
 pub struct ChainStateImpl<B, BE, CFA>
 where
     B: BlockT,
     BE: Backend<B>,
-    CFA: ClientForAleph<B, BE>,
+    CFA: ClientForSetBFT<B, BE>,
 {
     pub client: Arc<CFA>,
     pub _phantom: PhantomData<(B, BE)>,
@@ -40,7 +40,7 @@ where
     B: BlockT,
     B::Header: HeaderT<Number = BlockNumber>,
     BE: Backend<B>,
-    CFA: ClientForAleph<B, BE>,
+    CFA: ClientForSetBFT<B, BE>,
 {
     fn best_block_number(&self) -> BlockNumber {
         self.client.info().best_number

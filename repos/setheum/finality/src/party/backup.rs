@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -117,24 +117,24 @@ pub fn rotate(
     backup_path: Option<PathBuf>,
     session_id: u32,
 ) -> Result<ABFTBackup, BackupLoadError> {
-    debug!(target: "aleph-party", "Loading AlephBFT backup for session {:?}", session_id);
+    debug!(target: "setbft-party", "Loading SetBFT backup for session {:?}", session_id);
     let session_path = if let Some(path) = backup_path {
         path.join(format!("{session_id}"))
     } else {
-        debug!(target: "aleph-party", "Passing empty backup for session {:?} as no backup argument was provided", session_id);
+        debug!(target: "setbft-party", "Passing empty backup for session {:?} as no backup argument was provided", session_id);
         return Ok((Box::new(io::sink()), Box::new(io::empty())));
     };
-    debug!(target: "aleph-party", "Loading backup for session {:?} at path {:?}", session_id, session_path);
+    debug!(target: "setbft-party", "Loading backup for session {:?} at path {:?}", session_id, session_path);
 
     let session_backup_idxs = get_session_backup_idxs(&session_path)?;
 
     let backup_loader = load_backup(&session_path, &session_backup_idxs)?;
 
     let next_backup_path = get_next_path(&session_path, &session_backup_idxs);
-    debug!(target: "aleph-party", "Loaded backup for session {:?}. Creating new backup file at {:?}", session_id, next_backup_path);
+    debug!(target: "setbft-party", "Loaded backup for session {:?}. Creating new backup file at {:?}", session_id, next_backup_path);
     let backup_saver = Box::new(File::create(next_backup_path)?);
 
-    debug!(target: "aleph-party", "Backup rotation done for session {:?}", session_id);
+    debug!(target: "setbft-party", "Backup rotation done for session {:?}", session_id);
     Ok((backup_saver, backup_loader))
 }
 
@@ -161,10 +161,10 @@ pub fn remove_old_backups(path: Option<PathBuf>, current_session: u32) -> io::Re
                         }
                     }
                     Err(_) => {
-                        debug!(target: "aleph-party", "backup directory contains unexpected data.")
+                        debug!(target: "setbft-party", "backup directory contains unexpected data.")
                     }
                 },
-                None => debug!(target: "aleph-party", "backup directory contains unexpected data."),
+                None => debug!(target: "setbft-party", "backup directory contains unexpected data."),
             };
         }
     }

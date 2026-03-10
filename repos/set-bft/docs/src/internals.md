@@ -1,23 +1,23 @@
-## 5 AlephBFT Internals
+## 5 SetBFT Internals
 
-To explain the inner workings of AlephBFT it is instructive to follow the path of a unit: from the very start when it is created to the moment when its round is decided and its data is placed in one of the output batches. Here we give a brief overview and subsequently go more into details of specific components in dedicated subsections.
+To explain the inner workings of SetBFT it is instructive to follow the path of a unit: from the very start when it is created to the moment when its round is decided and its data is placed in one of the output batches. Here we give a brief overview and subsequently go more into details of specific components in dedicated subsections.
 
 1. The unit is created by one of the node's `Creator` component -- implemented in `creation/`. Creator sends the produced unit to `consensus/`.
 2. A recurring task of broadcasting this unit is put in the task queue. The unit will be broadcast to all other nodes a few times (with some delays in between).
 3. The unit is received by another node -- happens in `consensus/`, where it is send for further processing in `dag/`.
 4. Dag validates and reconstructs a unit's parents in several steps:
-  1. Validation, implemented in `dag/validation.rs`, checks signatures and basic unit properties, plus catches forks. This means that only **legit units**, in the sense defined in [the section on alerts](how_alephbft_does_it.md#25-alerts----dealing-with-fork-spam), are sent further. Thus no fork is ever passed on unless coming from an alert.
+  1. Validation, implemented in `dag/validation.rs`, checks signatures and basic unit properties, plus catches forks. This means that only **legit units**, in the sense defined in [the section on alerts](how_setbft_does_it.md#25-alerts----dealing-with-fork-spam), are sent further. Thus no fork is ever passed on unless coming from an alert.
   2. The units are further moved to a component responsible for reconstructing the explicit parents for these units -- implemented in `dag/reconstruction/parents.rs`.
   3. Each unit whose parents are successfully decoded, is passed on to `dag/reconstruction/dag.rs`, which ensures that units are passed on only when their parents already were. They are then returned back to `consensus/`.
 5. In `consensus/` such units are put in a store. Each unit in the store is legit + has all its parents in the store.
-6. Such units are passed to a component called the `Extender` -- see the files in `extension/`. The role of the extender is to efficiently run the `OrderData` algorithm, described in the [section on AlephBFT](how_alephbft_does_it.md).
+6. Such units are passed to a component called the `Extender` -- see the files in `extension/`. The role of the extender is to efficiently run the `OrderData` algorithm, described in the [section on SetBFT](how_setbft_does_it.md).
 7. Once a unit's data is placed in one of batches by the `Extender` then its path is over, although we keep it in the consensus store to be able to send it to other nodes on request.
 
 The above description omits backup saving for simplicity. It is injected just before a unit is placed in the store or broadcast.
 
 ### 5.1 Creator
 
-The creator produces units according to the AlephBFT protocol rules. It will wait until the prespecified delay has passed and attempt to create a unit using a maximal number of parents. If it is not possible yet, it will wait till the first moment enough parents are available. After creating the last unit, the creator stops producing new ones, although this is never expected to happen during correct execution.
+The creator produces units according to the SetBFT protocol rules. It will wait until the prespecified delay has passed and attempt to create a unit using a maximal number of parents. If it is not possible yet, it will wait till the first moment enough parents are available. After creating the last unit, the creator stops producing new ones, although this is never expected to happen during correct execution.
 
 ### 5.2 Dag
 

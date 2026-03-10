@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -33,8 +33,8 @@ use sp_core::twox_128;
 use sp_runtime::traits::{Block, OpaqueKeys};
 
 use crate::{
-    primitives ::{AccountId, AlephSessionApi, AuraId},
-    BlockHash, ClientForAleph,
+    primitives ::{AccountId, SetBFTSessionApi, AuraId},
+    BlockHash, ClientForSetBFT,
 };
 
 /// Trait handling connection between host code and runtime storage
@@ -49,8 +49,8 @@ type QueuedKeys = Vec<(AccountId, SessionKeys)>;
 
 pub struct RuntimeApiImpl<C, B, BE>
 where
-    C: ClientForAleph<B, BE> + Send + Sync + 'static,
-    C::Api: AlephSessionApi<B>,
+    C: ClientForSetBFT<B, BE> + Send + Sync + 'static,
+    C::Api: SetBFTSessionApi<B>,
     B: Block<Hash = BlockHash>,
     BE: Backend<B> + 'static,
 {
@@ -60,8 +60,8 @@ where
 
 impl<C, B, BE> Clone for RuntimeApiImpl<C, B, BE>
 where
-    C: ClientForAleph<B, BE> + Send + Sync + 'static,
-    C::Api: AlephSessionApi<B>,
+    C: ClientForSetBFT<B, BE> + Send + Sync + 'static,
+    C::Api: SetBFTSessionApi<B>,
     B: Block<Hash = BlockHash>,
     BE: Backend<B> + 'static,
 {
@@ -72,8 +72,8 @@ where
 
 impl<C, B, BE> RuntimeApiImpl<C, B, BE>
 where
-    C: ClientForAleph<B, BE> + Send + Sync + 'static,
-    C::Api: AlephSessionApi<B>,
+    C: ClientForSetBFT<B, BE> + Send + Sync + 'static,
+    C::Api: SetBFTSessionApi<B>,
     B: Block<Hash = BlockHash>,
     BE: Backend<B> + 'static,
 {
@@ -159,8 +159,8 @@ impl Display for ApiError {
 
 impl<C, B, BE> RuntimeApi for RuntimeApiImpl<C, B, BE>
 where
-    C: ClientForAleph<B, BE> + Send + Sync + 'static,
-    C::Api: AlephSessionApi<B>,
+    C: ClientForSetBFT<B, BE> + Send + Sync + 'static,
+    C::Api: SetBFTSessionApi<B>,
     B: Block<Hash = BlockHash>,
     BE: Backend<B> + 'static,
 {

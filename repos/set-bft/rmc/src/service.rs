@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,12 +41,12 @@ use crate::{
     scheduler::TaskScheduler,
     Message,
 };
-pub use aleph_bft_crypto::{MultiKeychain, Multisigned, Signable};
+pub use set_bft_crypto::{MultiKeychain, Multisigned, Signable};
 use core::fmt::Debug;
 use log::{debug, warn};
 use std::hash::Hash;
 
-const LOG_TARGET: &str = "AlephBFT-rmc";
+const LOG_TARGET: &str = "SetBFT-rmc";
 
 /// Reliable Multicast Box
 ///
@@ -61,7 +61,7 @@ const LOG_TARGET: &str = "AlephBFT-rmc";
 /// signatures to form a complete multisignature under the message, [`Service::process_message`]
 /// will return the multisigned hash.
 ///
-/// We refer to the documentation https://cardinal-cryptography.github.io/AlephBFT/reliable_broadcast.html
+/// We refer to the documentation https://cardinal-cryptography.github.io/SetBFT/reliable_broadcast.html
 /// for a high-level description of this protocol and how it is used for fork alerts.
 pub struct Service<H, MK, SCH>
 where
@@ -154,8 +154,8 @@ where
 #[cfg(test)]
 mod tests {
     use crate::{DoublingDelayScheduler, Handler, Message, Service};
-    use aleph_bft_crypto::{Multisigned, NodeCount, NodeIndex, Signed};
-    use aleph_bft_mock::{BadSigning, Keychain, PartialMultisignature, Signable, Signature};
+    use set_bft_crypto::{Multisigned, NodeCount, NodeIndex, Signed};
+    use set_bft_mock::{BadSigning, Keychain, PartialMultisignature, Signable, Signature};
     use futures::{
         channel::mpsc::{unbounded, UnboundedReceiver, UnboundedSender},
         future, StreamExt,

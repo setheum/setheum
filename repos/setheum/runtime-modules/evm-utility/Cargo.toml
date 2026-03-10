@@ -8,7 +8,7 @@ homepage.workspace = true
 repository.workspace = true
 
 [dependencies]
-sha3 = { workspace = true }
+sha3 = { workspace = true , default-features = false }
 
 sp-std = { workspace = true }
 

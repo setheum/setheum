@@ -1,39 +1,22 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
+
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
-// SPDX-License-Identifier: Apache-2.0 OR MIT
+// Copyright (C) 2019-Present Afsall Labs.
+// SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// 	http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 
-// Alternatively, this file is available under the MIT License:
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 #![cfg_attr(not(feature = "std"), no_std)]
 #![doc = include_str!("../README.md")]
@@ -42,24 +25,32 @@ extern crate core;
 
 mod impls;
 mod manager;
-mod traits;
+pub mod migration;
+#[cfg(test)]
+mod mock;
+#[cfg(test)]
+mod tests;
+mod manager;
 
 use frame_support::{pallet_prelude::Get, traits::StorageVersion};
 pub use manager::SessionAndEraManager;
 pub use pallet::*;
 use parity_scale_codec::{Decode, Encode};
-use primitives::{BanConfig as BanConfigStruct, BanInfo, SessionValidators, LENIENT_THRESHOLD};
+use primitives::{
+    BanInfo, FinalityBanConfig as FinalityBanConfigStruct,
+    ProductionBanConfig as ProductionBanConfigStruct, SessionValidators, LENIENT_THRESHOLD,
+};
 use scale_info::TypeInfo;
 use sp_runtime::Perquintill;
 use sp_std::{collections::btree_map::BTreeMap, default::Default};
-pub use traits::*;
+use sp_std::{collections::btree_map::BTreeMap, default::Default};
 
 pub type TotalReward = u32;
 #[derive(Decode, Encode, TypeInfo, PartialEq, Eq)]
 pub struct ValidatorTotalRewards<T>(pub BTreeMap<T, TotalReward>);
 
 #[derive(Decode, Encode, TypeInfo)]
-struct CurrentAndNextSessionValidators<T> {
+pub struct CurrentAndNextSessionValidators<T> {
     pub next: SessionValidators<T>,
     pub current: SessionValidators<T>,
 }
@@ -81,7 +72,7 @@ impl Get<Perquintill> for DefaultLenientThreshold {
     }
 }
 
-const STORAGE_VERSION: StorageVersion = StorageVersion::new(0);
+const STORAGE_VERSION: StorageVersion = StorageVersion::new(2);
 pub(crate) const LOG_TARGET: &str = "module-committee-management";
 
 #[frame_support::pallet]
@@ -92,34 +83,35 @@ pub mod pallet {
     };
     use frame_system::{ensure_root, pallet_prelude::OriginFor};
     use primitives::{
-        BanHandler, BanReason, BlockCount, FinalityCommitteeManager, SessionCount,
-        SessionValidators, ValidatorProvider,
+        AbftScoresProvider, BanHandler, BanReason, BlockCount, FinalityCommitteeManager,
+        SessionCount, SessionValidators, ValidatorProvider,
     };
     use sp_runtime::{Perbill, Perquintill};
     use sp_staking::EraIndex;
     use sp_std::vec::Vec;
 
     use crate::{
-        traits::{EraInfoProvider, ValidatorRewardsHandler},
-        BanConfigStruct, BanInfo, CurrentAndNextSessionValidators, DefaultLenientThreshold,
-        ValidatorExtractor, ValidatorTotalRewards, STORAGE_VERSION,
+        BanInfo, CurrentAndNextSessionValidators, DefaultLenientThreshold, FinalityBanConfigStruct,
+        ProductionBanConfigStruct, ValidatorTotalRewards, STORAGE_VERSION,
     };
+    use module_traits::{EraInfoProvider, ValidatorRewardsHandler, ValidatorExtractor};
 
     #[pallet::config]
     pub trait Config: frame_system::Config {
         type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
-/// Something that handles bans
+        /// Something that handles bans
         type BanHandler: BanHandler<AccountId = Self::AccountId>;
-/// Something that provides information about era.
+        /// Something that provides information about era.
         type EraInfoProvider: EraInfoProvider<AccountId = Self::AccountId>;
-/// Something that provides information about validator.
+        /// Something that provides information about validator.
         type ValidatorProvider: ValidatorProvider<AccountId = Self::AccountId>;
-/// Something that handles addition of rewards for validators.
+        /// Something that handles addition of rewards for validators.
         type ValidatorRewardsHandler: ValidatorRewardsHandler<AccountId = Self::AccountId>;
-/// Something that handles removal of the validators
+        /// Something that handles removal of the validators
         type ValidatorExtractor: ValidatorExtractor<AccountId = Self::AccountId>;
         type FinalityCommitteeManager: FinalityCommitteeManager<Self::AccountId>;
-/// Nr of blocks in the session.
+        type AbftScoresProvider: AbftScoresProvider;
+        /// Nr of blocks in the session.
         #[pallet::constant]
         type SessionPeriod: Get<u32>;
     }
@@ -133,63 +125,80 @@ pub mod pallet {
     pub type LenientThreshold<T: Config> =
         StorageValue<_, Perquintill, ValueQuery, DefaultLenientThreshold>;
 
-/// A lookup how many blocks a validator produced.
+    /// A lookup how many blocks a validator produced.
     #[pallet::storage]
     pub type SessionValidatorBlockCount<T: Config> =
         StorageMap<_, Twox64Concat, T::AccountId, BlockCount, ValueQuery>;
 
-/// Total possible reward per validator for the current era.
+    /// Total possible reward per validator for the current era.
     #[pallet::storage]
     pub type ValidatorEraTotalReward<T: Config> =
         StorageValue<_, ValidatorTotalRewards<T::AccountId>, OptionQuery>;
 
-/// Current era config for ban functionality, see [`BanConfig`]
+    /// Current era config for ban functionality related to block production.
     #[pallet::storage]
-    pub type BanConfig<T> = StorageValue<_, BanConfigStruct, ValueQuery>;
+    #[pallet::getter(fn production_ban_config)]
+    pub type ProductionBanConfig<T> = StorageValue<_, ProductionBanConfigStruct, ValueQuery>;
 
-/// A lookup for a number of underperformance sessions for a given validator
+    /// A lookup for a number of underperformance sessions in block production for a given validator
     #[pallet::storage]
+    #[pallet::getter(fn underperformed_producer_session_count)]
     pub type UnderperformedValidatorSessionCount<T: Config> =
         StorageMap<_, Twox64Concat, T::AccountId, SessionCount, ValueQuery>;
 
-/// Validators to be removed from non reserved list in the next era
+    /// Validators to be removed from non reserved list in the next era
     #[pallet::storage]
     pub type Banned<T: Config> = StorageMap<_, Twox64Concat, T::AccountId, BanInfo>;
 
-/// SessionValidators in the current session.
+    /// SessionValidators in the current session.
     #[pallet::storage]
-    pub(crate) type CurrentAndNextSessionValidatorsStorage<T: Config> =
+    #[pallet::getter(fn current_session_validators)]
+    pub(super) type CurrentAndNextSessionValidatorsStorage<T: Config> =
         StorageValue<_, CurrentAndNextSessionValidators<T::AccountId>, ValueQuery>;
+
+    /// A lookup for a number of underperformance sessions in block finalization for a given validator
+    #[pallet::storage]
+    #[pallet::getter(fn underperformed_finalizer_session_count)]
+    pub type UnderperformedFinalizerSessionCount<T: Config> =
+        StorageMap<_, Twox64Concat, T::AccountId, SessionCount, ValueQuery>;
+
+    /// Current era config for ban functionality related to block finality.
+    #[pallet::storage]
+    #[pallet::getter(fn finality_ban_config)]
+    pub type FinalityBanConfig<T> = StorageValue<_, FinalityBanConfigStruct, ValueQuery>;
 
     #[pallet::error]
     pub enum Error<T> {
-/// Raised in any scenario [`BanConfig`] is invalid
-/// * `performance_ratio_threshold` must be a number in range [0; 100]
-/// * `underperformed_session_count_threshold` must be a positive number,
-/// * `clean_session_counter_delay` must be a positive number.
+        /// Raised in any scenario [`ProductionBanConfig`] is invalid
+        /// * `performance_ratio_threshold` must be a number in range [0; 100]
+        /// * `underperformed_session_count_threshold` must be a positive number,
+        /// * `clean_session_counter_delay` must be a positive number.
         InvalidBanConfig,
 
-/// Ban reason is too big, ie given vector of bytes is greater than
-/// [`primitives::DEFAULT_BAN_REASON_LENGTH`]
+        /// Ban reason is too big, ie given vector of bytes is greater than
+        /// [`primitives::DEFAULT_BAN_REASON_LENGTH`]
         BanReasonTooBig,
 
-/// Lenient threshold not in [0-100] range
+        /// Lenient threshold not in [0-100] range
         InvalidLenientThreshold,
     }
 
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
-/// Ban thresholds for the next era has changed
-        SetBanConfig(BanConfigStruct),
+        /// Ban thresholds for the next era has changed
+        SetBanConfig(ProductionBanConfigStruct),
 
-/// Validators have been banned from the committee
+        /// Ban thresholds for the next era has changed
+        SetFinalityBanConfig(FinalityBanConfigStruct),
+
+        /// Validators have been banned from the committee
         BanValidators(Vec<(T::AccountId, BanInfo)>),
     }
 
     #[pallet::call]
     impl<T: Config> Pallet<T> {
-/// Sets ban config, it has an immediate effect
+        /// Sets ban config, it has an immediate effect
         #[pallet::call_index(1)]
         #[pallet::weight((T::BlockWeights::get().max_block, DispatchClass::Operational))]
         pub fn set_ban_config(
@@ -201,7 +210,7 @@ pub mod pallet {
         ) -> DispatchResult {
             ensure_root(origin)?;
 
-            let mut current_committee_ban_config = BanConfig::<T>::get();
+            let mut current_committee_ban_config = Self::production_ban_config();
 
             if let Some(minimal_expected_performance) = minimal_expected_performance {
                 ensure!(
@@ -234,13 +243,13 @@ pub mod pallet {
                 current_committee_ban_config.ban_period = ban_period;
             }
 
-            BanConfig::<T>::put(current_committee_ban_config.clone());
+            ProductionBanConfig::<T>::put(current_committee_ban_config.clone());
             Self::deposit_event(Event::SetBanConfig(current_committee_ban_config));
 
             Ok(())
         }
 
-/// Schedule a non-reserved node to be banned out from the committee at the end of the era
+        /// Schedule a non-reserved node to be banned out from the committee at the end of the era
         #[pallet::call_index(2)]
         #[pallet::weight((T::BlockWeights::get().max_block, DispatchClass::Operational))]
         pub fn ban_from_committee(
@@ -259,7 +268,7 @@ pub mod pallet {
             Ok(())
         }
 
-/// Cancel the ban of the node
+        /// Cancel the ban of the node
         #[pallet::call_index(3)]
         #[pallet::weight((T::BlockWeights::get().max_block, DispatchClass::Operational))]
         pub fn cancel_ban(origin: OriginFor<T>, banned: T::AccountId) -> DispatchResult {
@@ -269,7 +278,7 @@ pub mod pallet {
             Ok(())
         }
 
-/// Set lenient threshold
+        /// Set lenient threshold
         #[pallet::call_index(4)]
         #[pallet::weight((T::BlockWeights::get().max_block, DispatchClass::Operational))]
         pub fn set_lenient_threshold(
@@ -286,19 +295,75 @@ pub mod pallet {
 
             Ok(())
         }
+
+        /// Sets ban config, it has an immediate effect
+        #[pallet::call_index(5)]
+        #[pallet::weight((T::BlockWeights::get().max_block, DispatchClass::Operational))]
+        pub fn set_finality_ban_config(
+            origin: OriginFor<T>,
+            minimal_expected_performance: Option<u16>,
+            underperformed_session_count_threshold: Option<u32>,
+            ban_period: Option<EraIndex>,
+            clean_session_counter_delay: Option<u32>,
+        ) -> DispatchResult {
+            ensure_root(origin)?;
+
+            let mut current_committee_ban_config = Self::finality_ban_config();
+
+            if let Some(minimal_expected_performance) = minimal_expected_performance {
+                ensure!(
+                    minimal_expected_performance <= 10 * 60 * 5, // 10min with 5 rounds per second
+                    Error::<T>::InvalidBanConfig
+                );
+                current_committee_ban_config.minimal_expected_performance =
+                    minimal_expected_performance;
+            }
+
+            if let Some(underperformed_session_count_threshold) =
+                underperformed_session_count_threshold
+            {
+                ensure!(
+                    underperformed_session_count_threshold > 0,
+                    Error::<T>::InvalidBanConfig
+                );
+                current_committee_ban_config.underperformed_session_count_threshold =
+                    underperformed_session_count_threshold;
+            }
+
+            if let Some(ban_period) = ban_period {
+                ensure!(ban_period > 0, Error::<T>::InvalidBanConfig);
+                current_committee_ban_config.ban_period = ban_period;
+            }
+
+            if let Some(clean_session_counter_delay) = clean_session_counter_delay {
+                ensure!(
+                    clean_session_counter_delay > 0,
+                    Error::<T>::InvalidBanConfig
+                );
+                current_committee_ban_config.clean_session_counter_delay =
+                    clean_session_counter_delay;
+            }
+
+            FinalityBanConfig::<T>::put(current_committee_ban_config.clone());
+            Self::deposit_event(Event::SetFinalityBanConfig(current_committee_ban_config));
+
+            Ok(())
+        }
     }
 
     #[pallet::genesis_config]
     #[derive(frame_support::DefaultNoBound)]
     pub struct GenesisConfig<T: Config> {
-        pub committee_ban_config: BanConfigStruct,
+        pub committee_ban_config: ProductionBanConfigStruct,
+        pub finality_ban_config: FinalityBanConfigStruct,
         pub session_validators: SessionValidators<T::AccountId>,
     }
 
     #[pallet::genesis_build]
     impl<T: Config> BuildGenesisConfig for GenesisConfig<T> {
         fn build(&self) {
-            <BanConfig<T>>::put(self.committee_ban_config.clone());
+            <ProductionBanConfig<T>>::put(self.committee_ban_config.clone());
+            <FinalityBanConfig<T>>::put(self.finality_ban_config.clone());
             <CurrentAndNextSessionValidatorsStorage<T>>::put(CurrentAndNextSessionValidators {
                 current: self.session_validators.clone(),
                 next: self.session_validators.clone(),

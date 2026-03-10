@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,40 +41,46 @@
 #![allow(clippy::type_complexity)]
 
 use frame_support::pallet_prelude::{DispatchClass, Pays, Weight};
-use primitives::{task::TaskResult, Balance, CurrencyId, Fees, Multiplier, Nonce, ReserveIdentifier};
+use primitives::{task::TaskResult, AccountId, Balance, CurrencyId, Fees, Multiplier, Nonce, ReserveIdentifier};
 use sp_runtime::{
 	traits::CheckedDiv, transaction_validity::TransactionValidityError, DispatchError, DispatchResult, FixedU128,
 };
 use sp_std::{prelude::*, result::Result};
 use xcm::prelude::*;
+#[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize, Debug)]
+use parity_scale_codec::{Decode, Encode};
+use scale_info::TypeInfo;
+
+#[derive(Clone, PartialEq, Eq, sp_runtime::RuntimeDebug, Encode, Decode, TypeInfo)]
+#[cfg_attr(feature = "std", derive(Deserialize))]
 pub struct AirdropEntry {
     pub account: AccountId,
     pub amount: Balance,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Clone, PartialEq, Eq, sp_runtime::RuntimeDebug, Encode, Decode, TypeInfo)]
+#[cfg_attr(feature = "std", derive(Deserialize))]
 pub struct AirdropList(pub Vec<AirdropEntry>);
 
 pub mod bounded;
-pub mod ecdp;
+// pub mod ecdp;
 pub mod edfis_launchpad;
-pub mod edfis_mining;
 pub mod edfis_swap;
 pub mod edfis_swap_legacy;
 pub mod evm;
+pub mod incentives;
 pub mod migration;
 pub mod mocks;
 
 pub use crate::bounded::*;
-pub use crate::ecdp::*;
+// pub use crate::ecdp::*;
 pub use crate::edfis_launchpad::*;
-pub use crate::edfis_mining::*;
 pub use crate::edfis_swap::*;
-pub use crate::edfis_swap_legacy::*;
+// pub use crate::edfis_swap_legacy::*;
 pub use crate::evm::*;
+pub use crate::incentives::*;
 pub use crate::migration::*;
 
 pub type Price = FixedU128;
@@ -173,9 +179,17 @@ impl DispatchableTask for () {
 	}
 }
 
-#[impl_trait_for_tuples::impl_for_tuples(30)]
+/// Idle scheduler for dispatching tasks during on_idle
+pub trait IdleScheduler<Task> {
+	fn schedule(task: Task) -> DispatchResult;
+}
+
 pub trait OnNewEra<EraIndex> {
 	fn on_new_era(era: EraIndex);
+}
+
+impl<EraIndex> OnNewEra<EraIndex> for () {
+	fn on_new_era(_era: EraIndex) {}
 }
 
 pub trait NomineesProvider<AccountId> {
@@ -187,30 +201,21 @@ pub trait LiquidateCollateral<AccountId> {
 		who: &AccountId,
 		currency_id: CurrencyId,
 		amount: Balance,
-		target_ussd_amount: Balance,
+		target_seusd_amount: Balance,
 	) -> DispatchResult;
 }
 
-#[impl_trait_for_tuples::impl_for_tuples(30)]
-impl<AccountId> LiquidateCollateral<AccountId> for Tuple {
+impl<AccountId> LiquidateCollateral<AccountId> for () {
 	fn liquidate(
-		who: &AccountId,
-		currency_id: CurrencyId,
-		amount: Balance,
-		target_ussd_amount: Balance,
+		_who: &AccountId,
+		_currency_id: CurrencyId,
+		_amount: Balance,
+		_target_seusd_amount: Balance,
 	) -> DispatchResult {
-		let mut last_error = None;
-		for_tuples!( #(
-			match Tuple::liquidate(who, currency_id, amount, target_ussd_amount) {
-				Ok(_) => return Ok(()),
-				Err(e) => { last_error = Some(e) }
-			}
-		)* );
-		let last_error = last_error.unwrap_or(DispatchError::Other("No liquidation impl."));
-		Err(last_error)
+		Err(DispatchError::Other("No liquidation impl."))
 	}
 }
 
 pub trait BuyWeightRate {
-	fn calculate_rate(location: MultiLocation) -> Option<Ratio>;
+	fn calculate_rate(location: Location) -> Option<Ratio>;
 }

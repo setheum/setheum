@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -42,7 +42,6 @@ const SEED: u32 = 0;
 const NATIVE: CurrencyId = GetNativeCurrencyId::get();
 const STABLECOIN: CurrencyId = GetSetUSDId::get();
 const DINARID: CurrencyId = GetDinarCurrencyId::get();
-const SERP: CurrencyId = GetDinarCurrencyId::get();
 
 fn inject_liquidity(
 	maker: AccountId,
@@ -212,7 +211,6 @@ runtime_benchmarks! {
 
 // set balance
 		set_balance(currency_id, &sender, collateral_amount + ExistentialDeposits::get(&currency_id));
-		inject_liquidity(maker.clone(), currency_id, DINARID, 10_000 * dollar(SERP), 10_000 * dollar(DINARID))?;
 		inject_liquidity(maker, DINARID, STABLECOIN, 10_000 * dollar(DINARID), 10_000 * dollar(STABLECOIN))?;
 
 		feed_price(vec![(DINARID, Price::one())])?;

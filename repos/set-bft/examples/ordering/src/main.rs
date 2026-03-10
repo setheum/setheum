@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,8 +39,8 @@ use std::io::Write;
 mod dataio;
 mod network;
 
-use aleph_bft::{default_delay_config, run_session, NodeIndex, Terminator};
-use aleph_bft_mock::{Keychain, Spawner};
+use set_bft::{default_delay_config, run_session, NodeIndex, Terminator};
+use set_bft_mock::{Keychain, Spawner};
 use clap::Parser;
 use dataio::{Data, DataProvider, FinalizationHandler};
 use futures::{channel::oneshot, io, StreamExt};
@@ -88,7 +88,7 @@ struct Args {
 async fn create_backup(
     node_id: NodeIndex,
 ) -> Result<(Compat<File>, io::Cursor<Vec<u8>>), io::Error> {
-    let stash_path = Path::new("./aleph-bft-examples-ordering-backup");
+    let stash_path = Path::new("./set-bft-examples-ordering-backup");
     fs::create_dir_all(stash_path).await?;
     let file_path = stash_path.join(format!("{}.units", node_id.0));
     let loader = if file_path.exists() {
@@ -147,7 +147,7 @@ async fn main() {
     let (backup_saver, backup_loader) = create_backup(id)
         .await
         .expect("Error setting up unit saving");
-    let local_io = aleph_bft::LocalIO::new(
+    let local_io = set_bft::LocalIO::new(
         data_provider,
         finalization_handler,
         backup_saver,
@@ -155,13 +155,13 @@ async fn main() {
     );
 
     let (exit_tx, exit_rx) = oneshot::channel();
-    let member_terminator = Terminator::create_root(exit_rx, "AlephBFT-member");
+    let member_terminator = Terminator::create_root(exit_rx, "SetBFT-member");
     let mut delay_config = default_delay_config();
     delay_config.unit_creation_delay =
         Arc::new(move |_| Duration::from_millis(unit_creation_delay));
     let member_handle = tokio::spawn(async move {
         let keychain = Keychain::new(n_members, id);
-        let config = aleph_bft::create_config(n_members, id, 0, 5000, delay_config, Duration::ZERO)
+        let config = set_bft::create_config(n_members, id, 0, 5000, delay_config, Duration::ZERO)
             .expect("Should always succeed with Duration::ZERO");
         run_session(
             config,

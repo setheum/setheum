@@ -1,0 +1,41 @@
+name: Test
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.x]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile --non-interactive
+
+      - name: Compile contracts
+        run: npx hardhat compile
+
+      - name: Store contract artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: contracts-artifacts
+          path: artifacts
+
+      - name: Hardhat Tests
+        run:
+          yarn run test
+
+      - name: Coverage
+        if: ${{ success() }}
+        run: npx hardhat coverage

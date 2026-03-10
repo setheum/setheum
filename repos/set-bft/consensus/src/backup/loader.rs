@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -179,7 +179,7 @@ impl<H: Hasher, D: Data, S: Signature, R: AsyncRead> BackupLoader<H, D, S, R> {
 mod tests {
     use codec::Encode;
 
-    use aleph_bft_mock::{Data, Hasher64, Keychain, Loader, Signature};
+    use set_bft_mock::{Data, Hasher64, Keychain, Loader, Signature};
 
     use crate::{
         backup::{loader::LoaderError, BackupLoader as GenericLoader},

@@ -1,0 +1,32 @@
+name: Release Contracts
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  release-contracts:
+    name: Release Contracts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Nodejs
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile --non-interactive
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Compile contracts
+        run: yarn run compile
+
+      - name: Publish to npm registry
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

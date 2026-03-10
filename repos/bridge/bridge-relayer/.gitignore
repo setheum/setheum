@@ -1,0 +1,44 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+.DS_Store
+
+# Test binary, build with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+coverage.txt
+
+# IDE
+.idea/
+.vscode/
+.history
+
+# Builds
+build/
+bin/
+site/
+
+# golang
+.env
+keys/
+*.key
+
+# Sygma
+config.toml
+config.json
+*.block
+gethdata1/
+gethdata2/
+centrifuge-chain/
+sygma
+cli_output_data.log
+
+# Solidity
+/solidity
+/cfgBuilder/*.toml
+/lvldbdata

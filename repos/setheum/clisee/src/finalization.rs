@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -21,8 +21,8 @@
 use std::str::FromStr;
 
 use setheum_client::{
-    pallets::aleph::{AlephRpc, AlephSudoApi},
-    AccountId, AlephKeyPair, Connection, TxStatus,
+    pallets::setbft::{SetBFTRpc, SetBFTSudoApi},
+    AccountId, SetBFTKeyPair, Connection, TxStatus,
 };
 use primitives::{BlockHash, BlockNumber};
 
@@ -41,7 +41,7 @@ pub async fn finalize(
     connection: Connection,
     number: BlockNumber,
     hash: String,
-    key_pair: AlephKeyPair,
+    key_pair: SetBFTKeyPair,
 ) {
     let hash = BlockHash::from_str(&hash).expect("Hash is properly hex encoded");
     connection

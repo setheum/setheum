@@ -1,5 +1,5 @@
 [package]
-license = "Apache-2.0 OR MIT"
+license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 name = "module-operations"
 version = "0.1.0"
 authors.workspace = true
@@ -10,20 +10,26 @@ repository.workspace = true
 [dependencies]
 parity-scale-codec = { workspace = true, features = ["derive"] }
 scale-info = { workspace = true, features = ["derive"] }
-log = { workspace = true }
+log = { workspace = true , default-features = false }
 
 frame-support = { workspace = true }
 frame-system = { workspace = true }
 pallet-session = { workspace = true }
 pallet-balances = { workspace = true }
+pallet-staking = { workspace = true }
+pallet-contracts = { workspace = true }
+
 sp-runtime = { workspace = true }
 sp-core = { workspace = true }
+sp-staking = { workspace = true }
+sp-std = { workspace = true }
 
 [dev-dependencies]
 sp-io = { workspace = true }
-pallet-staking = { workspace = true }
 pallet-timestamp = { workspace = true }
 frame-election-provider-support = { workspace = true }
+anyhow = "1.0.93"
+wat = "1"
 
 [features]
 default = ["std"]
@@ -37,11 +43,13 @@ std = [
     "pallet-session/std",
     "pallet-balances/std",
     "pallet-staking/std",
+    "pallet-contracts/std",
     "pallet-timestamp/std",
     "frame-election-provider-support/std",
     "sp-runtime/std",
     "sp-core/std",
-
+    "sp-staking/std",
+    "sp-std/std",
 ]
 
 try-runtime = [

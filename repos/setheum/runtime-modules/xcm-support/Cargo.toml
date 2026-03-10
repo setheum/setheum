@@ -14,10 +14,10 @@ frame-support = { workspace = true }
 sp-runtime = { workspace = true }
 sp-std = { workspace = true }
 
-xcm = { workspace = true }
-xcm-executor = { workspace = true }
+xcm = { workspace = true , default-features = false }
+xcm-executor = { workspace = true , default-features = false }
 
-module-traits = { package = "module-traits", path = "../../runtime-modules/traits", default-features = false }
+module-traits = { workspace = true , default-features = false }
 
 [features]
 default = [ "std" ]

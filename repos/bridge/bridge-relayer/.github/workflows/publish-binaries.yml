@@ -1,0 +1,83 @@
+# The Licensed Work is (c) 2022 Sygma
+# SPDX-License-Identifier: LGPL-3.0-only
+
+name: Publish binaries
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    name: publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '1.19'
+
+      - name: Build
+        run: make build-all
+
+      - name: Archive Linux 64
+        uses: thedoctor0/zip-release@master
+        with:
+          filename: 'relayer-linux-amd64.zip'
+          directory: 'build/linux-amd64/'
+
+      - name: Archive Linux Arm
+        uses: thedoctor0/zip-release@master
+        with:
+          filename: 'relayer-linux-arm.zip'
+          directory: 'build/linux-arm/'
+
+      - name: Archive Darwin 64
+        uses: thedoctor0/zip-release@master
+        with:
+          filename: 'relayer-darwin-amd64.zip'
+          directory: 'build/darwin-amd64/'
+
+      - name: Archive Darwin Arm 64
+        uses: thedoctor0/zip-release@master
+        with:
+          filename: 'relayer-darwin-arm64.zip'
+          directory: 'build/darwin-arm64/'
+
+      - name: Upload Linux amd64
+        id: relayer-linux-amd64
+        uses: AButler/upload-release-assets@v2.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          files: 'build/linux-amd64/relayer-linux-amd64.zip'
+
+      - name: Upload Linux arm
+        id: relayer-linux-arm
+        uses: AButler/upload-release-assets@v2.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          files: 'build/linux-arm/relayer-linux-arm.zip'
+
+      - name: Upload Darwin amd64
+        id: relayer-darwin-amd64
+        uses: AButler/upload-release-assets@v2.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          files: 'build/darwin-amd64/relayer-darwin-amd64.zip'
+
+      - name: Upload Darwin arm
+        id: relayer-darwin-arm64
+        uses: AButler/upload-release-assets@v2.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          files: 'build/darwin-arm64/relayer-darwin-arm64.zip'

@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -54,7 +54,7 @@ pub async fn rotate_keys(connection: Connection) {
         Ok(new_keys) => info!(
             "Keys rotated, use the following in set_keys: {}{}",
             new_keys.aura.0 .0.encode_hex::<String>(),
-            new_keys.aleph.0 .0.encode_hex::<String>()
+            new_keys.setbft.0 .0.encode_hex::<String>()
         ),
         Err(e) => error!("Failed to rotate keys: {}.", e),
     }
@@ -66,7 +66,7 @@ pub async fn next_session_keys(connection: Connection, account_id: String) {
         Some(keys) => {
             let keys_json = json!({
                 "aura": "0x".to_owned() + keys.aura.0.0.encode_hex::<String>().as_str(),
-                "aleph": "0x".to_owned() + keys.aleph.0.0.encode_hex::<String>().as_str(),
+                "setbft": "0x".to_owned() + keys.setbft.0.0.encode_hex::<String>().as_str(),
             });
             println!("{}", serde_json::to_string_pretty(&keys_json).unwrap());
         }

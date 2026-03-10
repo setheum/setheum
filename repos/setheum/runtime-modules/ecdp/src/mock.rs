@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -72,10 +72,9 @@ pub type AuctionId = u32;
 pub const ALICE: AccountId = AccountId32::new([1u8; 32]);
 pub const BOB: AccountId = AccountId32::new([2u8; 32]);
 pub const CAROL: AccountId = AccountId32::new([3u8; 32]);
-pub const SEE: CurrencyId = CurrencyId::Token(TokenSymbol::SEE);
-pub const USSD: CurrencyId = CurrencyId::Token(TokenSymbol::USSD);
+pub const SEU: CurrencyId = CurrencyId::Token(TokenSymbol::SEU);
+pub const SEUSD: CurrencyId = CurrencyId::Token(TokenSymbol::SEUSD);
 pub const BTC: CurrencyId = CurrencyId::ForeignAsset(255);
-pub const EDF: CurrencyId = CurrencyId::Token(TokenSymbol::EDF);
 
 #[derive_impl(frame_system::config_preludes::TestDefaultConfig as frame_system::DefaultConfig)]
 impl frame_system::Config for Runtime {
@@ -124,7 +123,7 @@ impl pallet_balances::Config for Runtime {
 pub type AdaptedBasicCurrency = module_currencies::BasicCurrencyAdapter<Runtime, PalletBalances, Amount, BlockNumber>;
 
 parameter_types! {
-	pub const GetNativeCurrencyId: CurrencyId = SEE;
+	pub const GetNativeCurrencyId: CurrencyId = SEU;
 }
 
 impl module_currencies::Config for Runtime {
@@ -135,7 +134,7 @@ impl module_currencies::Config for Runtime {
 }
 
 parameter_types! {
-	pub const EcdpLoansPalletId: PalletId = PalletId(*b"set/ussdloan");
+	pub const EcdpLoansPalletId: PalletId = PalletId(*b"set/seusdloan");
 }
 
 impl module_ecdp_loans::Config for Runtime {
@@ -206,18 +205,18 @@ ord_parameter_types! {
 }
 
 parameter_types! {
-	pub const GetUSSDCurrencyId: CurrencyId = USSD;
-	pub const EcdpUssdTreasuryPalletId: PalletId = PalletId(*b"set/ussdtrsymod");
-	pub TreasuryAccount: AccountId = PalletId(*b"set/ussdtrsyacc").into_account_truncating();
+	pub const GetSEUSDCurrencyId: CurrencyId = SEUSD;
+	pub const EcdpUssdTreasuryPalletId: PalletId = PalletId(*b"set/seusdtrsymod");
+	pub TreasuryAccount: AccountId = PalletId(*b"set/seusdtrsyacc").into_account_truncating();
 	pub AlternativeSwapPathJointList: Vec<Vec<CurrencyId>> = vec![
-		vec![USSD],
+		vec![SEUSD],
 	];
 }
 
-impl module_ecdp_ussd_treasury::Config for Runtime {
+impl module_ecdp_seusd_treasury::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type Currency = Currencies;
-	type GetUSSDCurrencyId = GetUSSDCurrencyId;
+	type GetSEUSDCurrencyId = GetSEUSDCurrencyId;
 	type EcdpAuctionsManagerHandler = MockEcdpAuctionsManager;
 	type UpdateOrigin = EnsureSignedBy<One, AccountId>;
 	type EdfisSwapHandler = ();
@@ -295,7 +294,7 @@ parameter_types! {
 	pub DefaultLiquidationPenalty: FractionalRate = FractionalRate::try_from(Rate::saturating_from_rational(10, 100)).unwrap();
 	pub MaxSwapSlippageCompareToOracle: Ratio = Ratio::saturating_from_rational(50, 100);
 	pub MaxLiquidationContractSlippage: Ratio = Ratio::saturating_from_rational(80, 100);
-	pub const EcdpUssdEnginePalletId: PalletId = PalletId(*b"set/ussde");
+	pub const EcdpUssdEnginePalletId: PalletId = PalletId(*b"set/seusde");
 	pub const SettleErc20EvmOrigin: AccountId = AccountId32::new([255u8; 32]);
 }
 
@@ -307,7 +306,7 @@ impl module_cdp_engine::Config for Runtime {
 	type DefaultLiquidationPenalty = DefaultLiquidationPenalty;
 	type MinimumDebitValue = ConstU128<2>;
 	type MinimumCollateralAmount = MinimumCollateralAmount;
-	type GetUSSDCurrencyId = GetUSSDCurrencyId;
+	type GetSEUSDCurrencyId = GetSEUSDCurrencyId;
 	type EcdpUssdTreasury = EcdpUssdTreasuryModule;
 	type UpdateOrigin = EnsureSignedBy<One, AccountId>;
 	type MaxSwapSlippageCompareToOracle = MaxSwapSlippageCompareToOracle;
@@ -346,7 +345,7 @@ construct_runtime!(
 		PalletBalances: pallet_balances,
 		Currencies: module_currencies,
 		EcdpLoansModule: module_ecdp_loans,
-		EcdpUssdTreasuryModule: module_ecdp_ussd_treasury,
+		EcdpUssdTreasuryModule: module_ecdp_seusd_treasury,
 		EcdpUssdEngineModule: module_cdp_engine,
 		Timestamp: pallet_timestamp,
 		EvmAccounts: module_evm_accounts,
@@ -378,8 +377,6 @@ impl Default for ExtBuilder {
 			balances: vec![
 				(ALICE, BTC, 1000),
 				(BOB, BTC, 1000),
-				(ALICE, EDF, 1000),
-				(BOB, EDF, 1000),
 			],
 		}
 	}

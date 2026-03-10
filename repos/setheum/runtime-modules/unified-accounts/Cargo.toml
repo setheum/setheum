@@ -9,7 +9,7 @@ repository.workspace = true
 
 [dependencies]
 parity-scale-codec = { workspace = true }
-libsecp256k1 = { workspace = true, features = ["hmac", "static-context"], optional = true }
+libsecp256k1 = { workspace = true, optional = true, features = ["hmac", "static-context"] , default-features = false }
 scale-info = { workspace = true }
 
 frame-support = { workspace = true }
@@ -19,15 +19,15 @@ sp-io = { workspace = true }
 sp-runtime = { workspace = true }
 sp-std = { workspace = true }
 
-module-traits = { workspace = true }
-primitives = { workspace = true }
-module-support = { workspace = true }
-module-evm-utility-macro = { workspace = true }
+module-traits = { workspace = true , default-features = false }
+primitives = { workspace = true , default-features = false }
+module-support = { workspace = true , default-features = false }
+module-evm-utility-macro = { workspace = true , default-features = false }
 
 [dev-dependencies]
 pallet-balances = { workspace = true, features = ["std"] }
-module-currencies = { workspace = true, features = ["std"] }
-module-tokens = { workspace = true, features = ["std"] }
+module-currencies = { workspace = true, features = ["std"] , default-features = false }
+module-tokens = { workspace = true, features = ["std"] , default-features = false }
 
 [features]
 default = ["std"]

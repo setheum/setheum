@@ -11,7 +11,7 @@ jsonrpc-derive = { workspace = true }
 sp-api = { workspace = true }
 sp-blockchain = { workspace = true }
 sp-runtime = { workspace = true }
-module-oracle-runtime-api = { path = "../runtime-api" }
+module-oracle-runtime-api = { workspace = true , default-features = false }
 
 [features]
 default = ["std"]

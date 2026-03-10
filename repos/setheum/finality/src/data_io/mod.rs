@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -42,27 +42,27 @@ pub use chain_info::{ChainInfoProvider, SubstrateChainInfoProvider};
 pub use data_interpreter::OrderedDataInterpreter;
 pub use data_provider::{ChainTracker, DataProvider};
 pub use data_store::{DataStore, DataStoreConfig};
-pub use proposal::UnvalidatedAlephProposal;
+pub use proposal::UnvalidatedSetBFTProposal;
 
-// Maximum number of blocks above the last finalized allowed in an AlephBFT proposal.
+// Maximum number of blocks above the last finalized allowed in an SetBFT proposal.
 pub const MAX_DATA_BRANCH_LEN: usize = 7;
 
-/// The data ordered by the Aleph consensus.
+/// The data ordered by the SetBFT consensus.
 #[derive(Clone, Debug, Encode, Decode, PartialEq, Eq)]
-pub struct AlephData<UH: UnverifiedHeader> {
-    pub head_proposal: UnvalidatedAlephProposal<UH>,
+pub struct SetBFTData<UH: UnverifiedHeader> {
+    pub head_proposal: UnvalidatedSetBFTProposal<UH>,
 }
 
-impl<UH: UnverifiedHeader> Hash for AlephData<UH> {
+impl<UH: UnverifiedHeader> Hash for SetBFTData<UH> {
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.head_proposal.hash(state);
     }
 }
 
-/// A trait allowing to check the data contained in an AlephBFT network message, for the purpose of
+/// A trait allowing to check the data contained in an SetBFT network message, for the purpose of
 /// data availability checks.
-pub trait AlephNetworkMessage<UH: UnverifiedHeader>: Clone + Debug {
-    fn included_data(&self) -> Vec<AlephData<UH>>;
+pub trait SetBFTNetworkMessage<UH: UnverifiedHeader>: Clone + Debug {
+    fn included_data(&self) -> Vec<SetBFTData<UH>>;
 }
 
 #[derive(Clone, Debug)]

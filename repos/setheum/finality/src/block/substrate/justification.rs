@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -31,15 +31,15 @@ use crate::{
         },
         BlockStatus, ChainStatus, Justification as JustificationT, UnverifiedJustification,
     },
-    justification::AlephJustification,
+    justification::SetBFTJustification,
 };
 
-/// Proper `AlephJustification` or a variant indicating virtual justification
+/// Proper `SetBFTJustification` or a variant indicating virtual justification
 /// for the genesis block, which is the only block that can be the top finalized
 /// block with no proper justification.
 #[derive(Clone, Debug, Encode, Decode)]
 pub enum InnerJustification {
-    AlephJustification(AlephJustification),
+    SetBFTJustification(SetBFTJustification),
     Genesis,
 }
 
@@ -51,10 +51,10 @@ pub struct Justification {
 }
 
 impl Justification {
-    pub fn aleph_justification(header: Header, aleph_justification: AlephJustification) -> Self {
+    pub fn setbft_justification(header: Header, setbft_justification: SetBFTJustification) -> Self {
         Justification {
             header,
-            inner_justification: InnerJustification::AlephJustification(aleph_justification),
+            inner_justification: InnerJustification::SetBFTJustification(setbft_justification),
         }
     }
 
@@ -115,7 +115,7 @@ impl From<ChainStatusError> for TranslateError {
     }
 }
 
-/// Translates raw aleph justifications into ones acceptable to sync.
+/// Translates raw setbft justifications into ones acceptable to sync.
 #[derive(Clone)]
 pub struct JustificationTranslator {
     chain_status: SubstrateChainStatus,
@@ -128,13 +128,13 @@ impl JustificationTranslator {
 
     pub fn translate(
         &self,
-        aleph_justification: AlephJustification,
+        setbft_justification: SetBFTJustification,
         block_id: BlockId,
     ) -> Result<Justification, TranslateError> {
         use BlockStatus::*;
         match self.chain_status.status_of(block_id)? {
             Justified(Justification { header, .. }) | Present(header) => Ok(
-                Justification::aleph_justification(header, aleph_justification),
+                Justification::setbft_justification(header, setbft_justification),
             ),
             Unknown => Err(TranslateError::NoBlock),
         }

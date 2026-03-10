@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -227,7 +227,7 @@ where
 		let diff = Multiplier::saturating_from_rational(diff_abs, normal_max_weight.max(1));
 		let diff_squared = diff.saturating_mul(diff);
 
-		let v_squared_2 = v.saturating_mul(v) // Multiplier::saturating_from_integer(2);
+		let v_squared_2 = v.saturating_mul(v); // Multiplier::saturating_from_integer(2);
 
 		let first_term = v.saturating_mul(diff);
 		let second_term = v_squared_2.saturating_mul(diff_squared);
@@ -293,7 +293,7 @@ pub mod module {
 			+ IsType<<Self as frame_system::Config>::RuntimeCall>;
 
 /// Native currency id, the actual received currency type as fee for
-/// treasury. Should be SEE
+/// treasury. Should be SEU
 		#[pallet::constant]
 		type NativeCurrencyId: Get<CurrencyId>;
 
@@ -548,7 +548,7 @@ pub mod module {
 				);
 
 // add 1 percent;
-			let addition = target // 100;
+			let addition = target; // 100;
 			if addition == Weight::zero() {
 // this is most likely because in a test setup we set everything to ()
 // or to `ConstFeeMultiplier`.
@@ -1240,8 +1240,8 @@ where
 		let bounded_weight = info_weight.clamp(1, max_block_weight);
 		let bounded_length = (len as u64).clamp(1, max_block_length);
 
-		let max_tx_per_block_weight = max_block_weight // bounded_weight;
-		let max_tx_per_block_length = max_block_length // bounded_length;
+		let max_tx_per_block_weight = max_block_weight; // bounded_weight;
+		let max_tx_per_block_length = max_block_length; // bounded_length;
 // Given our current knowledge this value is going to be in a reasonable range - i.e.
 // less than 10^9 (2^30), so multiplying by the `tip` value is unlikely to overflow the
 // balance type. We still use saturating ops obviously, but the point is to end up with some
@@ -1252,7 +1252,7 @@ where
 // tipPerWeight = tipPerWight // TipPerWeightStep * TipPerWeightStep
 //              = tip // bounded_{weight|length} / TipPerWeightStep * TipPerWeightStep
 // priority = tipPerWeight * max_block_{weight|length}
-// MaxTipsOfPriority = 10_000 SEE = 10^16.
+// MaxTipsOfPriority = 10_000 SEU = 10^16.
 // `MaxTipsOfPriority * max_block_{weight|length}` will overflow, so div `TipPerWeightStep` here.
 		let max_reward = |val: PalletBalanceOf<T>| {
 			val.checked_div(T::TipPerWeightStep::get())

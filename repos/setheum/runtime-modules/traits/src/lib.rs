@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -66,6 +66,10 @@ use scale_info::TypeInfo;
 use serde::{Deserialize, Serialize};
 #[cfg(feature = "xcm")]
 pub use xcm_transfer::{XcmTransfer, XtokensWeightInfo};
+pub use setbft::{NextSessionAuthorityProvider, SessionNextSessionAuthorityProvider};
+pub use elections::ValidatorProvider;
+pub use committee_management::{EraInfoProvider, ValidatorRewardsHandler, ValidatorExtractor};
+pub use operations::{AccountInfoProvider, BalancesProvider, NextKeysSessionProvider, BondedStashProvider, ContractInfoProvider};
 
 pub mod arithmetic;
 #[cfg(feature = "xcm")]
@@ -85,6 +89,10 @@ pub mod rate_limit;
 pub mod rewards;
 #[cfg(feature = "xcm")]
 pub mod xcm_transfer;
+pub mod setbft;
+pub mod elections;
+pub mod committee_management;
+pub mod operations;
 
 /// New data handler
 #[impl_trait_for_tuples::impl_for_tuples(30)]

@@ -8,34 +8,35 @@ homepage.workspace = true
 repository.workspace = true
 
 [dependencies]
-# bstringify = { workspace = true }
-enumflags2 = { workspace = true, features = ["serde"] }
-hex-literal = { workspace = true }
-log = { workspace = true }
-num_enum = { workspace = true }
-parity-scale-codec = { workspace = true, features = ["max-encoded-len"] }
-paste = { workspace = true }
-scale-info = { workspace = true }
-serde = { workspace = true, features = ["alloc", "derive"] }
+# bstringify = { workspace = true , default-features = false }
+enumflags2 = { workspace = true, features = ["serde"] , default-features = false }
+hex-literal = { workspace = true , default-features = false }
+log = { workspace = true , default-features = false }
+num_enum = { workspace = true , default-features = false }
+parity-scale-codec = { workspace = true, features = ["max-encoded-len"], default-features = false }
+paste = { workspace = true , default-features = false }
+scale-info = { workspace = true, default-features = false }
+serde = { workspace = true, features = ["alloc", "derive"] , default-features = false }
 
-sp-api = { workspace = true }
-sp-application-crypto = { workspace = true }
-sp-core = { workspace = true }
-sp-io = { workspace = true }
-sp-runtime = { workspace = true }
-sp-std = { workspace = true }
-sp-staking = { workspace = true }
-sp-consensus-aura = { workspace = true }
+sp-api = { workspace = true, default-features = false }
+sp-application-crypto = { workspace = true, default-features = false }
+sp-core = { workspace = true, default-features = false }
+sp-io = { workspace = true, default-features = false }
+sp-runtime = { workspace = true, default-features = false }
+sp-std = { workspace = true, default-features = false }
+sp-staking = { workspace = true, default-features = false }
+sp-consensus-aura = { workspace = true, default-features = false }
 
-frame-support = { workspace = true }
+frame-support = { workspace = true, default-features = false }
 
-module-traits = { workspace = true }
+module-traits = { workspace = true , default-features = false }
+pallet-session = { workspace = true, default-features = false }
 
-# module-evm-utility = { workspace = true }
-# module-evm-utility-macro = { workspace = true }
+module-evm-utility = { workspace = true , default-features = false }
+module-evm-utility-macro = { workspace = true , default-features = false }
 
 [dev-dependencies]
-serde_json = { workspace = true, features = ["std"] }
+serde_json = { workspace = true, features = ["std"] , default-features = false }
 
 
 [features]
@@ -57,8 +58,9 @@ std = [
 	"frame-support/std",
 
 	"module-traits/std",
+	"pallet-session/std",
 
-	# "module-evm-utility/std",
+	"module-evm-utility/std",
 ]
 evm-tests = []
 short_session = []

@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -26,14 +26,14 @@ use crate::{
     block::{Header, HeaderVerifier, UnverifiedHeader},
     data_io::{
         chain_info::ChainInfoProvider,
-        proposal::{AlephProposal, PendingProposalStatus, ProposalStatus},
+        proposal::{SetBFTProposal, PendingProposalStatus, ProposalStatus},
     },
 };
 
 pub fn get_proposal_status<CIP, H, V>(
     chain_info_provider: &mut CIP,
     header_verifier: &mut V,
-    proposal: &AlephProposal<H::Unverified>,
+    proposal: &SetBFTProposal<H::Unverified>,
     old_status: Option<&ProposalStatus>,
 ) -> ProposalStatus
 where
@@ -51,7 +51,7 @@ where
     }
 
     if is_hopeless_fork(chain_info_provider, proposal) {
-        debug!(target: "aleph-finality", "Encountered a hopeless fork proposal {:?}.", proposal);
+        debug!(target: "setbft-finality", "Encountered a hopeless fork proposal {:?}.", proposal);
         return Ignore;
     }
 
@@ -63,7 +63,7 @@ where
             match header_verifier.verify_header(proposal.top_block_header(), false) {
                 Ok(_) => &Pending(PendingTopBlock),
                 Err(e) => {
-                    warn!(target: "aleph-finality", "Invalid header in proposal: {}", e);
+                    warn!(target: "setbft-finality", "Invalid header in proposal: {}", e);
                     &Pending(TopBlockImportedButIncorrectBranch)
                 }
             }
@@ -116,7 +116,7 @@ where
     }
 }
 
-fn is_hopeless_fork<CIP, UH>(chain_info_provider: &mut CIP, proposal: &AlephProposal<UH>) -> bool
+fn is_hopeless_fork<CIP, UH>(chain_info_provider: &mut CIP, proposal: &SetBFTProposal<UH>) -> bool
 where
     CIP: ChainInfoProvider,
     UH: UnverifiedHeader,
@@ -139,7 +139,7 @@ where
 
 fn is_ancestor_finalized<CIP, UH>(
     chain_info_provider: &mut CIP,
-    proposal: &AlephProposal<UH>,
+    proposal: &SetBFTProposal<UH>,
 ) -> bool
 where
     CIP: ChainInfoProvider,
@@ -163,7 +163,7 @@ where
 // Checks that the subsequent blocks in the branch are in the parent-child relation, as required.
 fn is_branch_ancestry_correct<CIP, UH>(
     chain_info_provider: &mut CIP,
-    proposal: &AlephProposal<UH>,
+    proposal: &SetBFTProposal<UH>,
 ) -> bool
 where
     CIP: ChainInfoProvider,
@@ -201,7 +201,7 @@ mod tests {
                 SubstrateChainInfoProvider,
             },
             proposal::{
-                AlephProposal,
+                SetBFTProposal,
                 PendingProposalStatus::*,
                 ProposalStatus::{self, *},
             },
@@ -218,17 +218,17 @@ mod tests {
         SessionBoundaryInfo, SessionId, SessionPeriod,
     };
 
-// A large number only for the purpose of creating `AlephProposal`s
+// A large number only for the purpose of creating `SetBFTProposal`s
     const DUMMY_SESSION_LEN: u32 = 1_000_000;
 
-    fn proposal_from_headers(headers: Vec<THeader>) -> AlephProposal<THeader> {
+    fn proposal_from_headers(headers: Vec<THeader>) -> SetBFTProposal<THeader> {
         let unvalidated = unvalidated_proposal_from_headers(headers);
         let session_boundaries = SessionBoundaryInfo::new(SessionPeriod(DUMMY_SESSION_LEN))
             .boundaries_for_session(SessionId(0));
         unvalidated.validate_bounds(&session_boundaries).unwrap()
     }
 
-    fn proposal_from_blocks(blocks: Vec<TBlock>) -> AlephProposal<THeader> {
+    fn proposal_from_blocks(blocks: Vec<TBlock>) -> SetBFTProposal<THeader> {
         let headers = blocks.into_iter().map(|b| b.header().clone()).collect();
         proposal_from_headers(headers)
     }
@@ -265,7 +265,7 @@ mod tests {
     fn verify_proposal_status(
         cached_cip: &mut TestCachedChainInfo,
         aux_cip: &mut TestAuxChainInfo,
-        proposal: &AlephProposal<THeader>,
+        proposal: &SetBFTProposal<THeader>,
         correct_status: ProposalStatus,
     ) {
         let status_a = get_proposal_status(aux_cip, &mut TestVerifier, proposal, None);

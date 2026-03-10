@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,7 +44,7 @@ use subxt::{events::EventDetails, ext::sp_core::H256};
 
 use crate::{
     api::contracts::events::ContractEmitted, connections::TxInfo, contract::ContractInstance,
-    utility::BlocksApi, AccountId, AlephConfig, Connection,
+    utility::BlocksApi, AccountId, SetBFTConfig, Connection,
 };
 
 /// Represents details about the block contianing the event.
@@ -180,7 +180,7 @@ pub async fn listen_contract_events(
 /// Try to convert `events` to `ContractEvent` using matching contract from `contracts`.
 pub fn translate_events<
     Err: Error + Into<anyhow::Error> + Send + Sync + 'static,
-    E: Iterator<Item = Result<EventDetails<AlephConfig>, Err>>,
+    E: Iterator<Item = Result<EventDetails<SetBFTConfig>, Err>>,
 >(
     events: E,
     contracts: &[&ContractInstance],

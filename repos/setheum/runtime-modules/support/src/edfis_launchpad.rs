@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,12 +35,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use codec::{Decode, Encode};
+use primitives::{Balance, CurrencyId, edfis_launchpad::CampaignInfo};
 use sp_runtime::{
 	DispatchError, DispatchResult,
 };
 use sp_std::{
 	cmp::{Eq, PartialEq},
+	prelude::*,
 };
 
 /// Abstraction over th Launchpad Proposal system.

@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -28,10 +28,10 @@ use crate::{
         substrate::{InnerJustification, Justification},
         Finalizer,
     },
-    finalization::{AlephFinalizer, BlockFinalizer},
+    finalization::{SetBFTFinalizer, BlockFinalizer},
 };
 
-impl<BE, C> Finalizer<Justification> for AlephFinalizer<Block, BE, C>
+impl<BE, C> Finalizer<Justification> for SetBFTFinalizer<Block, BE, C>
 where
     BE: Backend<Block>,
     C: HeaderBackend<Block> + LockImportRun<Block, BE> + SubstrateFinalizer<Block, BE>,
@@ -40,9 +40,9 @@ where
 
     fn finalize(&self, justification: Justification) -> Result<(), Self::Error> {
         match justification.inner_justification {
-            InnerJustification::AlephJustification(aleph_justification) => self.finalize_block(
+            InnerJustification::SetBFTJustification(setbft_justification) => self.finalize_block(
                 (justification.header.hash(), *justification.header.number()).into(),
-                aleph_justification.into(),
+                setbft_justification.into(),
             ),
             _ => Err(Self::Error::BadJustification(
                 "Trying fo finalize the genesis block using virtual sync justification."

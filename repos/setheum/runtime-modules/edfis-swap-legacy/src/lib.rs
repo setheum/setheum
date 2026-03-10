@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -43,7 +43,8 @@
 
 use frame_support::{pallet_prelude::*, transactional, PalletId};
 use frame_system::pallet_prelude::*;
-use module_support::{Incentives, SwapManager, Erc20InfoMapping, ExchangeRate, Ratio, SwapLimit};
+use module_support::{Erc20InfoMapping, ExchangeRate, Ratio, Incentives};
+use module_support::edfis_swap_legacy::{SwapManager, SwapLimit};
 use module_traits::{Happened, MultiCurrency, MultiCurrencyExtended};
 use parity_scale_codec::MaxEncodedLen;
 use primitives::{Balance, CurrencyId, TradingPair};

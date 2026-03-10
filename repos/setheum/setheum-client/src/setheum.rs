@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -55,7 +55,7 @@ pub mod api {
         "Staking",
         "History",
         "Session",
-        "Aleph",
+        "SetBFT",
         "Elections",
         "Treasury",
         "Vesting",
@@ -81,7 +81,7 @@ pub mod api {
         "SessionKeys",
         "AccountNonceApi",
         "TransactionPaymentApi",
-        "AlephSessionApi",
+        "SetBFTSessionApi",
         "NominationPoolsApi",
         "StakingApi",
         "ContractsApi",
@@ -143,8 +143,8 @@ pub mod api {
             ) -> transaction_payment_api::TransactionPaymentApi {
                 transaction_payment_api::TransactionPaymentApi
             }
-            pub fn aleph_session_api(&self) -> aleph_session_api::AlephSessionApi {
-                aleph_session_api::AlephSessionApi
+            pub fn setbft_session_api(&self) -> setbft_session_api::SetBFTSessionApi {
+                setbft_session_api::SetBFTSessionApi
             }
             pub fn nomination_pools_api(&self) -> nomination_pools_api::NominationPoolsApi {
                 nomination_pools_api::NominationPoolsApi
@@ -991,10 +991,10 @@ pub mod api {
                 }
             }
         }
-        pub mod aleph_session_api {
+        pub mod setbft_session_api {
             use super::{root_mod, runtime_types};
-            pub struct AlephSessionApi;
-            impl AlephSessionApi {
+            pub struct SetBFTSessionApi;
+            impl SetBFTSessionApi {
                 pub fn next_session_authorities(
                     &self,
                 ) -> ::subxt::runtime_api::Payload<
@@ -1005,7 +1005,7 @@ pub mod api {
                     >,
                 > {
                     ::subxt::runtime_api::Payload::new_static(
-                        "AlephSessionApi",
+                        "SetBFTSessionApi",
                         "next_session_authorities",
                         types::NextSessionAuthorities {},
                         [
@@ -1022,7 +1022,7 @@ pub mod api {
                     ::std::vec::Vec<runtime_types::primitives::app::Public>,
                 > {
                     ::subxt::runtime_api::Payload::new_static(
-                        "AlephSessionApi",
+                        "SetBFTSessionApi",
                         "authorities",
                         types::Authorities {},
                         [
@@ -1042,7 +1042,7 @@ pub mod api {
                     >,
                 > {
                     ::subxt::runtime_api::Payload::new_static(
-                        "AlephSessionApi",
+                        "SetBFTSessionApi",
                         "next_session_authority_data",
                         types::NextSessionAuthorityData {},
                         [
@@ -1060,7 +1060,7 @@ pub mod api {
                     runtime_types::primitives::SessionAuthorityData,
                 > {
                     ::subxt::runtime_api::Payload::new_static(
-                        "AlephSessionApi",
+                        "SetBFTSessionApi",
                         "authority_data",
                         types::AuthorityData {},
                         [
@@ -1076,7 +1076,7 @@ pub mod api {
                 ) -> ::subxt::runtime_api::Payload<types::SessionPeriod, ::core::primitive::u32>
                 {
                     ::subxt::runtime_api::Payload::new_static(
-                        "AlephSessionApi",
+                        "SetBFTSessionApi",
                         "session_period",
                         types::SessionPeriod {},
                         [
@@ -1091,7 +1091,7 @@ pub mod api {
                 ) -> ::subxt::runtime_api::Payload<types::MillisecsPerBlock, ::core::primitive::u64>
                 {
                     ::subxt::runtime_api::Payload::new_static(
-                        "AlephSessionApi",
+                        "SetBFTSessionApi",
                         "millisecs_per_block",
                         types::MillisecsPerBlock {},
                         [
@@ -1106,7 +1106,7 @@ pub mod api {
                 ) -> ::subxt::runtime_api::Payload<types::FinalityVersion, ::core::primitive::u32>
                 {
                     ::subxt::runtime_api::Payload::new_static(
-                        "AlephSessionApi",
+                        "SetBFTSessionApi",
                         "finality_version",
                         types::FinalityVersion {},
                         [
@@ -1123,7 +1123,7 @@ pub mod api {
                     ::core::primitive::u32,
                 > {
                     ::subxt::runtime_api::Payload::new_static(
-                        "AlephSessionApi",
+                        "SetBFTSessionApi",
                         "next_session_finality_version",
                         types::NextSessionFinalityVersion {},
                         [
@@ -1153,7 +1153,7 @@ pub mod api {
                     >,
                 > {
                     ::subxt::runtime_api::Payload::new_static(
-                        "AlephSessionApi",
+                        "SetBFTSessionApi",
                         "predict_session_committee",
                         types::PredictSessionCommittee { session },
                         [
@@ -1173,7 +1173,7 @@ pub mod api {
                     )>,
                 > {
                     ::subxt::runtime_api::Payload::new_static(
-                        "AlephSessionApi",
+                        "SetBFTSessionApi",
                         "next_session_aura_authorities",
                         types::NextSessionAuraAuthorities {},
                         [
@@ -1184,8 +1184,8 @@ pub mod api {
                     )
                 }
                 #[doc = " Returns owner (`AccountId`) corresponding to an AuthorityId (in some contexts referenced"]
-                #[doc = " also as `aleph_key` - consensus engine's part of session keys) in the current session"]
-                #[doc = " of AlephBFT (finalisation committee)."]
+                #[doc = " also as `setbft_key` - consensus engine's part of session keys) in the current session"]
+                #[doc = " of SetBFT (finalisation committee)."]
                 pub fn key_owner(
                     &self,
                     key: runtime_types::primitives::app::Public,
@@ -1196,7 +1196,7 @@ pub mod api {
                     >,
                 > {
                     ::subxt::runtime_api::Payload::new_static(
-                        "AlephSessionApi",
+                        "SetBFTSessionApi",
                         "key_owner",
                         types::KeyOwner { key },
                         [
@@ -1868,8 +1868,8 @@ pub mod api {
         pub fn session(&self) -> session::storage::StorageApi {
             session::storage::StorageApi
         }
-        pub fn aleph(&self) -> aleph::storage::StorageApi {
-            aleph::storage::StorageApi
+        pub fn setbft(&self) -> setbft::storage::StorageApi {
+            setbft::storage::StorageApi
         }
         pub fn elections(&self) -> elections::storage::StorageApi {
             elections::storage::StorageApi
@@ -1928,8 +1928,8 @@ pub mod api {
         pub fn session(&self) -> session::calls::TransactionApi {
             session::calls::TransactionApi
         }
-        pub fn aleph(&self) -> aleph::calls::TransactionApi {
-            aleph::calls::TransactionApi
+        pub fn setbft(&self) -> setbft::calls::TransactionApi {
+            setbft::calls::TransactionApi
         }
         pub fn elections(&self) -> elections::calls::TransactionApi {
             elections::calls::TransactionApi
@@ -8687,10 +8687,10 @@ pub mod api {
             }
         }
     }
-    pub mod aleph {
+    pub mod setbft {
         use super::{root_mod, runtime_types};
         #[doc = "Contains a variant per dispatchable extrinsic that this pallet has."]
-        pub type Call = runtime_types::module_aleph::pallet::Call;
+        pub type Call = runtime_types::module_setbft::pallet::Call;
         pub mod calls {
             use super::{root_mod, runtime_types};
             type DispatchError = runtime_types::sp_runtime::DispatchError;
@@ -8713,7 +8713,7 @@ pub mod api {
                     pub emergency_finalizer: runtime_types::primitives::app::Public,
                 }
                 impl ::subxt::blocks::StaticExtrinsic for SetEmergencyFinalizer {
-                    const PALLET: &'static str = "Aleph";
+                    const PALLET: &'static str = "SetBFT";
                     const CALL: &'static str = "set_emergency_finalizer";
                 }
                 #[derive(
@@ -8734,7 +8734,7 @@ pub mod api {
                     pub session: ::core::primitive::u32,
                 }
                 impl ::subxt::blocks::StaticExtrinsic for ScheduleFinalityVersionChange {
-                    const PALLET: &'static str = "Aleph";
+                    const PALLET: &'static str = "SetBFT";
                     const CALL: &'static str = "schedule_finality_version_change";
                 }
             }
@@ -8746,7 +8746,7 @@ pub mod api {
                     emergency_finalizer: runtime_types::primitives::app::Public,
                 ) -> ::subxt::tx::Payload<types::SetEmergencyFinalizer> {
                     ::subxt::tx::Payload::new_static(
-                        "Aleph",
+                        "SetBFT",
                         "set_emergency_finalizer",
                         types::SetEmergencyFinalizer {
                             emergency_finalizer,
@@ -8765,7 +8765,7 @@ pub mod api {
                     session: ::core::primitive::u32,
                 ) -> ::subxt::tx::Payload<types::ScheduleFinalityVersionChange> {
                     ::subxt::tx::Payload::new_static(
-                        "Aleph",
+                        "SetBFT",
                         "schedule_finality_version_change",
                         types::ScheduleFinalityVersionChange {
                             version_incoming,
@@ -8782,7 +8782,7 @@ pub mod api {
             }
         }
         #[doc = "The `Event` enum of this pallet"]
-        pub type Event = runtime_types::module_aleph::pallet::Event;
+        pub type Event = runtime_types::module_setbft::pallet::Event;
         pub mod events {
             use super::runtime_types;
             #[derive(
@@ -8800,7 +8800,7 @@ pub mod api {
             #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
             pub struct ChangeEmergencyFinalizer(pub runtime_types::primitives::app::Public);
             impl ::subxt::events::StaticEvent for ChangeEmergencyFinalizer {
-                const PALLET: &'static str = "Aleph";
+                const PALLET: &'static str = "SetBFT";
                 const EVENT: &'static str = "ChangeEmergencyFinalizer";
             }
             #[derive(
@@ -8818,7 +8818,7 @@ pub mod api {
             #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
             pub struct ScheduleFinalityVersionChange(pub runtime_types::primitives::VersionChange);
             impl ::subxt::events::StaticEvent for ScheduleFinalityVersionChange {
-                const PALLET: &'static str = "Aleph";
+                const PALLET: &'static str = "SetBFT";
                 const EVENT: &'static str = "ScheduleFinalityVersionChange";
             }
             #[derive(
@@ -8836,7 +8836,7 @@ pub mod api {
             #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
             pub struct FinalityVersionChange(pub runtime_types::primitives::VersionChange);
             impl ::subxt::events::StaticEvent for FinalityVersionChange {
-                const PALLET: &'static str = "Aleph";
+                const PALLET: &'static str = "SetBFT";
                 const EVENT: &'static str = "FinalityVersionChange";
             }
         }
@@ -8854,7 +8854,7 @@ pub mod api {
                     (),
                 > {
                     ::subxt::storage::address::Address::new_static(
-                        "Aleph",
+                        "SetBFT",
                         "Authorities",
                         vec![],
                         [
@@ -8874,7 +8874,7 @@ pub mod api {
                     (),
                 > {
                     ::subxt::storage::address::Address::new_static(
-                        "Aleph",
+                        "SetBFT",
                         "NextAuthorities",
                         vec![],
                         [
@@ -8897,7 +8897,7 @@ pub mod api {
                     (),
                 > {
                     ::subxt::storage::address::Address::new_static(
-                        "Aleph",
+                        "SetBFT",
                         "NextFinalityCommittee",
                         vec![],
                         [
@@ -8918,7 +8918,7 @@ pub mod api {
                     (),
                 > {
                     ::subxt::storage::address::Address::new_static(
-                        "Aleph",
+                        "SetBFT",
                         "EmergencyFinalizer",
                         vec![],
                         [
@@ -8939,7 +8939,7 @@ pub mod api {
                     (),
                 > {
                     ::subxt::storage::address::Address::new_static(
-                        "Aleph",
+                        "SetBFT",
                         "QueuedEmergencyFinalizer",
                         vec![],
                         [
@@ -8959,7 +8959,7 @@ pub mod api {
                     (),
                 > {
                     ::subxt::storage::address::Address::new_static(
-                        "Aleph",
+                        "SetBFT",
                         "NextEmergencyFinalizer",
                         vec![],
                         [
@@ -8980,7 +8980,7 @@ pub mod api {
                     (),
                 > {
                     ::subxt::storage::address::Address::new_static(
-                        "Aleph",
+                        "SetBFT",
                         "FinalityVersion",
                         vec![],
                         [
@@ -9002,7 +9002,7 @@ pub mod api {
                     (),
                 > {
                     ::subxt::storage::address::Address::new_static(
-                        "Aleph",
+                        "SetBFT",
                         "FinalityScheduledVersionChange",
                         vec![],
                         [
@@ -18405,7 +18405,7 @@ pub mod api {
                 #[codec(index = 10)]
                 Session(runtime_types::pallet_session::pallet::Call),
                 #[codec(index = 11)]
-                Aleph(runtime_types::module_aleph::pallet::Call),
+                SetBFT(runtime_types::module_setbft::pallet::Call),
                 #[codec(index = 12)]
                 Elections(runtime_types::module_elections::pallet::Call),
                 #[codec(index = 13)]
@@ -18511,7 +18511,7 @@ pub mod api {
                 #[codec(index = 10)]
                 Session(runtime_types::pallet_session::pallet::Event),
                 #[codec(index = 11)]
-                Aleph(runtime_types::module_aleph::pallet::Event),
+                SetBFT(runtime_types::module_setbft::pallet::Event),
                 #[codec(index = 12)]
                 Elections(runtime_types::module_elections::pallet::Event),
                 #[codec(index = 13)]
@@ -18590,7 +18590,7 @@ pub mod api {
             #[encode_as_type(crate_path = ":: subxt :: ext :: scale_encode")]
             pub struct SessionKeys {
                 pub aura: runtime_types::sp_consensus_aura::sr25519::app_sr25519::Public,
-                pub aleph: runtime_types::primitives::app::Public,
+                pub setbft: runtime_types::primitives::app::Public,
             }
         }
         pub mod bounded_collections {
@@ -19236,7 +19236,7 @@ pub mod api {
                 Initialization,
             }
         }
-        pub mod module_aleph {
+        pub mod module_setbft {
             use super::runtime_types;
             pub mod pallet {
                 use super::runtime_types;

@@ -1,0 +1,193 @@
+# Copyright 2020 ChainSafe Systems
+# SPDX-License-Identifier: LGPL-3.0-only
+
+x-logging:
+  &default-logging
+  driver: "json-file"
+  options:
+    max-size: "1m"
+    max-file: "1"
+    tag: "{{.Name}}"
+
+services:
+  mempool-stub:
+    image: ghcr.io/sprintertech/beacon-api-stub
+    container_name: mempool-stub
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+    volumes:
+      - "./cfg/stubs:/stubs"
+    ports:
+      - 8882:8882
+    environment:
+      - STUB_DATA=/stubs/mempool.yml
+    logging: *default-logging
+
+  bitcoin:
+#   image: ruimarinho/bitcoin-core:latest
+    image: ghcr.io/sprintertech/bitcoin
+    container_name: bitcoin
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+    ports:
+      - "18443:18443"
+      - "18332:18332"
+    environment:
+      BITCOIN_RPC_USER: user
+      BITCOIN_RPC_PASSWORD: password
+      BITCOIN_RPC_PORT: 18443
+      BITCOIN_NETWORK: regtest
+      BITCOIN_EXTRA_ARGS: "-rpcallowip=0.0.0.0/0 -rpcbind=0.0.0.0"
+    volumes:
+      - ./cfg/entrypoint/entrypoint.sh:/cfg/entrypoint/entrypoint.sh
+    entrypoint: /cfg/entrypoint/entrypoint.sh
+    logging: *default-logging
+
+  evm1-1:
+    image: ghcr.io/sprintertech/sygma-solidity:evm1-v2.10.1
+    container_name: evm1-1
+    command: --chain.chainId 1337 --db data/ --blockTime 2 --m 'black toward wish jar twin produce remember fluid always confirm bacon slush' > /dev/null
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+    logging: *default-logging
+    ports:
+      - "8545:8545"
+
+  evm2-1:
+    image: ghcr.io/sprintertech/sygma-solidity:evm2-v2.10.1
+    command: --chain.chainId 1338 --db data/ --blockTime 2 --m 'black toward wish jar twin produce remember fluid always confirm bacon slush' > /dev/null
+    container_name: evm2-1
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+    logging: *default-logging
+    ports:
+      - "8547:8545"
+
+  substrate-pallet:
+    image: "ghcr.io/sprintertech/sygma-substrate-pallets:e2e-v0.3.1"
+    container_name: substrate-pallet
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+    ports:
+      - "9944:9944"
+      - "9933:9933"
+    logging: *default-logging
+
+  ipfs0:
+    image: ipfs/kubo:release
+    container_name: ipfs0
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+    ports:
+      - "4001:4001"
+      - "5002:5001"
+      - "8080:8080"
+    logging: *default-logging
+
+  relayer1:
+    container_name: example_relayer1
+    build:
+      context: ../.
+      dockerfile: ./example/Dockerfile
+    command: sh -c "sleep 5 && ./bridge run --config /cfg/config_evm-evm_1.json --fresh"
+    depends_on:
+      - evm1-1
+      - substrate-pallet
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+    volumes:
+      - ./cfg:/cfg
+    restart: always
+    logging: *default-logging
+
+  relayer2:
+    container_name: example_relayer2
+    build:
+      context: ../.
+      dockerfile: ./example/Dockerfile
+    command: sh -c "sleep 5 && ./bridge run --config /cfg/config_evm-evm_2.json --fresh"
+    depends_on:
+      - evm1-1
+      - substrate-pallet
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+    volumes:
+      - ./cfg:/cfg
+    restart: always
+    logging: *default-logging
+
+  relayer3:
+    container_name: example_relayer3
+    build:
+      context: ../.
+      dockerfile: ./example/Dockerfile
+    command: sh -c "sleep 5 && ./bridge run --config /cfg/config_evm-evm_3.json --fresh"
+    depends_on:
+      - evm1-1
+      - substrate-pallet
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+    volumes:
+      - ./cfg:/cfg
+    restart: always
+    logging: *default-logging
+
+  otel-collector:
+    container_name: otel-collector
+    image: otel/opentelemetry-collector
+    command: ["--config=/etc/otel-collector-config.yml"]
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+    volumes:
+      - ./cfg/otel-collector-config.yml:/etc/otel-collector-config.yml
+    ports:
+      - "8889:8889"   # Prometheus exporter metrics
+    logging: *default-logging
+
+  grafana:
+    image: grafana/grafana:11.3.0
+    container_name: grafana
+    ports:
+      - 3000:3000
+    volumes:
+      - ./grafana/datasources/grafana.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+      - ./grafana/plugins/app.yaml:/etc/grafana/provisioning/plugins/app.yaml
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+      - GF_FEATURE_TOGGLES_ENABLE=accessControlOnCall lokiLogsDataplane
+      - GF_INSTALL_PLUGINS=grafana-lokiexplore-app
+    logging: *default-logging
+
+  loki:
+    image: grafana/loki:3.0.0
+    container_name: loki
+    ports:
+      - 3100:3100
+    command: -config.file=/etc/loki/loki.yaml
+    volumes:
+      - ./loki/loki.yaml:/etc/loki/loki.yaml
+    logging: *default-logging
+
+  promtail:
+    image:  grafana/promtail:3.0.0
+    container_name: promtail
+    volumes:
+      - ./promtail/promtail.yaml:/etc/promtail/docker-config.yaml
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: -config.file=/etc/promtail/docker-config.yaml
+    depends_on:
+      - loki
+    logging: *default-logging

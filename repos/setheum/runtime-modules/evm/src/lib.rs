@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -991,7 +991,7 @@ pub mod module {
 			let source_account = T::AddressMapping::get_account_id(&source);
 			let address = MIRRORED_TOKENS_ADDRESS_START | EvmAddress::from_low_u64_be(Self::network_contract_index());
 
-// ensure source has more than 10 SEE to deploy the contract.
+// ensure source has more than 10 SEU to deploy the contract.
 			let amount = T::Currency::minimum_balance().saturating_mul(100u32.into());
 			if T::Currency::free_balance(&source_account) < amount {
 				T::Currency::transfer(
@@ -1081,7 +1081,7 @@ pub mod module {
 
 			let source = T::NetworkContractSource::get();
 			let source_account = T::AddressMapping::get_account_id(&source);
-// ensure source has more than 10 SEE to deploy the contract.
+// ensure source has more than 10 SEU to deploy the contract.
 			let amount = T::Currency::minimum_balance().saturating_mul(100u32.into());
 			if T::Currency::free_balance(&source_account) < amount {
 				T::Currency::transfer(
@@ -1347,7 +1347,7 @@ impl<T: Config> Pallet<T> {
 
 /// Get StorageDepositPerByte of actual decimals
 	pub fn get_storage_deposit_per_byte() -> BalanceOf<T> {
-// StorageDepositPerByte decimals is 18, SEE decimals is 12, convert to 12 here.
+// StorageDepositPerByte decimals is 18, SEU decimals is 12, convert to 12 here.
 		convert_decimals_from_evm(T::StorageDepositPerByte::get()).expect("checked in integrity_test; qed")
 	}
 

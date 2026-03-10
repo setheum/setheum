@@ -8,7 +8,7 @@ homepage.workspace = true
 repository.workspace = true
 
 [dependencies]
-serde = { workspace = true, features = ["alloc", "derive"] }
+serde = { workspace = true, features = ["alloc", "derive"] , default-features = false }
 parity-scale-codec = { workspace = true }
 scale-info = { workspace = true }
 frame-support = { workspace = true }
@@ -16,11 +16,11 @@ frame-system = { workspace = true }
 sp-core = { workspace = true }
 sp-runtime = { workspace = true }
 sp-std = { workspace = true }
-module-support = { workspace = true }
-primitives = { workspace = true }
-module-traits = { workspace = true }
-module-currencies = { workspace = true }
-module-tokens = { workspace = true }
+module-support = { workspace = true , default-features = false }
+primitives = { workspace = true , default-features = false }
+module-traits = { workspace = true , default-features = false }
+module-currencies = { workspace = true , default-features = false }
+module-tokens = { workspace = true , default-features = false }
 
 [features]
 default = ["std"]

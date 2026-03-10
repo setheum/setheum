@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -36,7 +36,7 @@ pub struct Wrapper<H: SpHash> {
     phantom: PhantomData<H>,
 }
 
-/// AlephBFT requires an order on hashes and `SpHash` does not have one, so we wrap it to add it.
+/// SetBFT requires an order on hashes and `SpHash` does not have one, so we wrap it to add it.
 #[derive(Debug, PartialEq, Eq, Clone, Copy, StdHash, Encode, Decode)]
 pub struct OrdForHash<O: Eq + Copy + Clone + Send + Debug + StdHash + Encode + Decode + AsRef<[u8]>>
 {
@@ -75,7 +75,7 @@ impl<H: SpHash> Wrapper<H> {
     }
 }
 
-impl<H: SpHash> current_aleph_bft::Hasher for Wrapper<H> {
+impl<H: SpHash> current_setbft_bft::Hasher for Wrapper<H> {
     type Hash = OrdForHash<H::Output>;
 
     fn hash(s: &[u8]) -> Self::Hash {
@@ -83,7 +83,7 @@ impl<H: SpHash> current_aleph_bft::Hasher for Wrapper<H> {
     }
 }
 
-impl<H: SpHash> legacy_aleph_bft::Hasher for Wrapper<H> {
+impl<H: SpHash> legacy_setbft_bft::Hasher for Wrapper<H> {
     type Hash = OrdForHash<H::Output>;
 
     fn hash(s: &[u8]) -> Self::Hash {
@@ -91,7 +91,7 @@ impl<H: SpHash> legacy_aleph_bft::Hasher for Wrapper<H> {
     }
 }
 
-/// A wrapper for spawning tasks in a way compatible with AlephBFT.
+/// A wrapper for spawning tasks in a way compatible with SetBFT.
 #[derive(Clone)]
 pub struct SpawnHandle(SpawnTaskHandle);
 
@@ -144,7 +144,7 @@ impl SpawnHandleT for SpawnHandle {
     }
 }
 
-impl current_aleph_bft::SpawnHandle for SpawnHandle {
+impl current_setbft_bft::SpawnHandle for SpawnHandle {
     fn spawn(&self, name: &'static str, task: impl Future<Output = ()> + Send + 'static) {
         SpawnHandleT::spawn(self, name, task)
     }
@@ -153,12 +153,12 @@ impl current_aleph_bft::SpawnHandle for SpawnHandle {
         &self,
         name: &'static str,
         task: impl Future<Output = ()> + Send + 'static,
-    ) -> current_aleph_bft::TaskHandle {
+    ) -> current_setbft_bft::TaskHandle {
         SpawnHandleT::spawn_essential(self, name, task)
     }
 }
 
-impl legacy_aleph_bft::SpawnHandle for SpawnHandle {
+impl legacy_setbft_bft::SpawnHandle for SpawnHandle {
     fn spawn(&self, name: &'static str, task: impl Future<Output = ()> + Send + 'static) {
         SpawnHandleT::spawn(self, name, task)
     }
@@ -167,7 +167,7 @@ impl legacy_aleph_bft::SpawnHandle for SpawnHandle {
         &self,
         name: &'static str,
         task: impl Future<Output = ()> + Send + 'static,
-    ) -> legacy_aleph_bft::TaskHandle {
+    ) -> legacy_setbft_bft::TaskHandle {
         SpawnHandleT::spawn_essential(self, name, task)
     }
 }

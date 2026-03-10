@@ -1,0 +1,23 @@
+[package]
+name = "module-setbft-runtime-api"
+version = "0.1.0"
+license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
+authors.workspace = true
+edition.workspace = true
+homepage.workspace = true
+repository.workspace = true
+
+[dependencies]
+sp-api = { workspace = true }
+sp-std = { workspace = true }
+sp-consensus-aura = { workspace = true }
+
+primitives = { workspace = true , default-features = false }
+
+[features]
+default = ["std"]
+std = [
+    "sp-api/std",
+    "sp-std/std",
+    "primitives/std",
+]

@@ -1,0 +1,23 @@
+# The Licensed Work is (c) 2022 Sygma
+# SPDX-License-Identifier: LGPL-3.0-only
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+      http:
+
+exporters:
+  prometheus:
+    endpoint: 0.0.0.0:8889
+    namespace: default
+
+extensions:
+  health_check:
+
+service:
+  extensions: [health_check]
+  pipelines:
+    metrics:
+      exporters: [prometheus]
+      receivers: [otlp]

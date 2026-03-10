@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -100,7 +100,7 @@ impl TryFrom<SetheumMultiSignature> for ecdsa::Signature {
 
 impl Default for SetheumMultiSignature {
 	fn default() -> Self {
-		Self::Ed25519(ed25519::Signature([0u8; 64]))
+		Self::Ed25519(ed25519::Signature::from_raw([0u8; 64]))
 	}
 }
 

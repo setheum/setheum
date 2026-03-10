@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -51,14 +51,11 @@ use sp_std::cell::RefCell;
 
 pub type AccountId = AccountId32;
 
-pub const SEE: CurrencyId = CurrencyId::Token(TokenSymbol::SEE);
-pub const USSD: CurrencyId = CurrencyId::Token(TokenSymbol::USSD);
+pub const SEU: CurrencyId = CurrencyId::Token(TokenSymbol::SEU);
+pub const SEUSD: CurrencyId = CurrencyId::Token(TokenSymbol::SEUSD);
 pub const BTC: CurrencyId = CurrencyId::ForeignAsset(255);
-pub const EDF: CurrencyId = CurrencyId::Token(TokenSymbol::EDF);
-pub const BTC_USSD_LP: CurrencyId =
-	CurrencyId::DexShare(DexShare::ForeignAsset(255), DexShare::Token(TokenSymbol::USSD));
-pub const EDF_USSD_LP: CurrencyId =
-	CurrencyId::DexShare(DexShare::Token(TokenSymbol::EDF), DexShare::Token(TokenSymbol::USSD));
+pub const BTC_SEUSD_LP: CurrencyId =
+	CurrencyId::DexShare(DexShare::ForeignAsset(255), DexShare::Token(TokenSymbol::SEUSD));
 
 mod incentives {
 	pub use super::super::*;
@@ -84,7 +81,7 @@ parameter_type_with_key! {
 	pub ExistentialDeposits: |currency_id: CurrencyId| -> Balance {
 
 		match currency_id {
-			CurrencyId::Token(TokenSymbol::USSD) => 10,
+			CurrencyId::Token(TokenSymbol::SEUSD) => 10,
 			_ => Default::default()
 		}
 	};
@@ -128,7 +125,7 @@ impl module_rewards::Config for Runtime {
 }
 
 parameter_types! {
-	pub const GetNativeCurrencyId: CurrencyId = SEE;
+	pub const GetNativeCurrencyId: CurrencyId = SEU;
 	pub const IncentivesPalletId: PalletId = PalletId(*b"set/inct");
 }
 

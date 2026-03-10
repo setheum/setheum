@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,7 +39,7 @@
 #![allow(clippy::unused_unit)]
 #![allow(unused_must_use)]
 use setheum_primitives::{task::TaskResult, Nonce};
-use codec::FullCodec;
+use codec::{Decode, Encode, FullCodec};
 use frame_support::pallet_prelude::*;
 use frame_system::pallet_prelude::*;
 pub use module_support::{DispatchableTask, IdleScheduler};
@@ -62,7 +62,7 @@ pub mod module {
 
 	#[pallet::config]
 	pub trait Config: frame_system::Config {
-		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 
 /// Weight information for the extrinsics in this module.
 		type WeightInfo: WeightInfo;
@@ -92,17 +92,19 @@ pub mod module {
 	pub type NextTaskId<T: Config> = StorageValue<_, Nonce, ValueQuery>;
 
 	#[pallet::pallet]
+	#[pallet::without_storage_info]
 	pub struct Pallet<T>(_);
 
 	#[pallet::hooks]
-	impl<T: Config> Hooks<T::BlockNumber> for Pallet<T> {
-		fn on_idle(_n: T::BlockNumber, remaining_weight: Weight) -> Weight {
+	impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
+		fn on_idle(_n: BlockNumberFor<T>, remaining_weight: Weight) -> Weight {
 			Self::do_dispatch_tasks(remaining_weight)
 		}
 	}
 
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
+		#[pallet::call_index(0)]
 		#[pallet::weight(< T as Config >::WeightInfo::schedule_task())]
 		pub fn schedule_task(origin: OriginFor<T>, task: T::Task) -> DispatchResult {
 			ensure_root(origin)?;
@@ -131,7 +133,7 @@ impl<T: Config> Pallet<T> {
 /// Keep dispatching tasks in Storage, until insufficient weight remains.
 	pub fn do_dispatch_tasks(total_weight: Weight) -> Weight {
 		let mut weight_remaining = total_weight;
-		if weight_remaining <= T::MinimumWeightRemainInBlock::get() {
+		if weight_remaining.all_lte(T::MinimumWeightRemainInBlock::get()) {
 			return Zero::zero();
 		}
 
@@ -145,7 +147,7 @@ impl<T: Config> Pallet<T> {
 			}
 
 // If remaining weight falls below the minimmum, break from the loop.
-			if weight_remaining <= T::MinimumWeightRemainInBlock::get() {
+			if weight_remaining.all_lte(T::MinimumWeightRemainInBlock::get()) {
 				break;
 			}
 		}

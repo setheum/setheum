@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -39,7 +39,7 @@ pub trait BlockFinalizer {
     fn finalize_block(&self, block: BlockId, justification: Justification) -> Result<(), Error>;
 }
 
-pub struct AlephFinalizer<B, BE, C>
+pub struct SetBFTFinalizer<B, BE, C>
 where
     B: Block,
     BE: Backend<B>,
@@ -50,14 +50,14 @@ where
     phantom: PhantomData<(B, BE)>,
 }
 
-impl<B, BE, C> AlephFinalizer<B, BE, C>
+impl<B, BE, C> SetBFTFinalizer<B, BE, C>
 where
     B: Block,
     BE: Backend<B>,
     C: HeaderBackend<B> + LockImportRun<B, BE> + Finalizer<B, BE>,
 {
     pub(crate) fn new(client: Arc<C>, metrics: AllBlockMetrics) -> Self {
-        AlephFinalizer {
+        SetBFTFinalizer {
             client,
             metrics,
             phantom: PhantomData,
@@ -65,7 +65,7 @@ where
     }
 }
 
-impl<B, BE, C> BlockFinalizer for AlephFinalizer<B, BE, C>
+impl<B, BE, C> BlockFinalizer for SetBFTFinalizer<B, BE, C>
 where
     B: Block<Hash = BlockHash>,
     B::Header: Header<Number = BlockNumber>,
@@ -78,11 +78,11 @@ where
 
         let status = self.client.info();
         if status.finalized_number >= number {
-            warn!(target: "aleph-finality", "trying to finalize a block with hash {} and number {}
+            warn!(target: "setbft-finality", "trying to finalize a block with hash {} and number {}
                that is not greater than already finalized {}", hash, number, status.finalized_number);
         }
 
-        debug!(target: "aleph-finality", "Finalizing block with hash {:?} and number {:?}. Previous best: #{:?}.", hash, number, status.finalized_number);
+        debug!(target: "setbft-finality", "Finalizing block with hash {:?} and number {:?}. Previous best: #{:?}.", hash, number, status.finalized_number);
 
         let update_res = self.client.lock_import_and_run(|import_op| {
 // NOTE: all other finalization logic should come here, inside the lock
@@ -93,12 +93,12 @@ where
         let status = self.client.info();
         match &update_res {
             Ok(_) => {
-                debug!(target: "aleph-finality", "Successfully finalized block with hash {:?} and number {:?}. Current best: #{:?}.", hash, number, status.best_number);
+                debug!(target: "setbft-finality", "Successfully finalized block with hash {:?} and number {:?}. Current best: #{:?}.", hash, number, status.best_number);
                 self.metrics
                     .report_block(block, Checkpoint::Finalized, None);
             }
             Err(_) => {
-                debug!(target: "aleph-finality", "Failed to finalize block with hash {:?} and number {:?}. Current best: #{:?}.", hash, number, status.best_number)
+                debug!(target: "setbft-finality", "Failed to finalize block with hash {:?} and number {:?}. Current best: #{:?}.", hash, number, status.best_number)
             }
         }
 

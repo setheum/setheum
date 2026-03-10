@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -63,7 +63,7 @@ impl<A: AddressingInformation> Discovery<A> {
 
         let missing_authorities = handler.missing_nodes();
         let node_count = handler.node_count();
-        info!(target: "aleph-network", "{}/{} authorities known for session {}.", node_count.0-missing_authorities.len(), node_count.0, handler.session_id().0);
+        info!(target: "setbft-network", "{}/{} authorities known for session {}.", node_count.0-missing_authorities.len(), node_count.0, handler.session_id().0);
         Some(authentication)
     }
 
@@ -82,7 +82,7 @@ impl<A: AddressingInformation> Discovery<A> {
         authentication: Authentication<A>,
         handler: &mut SessionHandler<A>,
     ) -> (Option<A>, Option<Authentication<A>>) {
-        debug!(target: "aleph-network", "Handling broadcast with authentication {:?}.", authentication);
+        debug!(target: "setbft-network", "Handling broadcast with authentication {:?}.", authentication);
         let address = match handler.handle_authentication(authentication.clone()) {
             Some(address) => Some(address),
             None => return (None, None),
@@ -91,7 +91,7 @@ impl<A: AddressingInformation> Discovery<A> {
         if !self.should_rebroadcast(&node_id) {
             return (address, None);
         }
-        trace!(target: "aleph-network", "Rebroadcasting {:?}.", authentication);
+        trace!(target: "setbft-network", "Rebroadcasting {:?}.", authentication);
         self.last_broadcast.insert(node_id, Instant::now());
         (address, Some(authentication))
     }

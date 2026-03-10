@@ -1,0 +1,116 @@
+[package]
+name = "module-bridge"
+version = "0.3.0"
+edition = "2021"
+license = "LGPL-3.0"
+
+[dependencies]
+codec = { package = "parity-scale-codec", version = "3.6.1", default-features = false, features = ["derive", "max-encoded-len"] }
+scale-info = { version = "2.5.0", default-features = false, features = ["derive", "serde", "decode"] }
+log = { version = "0.4.14", default-features = false }
+ethabi = { version = "18.0.0", default-features = false }
+primitive-types = { version = "0.12", default-features = false, features = ["scale-info", "serde_no_std"] }
+arrayref = { version = "0.3.6", default-features = false }
+funty = { version = "3.0.0-rc1", default-features = false }
+hex = {version = "0.4.3", default-features = false, features = ["alloc"] }
+fixed = {version = "1.23.0", default-features = false }
+bounded-collections = { version = "0.1.4", default-features = false }
+hex-literal = { version = "0.3", default-features =  false }
+
+# Substrate
+sp-io = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506", default-features = false }
+sp-core = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506", default-features = false }
+sp-std = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506", default-features = false }
+sp-runtime = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506", default-features = false }
+frame-support = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506", default-features = false }
+frame-system = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506", default-features = false }
+frame-benchmarking = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506", default-features = false, optional = true }
+sp-arithmetic = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506", default-features = false }
+pallet-assets = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506", default-features = false }
+pallet-balances = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506", default-features = false }
+
+# Polkadot
+xcm = { package = "staging-xcm", git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506", default-features = false }
+xcm-builder = { package = "staging-xcm-builder", git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506", default-features = false }
+xcm-executor = { package = "staging-xcm-executor", git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506", default-features = false }
+
+# Cumulus
+cumulus-primitives-core = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506", default-features = false }
+cumulus-pallet-xcm = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506", default-features = false }
+cumulus-primitives-utility = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506", default-features = false }
+
+# Local
+module-bridge-traits = { path = "../bridge-traits", default-features = false }
+module-bridge-access-segregator = { path = "../bridge-access-segregator", default-features = false }
+module-bridge-basic-fee-handler = { path = "../bridge-basic-fee-handler", default-features = false }
+module-bridge-percentage-fee-handler = { path = "../bridge-percentage-fee-handler", default-features = false }
+module-bridge-fee-handler-router = { path = "../bridge-fee-handler-router", default-features = false }
+module-bridge-forwarder = { path = "../bridge-forwarder", default-features = false }
+module-bridge-xcm =  { path = "../bridge-xcm", default-features = false }
+
+[dev-dependencies]
+assert_matches = "1.4.0"
+hex-literal = "0.3"
+
+# Substrate
+sp-io = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
+sp-core = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
+sp-runtime = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
+frame-support = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
+frame-system = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
+pallet-balances = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
+pallet-assets = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
+pallet-timestamp = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
+
+# Polkadot
+xcm = { package = "staging-xcm", git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
+xcm-builder = { package = "staging-xcm-builder", git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
+xcm-executor = { package = "staging-xcm-executor", git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
+polkadot-parachain-primitives = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506"}
+
+parachains-common = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
+
+# Local
+module-bridge-basic-fee-handler = { path = "../bridge-basic-fee-handler" , default-features = false }
+module-bridge-traits = { path = "../bridge-traits" , default-features = false }
+
+[features]
+default = ["std"]
+runtime-benchmarks = [
+	'frame-benchmarking',
+	'frame-support/runtime-benchmarks',
+	'frame-system/runtime-benchmarks',
+]
+std = [
+	"codec/std",
+	"scale-info/std",
+	"log/std",
+	"ethabi/std",
+	"hex/std",
+	"bounded-collections/std",
+	"primitive-types/std",
+	"sp-runtime/std",
+	"sp-io/std",
+	"sp-std/std",
+	"sp-core/full_crypto",
+	"sp-arithmetic/std",
+	"frame-support/std",
+	"frame-system/std",
+	"frame-benchmarking/std",
+	"cumulus-primitives-core/std",
+	"cumulus-primitives-utility/std",
+	"cumulus-pallet-xcm/std",
+	"xcm/std",
+	"xcm-builder/std",
+	"xcm-executor/std",
+	"pallet-balances/std",
+    "pallet-assets/std",
+	"module-bridge-traits/std",
+	"module-bridge-access-segregator/std",
+	"module-bridge-basic-fee-handler/std",
+	"module-bridge-percentage-fee-handler/std",
+	"module-bridge-fee-handler-router/std",
+	"module-bridge-forwarder/std",
+	"module-bridge-xcm/std",
+]
+try-runtime = ["frame-support/try-runtime"]

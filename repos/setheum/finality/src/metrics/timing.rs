@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -99,7 +99,7 @@ impl<C: Clock> TimingBlockMetrics<C> {
                 register(
                     Histogram::with_opts(
                         HistogramOpts::new(
-                            format!("aleph_timing_{}", key.to_string().to_ascii_lowercase()),
+                            format!("setbft_timing_{}", key.to_string().to_ascii_lowercase()),
                             "no help",
                         )
                         .buckets(exponential_buckets_two_sided(
@@ -118,7 +118,7 @@ impl<C: Clock> TimingBlockMetrics<C> {
             time_since_prev_checkpoint,
             imported_to_finalized: register(
                 Histogram::with_opts(
-                    HistogramOpts::new("aleph_timing_imported_to_finalized", "no help")
+                    HistogramOpts::new("setbft_timing_imported_to_finalized", "no help")
                         .buckets(exponential_buckets_two_sided(2000.0, BUCKETS_FACTOR, 4, 6)?),
                 )?,
                 registry,

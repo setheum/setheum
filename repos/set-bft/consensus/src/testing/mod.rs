@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -48,7 +48,7 @@ use crate::{
     create_config, run_session, Config, DelayConfig, LocalIO, Network as NetworkT, NodeCount,
     NodeIndex, SpawnHandle, TaskHandle, Terminator,
 };
-use aleph_bft_mock::{
+use set_bft_mock::{
     Data, DataProvider, FinalizationHandler, Hasher64, Keychain, Loader, Network as MockNetwork,
     PartialMultisignature, ReconnectSender as ReconnectSenderGeneric, Saver, Signature, Spawner,
 };
@@ -124,7 +124,7 @@ pub fn spawn_honest_member(
             network,
             keychain,
             spawner_inner,
-            Terminator::create_root(exit_rx, "AlephBFT-member"),
+            Terminator::create_root(exit_rx, "SetBFT-member"),
         )
         .await
     };

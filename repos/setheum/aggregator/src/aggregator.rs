@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,8 +41,8 @@ use std::{
     time::Instant,
 };
 
-use aleph_bft_rmc::{DoublingDelayScheduler, MultiKeychain, Multisigned, Service as RmcService};
-use aleph_bft_types::Recipient;
+use setbft_bft_rmc::{DoublingDelayScheduler, MultiKeychain, Multisigned, Service as RmcService};
+use setbft_bft_types::Recipient;
 use log::{debug, info, trace, warn};
 
 use crate::{Hash, ProtocolSink, RmcNetworkData, SignableHash};
@@ -99,7 +99,7 @@ impl<H: Copy + Hash, PMS> BlockSignatureAggregator<H, PMS> {
     }
 
     fn on_multisigned_hash(&mut self, hash: H, signature: PMS) {
-        debug!(target: "aleph-aggregator", "New multisigned_hash {:?}.", hash);
+        debug!(target: "setbft-aggregator", "New multisigned_hash {:?}.", hash);
         self.signatures.insert(hash, signature);
     }
 
@@ -143,7 +143,7 @@ impl<H: Copy + Hash, PMS> BlockSignatureAggregator<H, PMS> {
             ));
         }
 
-        info!(target: "aleph-aggregator", "{}", status);
+        info!(target: "setbft-aggregator", "{}", status);
     }
 }
 
@@ -182,9 +182,9 @@ impl<
     }
 
     pub async fn start_aggregation(&mut self, hash: H) {
-        debug!(target: "aleph-aggregator", "Started aggregation for block hash {:?}", hash);
+        debug!(target: "setbft-aggregator", "Started aggregation for block hash {:?}", hash);
         if let Err(AggregatorError::DuplicateHash) = self.aggregator.on_start(hash) {
-            debug!(target: "aleph-aggregator", "Aggregation already started for block hash {:?}, ignoring.", hash);
+            debug!(target: "setbft-aggregator", "Aggregation already started for block hash {:?}, ignoring.", hash);
             return;
         }
         if let Some(multisigned) = self.rmc_service.start_rmc(SignableHash::new(hash)) {
@@ -203,14 +203,14 @@ impl<
             }
             tokio::select! {
                 message_from_rmc = self.rmc_service.next_message() => {
-                    trace!(target: "aleph-aggregator", "Our rmc message {:?}.", message_from_rmc);
+                    trace!(target: "setbft-aggregator", "Our rmc message {:?}.", message_from_rmc);
                     if let Err(e) = self.network.send(message_from_rmc, Recipient::Everyone) {
-                        warn!(target: "aleph-aggregator", "failed broadcasting a message from rmc: {:?}", e);
+                        warn!(target: "setbft-aggregator", "failed broadcasting a message from rmc: {:?}", e);
                     }
                 }
                 message_from_network = self.network.next() => match message_from_network {
                     Some(message) => {
-                        trace!(target: "aleph-aggregator", "Received message for rmc: {:?}", message);
+                        trace!(target: "setbft-aggregator", "Received message for rmc: {:?}", message);
                         if let Some(multisigned) = self.rmc_service.process_message(message) {
                             self.multisigned_events.push_back(multisigned);
                         }
@@ -226,7 +226,7 @@ impl<
 
     pub async fn next_multisigned_hash(&mut self) -> Option<(H, MK::PartialMultisignature)> {
         loop {
-            trace!(target: "aleph-aggregator", "Entering next_multisigned_hash loop.");
+            trace!(target: "setbft-aggregator", "Entering next_multisigned_hash loop.");
             match self.aggregator.try_pop_hash() {
                 Ok(res) => {
                     return Some(res);
@@ -234,14 +234,14 @@ impl<
                 Err(AggregatorError::NoHashFound) => { //* ignored */ }
                 Err(AggregatorError::DuplicateHash) => {
                     warn!(
-                        target: "aleph-aggregator",
+                        target: "setbft-aggregator",
                         "Unexpected aggregator exception in IO: DuplicateHash",
                     )
                 }
             }
 
             if self.wait_for_next_signature().await.is_err() {
-                warn!(target: "aleph-aggregator", "the network channel closed");
+                warn!(target: "setbft-aggregator", "the network channel closed");
                 return None;
             }
         }

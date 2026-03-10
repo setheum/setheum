@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -42,7 +42,7 @@ use crate::{
     units::Unit,
     Index, NodeCount, NodeIndex, Round, Signed, SpawnHandle,
 };
-use aleph_bft_mock::{BadSigning, DataProvider, Keychain, NetworkHook, Router, Spawner};
+use set_bft_mock::{BadSigning, DataProvider, Keychain, NetworkHook, Router, Spawner};
 use futures::StreamExt;
 use parking_lot::Mutex;
 use std::sync::Arc;

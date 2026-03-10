@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -52,7 +52,7 @@ fn proposal_info_works() {
                 origin: ALICE.clone(),
                 beneficiary: BOB,
                 pool: LaunchPad::campaign_pool(0),
-                raise_currency: USSD,
+                raise_currency: SEUSD,
                 sale_token: TEST,
                 token_price: 10,
                 crowd_allocation: 10_000,
@@ -87,7 +87,7 @@ fn proposal_info_works() {
                     origin: ALICE,
                     beneficiary: BOB,
                     pool: LaunchPad::campaign_pool(0),
-                    raise_currency: USSD,
+                    raise_currency: SEUSD,
                     sale_token: TEST,
                     token_price: 10,
                     crowd_allocation: 10_000,
@@ -124,7 +124,7 @@ fn campaign_info_works() {
                 origin: ALICE.clone(),
                 beneficiary: BOB,
                 pool: LaunchPad::campaign_pool(0),
-                raise_currency: USSD,
+                raise_currency: SEUSD,
                 sale_token: TEST,
                 token_price: 10,
                 crowd_allocation: 10_000,
@@ -167,7 +167,7 @@ fn campaign_info_works() {
                     origin: ALICE,
                     beneficiary: BOB,
                     pool: LaunchPad::campaign_pool(0),
-                    raise_currency: USSD,
+                    raise_currency: SEUSD,
                     sale_token: TEST,
                     token_price: 10,
                     crowd_allocation: 10_000,
@@ -202,7 +202,7 @@ fn make_proposal_works() {
             assert_ok!(LaunchPad::make_proposal(
                 Origin::signed(ALICE),
                 BOB,
-                USSD,
+                SEUSD,
                 TEST,
                 10,
                 10_000,
@@ -222,7 +222,7 @@ fn make_proposal_does_not_work() {
                 LaunchPad::make_proposal(
                     Origin::signed(ALICE),
                     BOB,
-                    USSD,
+                    SEUSD,
                     TEST,
                     10,
                     10_000,
@@ -235,7 +235,7 @@ fn make_proposal_does_not_work() {
                 LaunchPad::make_proposal(
                     Origin::signed(ALICE),
                     BOB,
-                    USSD,
+                    SEUSD,
                     TEST,
                     10,
                     10_000,
@@ -248,7 +248,7 @@ fn make_proposal_does_not_work() {
                 LaunchPad::make_proposal(
                     Origin::signed(ALICE),
                     BOB,
-                    USSD,
+                    SEUSD,
                     TEST,
                     10,
                     10_000,
@@ -271,7 +271,7 @@ fn contribute_works() {
                 origin: ALICE.clone(),
                 beneficiary: BOB,
                 pool: LaunchPad::campaign_pool(0),
-                raise_currency: USSD,
+                raise_currency: SEUSD,
                 sale_token: TEST,
                 token_price: 10,
                 crowd_allocation: 10_000,
@@ -347,7 +347,7 @@ fn contribute_does_not_work() {
                 origin: ALICE.clone(),
                 beneficiary: BOB,
                 pool: LaunchPad::campaign_pool(0),
-                raise_currency: USSD,
+                raise_currency: SEUSD,
                 sale_token: TEST,
                 token_price: 10,
                 crowd_allocation: 10_000,
@@ -409,7 +409,7 @@ fn claim_contribution_allocation_works() {
                 origin: ALICE.clone(),
                 beneficiary: BOB,
                 pool: LaunchPad::campaign_pool(0),
-                raise_currency: USSD,
+                raise_currency: SEUSD,
                 sale_token: TEST,
                 token_price: 10,
                 crowd_allocation: 10_000,
@@ -476,7 +476,7 @@ fn claim_contribution_allocation_does_not_work() {
                 origin: ALICE.clone(),
                 beneficiary: BOB,
                 pool: LaunchPad::campaign_pool(0),
-                raise_currency: USSD,
+                raise_currency: SEUSD,
                 sale_token: TEST,
                 token_price: 10,
                 crowd_allocation: 10_000,
@@ -545,7 +545,7 @@ fn claim_campaign_fundraise_works() {
                 origin: ALICE.clone(),
                 beneficiary: BOB,
                 pool: LaunchPad::campaign_pool(0),
-                raise_currency: USSD,
+                raise_currency: SEUSD,
                 sale_token: TEST,
                 token_price: 10,
                 crowd_allocation: 10_000,
@@ -612,7 +612,7 @@ fn claim_campaign_fundraise_does_not_work() {
                 origin: ALICE.clone(),
                 beneficiary: BOB,
                 pool: LaunchPad::campaign_pool(0),
-                raise_currency: USSD,
+                raise_currency: SEUSD,
                 sale_token: TEST,
                 token_price: 10,
                 crowd_allocation: 10_000,
@@ -689,7 +689,7 @@ fn claim_campaign_fundraise_does_not_work_already_claimed() {
                 origin: ALICE.clone(),
                 beneficiary: BOB,
                 pool: LaunchPad::campaign_pool(0),
-                raise_currency: USSD,
+                raise_currency: SEUSD,
                 sale_token: TEST,
                 token_price: 10,
                 crowd_allocation: 10_000,
@@ -761,7 +761,7 @@ fn approve_proposal_works() {
                 origin: ALICE.clone(),
                 beneficiary: BOB,
                 pool: LaunchPad::campaign_pool(0),
-                raise_currency: USSD,
+                raise_currency: SEUSD,
                 sale_token: TEST,
                 token_price: 10,
                 crowd_allocation: 10_000,
@@ -815,7 +815,7 @@ fn approve_proposal_does_not_work() {
                 origin: ALICE.clone(),
                 beneficiary: BOB,
                 pool: LaunchPad::campaign_pool(0),
-                raise_currency: USSD,
+                raise_currency: SEUSD,
                 sale_token: TEST,
                 token_price: 10,
                 crowd_allocation: 10_000,
@@ -853,7 +853,7 @@ fn approve_proposal_does_not_work() {
             assert_noop!(
                 LaunchPad::approve_proposal(
                     Origin::signed(11),
-                    USSD,
+                    SEUSD,
                 ),
                 Error::<Runtime>::ProposalNotFound
             );
@@ -871,7 +871,7 @@ fn reject_proposal_works() {
                 origin: ALICE.clone(),
                 beneficiary: BOB,
                 pool: LaunchPad::campaign_pool(0),
-                raise_currency: USSD,
+                raise_currency: SEUSD,
                 sale_token: TEST,
                 token_price: 10,
                 crowd_allocation: 10_000,
@@ -917,7 +917,7 @@ fn reject_proposal_does_not_work() {
                 origin: ALICE.clone(),
                 beneficiary: BOB,
                 pool: LaunchPad::campaign_pool(0),
-                raise_currency: USSD,
+                raise_currency: SEUSD,
                 sale_token: TEST,
                 token_price: 10,
                 crowd_allocation: 10_000,
@@ -955,7 +955,7 @@ fn reject_proposal_does_not_work() {
             assert_noop!(
                 LaunchPad::reject_proposal(
                     Origin::signed(11),
-                    USSD,
+                    SEUSD,
                 ),
                 Error::<Runtime>::ProposalNotFound
             );
@@ -973,7 +973,7 @@ fn get_contributors_count_works() {
                 origin: ALICE.clone(),
                 beneficiary: BOB,
                 pool: LaunchPad::campaign_pool(0),
-                raise_currency: USSD,
+                raise_currency: SEUSD,
                 sale_token: TEST,
                 token_price: 10,
                 crowd_allocation: 10_000,
@@ -1043,7 +1043,7 @@ fn get_total_amounts_raised_works() {
                 origin: ALICE.clone(),
                 beneficiary: BOB,
                 pool: LaunchPad::campaign_pool(0),
-                raise_currency: USSD,
+                raise_currency: SEUSD,
                 sale_token: TEST,
                 token_price: 10,
                 crowd_allocation: 10_000,
@@ -1090,7 +1090,7 @@ fn get_total_amounts_raised_works() {
             assert_eq!(
                 LaunchPad::get_total_amounts_raised(),
                 vec![
-                    (USSD, 50000),
+                    (SEUSD, 50000),
                 ]
             );
         });
@@ -1111,7 +1111,7 @@ fn on_retire_works() {
                 origin: ALICE.clone(),
                 beneficiary: BOB,
                 pool: LaunchPad::campaign_pool(0),
-                raise_currency: USSD,
+                raise_currency: SEUSD,
                 sale_token: TEST,
                 token_price: 10,
                 crowd_allocation: 10_000,

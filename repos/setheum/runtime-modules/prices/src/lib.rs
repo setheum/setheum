@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -68,21 +68,19 @@ pub mod module {
 /// The data source, such as Oracle.
 		type Source: DataProvider<CurrencyId, Price> + DataFeeder<CurrencyId, Price, Self::AccountId>;
 
-/// The fixed prices of USSD, it should be 1 USD in Setheum.
+/// The fixed prices of SEUSD, it should be 1 USD in Setheum.
 		#[pallet::constant]
-		type USSDFixedPrice: Get<Price>;
+		type SEUSDFixedPrice: Get<Price>;
 
-/// The USSD CURRENCY id, it should be USSD in Setheum.
+/// The SEUSD CURRENCY id, it should be SEUSD in Setheum.
 		#[pallet::constant]
-		type GetUSSDCurrencyId: Get<CurrencyId>;
+		type GetSEUSDCurrencyId: Get<CurrencyId>;
 
-/// The SEE currency id, it should be SEE in Setheum.
+/// The SEU currency id, it should be SEU in Setheum.
 		#[pallet::constant]
 		type GetSEECurrencyId: Get<CurrencyId>;
 
-/// The EDF currency id, it should be EDF in Setheum.
 		#[pallet::constant]
-		type GetEDFCurrencyId: Get<CurrencyId>;
 
 /// The origin which may lock and unlock prices feed to system.
 		type LockOrigin: EnsureOrigin<Self::RuntimeOrigin>;
@@ -180,9 +178,9 @@ impl<T: Config> Pallet<T> {
 			currency_id
 		};
 
-		let maybe_price = if currency_id == T::GetUSSDCurrencyId::get() {
-// if is USSD stablecoin, use fixed price
-			Some(T::USSDFixedPrice::get())
+		let maybe_price = if currency_id == T::GetSEUSDCurrencyId::get() {
+// if is SEUSD stablecoin, use fixed price
+			Some(T::SEUSDFixedPrice::get())
 		} else if let CurrencyId::DexShare(dex_share_0, dex_share_1) = currency_id {
 			let token_0: CurrencyId = dex_share_0.into();
 			let token_1: CurrencyId = dex_share_1.into();

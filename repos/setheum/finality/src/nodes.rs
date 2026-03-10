@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -32,13 +32,13 @@ use sp_consensus::SelectChain;
 use sp_consensus_aura::AuraApi;
 
 use crate::{
-    primitives ::{AlephSessionApi, AuraId, Block},
+    primitives ::{SetBFTSessionApi, AuraId, Block},
     block::{
         substrate::{JustificationTranslator, SubstrateFinalizationInfo, VerifierCache},
         BlockchainEvents, ChainStatus, FinalizationStatus, Justification,
     },
     crypto::AuthorityPen,
-    finalization::AlephFinalizer,
+    finalization::SetBFTFinalizer,
     idx_to_account::ValidatorIndexToAccountIdConverterImpl,
     metrics::{run_chain_state_metrics, transaction_pool::TransactionPoolWrapper},
     network::{
@@ -55,7 +55,7 @@ use crate::{
     session::SessionBoundaryInfo,
     session_map::{AuthorityProviderImpl, FinalityNotifierImpl, SessionMapUpdater},
     sync::{DatabaseIO as SyncDatabaseIO, Service as SyncService, IO as SyncIO},
-    AlephConfig,
+    SetBFTConfig,
 };
 
 // How many sessions we remember.
@@ -63,7 +63,7 @@ use crate::{
 // so the actual size probably needs to be increased by one.
 pub const VERIFIER_CACHE_SIZE: usize = 3;
 
-const LOG_TARGET: &str = "aleph-party";
+const LOG_TARGET: &str = "setbft-party";
 
 pub fn new_pen(mnemonic: &str, keystore: Arc<LocalKeystore>) -> AuthorityPen {
     let validator_peer_id = keystore
@@ -73,15 +73,15 @@ pub fn new_pen(mnemonic: &str, keystore: Arc<LocalKeystore>) -> AuthorityPen {
         .expect("we just generated this key so everything should work")
 }
 
-pub async fn run_validator_node<C, BE, SC, TP>(aleph_config: AlephConfig<C, SC, TP>)
+pub async fn run_validator_node<C, BE, SC, TP>(setbft_config: SetBFTConfig<C, SC, TP>)
 where
-    C: crate::ClientForAleph<Block, BE> + Send + Sync + 'static,
-    C::Api: AlephSessionApi<Block> + AuraApi<Block, AuraId>,
+    C: crate::ClientForSetBFT<Block, BE> + Send + Sync + 'static,
+    C::Api: SetBFTSessionApi<Block> + AuraApi<Block, AuraId>,
     BE: Backend<Block> + 'static,
     SC: SelectChain<Block> + 'static,
     TP: TransactionPool<Block = Block> + 'static,
 {
-    let AlephConfig {
+    let SetBFTConfig {
         network,
         network_event_stream,
         client,
@@ -104,10 +104,10 @@ where
         sync_oracle,
         validator_address_cache,
         transaction_pool,
-    } = aleph_config;
+    } = setbft_config;
 
 // We generate the phrase manually to only save the key in RAM, we don't want to have these
-// relatively low-importance keys getting spammed around the absolutely crucial Aleph keys.
+// relatively low-importance keys getting spammed around the absolutely crucial SetBFT keys.
 // The interface of `ed25519_generate_new` only allows to save in RAM by providing a mnemonic.
     let network_authority_pen = new_pen(
         Mnemonic::new(MnemonicType::Words12, Language::English).phrase(),
@@ -117,7 +117,7 @@ where
     debug!(
         target: LOG_TARGET,
         "Initializing rate-limiter for the validator-network with {} byte(s) per second.",
-        rate_limiter_config.alephbft_bit_rate_per_connection
+        rate_limiter_config.setbftbft_bit_rate_per_connection
     );
 
     let (dialer, listener, network_identity) = new_tcp_network(
@@ -128,10 +128,10 @@ where
     .await
     .expect("we should have working networking");
 
-    let alephbft_rate_limiter =
-        SleepingRateLimiter::new(rate_limiter_config.alephbft_bit_rate_per_connection);
-    let dialer = RateLimitingDialer::new(dialer, alephbft_rate_limiter.clone());
-    let listener = RateLimitingListener::new(listener, alephbft_rate_limiter);
+    let setbftbft_rate_limiter =
+        SleepingRateLimiter::new(rate_limiter_config.setbftbft_bit_rate_per_connection);
+    let dialer = RateLimitingDialer::new(dialer, setbftbft_rate_limiter.clone());
+    let listener = RateLimitingListener::new(listener, setbftbft_rate_limiter);
 
     let (validator_network_service, validator_network) = Service::new(
         dialer,
@@ -141,7 +141,7 @@ where
         registry.clone(),
     );
     let (_validator_network_exit, exit) = oneshot::channel();
-    spawn_handle.spawn("aleph/validator_network", async move {
+    spawn_handle.spawn("setbft/validator_network", async move {
         debug!(target: LOG_TARGET, "Validator network has started.");
         match validator_network_service.run(exit).await {
             Ok(_) => debug!(target: LOG_TARGET, "Validator network finished."),
@@ -174,7 +174,7 @@ where
         session_period,
     );
     let session_authorities = map_updater.readonly_session_map();
-    spawn_handle.spawn("aleph/updater", async move {
+    spawn_handle.spawn("setbft/updater", async move {
         debug!(target: LOG_TARGET, "SessionMapUpdater has started.");
         map_updater.run().await;
         debug!(target: LOG_TARGET, "SessionMapUpdater finished.");
@@ -184,7 +184,7 @@ where
 
     let client_for_slo_metrics = client.clone();
     let registry_for_slo_metrics = registry.clone();
-    spawn_handle.spawn("aleph/slo-metrics", async move {
+    spawn_handle.spawn("setbft/slo-metrics", async move {
         if let Err(err) = run_chain_state_metrics(
             client_for_slo_metrics.as_ref(),
             client_for_slo_metrics.every_import_notification_stream(),
@@ -215,7 +215,7 @@ where
         VERIFIER_CACHE_SIZE,
         genesis_header,
     );
-    let finalizer = AlephFinalizer::new(client.clone(), metrics.clone());
+    let finalizer = SetBFTFinalizer::new(client.clone(), metrics.clone());
     import_queue_handle.attach_metrics(metrics.clone());
     let justifications_for_sync = justification_channel_provider.get_sender();
     let sync_io = SyncIO::new(
@@ -267,11 +267,11 @@ where
         }
     };
 
-    spawn_handle.spawn("aleph/sync", sync_task);
+    spawn_handle.spawn("setbft/sync", sync_task);
     debug!(target: LOG_TARGET, "Sync has started.");
 
-    spawn_handle.spawn("aleph/connection_manager", connection_manager_task);
-    spawn_handle.spawn("aleph/gossip_network", gossip_network_task);
+    spawn_handle.spawn("setbft/connection_manager", connection_manager_task);
+    spawn_handle.spawn("setbft/gossip_network", gossip_network_task);
     debug!(target: LOG_TARGET, "Gossip network has started.");
 
     let party = ConsensusParty::new(ConsensusPartyParams {

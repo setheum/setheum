@@ -10,32 +10,39 @@ repository.workspace = true
 [dependencies]
 parity-scale-codec = { workspace = true }
 scale-info = { workspace = true }
-serde = { workspace = true, optional = true }
+serde = { workspace = true, optional = true , default-features = false }
 
-frame-benchmarking = { workspace = true, optional = true }
+frame-benchmarking = { workspace = true }
 frame-support = { workspace = true }
 frame-system = { workspace = true }
 sp-runtime = { workspace = true }
 sp-std = { workspace = true }
+sp-core = { workspace = true }
+sp-io = { workspace = true }
+log = { workspace = true }
+paste = { workspace = true }
 
-module-traits = { package = "module-traits", path = "../traits", default-features = false }
+module-traits = { workspace = true , default-features = false }
+sp-storage = { git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2506", version = "22.0.0", default-features = false }
 
 [dev-dependencies]
-sp-core = { workspace = true, features = ["std"] }
-sp-io = { workspace = true, features = ["std"] }
 
 [features]
 default = [ "std" ]
 std = [
-	"frame-benchmarking?/std",
+	"frame-benchmarking/std",
 	"frame-support/std",
 	"frame-system/std",
+	"log/std",
 	"module-traits/std",
 	"parity-scale-codec/std",
 	"scale-info/std",
-	"serde",
+	"serde/std",
+	"sp-core/std",
+	"sp-io/std",
 	"sp-runtime/std",
 	"sp-std/std",
+	"sp-storage/std",
 ]
 runtime-benchmarks = [
 	"frame-benchmarking/runtime-benchmarks",

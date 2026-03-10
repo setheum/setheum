@@ -8,10 +8,10 @@ homepage.workspace = true
 repository.workspace = true
 
 [dependencies]
-impl-trait-for-tuples = { workspace = true }
+impl-trait-for-tuples = { workspace = true , default-features = false }
 parity-scale-codec = { workspace = true }
 scale-info = { workspace = true }
-serde = { workspace = true, features = ["derive", "std"], optional = true }
+serde = { workspace = true, optional = true, features = ["derive"] , default-features = false }
 
 frame-support = { workspace = true }
 frame-system = { workspace = true }
@@ -19,13 +19,13 @@ sp-runtime = { workspace = true }
 sp-std = { workspace = true }
 sp-core = { workspace = true }
 sp-io = { workspace = true }
-xcm = { workspace = true }
+xcm = { workspace = true , default-features = false }
 
-module-tokens = { workspace = true }
-primitives = { workspace = true }
+module-tokens = { workspace = true , default-features = false }
+primitives = { workspace = true , default-features = false }
 
 [dev-dependencies]
-serde_json = { workspace = true, features = ["std"] }
+serde_json = { workspace = true, features = ["std"] , default-features = false }
 
 [features]
 default = ["std"]
@@ -36,7 +36,7 @@ std = [
 	"module-tokens/std",
 	"primitives/std",
 	"scale-info/std",
-	"serde",
+	"serde/std",
 	"sp-core/std",
 	"sp-io/std",
 	"sp-runtime/std",

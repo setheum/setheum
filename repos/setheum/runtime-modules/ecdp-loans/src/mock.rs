@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -60,9 +60,8 @@ pub type BlockNumber = u64;
 
 pub const ALICE: AccountId = 1;
 pub const BOB: AccountId = 2;
-pub const SEE: CurrencyId = CurrencyId::Token(TokenSymbol::SEE);
-pub const USSD: CurrencyId = CurrencyId::Token(TokenSymbol::USSD);
-pub const EDF: CurrencyId = CurrencyId::Token(TokenSymbol::EDF);
+pub const SEU: CurrencyId = CurrencyId::Token(TokenSymbol::SEU);
+pub const SEUSD: CurrencyId = CurrencyId::Token(TokenSymbol::SEUSD);
 pub const BTC: CurrencyId = CurrencyId::ForeignAsset(255);
 
 mod ecdp_loans {
@@ -115,7 +114,7 @@ impl pallet_balances::Config for Runtime {
 }
 
 parameter_types! {
-	pub const GetNativeCurrencyId: CurrencyId = SEE;
+	pub const GetNativeCurrencyId: CurrencyId = SEU;
 }
 
 impl module_currencies::Config for Runtime {
@@ -159,16 +158,16 @@ ord_parameter_types! {
 }
 
 parameter_types! {
-	pub const GetUSSDCurrencyId: CurrencyId = USSD;
-	pub const EcdpUssdTreasuryPalletId: PalletId = PalletId(*b"set/ussdtrsymod");
-	pub TreasuryAccount: AccountId = PalletId(*b"set/ussdtrsyacc").into_account_truncating();
+	pub const GetSEUSDCurrencyId: CurrencyId = SEUSD;
+	pub const EcdpUssdTreasuryPalletId: PalletId = PalletId(*b"set/seusdtrsymod");
+	pub TreasuryAccount: AccountId = PalletId(*b"set/seusdtrsyacc").into_account_truncating();
 	pub AlternativeSwapPathJointList: Vec<Vec<CurrencyId>> = vec![];
 }
 
-impl module_ecdp_ussd_treasury::Config for Runtime {
+impl module_ecdp_seusd_treasury::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type Currency = Currencies;
-	type GetUSSDCurrencyId = GetUSSDCurrencyId;
+	type GetSEUSDCurrencyId = GetSEUSDCurrencyId;
 	type EcdpAuctionsManagerHandler = MockEcdpAuctionsManager;
 	type UpdateOrigin = EnsureSignedBy<One, AccountId>;
 	type DEX = ();
@@ -193,7 +192,6 @@ impl EcdpUssdRiskManager<AccountId, CurrencyId, Balance, Balance> for MockEcdpUs
 		check_required_ratio: bool,
 	) -> DispatchResult {
 		match currency_id {
-			EDF => {
 				if check_required_ratio {
 					Err(sp_runtime::DispatchError::Other(
 						"mock below required collateral ratio error",
@@ -209,7 +207,6 @@ impl EcdpUssdRiskManager<AccountId, CurrencyId, Balance, Balance> for MockEcdpUs
 
 	fn check_debit_cap(currency_id: CurrencyId, total_debit_balance: Balance) -> DispatchResult {
 		match (currency_id, total_debit_balance) {
-			(EDF, 1000) => Err(sp_runtime::DispatchError::Other("mock exceed debit value cap error")),
 			(BTC, 1000) => Err(sp_runtime::DispatchError::Other("mock exceed debit value cap error")),
 			(_, _) => Ok(()),
 		}
@@ -217,7 +214,6 @@ impl EcdpUssdRiskManager<AccountId, CurrencyId, Balance, Balance> for MockEcdpUs
 }
 
 thread_local! {
-	pub static EDF_SHARES: RefCell<HashMap<AccountId, Balance>> = RefCell::new(HashMap::new());
 }
 
 // Remove it based on `TODO:[src/lib.rs:0]`.
@@ -232,8 +228,6 @@ thread_local! {
 // 			previous_amount.saturating_sub(adjustment_abs)
 // 		};
 
-// 		if *currency_id == EDF {
-// 			EDF_SHARES.with(|v| {
 // 				let mut old_map = v.borrow().clone();
 // 				old_map.insert(*who, new_share_amount);
 // 				*v.borrow_mut() = old_map;
@@ -243,7 +237,7 @@ thread_local! {
 // }
 
 parameter_types! {
-	pub const EcdpLoansPalletId: PalletId = PalletId(*b"set/ussdloan");
+	pub const EcdpLoansPalletId: PalletId = PalletId(*b"set/seusdloan");
 }
 
 impl Config for Runtime {
@@ -263,7 +257,7 @@ construct_runtime!(
 		Tokens: module_tokens,
 		PalletBalances: pallet_balances,
 		Currencies: module_currencies,
-		EcdpUssdTreasuryModule: module_ecdp_ussd_treasury,
+		EcdpUssdTreasuryModule: module_ecdp_seusd_treasury,
 	}
 );
 
@@ -275,9 +269,7 @@ impl Default for ExtBuilder {
 	fn default() -> Self {
 		Self {
 			balances: vec![
-				(ALICE, EDF, 1000),
 				(ALICE, BTC, 1000),
-				(BOB, EDF, 1000),
 				(BOB, BTC, 1000),
 			],
 		}

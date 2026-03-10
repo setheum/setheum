@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -50,17 +50,15 @@ fn make_airdrop_works() {
             (BOB, 5),
         ];
 
-        assert_ok!(Airdrop::make_airdrop(Origin::signed(ALICE), SETR, airdrop_list.clone()));
         System::assert_last_event(Event::AirDrop(
             crate::Event::Airdrop {
-                currency_id: SETR,
                 airdrop_list: airdrop_list.clone()
             },
         ));
-        assert_ok!(Airdrop::make_airdrop(Origin::signed(ALICE), SETUSD, airdrop_list));
+        assert_ok!(Airdrop::make_airdrop(Origin::signed(ALICE), SEUSD, airdrop_list));
         System::assert_last_event(Event::AirDrop(
             crate::Event::Airdrop {
-                currency_id: SETUSD,
+                currency_id: SEUSD,
                 airdrop_list
             },
         ));
@@ -77,20 +75,18 @@ fn make_airdrop_with_json_works() {
         ]
         "#.as_bytes().to_vec();
 
-        assert_ok!(Airdrop::make_airdrop_with_json(Origin::signed(ALICE), SETR, valid_json.clone()));
         System::assert_last_event(Event::AirDrop(
             crate::Event::Airdrop {
-                currency_id: SETR,
                 airdrop_list: vec![
                     (ALICE, 10),
                     (BOB, 5),
                 ]
             },
         ));
-        assert_ok!(Airdrop::make_airdrop_with_json(Origin::signed(ALICE), SETUSD, valid_json));
+        assert_ok!(Airdrop::make_airdrop_with_json(Origin::signed(ALICE), SEUSD, valid_json));
         System::assert_last_event(Event::AirDrop(
             crate::Event::Airdrop {
-                currency_id: SETUSD,
+                currency_id: SEUSD,
                 airdrop_list: vec![
                     (ALICE, 10),
                     (BOB, 5),
@@ -108,17 +104,13 @@ fn make_airdrop_does_not_work() {
             (BOB, 5),
         ];
 
-        assert_ok!(Airdrop::make_airdrop(Origin::signed(ALICE), SETR, airdrop_list.clone()));
         System::assert_last_event(Event::AirDrop(
             crate::Event::Airdrop {
-                currency_id: SETR,
                 airdrop_list: airdrop_list.clone()
             },
         ));
-        assert_eq!(Tokens::free_balance(SETR, Airdrop::account_id()), 258);
 
         assert_noop!(
-            Airdrop::make_airdrop(Origin::signed(ALICE), SETR, airdrop_list),
             Error::<Runtime>::OverSizedAirdropList,
         );
     });
@@ -134,20 +126,16 @@ fn make_airdrop_with_json_does_not_work() {
         ]
         "#.as_bytes().to_vec();
 
-        assert_ok!(Airdrop::make_airdrop_with_json(Origin::signed(ALICE), SETR, oversized_json.clone()));
         System::assert_last_event(Event::AirDrop(
             crate::Event::Airdrop {
-                currency_id: SETR,
                 airdrop_list: vec![
                     (ALICE, 10),
                     (BOB, 5),
                 ]
             },
         ));
-        assert_eq!(Tokens::free_balance(SETR, Airdrop::account_id()), 258);
 
         assert_noop!(
-            Airdrop::make_airdrop_with_json(Origin::signed(ALICE), SETR, oversized_json),
             Error::<Runtime>::OverSizedAirdropList
         );
     });

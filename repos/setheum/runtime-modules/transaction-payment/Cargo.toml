@@ -8,7 +8,7 @@ homepage.workspace = true
 repository.workspace = true
 
 [dependencies]
-log = { workspace = true }
+log = { workspace = true , default-features = false }
 parity-scale-codec = { workspace = true }
 scale-info = { workspace = true }
 sp-runtime = { workspace = true }
@@ -18,18 +18,18 @@ sp-std = { workspace = true }
 sp-io= { workspace = true }
 pallet-transaction-payment = { workspace = true }
 pallet-transaction-payment-rpc-runtime-api = { workspace = true }
-primitives = { workspace = true }
-module-support = { workspace = true }
-module-traits = { workspace = true }
-xcm = { workspace = true }
+primitives = { workspace = true , default-features = false }
+module-support = { workspace = true , default-features = false }
+module-traits = { workspace = true , default-features = false }
+xcm = { workspace = true , default-features = false }
 
 [dev-dependencies]
 sp-core = { workspace = true, features = ["std"] }
 pallet-balances = { workspace = true, features = ["std"] }
-module-tokens = { workspace = true, features = ["std"] }
-module-currencies = { workspace = true, features = ["std"] }
-module-edfis_swap_legacy = { workspace = true, features = ["std"] }
-smallvec = { workspace = true }
+module-tokens = { workspace = true, features = ["std"] , default-features = false }
+module-currencies = { workspace = true, features = ["std"] , default-features = false }
+module-edfis_swap_legacy = { workspace = true, features = ["std"] , default-features = false }
+smallvec = { workspace = true , default-features = false }
 
 [features]
 default = ["std"]

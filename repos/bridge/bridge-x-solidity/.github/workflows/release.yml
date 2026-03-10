@@ -1,0 +1,21 @@
+name: Create Sygma-X solidity release
+
+on:
+  push:
+    branches:
+      - master
+jobs:
+  release-please:
+    name: release
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    steps:
+
+      - uses: actions/checkout@v2
+      - uses: google-github-actions/release-please-action@v3
+        id: release
+        with:
+          token: ${{ secrets.RELEASE_TOKEN }}
+          release-type: node
+          package-name: '@buildwithsygma/sygma-x-contracts'
+          changelog-types: '[{"type":"feat","section":"Features","hidden":false},{"type":"fix","section":"Bug Fixes","hidden":false},{"type":"chore","section":"Miscellaneous","hidden":false},{"type":"revert","hidden":true}]'

@@ -1,7 +1,7 @@
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -97,7 +97,7 @@ impl Debug for DelayConfig {
     }
 }
 
-/// Main configuration of the consensus. We refer to [the documentation](https://cardinal-cryptography.github.io/AlephBFT/aleph_bft_api.html#34-alephbft-sessions)
+/// Main configuration of the consensus. We refer to [the documentation](https://cardinal-cryptography.github.io/SetBFT/set_bft_api.html#34-setbft-sessions)
 /// Section 3.4 for a discussion of some of these parameters and their significance.
 #[derive(Clone, Debug)]
 pub struct Config {
@@ -163,7 +163,7 @@ pub fn create_config(
 ) -> Result<Config, InvalidConfigError> {
     if time_to_reach_round(max_round, &delay_config.unit_creation_delay) < time_to_reach_max_round {
         error!(
-            target: "AlephBFT-config",
+            target: "SetBFT-config",
             "Reaching max_round will happen too fast with the given Config. Consider increasing max_round or lowering time_to_reach_max_round."
         );
         return Err(InvalidConfigError);

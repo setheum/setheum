@@ -1,7 +1,7 @@
 [package]
-license = "Apache-2.0 OR MIT"
 name = "module-elections"
 version = "0.6.0"
+license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 authors.workspace = true
 edition.workspace = true
 homepage.workspace = true
@@ -10,8 +10,8 @@ repository.workspace = true
 [dependencies]
 parity-scale-codec = { workspace = true, features = ["derive"] }
 scale-info = { workspace = true, features = ["derive"] }
-rand = { workspace = true }
-rand_pcg = { workspace = true }
+rand = { workspace = true , default-features = false }
+rand_pcg = { workspace = true , default-features = false }
 
 frame-election-provider-support = { workspace = true }
 frame-support = { workspace = true }
@@ -25,8 +25,7 @@ sp-runtime = { workspace = true }
 sp-staking = { workspace = true }
 sp-std = { workspace = true }
 
-module-support = { workspace = true }
-primitives = { workspace = true }
+primitives = { workspace = true , default-features = false }
 
 [features]
 default = ["std"]
@@ -47,7 +46,6 @@ std = [
     "sp-staking/std",
     "primitives/std",
     "sp-io/std",
-    "module-support/std",
 ]
 try-runtime = [
     "frame-support/try-runtime",

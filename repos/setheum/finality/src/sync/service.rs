@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -392,7 +392,7 @@ where
         for proof in proofs {
             warn!(target: LOG_TARGET, "Equivocation detected: {proof}");
             if proof.are_we_equivocating() {
-                panic!("We are equivocating, which is ILLEGAL - shutting down the node. This is probably caused by running two instances of the node with the same set of credentials. Make sure that you are running ONLY ONE instance of the node. If the problem persists, contact the Setheum developers on Official Channels.");
+                panic!("We are equivocating, which is ILLEGAL - shutting down the node. This is probably caused by running two instances of the node with the same set of credentials. Make sure that you are running ONLY ONE instance of the node. If the problem persists, contact the Afsall Labs on Official Channels.");
             }
         }
     }

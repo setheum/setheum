@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -33,14 +33,14 @@ use tokio::sync::{
 
 use crate::{
     primitives ::{
-        AccountId, AlephSessionApi, AuraId, BlockHash, BlockNumber, SessionAuthorityData,
+        AccountId, SetBFTSessionApi, AuraId, BlockHash, BlockNumber, SessionAuthorityData,
     },
     runtime_api::RuntimeApi,
     session::SessionBoundaryInfo,
-    ClientForAleph, SessionId, SessionPeriod,
+    ClientForSetBFT, SessionId, SessionPeriod,
 };
 const PRUNING_THRESHOLD: u32 = 10;
-const LOG_TARGET: &str = "aleph-session-updater";
+const LOG_TARGET: &str = "setbft-session-updater";
 type SessionMap = HashMap<SessionId, SessionAuthorityData>;
 type SessionSubscribers = HashMap<SessionId, Vec<OneShotSender<SessionAuthorityData>>>;
 
@@ -60,8 +60,8 @@ pub trait AuthorityProvider: Clone + Send + Sync + 'static {
 /// answer for `num < finalized_number - n`.
 pub struct AuthorityProviderImpl<C, B, BE, RA>
 where
-    C: ClientForAleph<B, BE> + Send + Sync + 'static,
-    C::Api: crate::primitives ::AlephSessionApi<B> + AuraApi<B, AuraId>,
+    C: ClientForSetBFT<B, BE> + Send + Sync + 'static,
+    C::Api: crate::primitives ::SetBFTSessionApi<B> + AuraApi<B, AuraId>,
     B: Block<Hash = BlockHash>,
     BE: Backend<B> + 'static,
     RA: RuntimeApi,
@@ -73,8 +73,8 @@ where
 
 impl<C, B, BE, RA> Clone for AuthorityProviderImpl<C, B, BE, RA>
 where
-    C: ClientForAleph<B, BE> + Send + Sync + 'static,
-    C::Api: crate::primitives ::AlephSessionApi<B> + AuraApi<B, AuraId>,
+    C: ClientForSetBFT<B, BE> + Send + Sync + 'static,
+    C::Api: crate::primitives ::SetBFTSessionApi<B> + AuraApi<B, AuraId>,
     B: Block<Hash = BlockHash>,
     B::Header: Header<Number = BlockNumber>,
     BE: Backend<B> + 'static,
@@ -87,8 +87,8 @@ where
 
 impl<C, B, BE, RA> AuthorityProviderImpl<C, B, BE, RA>
 where
-    C: ClientForAleph<B, BE> + Send + Sync + 'static,
-    C::Api: crate::primitives ::AlephSessionApi<B> + AuraApi<B, AuraId>,
+    C: ClientForSetBFT<B, BE> + Send + Sync + 'static,
+    C::Api: crate::primitives ::SetBFTSessionApi<B> + AuraApi<B, AuraId>,
     B: Block<Hash = BlockHash>,
     B::Header: Header<Number = BlockNumber>,
     BE: Backend<B> + 'static,
@@ -118,8 +118,8 @@ where
 
 impl<C, B, BE, RA> AuthorityProvider for AuthorityProviderImpl<C, B, BE, RA>
 where
-    C: ClientForAleph<B, BE> + Send + Sync + 'static,
-    C::Api: AlephSessionApi<B> + AuraApi<B, AuraId>,
+    C: ClientForSetBFT<B, BE> + Send + Sync + 'static,
+    C::Api: SetBFTSessionApi<B> + AuraApi<B, AuraId>,
     B: Block<Hash = BlockHash>,
     B::Header: Header<Number = BlockNumber>,
     BE: Backend<B> + 'static,
@@ -143,7 +143,7 @@ where
         let block_hash = self.block_hash(block_number)?;
         match self.client.runtime_api().authority_data(block_hash) {
             Ok(data) => Some(data),
-            Err(_) => AlephSessionApi::authorities(self.client.runtime_api().deref(), block_hash)
+            Err(_) => SetBFTSessionApi::authorities(self.client.runtime_api().deref(), block_hash)
                 .map(|authorities| SessionAuthorityData::new(authorities, None))
                 .ok(),
         }
@@ -181,8 +181,8 @@ pub trait FinalityNotifier {
 /// Default implementation of finality notificator trait.
 pub struct FinalityNotifierImpl<C, B, BE>
 where
-    C: ClientForAleph<B, BE> + Send + Sync + 'static,
-    C::Api: crate::primitives ::AlephSessionApi<B>,
+    C: ClientForSetBFT<B, BE> + Send + Sync + 'static,
+    C::Api: crate::primitives ::SetBFTSessionApi<B>,
     B: Block,
     B::Header: Header<Number = BlockNumber>,
     BE: Backend<B> + 'static,
@@ -194,8 +194,8 @@ where
 
 impl<C, B, BE> FinalityNotifierImpl<C, B, BE>
 where
-    C: ClientForAleph<B, BE> + Send + Sync + 'static,
-    C::Api: crate::primitives ::AlephSessionApi<B>,
+    C: ClientForSetBFT<B, BE> + Send + Sync + 'static,
+    C::Api: crate::primitives ::SetBFTSessionApi<B>,
     B: Block,
     B::Header: Header<Number = BlockNumber>,
     BE: Backend<B> + 'static,
@@ -212,8 +212,8 @@ where
 #[async_trait::async_trait]
 impl<C, B, BE> FinalityNotifier for FinalityNotifierImpl<C, B, BE>
 where
-    C: ClientForAleph<B, BE> + Send + Sync + 'static,
-    C::Api: crate::primitives ::AlephSessionApi<B>,
+    C: ClientForSetBFT<B, BE> + Send + Sync + 'static,
+    C::Api: crate::primitives ::SetBFTSessionApi<B>,
     B: Block,
     B::Header: Header<Number = BlockNumber>,
     BE: Backend<B> + 'static,
