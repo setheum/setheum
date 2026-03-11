@@ -43,8 +43,6 @@
 //! [Substrate](https://github.com/paritytech/substrate) chain, but there are some unique to `setheum`,
 //! e.g. [`modules::edfis::EdfisApi`]
 
-#![feature(auto_traits)]
-#![feature(negative_impls)]
 
 use std::str::FromStr;
 

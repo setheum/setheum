@@ -14,19 +14,19 @@ description = "This crate provides a Rust application interface for submitting t
 async-trait = "0.1.58"
 anyhow = "1.0"
 codec = { package = 'parity-scale-codec', version = "3.0.0", features = ['derive'] }
-hex = { workspace = true, features = ["alloc"] , default-features = false }
+hex = { workspace = true, features = ["alloc"] }
 log = "0.4"
 thiserror = "1.0"
-serde_json = { workspace = true , default-features = false }
+serde_json = { workspace = true }
 contract-transcode = "3.2.0"
 ink_metadata = { version = "4.3.0" }
 subxt = { version = "0.30.1", features = ["substrate-compat"] }
 futures = "0.3.25"
-serde = { workspace = true, features = ["derive"] , default-features = false }
+serde = { workspace = true, features = ["derive"] }
 
 pallet-contracts = { workspace = true }
 
-primitives = { workspace = true , default-features = false }
+primitives = { workspace = true, features = ["std"] }
 
 [dev-dependencies]
 tokio = "1.21"

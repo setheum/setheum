@@ -112,7 +112,7 @@ pub trait TreasurySudoApi {
 #[async_trait::async_trait]
 impl<C: ConnectionApi> TreasuryApi for C {
     async fn treasury_account(&self) -> AccountId {
-        PalletId(*b"set/trsry").into_account_truncating()
+        PalletId(*b"set/trsy").into_account_truncating()
     }
 
     async fn proposals_count(&self, at: Option<BlockHash>) -> Option<u32> {
