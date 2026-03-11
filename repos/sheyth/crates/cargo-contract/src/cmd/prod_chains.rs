@@ -116,9 +116,7 @@ define_chains! {
     /// List of production chains where the contract can be deployed to.
     #[derive(clap::ValueEnum)]
     pub enum ProductionChain {
-        Setheum = ("wss://rpc.setheum.xyz:443/", "Substrate"),
-        Astar = ("wss://rpc.astar.network:443/", "Polkadot"),
-        Shiden = ("wss://rpc.shiden.astar.network:443/", "Polkadot"),
-        Krest = ("wss://wss-krest.peaq.network:443/", "Polkadot")
+        Mainnet = ("wss://rpc.setheum.com:443/", "Substrate"),
+        Testnet = ("wss://testnet-rpc.setheum.com:443/", "Substrate")
     }
 }
