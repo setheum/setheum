@@ -1,5 +1,5 @@
 import logging
-from aleph_chain_version import AlephChainVersion
+from setheum_chain_version import SetheumChainVersion
 from utils import format_balance, save_accounts_to_json_file
 from consumers_counter import get_expected_consumers_counter
 
@@ -24,7 +24,7 @@ def check_account_balances_invariants(account, chain_major_version, ed):
     # balance so max possible value of providers is 1
     account_ref_counter_invariant = (providers <= 1 and consumers == 0) or (consumers > 0 and providers == 1)
 
-    if chain_major_version <= AlephChainVersion.VERSION_11_4:
+    if chain_major_version <= SetheumChainVersion.VERSION_11_4:
         misc_frozen = account['data']['misc_frozen']
         fee_frozen = account['data']['fee_frozen']
 
@@ -95,7 +95,7 @@ def perform_accounts_state_checks(chain_connection,
         log.warning(f"Found {len(accounts_failed_balances_invariants)} accounts that do not "
                     f"meet balances invariants!")
 
-    if chain_major_version >= AlephChainVersion.VERSION_13_3:
+    if chain_major_version >= SetheumChainVersion.VERSION_13_3:
         log.info(f"Checking consumers counter...")
         accounts_with_wrong_consumers_counter = list(filter(
             lambda account_and_info: not check_consumers_counter(chain_major_version,
@@ -139,7 +139,7 @@ def check_consumers_counter(chain_major_version,
     :param contract_accounts: Contracts.ContractInfoOf storage map
     :return: True if account has correct consumers counter, False otherwise
     """
-    assert chain_major_version >= AlephChainVersion.VERSION_13_3, \
+    assert chain_major_version >= SetheumChainVersion.VERSION_13_3, \
         f"You must run this on SetheumNode chain with at least 13.3 version!"
 
     expected_consumers_counter = get_expected_consumers_counter(chain_major_version,

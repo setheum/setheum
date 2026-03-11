@@ -10,5 +10,5 @@ COPY default.nix shell.nix /node/nix-files/
 RUN nix-shell --pure --run 'echo installed all native pre-requisities' /node/nix-files/shell.nix
 
 WORKDIR /node/build
-ENTRYPOINT PATH_TO_FIX="result/bin/aleph-node" "/node/nix-files/nix/nix-build.sh"
+ENTRYPOINT PATH_TO_FIX="result/bin/setheum-node" "/node/nix-files/nix/nix-build.sh"
 CMD []

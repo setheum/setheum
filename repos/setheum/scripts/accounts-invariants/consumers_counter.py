@@ -1,5 +1,5 @@
 import logging
-from aleph_chain_version import AlephChainVersion
+from setheum_chain_version import SetheumChainVersion
 from chain_operations import query_storage_map
 
 log = logging.getLogger()
@@ -103,7 +103,7 @@ def get_expected_consumers_counter(chain_major_version,
     :param contract_accounts: Contracts.ContractInfoOf storage map
     :return: Integer denoting consumers ccounter
     """
-    assert chain_major_version >= AlephChainVersion.VERSION_13_3, \
+    assert chain_major_version >= SetheumChainVersion.VERSION_13_3, \
         f"You must run this on SetheumNode chain with at least 13.3 version!"
 
     expected_consumers = 0
@@ -119,7 +119,7 @@ def get_expected_consumers_counter(chain_major_version,
         expected_consumers += 1
     if is_contract_account(account_id, contract_accounts):
         expected_consumers += 1
-    if chain_major_version == AlephChainVersion.VERSION_13_3:
+    if chain_major_version == SetheumChainVersion.VERSION_13_3:
         # locks contribute to consumers counter only in SetheumNode <= 13 version
         if has_at_least_one_lock(account_id, locks):
             expected_consumers += 1

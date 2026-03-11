@@ -8,7 +8,7 @@
 # that is a starting point for all setheum-nodes. Together with the chainspec, we generate a keystore
 # that consist of two types of keys:
 #   * two session keys for each validator (one for authoring blocks called AURA key and one for
-#     participating in AlephBFT consensus called ALEPH key)
+#     participating in SetBFT consensus called SETHEUM key)
 #   * one key for participating in P2P network called p2p key
 # The keystore is stored in a filesystem altogether with database, and this is called base path.
 # Optionally, script can build testing setheum-node binary for you (short session meaning 30 blocks
@@ -27,7 +27,7 @@
 # They are 3 set of ports you need to have opened and free on your machine in order to run consensus:
 #  * RPC port - range [9944; 9954) - used for JSON RPC protocol
 #  * P2p port - range [30333; 30343) - used for P2P peer network
-#  * Validator port - range [30343; 30353) - used for consensus mechanism (AlephBFT)
+#  * Validator port - range [30343; 30353) - used for consensus mechanism (SetBFT)
 #
 # You need to have installed following prerequisites in order to use that script:
 #   * jq
@@ -39,7 +39,7 @@ set -euo pipefail
 
 # ------------------------ constants --------------------------------------
 
-ALEPH_NODE="target/release/setheum-node"
+SETHEUM_NODE="target/release/setheum-node"
 CHAINSPEC_GENERATOR="target/release/chain-bootstrapper"
 NODE_P2P_PORT_RANGE_START=30333
 NODE_VALIDATOR_PORT_RANGE_START=30343
@@ -63,7 +63,7 @@ Usage:
     [-n|--rpc-nodes RPC_NODES]
       number of RPC nodes to bootstrap and start
     [-p|--base-path BASE_PATH]
-        if specified, use given base path (keystore, db, AlephBFT backups)
+        if specified, use given base path (keystore, db, SetBFT backups)
         if not specified, base path is ./run-nodes-local
     [--finality-version]
       which finality version should be used, default = legacy
@@ -74,7 +74,7 @@ Usage:
     [--dont-delete-db]
       set to not delete database
     [--dont-remove-abft-backups]
-      set to not delete AlephBFT backups; by default they are removed since
+      set to not delete SetBFT backups; by default they are removed since
       this script is intended to bootstrap chain by default, in which case you do not want to have
       them in 99% of scenarios
 EOF
@@ -85,7 +85,7 @@ VALIDATORS=${VALIDATORS:-6}
 RPC_NODES=${RPC_NODES:-1}
 BASE_PATH=${BASE_PATH:-"./run-nodes-local"}
 DONT_BOOTSTRAP=${DONT_BOOTSTRAP:-""}
-DONT_BUILD_ALEPH_NODE=${DONT_BUILD_ALEPH_NODE:-""}
+DONT_BUILD_SETHEUM_NODE=${DONT_BUILD_SETHEUM_NODE:-""}
 DONT_DELETE_DB=${DONT_DELETE_DB:-""}
 DONT_REMOVE_ABFT_BACKUPS=${DONT_REMOVE_ABFT_BACKUPS:-""}
 FINALITY_VERSION=${FINALITY_VERSION:-"legacy"}
@@ -113,7 +113,7 @@ while [[ $# -gt 0 ]]; do
       shift
       ;;
     --dont-build)
-      DONT_BUILD_ALEPH_NODE="true"
+      DONT_BUILD_SETHEUM_NODE="true"
       shift
       ;;
     --dont-delete-db)
@@ -187,15 +187,15 @@ function run_node() {
     --max-runtime-instances 8
     --enable-log-reloading
     --detailed-log-output
-    -laleph-party=debug
-    -laleph-network=debug
+    -lsetheum-party=debug
+    -lsetheum-network=debug
     -lnetwork-clique=debug
-    -laleph-finality=debug
-    -laleph-justification=debug
-    -laleph-data-store=debug
-    -laleph-updater=debug
-    -laleph-metrics=debug
-    -laleph-abft=debug
+    -lsetheum-finality=debug
+    -lsetheum-justification=debug
+    -lsetheum-data-store=debug
+    -lsetheum-updater=debug
+    -lsetheum-metrics=debug
+    -lsetheum-abft=debug
   )
 
   info "Running node ${index}..."
@@ -208,7 +208,7 @@ if [[ "${VALIDATORS}" -lt 1 ]]; then
   error "Number of validators should be at least 1!"
 fi
 if [[ "${VALIDATORS}" -lt 4 ]]; then
-  warning "AlephBFT is only supported for more than 4 nodes."
+  warning "SetBFT is only supported for more than 4 nodes."
 fi
 if [[ "${RPC_NODES}" -lt 1 ]]; then
   error "Number of RPC nodes should be at least 1!"
@@ -243,25 +243,25 @@ if ! killall -9 setheum-node 2> /dev/null; then
   info "No setheum-node processes found."
 fi
 
-if [[ -z "${DONT_BUILD_ALEPH_NODE}" ]]; then
+if [[ -z "${DONT_BUILD_SETHEUM_NODE}" ]]; then
   info "Building testing setheum-node binary (short session) and chain-bootstrapper binary."
   cargo build --release -p setheum-node
   if [[ -z "${DONT_BOOTSTRAP}" ]]; then
     cargo build --release -p chain-bootstrapper --features "short_session enable_treasury_proposals"
   fi
-elif [[ ! -x "${ALEPH_NODE}" || ! -x "${CHAINSPEC_GENERATOR}" ]]; then
-  error "${ALEPH_NODE} or ${CHAINSPEC_GENERATOR} does not exist or it's not an executable file!"
+elif [[ ! -x "${SETHEUM_NODE}" || ! -x "${CHAINSPEC_GENERATOR}" ]]; then
+  error "${SETHEUM_NODE} or ${CHAINSPEC_GENERATOR} does not exist or it's not an executable file!"
 fi
 
 NUMBER_OF_NODES_TO_BOOTSTRAP=$(( VALIDATORS + RPC_NODES ))
 info "Generating ${NUMBER_OF_NODES_TO_BOOTSTRAP} stash accounts identities."
 declare -a rpc_node_account_ids
 for i in $(seq 0 "$(( RPC_NODES - 1 ))"); do
-  rpc_node_account_ids+=($(get_ss58_address_from_seed "//${i}" "${ALEPH_NODE}"))
+  rpc_node_account_ids+=($(get_ss58_address_from_seed "//${i}" "${SETHEUM_NODE}"))
 done
 declare -a validator_account_ids
 for i in $(seq "${RPC_NODES}" "$(( NUMBER_OF_NODES_TO_BOOTSTRAP - 1 ))"); do
-  validator_account_ids+=($(get_ss58_address_from_seed "//${i}" "${ALEPH_NODE}"))
+  validator_account_ids+=($(get_ss58_address_from_seed "//${i}" "${SETHEUM_NODE}"))
 done
 
 info "Following identities were generated:"
@@ -305,7 +305,7 @@ if [[ -z "${DONT_BOOTSTRAP}" ]]; then
 fi
 
 info "Creating bootnode p2p multiaddress."
-p2p_key_public=$("${ALEPH_NODE}" key inspect-node-key --file "${BASE_PATH}/${rpc_node_account_ids[0]}/p2p_secret")
+p2p_key_public=$("${SETHEUM_NODE}" key inspect-node-key --file "${BASE_PATH}/${rpc_node_account_ids[0]}/p2p_secret")
 bootnode_multiaddress="/dns4/localhost/tcp/$((NODE_P2P_PORT_RANGE_START))/p2p/${p2p_key_public}"
 info "Bootnode p2p multiaddress is ${bootnode_multiaddress}"
 
@@ -313,11 +313,11 @@ if [[ -z "${DONT_DELETE_DB}" ]] ; then
   info "Removing database for all nodes (aka purging chain)."
   for i in $(seq 0 "$(( RPC_NODES - 1 ))"); do
     rpc_node_account_id=${rpc_node_account_ids[$i]}
-    "${ALEPH_NODE}" purge-chain --base-path "${BASE_PATH}/${rpc_node_account_id}" --chain "${BASE_PATH}/chainspec.json" -y > /dev/null 2>&1
+    "${SETHEUM_NODE}" purge-chain --base-path "${BASE_PATH}/${rpc_node_account_id}" --chain "${BASE_PATH}/chainspec.json" -y > /dev/null 2>&1
   done
   for i in $(seq 0 "$(( VALIDATORS - 1 ))"); do
     validator_account_id="${validator_account_ids[$i]}"
-    "${ALEPH_NODE}" purge-chain --base-path "${BASE_PATH}/${validator_account_id}" --chain "${BASE_PATH}/chainspec.json" -y > /dev/null 2>&1
+    "${SETHEUM_NODE}" purge-chain --base-path "${BASE_PATH}/${validator_account_id}" --chain "${BASE_PATH}/chainspec.json" -y > /dev/null 2>&1
   done
 fi
 
@@ -325,7 +325,7 @@ if [[ -z "${DONT_REMOVE_ABFT_BACKUPS}" ]]; then
   all_account_ids=(${validator_account_ids[@]} ${rpc_node_account_ids[@]})
   backups=$(get_backup_folders "${BASE_PATH}" ${all_account_ids[@]})
   if [[ "${backups[@]}" ]]; then
-    info "Removing AlephBFT backups."
+    info "Removing SetBFT backups."
     echo "${backups[@]}" | xargs rm -rf
   fi
 fi

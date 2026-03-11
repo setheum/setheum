@@ -2,7 +2,7 @@
 
 from chain_operations import *
 from consumers_counter import *
-from aleph_chain_version import *
+from setheum_chain_version import *
 from contracts import *
 from total_issuance import *
 from account_invariants import *
@@ -90,10 +90,10 @@ if __name__ == "__main__":
         state_block_hash = chain_ws_connection.get_chain_head()
     log.info(f"Script uses block hash {state_block_hash} to query state from.")
 
-    aleph_chain_version = get_aleph_chain_version(chain_ws_connection, state_block_hash)
-    log.info(f"Version of an SetheumNode chain connected to is {str(aleph_chain_version)}")
+    setheum_chain_version = get_setheum_chain_version(chain_ws_connection, state_block_hash)
+    log.info(f"Version of an SetheumNode chain connected to is {str(setheum_chain_version)}")
     if args.fix_consumers_counter:
-        if aleph_chain_version < AlephChainVersion.VERSION_14_X:
+        if setheum_chain_version < SetheumChainVersion.VERSION_14_X:
             log.error(
                 f"Fixing consumers counter can only be done on SetheumNode chains with at least "
                 f"14.0 version. Exiting.")
@@ -107,7 +107,7 @@ if __name__ == "__main__":
         log.info(f"Fixing all accounts that have invalid consumers counter")
         accounts_with_invalid_consumers_counter = [account_id_and_info for account_id_and_info in
                                                    all_accounts if
-                                                   not check_consumers_counter(aleph_chain_version,
+                                                   not check_consumers_counter(setheum_chain_version,
                                                                                account_id_and_info[0],
                                                                                account_id_and_info[1],
                                                                                locks,
@@ -150,7 +150,7 @@ if __name__ == "__main__":
     log.info(f"Performing pallet balances sanity checks.")
     perform_accounts_state_checks(chain_connection=chain_ws_connection,
                                   accounts=all_accounts,
-                                  chain_major_version=aleph_chain_version,
+                                  chain_major_version=setheum_chain_version,
                                   locks=locks,
                                   bonded=bonded,
                                   ledger=ledger,

@@ -4,14 +4,14 @@
 # allows to strip binary from all debug info
 , keepDebugInfo ? true
 # name of this derivation
-, name ? "aleph-node"
+, name ? "setheum-node"
 # attribute set of the form { "package_name" = [list_of_features] }
 # defines which packages supposed to be build
-, crates ? { "aleph-node" = []; }
+, crates ? { "setheum-node" = []; }
 # allows to run unit tests during the build procedure
 , runTests ? false
 # forces naersk (helper tool for building rust projects under nix) to build in a single derivation, instead default way that uses deps and project derivations
-# it is used for building aleph-runtime (we don't want its dependencies to be build separately for a non-WASM architecture)
+# it is used for building setheum-runtime (we don't want its dependencies to be build separately for a non-WASM architecture)
 # FIXME two-step build fails. naersk attempts creating a type of a mock project that mainly consists of no-op main/lib.rs and a list cargo dependencies copied from
 # the processed project. Unfortunately, it somehow fails to process our workspace configuration and crashes while building some of our crates (even we don't use
 # them later in the main build procedure).
@@ -58,8 +58,8 @@ let
       "unknown";
 
   modePath = if release then "release" else "debug";
-  pathToWasm = "target/" + modePath + "/wbuild/aleph-runtime/target/wasm32-unknown-unknown/" + modePath + "/aleph_runtime.wasm";
-  pathToCompactWasm = "target/" + modePath + "/wbuild/aleph-runtime/aleph_runtime.compact.compressed.wasm";
+  pathToWasm = "target/" + modePath + "/wbuild/setheum-runtime/target/wasm32-unknown-unknown/" + modePath + "/setheum_runtime.wasm";
+  pathToCompactWasm = "target/" + modePath + "/wbuild/setheum-runtime/setheum_runtime.compact.compressed.wasm";
 
   featureIntoPrefixedFeature = packageName: feature: packageName + "/" + feature;
   featuresIntoPrefixedFeatures = package: features: builtins.map (featureIntoPrefixedFeature package) features;
@@ -82,7 +82,7 @@ let
   src = nixpkgs.lib.cleanSourceWith {
     src = ./.;
     filter = gitFilter ./.;
-    name = "aleph-source";
+    name = "setheum-source";
   };
   # overrides attributes needed for downloading cargo dependencies by naersk
   disableDependencyDownload = _: { cargoconfig = ""; crate_sources = cargoHome; };
@@ -115,7 +115,7 @@ with nixpkgs; naersk.buildPackage rec {
     # this is the way we can pass additional arguments to rustc that is called by cargo, e.g. list of available cpu features
     export RUSTFLAGS="${rustflags}"
 
-    # it allows us to provide hash of the git's HEAD, which is used as part of the version string returned by aleph-node
+    # it allows us to provide hash of the git's HEAD, which is used as part of the version string returned by setheum-node
     # see https://github.com/paritytech/substrate/blob/5597a93a8c8b1ab578693c68549e3ce1902f3eaf/utils/build-script-utils/src/version.rs#L22
     export SUBSTRATE_CLI_GIT_COMMIT_HASH="${gitCommit}"
 
@@ -152,7 +152,7 @@ with nixpkgs; naersk.buildPackage rec {
          ''
        }
   '';
-  # called after successful build - copies aleph-runtime WASM binaries and sets appropriate interpreter (compatibility with other linux distros)
+  # called after successful build - copies setheum-runtime WASM binaries and sets appropriate interpreter (compatibility with other linux distros)
   postInstall = ''
     if [ -f ${pathToWasm} ]; then
       mkdir -p $out/lib

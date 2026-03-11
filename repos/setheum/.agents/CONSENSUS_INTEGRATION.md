@@ -26,7 +26,7 @@ This document outlines the implementation plan and task progress for integrating
 - **Status**: [x] Integrated, currently resolving dependency conflicts.
 
 ### 3. Hybrid Frontier EVM with Unified Accounts
-- **Goal**: Implement Ethereum compatibility with Astar-style Unified Accounts and Acala-style Native Token support.
+- **Goal**: Implement Ethereum compatibility with Astar-style Unified Accounts and Setheum-style Native Token support.
 - **Approach**: Use Frontier pallets (`pallet-evm`, `pallet-ethereum`) with custom address mapping and precompiles for native currency support.
 - **Status**: [ ] Pending completion of consensus integration.
 
@@ -53,7 +53,7 @@ This document outlines the implementation plan and task progress for integrating
 
 ### Phase 3: Web3 Integrity (EVM)
 - [x] Analyze Astar Unified Accounts.
-- [x] Analyze Acala EVM Native Tokens.
+- [x] Analyze Setheum EVM Native Tokens.
 - [/] Integrate Frontier EVM (Standardizing on SDK `stable2506`).
     - [x] Restore `primitives::evm` and its dependencies.
     - [x] Stabilize `module-support` and resolve build errors

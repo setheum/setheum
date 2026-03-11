@@ -3,7 +3,7 @@ set -euo pipefail
 
 NIX_FILE=${NIX_FILE:-"default.nix"}
 DYNAMIC_LINKER_PATH=${DYNAMIC_LINKER_PATH:-"/lib64/ld-linux-x86-64.so.2"}
-CRATES=${CRATES:-'{ "aleph-node" = []; }'}
+CRATES=${CRATES:-'{ "setheum-node" = []; }'}
 SINGLE_STEP=${SINGLE_STEP:-true}
 RUSTFLAGS=${RUSTFLAGS:-"-C target-cpu=generic"}
 CARGO_HOME=${CARGO_HOME:-"$(realpath ~/.cargo)"}
@@ -41,7 +41,7 @@ echo results copied
 
 # we need to change the dynamic linker
 # otherwise our binary references one that is specific for nix
-# we need it for aleph-node to be run outside nix-shell
+# we need it for setheum-node to be run outside nix-shell
 if [ ! -z "${PATH_TO_FIX}" ] && [ -f ${PATH_TO_FIX} ]; then
     echo patching...
     chmod +w $PATH_TO_FIX

@@ -73,13 +73,13 @@ def find_fee(events, by_whom):
     return uint(event_field(fee_event, 'actual_fee'))
 
 
-with urllib.request.urlopen('https://api.coingecko.com/api/v3/simple/price?ids=aleph-zero&vs_currencies=usd') as response:
+with urllib.request.urlopen('https://api.coingecko.com/api/v3/simple/price?ids=setheum&vs_currencies=usd') as response:
     data = json.load(response)
-    aleph_usd = data['aleph-zero']['usd']
+    setheum_usd = data['setheum']['usd']
 
 
 def format_fee(fee):
-    return "%f AZERO ($%f)" % (fee / AZERO, fee / AZERO * aleph_usd)
+    return "%f AZERO ($%f)" % (fee / AZERO, fee / AZERO * setheum_usd)
 
 
 deploy_result = deploy(args.adder_dir)
