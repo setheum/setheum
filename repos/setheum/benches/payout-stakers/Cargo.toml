@@ -1,0 +1,25 @@
+[package]
+license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
+name = "payout-stakers"
+version = "0.3.2"
+authors = ["Cardinal Cryptography"]
+edition = "2021"
+
+[dependencies]
+anyhow = "^1.0"
+clap = { version = "3.0.0", features = ["derive"] }
+codec = { package = 'parity-scale-codec', version = "3.0.0", features = ['derive'] }
+env_logger = "0.8"
+hex = { version = "0.4.3", default-features = false, features = ["alloc"] }
+log = "0.4"
+futures = "0.3.25"
+rand = "0.8.5"
+
+sp-core = { workspace = true, features = ["full_crypto"] }
+sp-keyring = { workspace = true }
+
+subxt = "0.30.1"
+tokio = { version = "1.21.2", features = ["full"] }
+
+setheum_client = { path = "../../setheum-client" }
+primitives = { path = "../../primitives", package = "setheum-primitives" }

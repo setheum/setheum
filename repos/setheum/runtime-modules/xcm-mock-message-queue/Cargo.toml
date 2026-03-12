@@ -4,7 +4,7 @@ description = "XCM Mock Message Qeueu for XCM Simulator tests"
 repository = "https://github.com/open-web3-stack/open-runtime-module-library/tree/master/xcm-mock-message-queue"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 version = "1.5.0"
-authors = ["Acala Developers"]
+authors = ["Setheum Developers"]
 edition = "2021"
 
 [dependencies]

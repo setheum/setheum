@@ -1,44 +1,75 @@
-name: Test
+name: Test & Build
 
 on:
   pull_request:
     branches:
       - master
-      - polkadot-**
-    paths-ignore:
-      - '**/README.md'
   push:
     branches:
       - master
-      - polkadot-**
-    paths-ignore:
-      - '**/README.md'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  build:
-    runs-on: [self-hosted]
-    env:
-      SCCACHE_CACHE_SIZE: "60G"
+  check-format:
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: Install toolchain
-      uses: dtolnay/rust-toolchain@nightly
-    - name: Install Wasm toolchain
-      run: rustup target add wasm32-unknown-unknown
-    - name: Check format
-      run: make dev-format-check
-    - name: Install clippy
-      run: rustup component add clippy
-    - name: Update
-      run: |
-        cargo update
-    - name: Run clippy
-      run: cargo clippy -- -D warnings
-    - name: Check for Wasm
-      run: make dev-check
-    - name: Run tests
-      run: make dev-test
+      - uses: actions/checkout@v4
+      - name: Install Rust Toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.88.0
+          components: rustfmt
+      - name: Check format
+        run: cargo fmt --all -- --check
+
+  clippy-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust Toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.88.0
+          components: clippy
+          targets: wasm32v1-none
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-test-${{ hashFiles('**/Cargo.lock') }}
+      - name: Run Clippy
+        run: cargo clippy --workspace --all-targets -- -D warnings
+      - name: Run Tests
+        run: cargo test --workspace
+
+  build-node:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust Toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.88.0
+          targets: wasm32v1-none
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v2
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-build-${{ hashFiles('**/Cargo.lock') }}
+      - name: Build node
+        run: cargo build --release -p setheum-node
