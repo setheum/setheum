@@ -35,10 +35,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use primitives::{Balance, CurrencyId, launchpad::CampaignInfo};
-use sp_runtime::{
-	DispatchError, DispatchResult,
-};
+use primitives::{launchpad::CampaignInfo, Balance, CurrencyId};
+use sp_runtime::{DispatchError, DispatchResult};
 use sp_std::{
 	cmp::{Eq, PartialEq},
 	prelude::*,
@@ -48,11 +46,11 @@ use sp_std::{
 pub trait Proposal<AccountId, BlockNumber> {
 	type CurrencyId;
 
-/// The Campaign Proposal info of `id`
+	/// The Campaign Proposal info of `id`
 	fn proposal_info(id: Self::CurrencyId) -> Option<CampaignInfo<AccountId, Balance, BlockNumber>>;
-/// Get all proposals
+	/// Get all proposals
 	fn all_proposals() -> Vec<CampaignInfo<AccountId, Balance, BlockNumber>>;
-/// Create new Campaign Proposal with specific `CampaignInfo`, return the `id` of the Campaign
+	/// Create new Campaign Proposal with specific `CampaignInfo`, return the `id` of the Campaign
 	fn new_proposal(
 		origin: AccountId,
 		beneficiary: AccountId,
@@ -63,11 +61,11 @@ pub trait Proposal<AccountId, BlockNumber> {
 		goal: Balance,
 		period: BlockNumber,
 	) -> DispatchResult;
-/// Approve Proposal by `id` at `now`.
-    fn on_approve_proposal(id: Self::CurrencyId) -> sp_std::result::Result<(), DispatchError>;
-/// Reject Proposal by `id` and update storage
+	/// Approve Proposal by `id` at `now`.
+	fn on_approve_proposal(id: Self::CurrencyId) -> sp_std::result::Result<(), DispatchError>;
+	/// Reject Proposal by `id` and update storage
 	fn on_reject_proposal(id: Self::CurrencyId) -> sp_std::result::Result<(), DispatchError>;
-/// Remove Proposal by `id` from storage
+	/// Remove Proposal by `id` from storage
 	fn remove_proposal(id: Self::CurrencyId) -> sp_std::result::Result<(), DispatchError>;
 }
 
@@ -75,43 +73,30 @@ pub trait Proposal<AccountId, BlockNumber> {
 pub trait CampaignManager<AccountId, BlockNumber> {
 	type CurrencyId;
 
-/// The Campaign info of `id`
+	/// The Campaign info of `id`
 	fn campaign_info(id: Self::CurrencyId) -> Option<CampaignInfo<AccountId, Balance, BlockNumber>>;
-/// Get all proposals
+	/// Get all proposals
 	fn all_campaigns() -> Vec<CampaignInfo<AccountId, Balance, BlockNumber>>;
-/// Called when a contribution is received.
-	fn on_contribution(
-		who: AccountId,
-		id: Self::CurrencyId,
-		amount: Balance,
-	) -> DispatchResult;
-/// Called when a contribution allocation is claimed
-	fn on_claim_allocation(
-		who: AccountId,
-		id: Self::CurrencyId,
-	) -> DispatchResult;
-/// Called when a campaign's raised fund is claimed
-	fn on_claim_campaign(
-		who: AccountId,
-		id: Self::CurrencyId,
-	) -> DispatchResult;
-/// Called when a failed campaign is claimed by the proposer
-	fn on_claim_failed_campaign(
-		who: AccountId,
-		id: Self::CurrencyId,
-	) -> DispatchResult;
-/// Activate a campaign by `id`
+	/// Called when a contribution is received.
+	fn on_contribution(who: AccountId, id: Self::CurrencyId, amount: Balance) -> DispatchResult;
+	/// Called when a contribution allocation is claimed
+	fn on_claim_allocation(who: AccountId, id: Self::CurrencyId) -> DispatchResult;
+	/// Called when a campaign's raised fund is claimed
+	fn on_claim_campaign(who: AccountId, id: Self::CurrencyId) -> DispatchResult;
+	/// Called when a failed campaign is claimed by the proposer
+	fn on_claim_failed_campaign(who: AccountId, id: Self::CurrencyId) -> DispatchResult;
+	/// Activate a campaign by `id`
 	fn activate_campaign(id: Self::CurrencyId) -> DispatchResult;
-/// Ensure campaign is Valid and Successfully Ended
+	/// Ensure campaign is Valid and Successfully Ended
 	fn ensure_successfully_ended_campaign(id: Self::CurrencyId) -> DispatchResult;
-/// Record Successful Campaign by `id`
-	fn on_successful_campaign(now: BlockNumber, id: Self::CurrencyId) -> DispatchResult ;
-/// Record Failed Campaign by `id`
-	fn on_failed_campaign(now: BlockNumber, id: Self::CurrencyId) -> DispatchResult ;
-/// Called when pool is retired
-	fn on_retire(id: Self::CurrencyId)-> DispatchResult;
-/// Get amount of contributors in a campaign
+	/// Record Successful Campaign by `id`
+	fn on_successful_campaign(now: BlockNumber, id: Self::CurrencyId) -> DispatchResult;
+	/// Record Failed Campaign by `id`
+	fn on_failed_campaign(now: BlockNumber, id: Self::CurrencyId) -> DispatchResult;
+	/// Called when pool is retired
+	fn on_retire(id: Self::CurrencyId) -> DispatchResult;
+	/// Get amount of contributors in a campaign
 	fn get_contributors_count(id: Self::CurrencyId) -> u32;
-/// Get the total amounts raised in protocol
+	/// Get the total amounts raised in protocol
 	fn get_total_amounts_raised() -> Vec<(CurrencyId, Balance)>;
 }

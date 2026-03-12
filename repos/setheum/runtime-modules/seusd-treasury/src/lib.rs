@@ -41,7 +41,7 @@
 
 use frame_support::{pallet_prelude::*, transactional, PalletId};
 use frame_system::pallet_prelude::*;
-use module_support::{AuctionsManager, UssdTreasury, UssdTreasuryExtended, SwapManager, Ratio, Swap, SwapLimit};
+use module_support::{AuctionsManager, Ratio, Swap, SwapLimit, SwapManager, UssdTreasury, UssdTreasuryExtended};
 use module_traits::{MultiCurrency, MultiCurrencyExtended};
 use primitives::{Balance, CurrencyId};
 use sp_runtime::{
@@ -59,95 +59,92 @@ pub use weights::WeightInfo;
 
 #[frame_support::pallet]
 pub mod module {
-	use super::*; 
+	use super::*;
 
 	#[pallet::config]
 	pub trait Config: frame_system::Config {
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 
-/// The origin which may update parameters and handle
-/// surplus/collateral.
+		/// The origin which may update parameters and handle
+		/// surplus/collateral.
 		type UpdateOrigin: EnsureOrigin<Self::RuntimeOrigin>;
 
-/// The Currency for managing assets related to 
+		/// The Currency for managing assets related to
 		type Currency: MultiCurrencyExtended<Self::AccountId, CurrencyId = CurrencyId, Balance = Balance>;
 
-/// Stablecoin currency id
+		/// Stablecoin currency id
 		#[pallet::constant]
 		type GetSEUSDCurrencyId: Get<CurrencyId>;
 
-/// Auction manager creates auction to handle system surplus and debit
+		/// Auction manager creates auction to handle system surplus and debit
 		type AuctionsManagerHandler: AuctionsManager<Self::AccountId, CurrencyId = CurrencyId, Balance = Balance>;
 
-/// Dex manager
+		/// Dex manager
 		type DEX: SwapManager<Self::AccountId, Balance, CurrencyId>;
 
-/// Swap
+		/// Swap
 		type Swap: Swap<Self::AccountId, Balance, CurrencyId>;
 
-/// The cap of lots number when create collateral auction on a
-/// liquidation or to create debit/surplus auction on block end.
-/// If set to 0, does not work.
+		/// The cap of lots number when create collateral auction on a
+		/// liquidation or to create debit/surplus auction on block end.
+		/// If set to 0, does not work.
 		#[pallet::constant]
 		type MaxAuctionsCount: Get<u32>;
 
 		#[pallet::constant]
 		type TreasuryAccount: Get<Self::AccountId>;
 
-/// The SEUSD Treasury's module id, stores the surplus and collateral assets.
+		/// The SEUSD Treasury's module id, stores the surplus and collateral assets.
 		#[pallet::constant]
 		type PalletId: Get<PalletId>;
 
-/// Weight information for the extrinsics in this module.
+		/// Weight information for the extrinsics in this module.
 		type WeightInfo: WeightInfo;
 	}
 
 	#[pallet::error]
 	pub enum Error<T> {
-/// The collateral amount of SEUSD Treasury is not enough
+		/// The collateral amount of SEUSD Treasury is not enough
 		CollateralNotEnough,
-/// The surplus pool of SEUSD Treasury is not enough
+		/// The surplus pool of SEUSD Treasury is not enough
 		SurplusPoolNotEnough,
-/// The debit pool of SEUSD Treasury is not enough
+		/// The debit pool of SEUSD Treasury is not enough
 		DebitPoolNotEnough,
-/// Cannot use collateral to swap SEUSD
+		/// Cannot use collateral to swap SEUSD
 		CannotSwap,
-/// The currency id is not DexShare type
+		/// The currency id is not DexShare type
 		NotDexShare,
 	}
 
 	#[pallet::event]
 	#[pallet::generate_deposit(pub fn deposit_event)]
 	pub enum Event<T: Config> {
-/// The expected amount size for per lot collateral auction of specific collateral type
-/// updated.
-		ExpectedCollateralAuctionSizeUpdated {
-			collateral_type: CurrencyId,
-			new_size: Balance,
-		},
-/// The buffer amount of debit pool that will not be offset by suplus pool updated.
+		/// The expected amount size for per lot collateral auction of specific collateral type
+		/// updated.
+		ExpectedCollateralAuctionSizeUpdated { collateral_type: CurrencyId, new_size: Balance },
+		/// The buffer amount of debit pool that will not be offset by suplus pool updated.
 		DebitOffsetBufferUpdated { amount: Balance },
 	}
 
-/// The expected amount size for per lot collateral auction of specific
-/// collateral type.
-///
-/// ExpectedCollateralAuctionSize: map CurrencyId => Balance
+	/// The expected amount size for per lot collateral auction of specific
+	/// collateral type.
+	///
+	/// ExpectedCollateralAuctionSize: map CurrencyId => Balance
 	#[pallet::storage]
 	#[pallet::getter(fn expected_collateral_auction_size)]
 	pub type ExpectedCollateralAuctionSize<T: Config> = StorageMap<_, Twox64Concat, CurrencyId, Balance, ValueQuery>;
 
-/// Current total debit value of system. It's not same as debit in Egine,
-/// it is the bad debt of the system.
-///
-/// DebitPool: Balance
+	/// Current total debit value of system. It's not same as debit in Egine,
+	/// it is the bad debt of the system.
+	///
+	/// DebitPool: Balance
 	#[pallet::storage]
 	#[pallet::getter(fn debit_pool)]
 	pub type DebitPool<T: Config> = StorageValue<_, Balance, ValueQuery>;
 
-/// The buffer amount of debit pool that will not be offset by surplus pool.
-///
-/// DebitOffsetBuffer: Balance
+	/// The buffer amount of debit pool that will not be offset by surplus pool.
+	///
+	/// DebitOffsetBuffer: Balance
 	#[pallet::storage]
 	#[pallet::getter(fn debit_offset_buffer)]
 	pub type DebitOffsetBuffer<T: Config> = StorageValue<_, Balance, ValueQuery>;
@@ -162,11 +159,9 @@ pub mod module {
 	#[pallet::genesis_build]
 	impl<T: Config> BuildGenesisConfig for GenesisConfig<T> {
 		fn build(&self) {
-			self.expected_collateral_auction_size
-				.iter()
-				.for_each(|(currency_id, size)| {
-					ExpectedCollateralAuctionSize::<T>::insert(currency_id, size);
-				});
+			self.expected_collateral_auction_size.iter().for_each(|(currency_id, size)| {
+				ExpectedCollateralAuctionSize::<T>::insert(currency_id, size);
+			});
 		}
 	}
 
@@ -175,9 +170,9 @@ pub mod module {
 
 	#[pallet::hooks]
 	impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
-/// Handle excessive surplus or debits of system when block end
+		/// Handle excessive surplus or debits of system when block end
 		fn on_finalize(_now: BlockNumberFor<T>) {
-// offset the same amount between debit pool and surplus pool
+			// offset the same amount between debit pool and surplus pool
 			Self::offset_surplus_and_debit();
 		}
 	}
@@ -197,14 +192,14 @@ pub mod module {
 			Ok(())
 		}
 
-/// Auction the collateral not occupied by the auction.
-///
-/// The dispatch origin of this call must be `UpdateOrigin`.
-///
-/// - `currency_id`: collateral type
-/// - `amount`: collateral amount
-/// - `target`: target amount
-/// - `splited`: split collateral to multiple auction according to the config size
+		/// Auction the collateral not occupied by the auction.
+		///
+		/// The dispatch origin of this call must be `UpdateOrigin`.
+		///
+		/// - `currency_id`: collateral type
+		/// - `amount`: collateral amount
+		/// - `target`: target amount
+		/// - `splited`: split collateral to multiple auction according to the config size
 		#[pallet::call_index(1)]
 		#[pallet::weight(
 			if *splited {
@@ -231,12 +226,12 @@ pub mod module {
 			Ok(Some(T::WeightInfo::auction_collateral(created_auctions)).into())
 		}
 
-/// Swap the collateral not occupied by the auction to SEUSD.
-///
-/// The dispatch origin of this call must be `UpdateOrigin`.
-///
-/// - `currency_id`: collateral type
-/// - `swap_limit`: target amount
+		/// Swap the collateral not occupied by the auction to SEUSD.
+		///
+		/// The dispatch origin of this call must be `UpdateOrigin`.
+		///
+		/// - `currency_id`: collateral type
+		/// - `swap_limit`: target amount
 		#[pallet::call_index(2)]
 		#[pallet::weight(T::WeightInfo::exchange_collateral_to_seusd())]
 		pub fn exchange_collateral_to_seusd(
@@ -245,18 +240,18 @@ pub mod module {
 			swap_limit: SwapLimit<Balance>,
 		) -> DispatchResult {
 			T::UpdateOrigin::ensure_origin(origin)?;
-// the supply collateral must not be occupied by the auction.
+			// the supply collateral must not be occupied by the auction.
 			Self::swap_collateral_to_seusd(currency_id, swap_limit, false)?;
 			Ok(())
 		}
 
-/// Update parameters related to collateral auction under specific
-/// collateral type
-///
-/// The dispatch origin of this call must be `UpdateOrigin`.
-///
-/// - `currency_id`: collateral type
-/// - `amount`: expected size of per lot collateral auction
+		/// Update parameters related to collateral auction under specific
+		/// collateral type
+		///
+		/// The dispatch origin of this call must be `UpdateOrigin`.
+		///
+		/// - `currency_id`: collateral type
+		/// - `amount`: expected size of per lot collateral auction
 		#[pallet::call_index(3)]
 		#[pallet::weight((T::WeightInfo::set_expected_collateral_auction_size(), DispatchClass::Operational))]
 		pub fn set_expected_collateral_auction_size(
@@ -273,11 +268,11 @@ pub mod module {
 			Ok(())
 		}
 
-/// Update the debit offset buffer
-///
-/// The dispatch origin of this call must be `UpdateOrigin`.
-///
-/// - `amount`: the buffer amount of debit pool
+		/// Update the debit offset buffer
+		///
+		/// The dispatch origin of this call must be `UpdateOrigin`.
+		///
+		/// - `amount`: the buffer amount of debit pool
 		#[pallet::call_index(4)]
 		#[pallet::weight((T::WeightInfo::set_expected_collateral_auction_size(), DispatchClass::Operational))]
 		pub fn set_debit_offset_buffer(origin: OriginFor<T>, #[pallet::compact] amount: Balance) -> DispatchResult {
@@ -294,52 +289,48 @@ pub mod module {
 }
 
 impl<T: Config> Pallet<T> {
-/// Get account of cdp treasury module.
+	/// Get account of cdp treasury module.
 	pub fn account_id() -> T::AccountId {
 		T::PalletId::get().into_account_truncating()
 	}
 
-/// Get current total surplus of system.
+	/// Get current total surplus of system.
 	pub fn surplus_pool() -> Balance {
 		T::Currency::free_balance(T::GetSEUSDCurrencyId::get(), &Self::account_id())
 	}
 
-/// Get total collateral amount of cdp treasury module.
+	/// Get total collateral amount of cdp treasury module.
 	pub fn total_collaterals(currency_id: CurrencyId) -> Balance {
 		T::Currency::free_balance(currency_id, &Self::account_id())
 	}
 
-/// Get collateral amount not in auction
+	/// Get collateral amount not in auction
 	pub fn total_collaterals_not_in_auction(currency_id: CurrencyId) -> Balance {
 		T::Currency::free_balance(currency_id, &Self::account_id())
 			.saturating_sub(T::AuctionsManagerHandler::get_total_collateral_in_auction(currency_id))
 	}
 
 	fn offset_surplus_and_debit() {
-// The part of the debit pool that exceeds the debit offset buffer can be offset by the surplus
-		let offset_amount = sp_std::cmp::min(
-			Self::debit_pool().saturating_sub(Self::debit_offset_buffer()),
-			Self::surplus_pool(),
-		);
+		// The part of the debit pool that exceeds the debit offset buffer can be offset by the surplus
+		let offset_amount =
+			sp_std::cmp::min(Self::debit_pool().saturating_sub(Self::debit_offset_buffer()), Self::surplus_pool());
 
-// Burn the amount that is equal to offset amount of SEUSD
+		// Burn the amount that is equal to offset amount of SEUSD
 		if !offset_amount.is_zero() {
 			let res = Self::burn_debit(&Self::account_id(), offset_amount);
 			match res {
 				Ok(_) => {
 					DebitPool::<T>::mutate(|debit| {
-						*debit = debit
-							.checked_sub(offset_amount)
-							.expect("offset = min(debit, surplus); qed")
+						*debit = debit.checked_sub(offset_amount).expect("offset = min(debit, surplus); qed")
 					});
-				}
+				},
 				Err(e) => {
 					log::warn!(
 						target: "seusd-treasury",
 						"get_swap_supply_amount: Attempt to burn surplus {:?} failed: {:?}, this is unexpected but should be safe",
 						offset_amount, e
 					);
-				}
+				},
 			}
 		}
 	}
@@ -377,9 +368,9 @@ impl<T: Config> UssdTreasury<T::AccountId> for Pallet<T> {
 		Self::issue_debit(&Self::account_id(), amount, true)
 	}
 
-/// This should be the only function in the system that issues SEUSD
+	/// This should be the only function in the system that issues SEUSD
 	fn issue_debit(who: &T::AccountId, debit: Self::Balance, backed: bool) -> DispatchResult {
-// increase system debit if the debit is unbacked
+		// increase system debit if the debit is unbacked
 		if !backed {
 			Self::on_system_debit(debit)?;
 		}
@@ -388,7 +379,7 @@ impl<T: Config> UssdTreasury<T::AccountId> for Pallet<T> {
 		Ok(())
 	}
 
-/// This should be the only function in the system that burns SEUSD
+	/// This should be the only function in the system that burns SEUSD
 	fn burn_debit(who: &T::AccountId, debit: Self::Balance) -> DispatchResult {
 		T::Currency::withdraw(T::GetSEUSDCurrencyId::get(), who, debit)
 	}
@@ -449,10 +440,7 @@ impl<T: Config> UssdTreasuryExtended<T::AccountId> for Pallet<T> {
 		refund_receiver: T::AccountId,
 		splited: bool,
 	) -> Result<u32, DispatchError> {
-		ensure!(
-			Self::total_collaterals_not_in_auction(currency_id) >= amount,
-			Error::<T>::CollateralNotEnough,
-		);
+		ensure!(Self::total_collaterals_not_in_auction(currency_id) >= amount, Error::<T>::CollateralNotEnough,);
 
 		let mut unhandled_collateral_amount = amount;
 		let mut unhandled_target = target;
@@ -484,7 +472,7 @@ impl<T: Config> UssdTreasuryExtended<T::AccountId> for Pallet<T> {
 		while !unhandled_collateral_amount.is_zero() {
 			created_lots = created_lots.saturating_add(One::one());
 			let (lot_collateral_amount, lot_target) = if created_lots == lots_count {
-// the last lot may be have some remnant than average
+				// the last lot may be have some remnant than average
 				(unhandled_collateral_amount, unhandled_target)
 			} else {
 				(average_amount_per_lot, average_target_per_lot)
@@ -508,9 +496,8 @@ impl<T: Config> UssdTreasuryExtended<T::AccountId> for Pallet<T> {
 		lp_currency_id: CurrencyId,
 		amount: Balance,
 	) -> sp_std::result::Result<(Balance, Balance), DispatchError> {
-		let (currency_id_0, currency_id_1) = lp_currency_id
-			.split_dex_share_currency_id()
-			.ok_or(Error::<T>::NotDexShare)?;
+		let (currency_id_0, currency_id_1) =
+			lp_currency_id.split_dex_share_currency_id().ok_or(Error::<T>::NotDexShare)?;
 		T::DEX::remove_liquidity(
 			&Self::account_id(),
 			currency_id_0,

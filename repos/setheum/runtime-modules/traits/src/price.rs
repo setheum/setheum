@@ -85,14 +85,8 @@ mod test {
 
 	#[test]
 	fn get_price_should_work() {
-		assert_eq!(
-			TestPriceProvider::get_price(1, 2),
-			Some(Price::saturating_from_rational(1, 2))
-		);
-		assert_eq!(
-			TestPriceProvider::get_price(2, 1),
-			Some(Price::saturating_from_rational(2, 1))
-		);
+		assert_eq!(TestPriceProvider::get_price(1, 2), Some(Price::saturating_from_rational(1, 2)));
+		assert_eq!(TestPriceProvider::get_price(2, 1), Some(Price::saturating_from_rational(2, 1)));
 	}
 
 	#[test]

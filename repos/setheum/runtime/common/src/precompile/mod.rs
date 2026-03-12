@@ -90,7 +90,8 @@ impl<
 		OraclePrecompile,
 		ScheduleCallPrecompile,
 		DexPrecompile,
-	> where
+	>
+where
 	MultiCurrencyPrecompile: Precompile,
 	NFTPrecompile: Precompile,
 	StateRentPrecompile: Precompile,

@@ -46,9 +46,9 @@ use sp_std::{cmp::PartialEq, prelude::*, result::Result};
 
 #[derive(RuntimeDebug, Encode, Decode, Clone, Copy, PartialEq, Eq, TypeInfo)]
 pub enum SwapLimit<Balance> {
-/// use exact amount supply amount to swap. (exact_supply_amount, minimum_target_amount)
+	/// use exact amount supply amount to swap. (exact_supply_amount, minimum_target_amount)
 	ExactSupply(Balance, Balance),
-/// swap to get exact amount target. (maximum_supply_amount, exact_target_amount)
+	/// swap to get exact amount target. (maximum_supply_amount, exact_target_amount)
 	ExactTarget(Balance, Balance),
 }
 

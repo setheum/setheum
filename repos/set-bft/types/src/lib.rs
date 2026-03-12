@@ -41,13 +41,13 @@ mod dataio;
 mod network;
 mod tasks;
 
+pub use dataio::{DataProvider, FinalizationHandler, OrderedUnit, UnitFinalizationHandler};
+pub use network::{Network, Recipient};
 pub use set_bft_crypto::{
     IncompleteMultisignatureError, Index, Indexed, Keychain, MultiKeychain, Multisigned, NodeCount,
     NodeIndex, NodeMap, NodeSubset, PartialMultisignature, PartiallyMultisigned, Signable,
     Signature, SignatureError, SignatureSet, Signed, UncheckedSigned,
 };
-pub use dataio::{DataProvider, FinalizationHandler, OrderedUnit, UnitFinalizationHandler};
-pub use network::{Network, Recipient};
 pub use tasks::{SpawnHandle, TaskHandle};
 
 use codec::Codec;

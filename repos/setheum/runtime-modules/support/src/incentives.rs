@@ -50,28 +50,28 @@ use sp_std::prelude::*;
 pub enum PoolId {
 	SetrLiquidityRewards(CurrencyId),
 
-/// Rewards and shares pool for Setheum USD (SEUSD) users who are staking LP token(LPCurrencyId)
+	/// Rewards and shares pool for Setheum USD (SEUSD) users who are staking LP token(LPCurrencyId)
 	UssdLiquidityRewards(CurrencyId),
 
-/// Rewards and shares pool for  market makers who stake LP token(LPCurrencyId)
+	/// Rewards and shares pool for  market makers who stake LP token(LPCurrencyId)
 	LiquidityRewards(CurrencyId),
 
-/// Rewards and shares pool for Moya Earn
+	/// Rewards and shares pool for Moya Earn
 	MoyaEarnRewards(CurrencyId),
 }
 
 pub trait IncentivesManager<AccountId, Balance, CurrencyId, PoolId> {
-/// Gets reward amount for the given reward currency added per period
+	/// Gets reward amount for the given reward currency added per period
 	fn get_incentive_reward_amount(pool_id: PoolId, currency_id: CurrencyId) -> Balance;
-/// Stake LP token to add shares to pool
+	/// Stake LP token to add shares to pool
 	fn deposit_share(who: &AccountId, lp_currency_id: CurrencyId, amount: Balance) -> DispatchResult;
-/// Unstake LP token to remove shares from pool
+	/// Unstake LP token to remove shares from pool
 	fn withdraw_share(who: &AccountId, lp_currency_id: CurrencyId, amount: Balance) -> DispatchResult;
-/// Claim all available rewards for specific `PoolId`
+	/// Claim all available rewards for specific `PoolId`
 	fn claim_rewards(who: AccountId, pool_id: PoolId) -> DispatchResult;
-/// Gets deduction reate for claiming reward early
+	/// Gets deduction reate for claiming reward early
 	fn get_claim_reward_deduction_rate(pool_id: PoolId) -> Rate;
-/// Gets the pending rewards for a pool, for an account
+	/// Gets the pending rewards for a pool, for an account
 	fn get_pending_rewards(pool_id: PoolId, who: AccountId, reward_currency: Vec<CurrencyId>) -> Vec<Balance>;
 }
 

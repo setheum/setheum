@@ -47,11 +47,11 @@ pub use evm_runtime;
 pub fn sha3_256(s: &str) -> [u8; 32] {
 	let mut result = [0u8; 32];
 
-// create a SHA3-256 object
+	// create a SHA3-256 object
 	let mut hasher = Keccak256::new();
-// write input message
+	// write input message
 	hasher.update(s);
-// read hash digest
+	// read hash digest
 	result.copy_from_slice(&hasher.finalize()[..32]);
 
 	result

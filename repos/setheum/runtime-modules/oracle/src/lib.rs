@@ -171,10 +171,7 @@ pub mod module {
 	#[pallet::generate_deposit(pub(crate) fn deposit_event)]
 	pub enum Event<T: Config<I>, I: 'static = ()> {
 		/// New feed data is submitted.
-		NewFeedData {
-			sender: T::AccountId,
-			values: Vec<(T::OracleKey, T::OracleValue)>,
-		},
+		NewFeedData { sender: T::AccountId, values: Vec<(T::OracleKey, T::OracleValue)> },
 	}
 
 	/// Raw values for each oracle operators
@@ -221,17 +218,12 @@ pub mod module {
 			origin: OriginFor<T>,
 			values: BoundedVec<(T::OracleKey, T::OracleValue), T::MaxFeedValues>,
 		) -> DispatchResultWithPostInfo {
-			let feeder = ensure_signed(origin.clone())
-				.map(Some)
-				.or_else(|_| ensure_root(origin).map(|_| None))?;
+			let feeder = ensure_signed(origin.clone()).map(Some).or_else(|_| ensure_root(origin).map(|_| None))?;
 
 			let who = Self::ensure_account(feeder)?;
 
 			// ensure account hasn't dispatched an updated yet
-			ensure!(
-				HasDispatched::<T, I>::mutate(|set| set.insert(who.clone())),
-				Error::<T, I>::AlreadyFeeded
-			);
+			ensure!(HasDispatched::<T, I>::mutate(|set| set.insert(who.clone())), Error::<T, I>::AlreadyFeeded);
 
 			Self::do_feed_values(who, values.into())?;
 			Ok(Pays::No.into())
@@ -276,10 +268,7 @@ impl<T: Config<I>, I: 'static> Pallet<T, I> {
 	fn do_feed_values(who: T::AccountId, values: Vec<(T::OracleKey, T::OracleValue)>) -> DispatchResult {
 		let now = T::Time::now();
 		for (key, value) in &values {
-			let timestamped = TimestampedValue {
-				value: value.clone(),
-				timestamp: now,
-			};
+			let timestamped = TimestampedValue { value: value.clone(), timestamp: now };
 			RawValues::<T, I>::insert(&who, key, timestamped);
 
 			// Update `Values` storage if `combined` yielded result.

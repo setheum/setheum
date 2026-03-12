@@ -89,7 +89,7 @@ where
 					output: Output::default().encode_bytes(&name),
 					logs: Default::default(),
 				})
-			}
+			},
 			Action::QuerySymbol => {
 				let symbol = CurrencyIdMapping::symbol(currency_id)
 					.ok_or_else(|| ExitError::Other("Get symbol failed".into()))?;
@@ -101,7 +101,7 @@ where
 					output: Output::default().encode_bytes(&symbol),
 					logs: Default::default(),
 				})
-			}
+			},
 			Action::QueryDecimals => {
 				let decimals = CurrencyIdMapping::decimals(currency_id)
 					.ok_or_else(|| ExitError::Other("Get decimals failed".into()))?;
@@ -113,7 +113,7 @@ where
 					output: Output::default().encode_u8(decimals),
 					logs: Default::default(),
 				})
-			}
+			},
 			Action::QueryTotalIssuance => {
 				let total_issuance = MultiCurrency::total_issuance(currency_id);
 				log::debug!(target: "evm", "multicurrency: total issuance: {:?}", total_issuance);
@@ -124,7 +124,7 @@ where
 					output: Output::default().encode_u128(total_issuance),
 					logs: Default::default(),
 				})
-			}
+			},
 			Action::QueryBalance => {
 				let who = input.account_id_at(1)?;
 				let balance = MultiCurrency::total_balance(currency_id, &who);
@@ -136,7 +136,7 @@ where
 					output: Output::default().encode_u128(balance),
 					logs: Default::default(),
 				})
-			}
+			},
 			Action::Transfer => {
 				let from = input.account_id_at(1)?;
 				let to = input.account_id_at(2)?;
@@ -154,7 +154,7 @@ where
 					output: vec![],
 					logs: Default::default(),
 				})
-			}
+			},
 		}
 	}
 }

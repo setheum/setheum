@@ -46,27 +46,18 @@ use sp_std::{cmp::PartialEq, prelude::*, result::Result};
 
 #[derive(RuntimeDebug, Encode, Decode, Clone, Copy, PartialEq, Eq, TypeInfo)]
 pub enum SwapLimit<Balance> {
-/// use exact amount supply amount to swap. (exact_supply_amount, minimum_target_amount)
+	/// use exact amount supply amount to swap. (exact_supply_amount, minimum_target_amount)
 	ExactSupply(Balance, Balance),
-/// swap to get exact amount target. (maximum_supply_amount, exact_target_amount)
+	/// swap to get exact amount target. (maximum_supply_amount, exact_target_amount)
 	ExactTarget(Balance, Balance),
 }
 
 pub trait SwapManager<AccountId, Balance, CurrencyId> {
-	fn get_liquidity_pool(
-		currency_id_a: CurrencyId,
-		currency_id_b: CurrencyId
-	) -> (Balance, Balance);
+	fn get_liquidity_pool(currency_id_a: CurrencyId, currency_id_b: CurrencyId) -> (Balance, Balance);
 
-	fn get_liquidity_token_address(
-		currency_id_a: CurrencyId,
-		currency_id_b: CurrencyId
-	) -> Option<H160>;
+	fn get_liquidity_token_address(currency_id_a: CurrencyId, currency_id_b: CurrencyId) -> Option<H160>;
 
-	fn get_swap_amount(
-		path: &[CurrencyId],
-		limit: SwapLimit<Balance>
-	) -> Option<(Balance, Balance)>;
+	fn get_swap_amount(path: &[CurrencyId], limit: SwapLimit<Balance>) -> Option<(Balance, Balance)>;
 
 	fn get_best_price_swap_path(
 		supply_currency_id: CurrencyId,

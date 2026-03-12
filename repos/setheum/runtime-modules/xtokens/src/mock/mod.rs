@@ -88,62 +88,27 @@ impl Convert<CurrencyId, Option<Location>> for CurrencyIdConvert {
 	fn convert(id: CurrencyId) -> Option<Location> {
 		match id {
 			CurrencyId::R => Some(Parent.into()),
-			CurrencyId::A => Some(
-				(
-					Parent,
-					Parachain(1),
-					Junction::from(BoundedVec::try_from(b"A".to_vec()).unwrap()),
-				)
-					.into(),
-			),
-			CurrencyId::A1 => Some(
-				(
-					Parent,
-					Parachain(1),
-					Junction::from(BoundedVec::try_from(b"A1".to_vec()).unwrap()),
-				)
-					.into(),
-			),
-			CurrencyId::B => Some(
-				(
-					Parent,
-					Parachain(2),
-					Junction::from(BoundedVec::try_from(b"B".to_vec()).unwrap()),
-				)
-					.into(),
-			),
-			CurrencyId::B1 => Some(
-				(
-					Parent,
-					Parachain(2),
-					Junction::from(BoundedVec::try_from(b"B1".to_vec()).unwrap()),
-				)
-					.into(),
-			),
-			CurrencyId::B2 => Some(
-				(
-					Parent,
-					Parachain(2),
-					Junction::from(BoundedVec::try_from(b"B2".to_vec()).unwrap()),
-				)
-					.into(),
-			),
-			CurrencyId::C => Some(
-				(
-					Parent,
-					Parachain(3),
-					Junction::from(BoundedVec::try_from(b"C".to_vec()).unwrap()),
-				)
-					.into(),
-			),
-			CurrencyId::D => Some(
-				(
-					Parent,
-					Parachain(4),
-					Junction::from(BoundedVec::try_from(b"D".to_vec()).unwrap()),
-				)
-					.into(),
-			),
+			CurrencyId::A => {
+				Some((Parent, Parachain(1), Junction::from(BoundedVec::try_from(b"A".to_vec()).unwrap())).into())
+			},
+			CurrencyId::A1 => {
+				Some((Parent, Parachain(1), Junction::from(BoundedVec::try_from(b"A1".to_vec()).unwrap())).into())
+			},
+			CurrencyId::B => {
+				Some((Parent, Parachain(2), Junction::from(BoundedVec::try_from(b"B".to_vec()).unwrap())).into())
+			},
+			CurrencyId::B1 => {
+				Some((Parent, Parachain(2), Junction::from(BoundedVec::try_from(b"B1".to_vec()).unwrap())).into())
+			},
+			CurrencyId::B2 => {
+				Some((Parent, Parachain(2), Junction::from(BoundedVec::try_from(b"B2".to_vec()).unwrap())).into())
+			},
+			CurrencyId::C => {
+				Some((Parent, Parachain(3), Junction::from(BoundedVec::try_from(b"C".to_vec()).unwrap())).into())
+			},
+			CurrencyId::D => {
+				Some((Parent, Parachain(4), Junction::from(BoundedVec::try_from(b"D".to_vec()).unwrap())).into())
+			},
 		}
 	}
 }
@@ -193,11 +158,7 @@ impl Convert<Location, Option<CurrencyId>> for CurrencyIdConvert {
 }
 impl Convert<Asset, Option<CurrencyId>> for CurrencyIdConvert {
 	fn convert(a: Asset) -> Option<CurrencyId> {
-		if let Asset {
-			fun: Fungible(_),
-			id: AssetId(id),
-		} = a
-		{
+		if let Asset { fun: Fungible(_), id: AssetId(id) } = a {
 			Self::convert(id)
 		} else {
 			Option::None
@@ -292,15 +253,11 @@ pub type ParaTeleportTokens = module_tokens::Pallet<para_teleport::Runtime>;
 pub fn para_ext(para_id: u32) -> TestExternalities {
 	use para::{MsgQueue, Runtime, System};
 
-	let mut t = frame_system::GenesisConfig::<Runtime>::default()
-		.build_storage()
-		.unwrap();
+	let mut t = frame_system::GenesisConfig::<Runtime>::default().build_storage().unwrap();
 
-	module_tokens::GenesisConfig::<Runtime> {
-		balances: vec![(ALICE, CurrencyId::R, 1_000)],
-	}
-	.assimilate_storage(&mut t)
-	.unwrap();
+	module_tokens::GenesisConfig::<Runtime> { balances: vec![(ALICE, CurrencyId::R, 1_000)] }
+		.assimilate_storage(&mut t)
+		.unwrap();
 
 	let mut ext = TestExternalities::new(t);
 	ext.execute_with(|| {
@@ -313,15 +270,11 @@ pub fn para_ext(para_id: u32) -> TestExternalities {
 pub fn para_teleport_ext(para_id: u32) -> TestExternalities {
 	use para_teleport::{MsgQueue, Runtime, System};
 
-	let mut t = frame_system::GenesisConfig::<Runtime>::default()
-		.build_storage()
-		.unwrap();
+	let mut t = frame_system::GenesisConfig::<Runtime>::default().build_storage().unwrap();
 
-	module_tokens::GenesisConfig::<Runtime> {
-		balances: vec![(ALICE, CurrencyId::R, 1_000)],
-	}
-	.assimilate_storage(&mut t)
-	.unwrap();
+	module_tokens::GenesisConfig::<Runtime> { balances: vec![(ALICE, CurrencyId::R, 1_000)] }
+		.assimilate_storage(&mut t)
+		.unwrap();
 
 	let mut ext = TestExternalities::new(t);
 	ext.execute_with(|| {
@@ -334,16 +287,11 @@ pub fn para_teleport_ext(para_id: u32) -> TestExternalities {
 pub fn asset_hub_ext(para_id: u32) -> sp_io::TestExternalities {
 	use asset_hub::{MsgQueue, Runtime, System};
 
-	let mut t = frame_system::GenesisConfig::<Runtime>::default()
-		.build_storage()
-		.unwrap();
+	let mut t = frame_system::GenesisConfig::<Runtime>::default().build_storage().unwrap();
 
-	pallet_balances::GenesisConfig::<Runtime> {
-		balances: vec![(ALICE, 1_000)],
-		..Default::default()
-	}
-	.assimilate_storage(&mut t)
-	.unwrap();
+	pallet_balances::GenesisConfig::<Runtime> { balances: vec![(ALICE, 1_000)], ..Default::default() }
+		.assimilate_storage(&mut t)
+		.unwrap();
 
 	let mut ext = sp_io::TestExternalities::new(t);
 	ext.execute_with(|| {
@@ -356,16 +304,11 @@ pub fn asset_hub_ext(para_id: u32) -> sp_io::TestExternalities {
 pub fn relay_ext() -> sp_io::TestExternalities {
 	use relay::{Runtime, System};
 
-	let mut t = frame_system::GenesisConfig::<Runtime>::default()
-		.build_storage()
-		.unwrap();
+	let mut t = frame_system::GenesisConfig::<Runtime>::default().build_storage().unwrap();
 
-	pallet_balances::GenesisConfig::<Runtime> {
-		balances: vec![(ALICE, 1_000)],
-		..Default::default()
-	}
-	.assimilate_storage(&mut t)
-	.unwrap();
+	pallet_balances::GenesisConfig::<Runtime> { balances: vec![(ALICE, 1_000)], ..Default::default() }
+		.assimilate_storage(&mut t)
+		.unwrap();
 
 	let mut ext = sp_io::TestExternalities::new(t);
 	ext.execute_with(|| System::set_block_number(1));
@@ -388,21 +331,10 @@ impl WeightTrader for AllTokensAreCreatedEqualToWeight {
 		payment: AssetsInHolding,
 		_context: &XcmContext,
 	) -> Result<AssetsInHolding, XcmError> {
-		let asset_id = payment
-			.fungible
-			.iter()
-			.next()
-			.expect("Payment must be something; qed")
-			.0;
-		let required = Asset {
-			id: asset_id.clone(),
-			fun: Fungible(weight.ref_time() as u128),
-		};
+		let asset_id = payment.fungible.iter().next().expect("Payment must be something; qed").0;
+		let required = Asset { id: asset_id.clone(), fun: Fungible(weight.ref_time() as u128) };
 
-		let Asset {
-			fun: _,
-			id: AssetId(ref id),
-		} = &required;
+		let Asset { fun: _, id: AssetId(ref id) } = &required;
 
 		self.0 = id.clone();
 
@@ -448,19 +380,14 @@ impl ShouldExecute for AllowTopLevelPaidExecution {
 			.skip_inst_while(|inst| matches!(inst, ClearOrigin))?
 			.match_next_inst(|inst| {
 				let res = match inst {
-					BuyExecution {
-						weight_limit: Limited(ref mut weight),
-						..
-					} if weight.all_gte(max_weight) => {
+					BuyExecution { weight_limit: Limited(ref mut weight), .. } if weight.all_gte(max_weight) => {
 						*weight = max_weight;
 						Ok(())
-					}
-					BuyExecution {
-						ref mut weight_limit, ..
-					} if weight_limit == &Unlimited => {
+					},
+					BuyExecution { ref mut weight_limit, .. } if weight_limit == &Unlimited => {
 						*weight_limit = Limited(max_weight);
 						Ok(())
-					}
+					},
 					_ => Err(ProcessMessageError::Overweight(max_weight)),
 				};
 				res

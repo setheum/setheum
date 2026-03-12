@@ -75,22 +75,22 @@ where
 				let decimals = match maybe_decimals {
 					Some(decimals) => decimals,
 					None => {
-// If the option is none, let price = 0 to return 0.
-// Solidity should handle the situation of price 0.
+						// If the option is none, let price = 0 to return 0.
+						// Solidity should handle the situation of price 0.
 						price = Default::default();
 						Default::default()
-					}
+					},
 				};
 
 				let maybe_adjustment_multiplier = 10u128.checked_pow((18 - decimals).into());
 				let adjustment_multiplier = match maybe_adjustment_multiplier {
 					Some(adjustment_multiplier) => adjustment_multiplier,
 					None => {
-// If the option is none, let price = 0 to return 0.
-// Solidity should handle the situation of price 0.
+						// If the option is none, let price = 0 to return 0.
+						// Solidity should handle the situation of price 0.
 						price = Default::default();
 						Default::default()
-					}
+					},
 				};
 
 				let output = price.into_inner().wrapping_div(adjustment_multiplier);
@@ -102,7 +102,7 @@ where
 					output: Output::default().encode_u128(output),
 					logs: Default::default(),
 				})
-			}
+			},
 		}
 	}
 }

@@ -44,28 +44,28 @@ use subxt::{events::EventDetails, ext::sp_core::H256};
 
 use crate::{
     api::contracts::events::ContractEmitted, connections::TxInfo, contract::ContractInstance,
-    utility::BlocksApi, AccountId, SetBFTConfig, Connection,
+    utility::BlocksApi, AccountId, Connection, SetBFTConfig,
 };
 
 /// Represents details about the block contianing the event.
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct BlockDetails {
-/// the block number
+    /// the block number
     pub block_number: u32,
-/// the block hash
+    /// the block hash
     pub block_hash: H256,
 }
 
 /// Represents a single event emitted by a contract.
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct ContractEvent {
-/// The address of the contract that emitted the event.
+    /// The address of the contract that emitted the event.
     pub contract: AccountId,
-/// The name of the event.
+    /// The name of the event.
     pub name: Option<String>,
-/// Data contained in the event.
+    /// Data contained in the event.
     pub data: HashMap<String, Value>,
-/// details about the block containing the event
+    /// details about the block containing the event
     pub block_details: Option<BlockDetails>,
 }
 

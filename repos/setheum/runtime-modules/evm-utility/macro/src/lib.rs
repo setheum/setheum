@@ -44,14 +44,7 @@ use syn::{parse_macro_input, Expr, ExprLit, Ident, ItemEnum, Lit, LitByteStr, Li
 pub fn generate_function_selector(_: TokenStream, input: TokenStream) -> TokenStream {
 	let item = parse_macro_input!(input as ItemEnum);
 
-	let ItemEnum {
-		attrs,
-		vis,
-		enum_token,
-		ident,
-		variants,
-		..
-	} = item;
+	let ItemEnum { attrs, vis, enum_token, ident, variants, .. } = item;
 
 	let mut ident_expressions: Vec<Ident> = vec![];
 	let mut variant_expressions: Vec<Expr> = vec![];
@@ -59,7 +52,7 @@ pub fn generate_function_selector(_: TokenStream, input: TokenStream) -> TokenSt
 		if let Some((_, Expr::Lit(ExprLit { lit, .. }))) = variant.discriminant {
 			if let Lit::Str(token) = lit {
 				let selector = module_evm_utility::get_function_selector(&token.value());
-// println!("method: {:?}, selector: {:?}", token.value(), selector);
+				// println!("method: {:?}, selector: {:?}", token.value(), selector);
 				ident_expressions.push(variant.ident);
 				variant_expressions.push(Expr::Lit(ExprLit {
 					lit: Lit::Verbatim(Literal::u32_suffixed(selector)),

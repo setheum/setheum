@@ -53,8 +53,7 @@ mod benchmarks {
 	fn pause_bridge() {
 		let dest_domain_id: DomainID = 0;
 		let dest_chain_id: ChainID = U256::from(1);
-		Bridge::<T>::register_domain(SystemOrigin::Root.into(), dest_domain_id, dest_chain_id)
-			.unwrap();
+		Bridge::<T>::register_domain(SystemOrigin::Root.into(), dest_domain_id, dest_chain_id).unwrap();
 
 		#[extrinsic_call]
 		pause_bridge(SystemOrigin::Root, dest_domain_id);
@@ -66,8 +65,7 @@ mod benchmarks {
 	fn unpause_bridge() {
 		let dest_domain_id: DomainID = 0;
 		let dest_chain_id: ChainID = U256::from(1);
-		Bridge::<T>::register_domain(SystemOrigin::Root.into(), dest_domain_id, dest_chain_id)
-			.unwrap();
+		Bridge::<T>::register_domain(SystemOrigin::Root.into(), dest_domain_id, dest_chain_id).unwrap();
 		Bridge::<T>::pause_bridge(SystemOrigin::Root.into(), dest_domain_id).unwrap();
 
 		#[extrinsic_call]
@@ -102,8 +100,7 @@ mod benchmarks {
 		let dest_domain_id: DomainID = 0;
 		let dest_chain_id: ChainID = U256::from(1);
 
-		Bridge::<T>::register_domain(SystemOrigin::Root.into(), dest_domain_id, dest_chain_id)
-			.unwrap();
+		Bridge::<T>::register_domain(SystemOrigin::Root.into(), dest_domain_id, dest_chain_id).unwrap();
 
 		#[extrinsic_call]
 		unregister_domain(SystemOrigin::Root, dest_domain_id, dest_chain_id);
@@ -124,10 +121,7 @@ mod benchmarks {
 		let amount = 200_000_000_000_000u128; // 200 with 12 decimals
 		let caller = whitelisted_caller::<AccountId32>();
 
-		let _ = <Balances<T, _> as Currency<_>>::make_free_balance_be(
-			&caller.clone().into(),
-			(amount * 2).into(),
-		);
+		let _ = <Balances<T, _> as Currency<_>>::make_free_balance_be(&caller.clone().into(), (amount * 2).into());
 
 		BasicFeeHandler::<T>::set_fee(
 			SystemOrigin::Root.into(),
@@ -144,8 +138,7 @@ mod benchmarks {
 		)
 		.unwrap();
 
-		Bridge::<T>::register_domain(SystemOrigin::Root.into(), dest_domain_id, dest_chain_id)
-			.unwrap();
+		Bridge::<T>::register_domain(SystemOrigin::Root.into(), dest_domain_id, dest_chain_id).unwrap();
 		Bridge::<T>::set_mpc_address(SystemOrigin::Root.into(), test_mpc_addr).unwrap();
 
 		#[extrinsic_call]
@@ -154,10 +147,7 @@ mod benchmarks {
 			Box::new((Concrete(native_location), Fungible(amount)).into()),
 			Box::new(Location {
 				parents: 0,
-				interior: X2(
-					slice_to_generalkey(b"ethereum recipient"),
-					slice_to_generalkey(&[dest_domain_id]),
-				),
+				interior: X2(slice_to_generalkey(b"ethereum recipient"), slice_to_generalkey(&[dest_domain_id])),
 			}),
 		);
 
@@ -172,8 +162,7 @@ mod benchmarks {
 		let dest_chain_id: ChainID = U256::from(1);
 		let test_mpc_addr: MpcAddress = MpcAddress([1u8; 20]);
 
-		Bridge::<T>::register_domain(SystemOrigin::Root.into(), dest_domain_id, dest_chain_id)
-			.unwrap();
+		Bridge::<T>::register_domain(SystemOrigin::Root.into(), dest_domain_id, dest_chain_id).unwrap();
 		Bridge::<T>::set_mpc_address(SystemOrigin::Root.into(), test_mpc_addr).unwrap();
 
 		#[extrinsic_call]
@@ -196,15 +185,11 @@ mod benchmarks {
 		let test_mpc_addr: MpcAddress = MpcAddress(pub_key.to_eth_address().unwrap());
 		Bridge::<T>::set_mpc_address(SystemOrigin::Root.into(), test_mpc_addr).unwrap();
 
-		let _ = <Balances<T, _> as Currency<_>>::make_free_balance_be(
-			&bridge_account.clone().into(),
-			(amount).into(),
-		);
+		let _ = <Balances<T, _> as Currency<_>>::make_free_balance_be(&bridge_account.clone().into(), (amount).into());
 		assert_eq!(Balances::<T, _>::free_balance(bridge_account.clone()), (amount).into());
 
 		// register domain
-		Bridge::<T>::register_domain(SystemOrigin::Root.into(), dest_domain_id, U256::from(1))
-			.unwrap();
+		Bridge::<T>::register_domain(SystemOrigin::Root.into(), dest_domain_id, U256::from(1)).unwrap();
 
 		// Generate proposals
 		// amount is in 18 decimal 0.000200000000000000, will be convert to 12 decimal
@@ -215,11 +200,7 @@ mod benchmarks {
 			resource_id: native_resourceid,
 			data: Bridge::<T>::create_deposit_data(
 				amount,
-				Location::new(
-					0,
-					X1(Junction::AccountId32 { network: None, id: caller.clone().into() }),
-				)
-				.encode(),
+				Location::new(0, X1(Junction::AccountId32 { network: None, id: caller.clone().into() })).encode(),
 			),
 		};
 
@@ -228,12 +209,10 @@ mod benchmarks {
 			proposals.push(native_transfer_proposal.clone());
 		}
 
-		let final_message: [u8; 32] =
-			Bridge::<T>::construct_ecdsa_signing_proposals_data(&proposals);
+		let final_message: [u8; 32] = Bridge::<T>::construct_ecdsa_signing_proposals_data(&proposals);
 		// let proposals_with_valid_signature = pair.sign_prehashed(&final_message);
 		let proposals_with_valid_signature =
-			sp_io::crypto::ecdsa_sign_prehashed(key_type, &pub_key, &final_message)
-				.expect("Generates signature");
+			sp_io::crypto::ecdsa_sign_prehashed(key_type, &pub_key, &final_message).expect("Generates signature");
 
 		// Only the first proposal will  execute successfully, others will fail due to deposit nonce
 		#[extrinsic_call]

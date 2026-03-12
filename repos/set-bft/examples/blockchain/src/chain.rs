@@ -36,7 +36,6 @@
 // SOFTWARE.
 
 use crate::{network::NetworkData, DataStore};
-use set_bft::{NodeIndex, Terminator};
 use codec::{Decode, Encode};
 use futures::{
     channel::mpsc::{UnboundedReceiver, UnboundedSender},
@@ -45,6 +44,7 @@ use futures::{
 use futures_timer::Delay;
 use log::{debug, info};
 use parking_lot::Mutex;
+use set_bft::{NodeIndex, Terminator};
 use std::{
     fmt,
     fmt::{Debug, Formatter},

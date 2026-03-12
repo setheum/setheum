@@ -48,8 +48,8 @@ pub mod pallet {
 	use xcm_executor::traits::TransactAsset;
 
 	use module_bridge_traits::{
-		Bridge, ChainID, DecimalConverter, DepositNonce, DomainID, ExtractDestinationData,
-		FeeHandler, MpcAddress, ResourceId, TransferType, VerifyingContractAddress,
+		Bridge, ChainID, DecimalConverter, DepositNonce, DomainID, ExtractDestinationData, FeeHandler, MpcAddress,
+		ResourceId, TransferType, VerifyingContractAddress,
 	};
 
 	use crate::eip712;
@@ -151,17 +151,9 @@ pub mod pallet {
 			handler_response: Vec<u8>,
 		},
 		/// When proposal was executed successfully
-		ProposalExecution {
-			origin_domain_id: DomainID,
-			deposit_nonce: DepositNonce,
-			data_hash: [u8; 32],
-		},
+		ProposalExecution { origin_domain_id: DomainID, deposit_nonce: DepositNonce, data_hash: [u8; 32] },
 		/// When proposal was faild to execute
-		FailedHandlerExecution {
-			error: Vec<u8>,
-			origin_domain_id: DomainID,
-			deposit_nonce: DepositNonce,
-		},
+		FailedHandlerExecution { error: Vec<u8>, origin_domain_id: DomainID, deposit_nonce: DepositNonce },
 		/// When user is going to retry a bridge transfer
 		/// args: [deposit_on_block_height, dest_domain_id, sender]
 		Retry { deposit_on_block_height: u128, dest_domain_id: DomainID, sender: T::AccountId },
@@ -257,15 +249,8 @@ pub mod pallet {
 	/// Mark whether a deposit nonce was used. Used to mark execution status of a proposal.
 	#[pallet::storage]
 	#[pallet::getter(fn used_nonces)]
-	pub type UsedNonces<T: Config> = StorageDoubleMap<
-		_,
-		Twox64Concat,
-		DomainID,
-		Twox64Concat,
-		DepositNonce,
-		DepositNonce,
-		ValueQuery,
-	>;
+	pub type UsedNonces<T: Config> =
+		StorageDoubleMap<_, Twox64Concat, DomainID, Twox64Concat, DepositNonce, DepositNonce, ValueQuery>;
 
 	/// Mark supported dest domainID
 	#[pallet::storage]
@@ -405,8 +390,7 @@ pub mod pallet {
 				Error::<T>::AccessDenied
 			);
 			ensure!(
-				DestDomainIds::<T>::get(dest_domain_id)
-					&& DestChainIds::<T>::get(dest_domain_id).is_some(),
+				DestDomainIds::<T>::get(dest_domain_id) && DestChainIds::<T>::get(dest_domain_id).is_some(),
 				Error::<T>::DestDomainNotSupported
 			);
 
@@ -433,11 +417,7 @@ pub mod pallet {
 		#[transactional]
 		#[pallet::call_index(5)]
 		#[pallet::weight(< T as Config >::WeightInfo::deposit())]
-		pub fn deposit(
-			origin: OriginFor<T>,
-			asset: Box<Asset>,
-			dest: Box<Location>,
-		) -> DispatchResult {
+		pub fn deposit(origin: OriginFor<T>, asset: Box<Asset>, dest: Box<Location>) -> DispatchResult {
 			let sender = ensure_signed(origin)?;
 
 			ensure!(!MpcAddr::<T>::get().is_clear(), Error::<T>::MissingMpcAddress);
@@ -456,8 +436,7 @@ pub mod pallet {
 			let (resource_id, amount, transfer_type) =
 				Self::extract_asset(&asset.clone()).ok_or(Error::<T>::AssetNotBound)?;
 			// Return error if no fee handler set
-			let fee = T::FeeHandler::get_fee(dest_domain_id, *asset.clone())
-				.ok_or(Error::<T>::MissingFeeConfig)?;
+			let fee = T::FeeHandler::get_fee(dest_domain_id, *asset.clone()).ok_or(Error::<T>::MissingFeeConfig)?;
 
 			ensure!(amount > fee, Error::<T>::FeeTooExpensive);
 
@@ -472,8 +451,7 @@ pub mod pallet {
 			// Deposit `fee` of asset to treasury account
 			T::AssetTransactor::deposit_asset(
 				&(asset.id, Fungible(fee)).into(),
-				&Junction::AccountId32 { network: None, id: T::FeeReserveAccount::get().into() }
-					.into(),
+				&Junction::AccountId32 { network: None, id: T::FeeReserveAccount::get().into() }.into(),
 				// Put empty message hash here because we are not sending XCM message
 				&XcmContext::with_message_id([0; 32]),
 			)
@@ -481,8 +459,8 @@ pub mod pallet {
 
 			let bridge_amount = amount - fee;
 
-			let token_reserved_account = Self::get_token_reserved_account(&asset.id)
-				.ok_or(Error::<T>::NoLiquidityHolderAccountBound)?;
+			let token_reserved_account =
+				Self::get_token_reserved_account(&asset.id).ok_or(Error::<T>::NoLiquidityHolderAccountBound)?;
 
 			// Deposit `bridge_amount` of asset to reserve account if asset is reserved in local
 			// chain.
@@ -504,9 +482,8 @@ pub mod pallet {
 			);
 
 			// convert the asset decimal
-			let decimal_converted_amount =
-				T::DecimalConverter::convert_to(&(asset.id, bridge_amount).into())
-					.ok_or(Error::<T>::DecimalConversionFail)?;
+			let decimal_converted_amount = T::DecimalConverter::convert_to(&(asset.id, bridge_amount).into())
+				.ok_or(Error::<T>::DecimalConversionFail)?;
 
 			// Emit Deposit event
 			Self::deposit_event(Event::Deposit {
@@ -535,11 +512,7 @@ pub mod pallet {
 		#[transactional]
 		#[pallet::call_index(6)]
 		#[pallet::weight(< T as Config >::WeightInfo::retry())]
-		pub fn retry(
-			origin: OriginFor<T>,
-			deposit_on_block_height: u128,
-			dest_domain_id: DomainID,
-		) -> DispatchResult {
+		pub fn retry(origin: OriginFor<T>, deposit_on_block_height: u128, dest_domain_id: DomainID) -> DispatchResult {
 			ensure!(
 				<module_bridge_access_segregator::pallet::Pallet<T>>::has_access(
 					<T as Config>::PalletIndex::get(),
@@ -557,11 +530,7 @@ pub mod pallet {
 				Ok(sender) => sender,
 				_ => [0u8; 32].into(),
 			};
-			Self::deposit_event(Event::<T>::Retry {
-				deposit_on_block_height,
-				dest_domain_id,
-				sender,
-			});
+			Self::deposit_event(Event::<T>::Retry { deposit_on_block_height, dest_domain_id, sender });
 			Ok(())
 		}
 
@@ -569,11 +538,7 @@ pub mod pallet {
 		#[transactional]
 		#[pallet::call_index(7)]
 		#[pallet::weight(< T as Config >::WeightInfo::execute_proposal(proposals.len() as u32))]
-		pub fn execute_proposal(
-			_origin: OriginFor<T>,
-			proposals: Vec<Proposal>,
-			signature: Vec<u8>,
-		) -> DispatchResult {
+		pub fn execute_proposal(_origin: OriginFor<T>, proposals: Vec<Proposal>, signature: Vec<u8>) -> DispatchResult {
 			// Check MPC address and bridge status
 			ensure!(!MpcAddr::<T>::get().is_clear(), Error::<T>::MissingMpcAddress);
 
@@ -583,10 +548,7 @@ pub mod pallet {
 			let final_message = Self::construct_ecdsa_signing_proposals_data(&proposals);
 
 			// Verify MPC signature
-			ensure!(
-				Self::verify_by_mpc_address(final_message, signature),
-				Error::<T>::BadMpcSignature
-			);
+			ensure!(Self::verify_by_mpc_address(final_message, signature), Error::<T>::BadMpcSignature);
 
 			// Execute proposals one by one.
 			// Note if one proposal failed to execute, we emit `FailedHandlerExecution` rather
@@ -604,21 +566,14 @@ pub mod pallet {
 					},
 					|_| {
 						// Update proposal status
-						Self::set_proposal_executed(
-							proposal.deposit_nonce,
-							proposal.origin_domain_id,
-						);
+						Self::set_proposal_executed(proposal.deposit_nonce, proposal.origin_domain_id);
 
 						// Emit ProposalExecution
 						Self::deposit_event(Event::ProposalExecution {
 							origin_domain_id: proposal.origin_domain_id,
 							deposit_nonce: proposal.deposit_nonce,
 							data_hash: keccak_256(
-								&[
-									proposal.data.clone(),
-									T::PalletId::get().into_account_truncating(),
-								]
-								.concat(),
+								&[proposal.data.clone(), T::PalletId::get().into_account_truncating()].concat(),
 							),
 						});
 					},
@@ -688,12 +643,7 @@ pub mod pallet {
 	where
 		<T as frame_system::Config>::AccountId: From<[u8; 32]> + Into<[u8; 32]>,
 	{
-		fn transfer(
-			sender: [u8; 32],
-			asset: Asset,
-			dest: Location,
-			_max_weight: Option<Weight>,
-		) -> DispatchResult {
+		fn transfer(sender: [u8; 32], asset: Asset, dest: Location, _max_weight: Option<Weight>) -> DispatchResult {
 			let sender_origin = OriginFor::<T>::from(RawOrigin::Signed(sender.into()));
 			Pallet::<T>::deposit(sender_origin, Box::from(asset), Box::from(dest))?;
 			Ok(())
@@ -727,9 +677,7 @@ pub mod pallet {
 
 		/// Return the TokenReservedAccount address by the given token
 		pub fn get_token_reserved_account(token_id: &AssetId) -> Option<[u8; 32]> {
-			T::TransferReserveAccounts::get()
-				.get(token_id)
-				.map(|account| (*account).clone().into())
+			T::TransferReserveAccounts::get().get(token_id).map(|account| (*account).clone().into())
 		}
 
 		/// convert the ECDSA 64-byte uncompressed pubkey to H160 address
@@ -746,8 +694,7 @@ pub mod pallet {
                     .as_bytes(),
             );
 			let proposal_typehash = keccak_256(
-				"Proposal(uint8 originDomainID,uint64 depositNonce,bytes32 resourceID,bytes data)"
-					.as_bytes(),
+				"Proposal(uint8 originDomainID,uint64 depositNonce,bytes32 resourceID,bytes data)".as_bytes(),
 			);
 
 			if proposals.is_empty() {
@@ -811,11 +758,10 @@ pub mod pallet {
 		/// are supported.
 		fn extract_asset(asset: &Asset) -> Option<(ResourceId, u128, TransferType)> {
 			match (&asset.fun, &asset.id) {
-				(Fungible(amount), _) => {
-					T::ResourcePairs::get().iter().position(|a| a.0 == asset.id).map(|idx| {
-						(T::ResourcePairs::get()[idx].1, *amount, TransferType::FungibleTransfer)
-					})
-				},
+				(Fungible(amount), _) => T::ResourcePairs::get()
+					.iter()
+					.position(|a| a.0 == asset.id)
+					.map(|idx| (T::ResourcePairs::get()[idx].1, *amount, TransferType::FungibleTransfer)),
 				_ => None,
 			}
 		}
@@ -842,12 +788,10 @@ pub mod pallet {
 				return Err(Error::<T>::InvalidDepositData.into());
 			}
 
-			let amount: u128 = U256::from_big_endian(&data[0..32])
-				.try_into()
-				.map_err(|_| Error::<T>::InvalidDepositData)?;
-			let recipient_len: usize = U256::from_big_endian(&data[32..64])
-				.try_into()
-				.map_err(|_| Error::<T>::InvalidDepositData)?;
+			let amount: u128 =
+				U256::from_big_endian(&data[0..32]).try_into().map_err(|_| Error::<T>::InvalidDepositData)?;
+			let recipient_len: usize =
+				U256::from_big_endian(&data[32..64]).try_into().map_err(|_| Error::<T>::InvalidDepositData)?;
 			if (data.len() - 64) != recipient_len {
 				return Err(Error::<T>::InvalidDepositData.into());
 			}
@@ -861,10 +805,7 @@ pub mod pallet {
 		}
 
 		fn rid_to_assetid(rid: &ResourceId) -> Option<AssetId> {
-			T::ResourcePairs::get()
-				.iter()
-				.position(|a| &a.1 == rid)
-				.map(|idx| T::ResourcePairs::get()[idx].0)
+			T::ResourcePairs::get().iter().position(|a| &a.1 == rid).map(|idx| T::ResourcePairs::get()[idx].0)
 		}
 
 		fn hex_zero_padding_32(i: u128) -> [u8; 32] {
@@ -890,28 +831,23 @@ pub mod pallet {
 			// Check if dest domain bridge is paused
 			ensure!(!IsPaused::<T>::get(proposal.origin_domain_id), Error::<T>::BridgePaused);
 			// Check if domain is supported
-			ensure!(
-				DestDomainIds::<T>::get(proposal.origin_domain_id),
-				Error::<T>::DestDomainNotSupported
-			);
+			ensure!(DestDomainIds::<T>::get(proposal.origin_domain_id), Error::<T>::DestDomainNotSupported);
 			// Check if proposal has executed
 			ensure!(
 				!Self::is_proposal_executed(proposal.deposit_nonce, proposal.origin_domain_id),
 				Error::<T>::ProposalAlreadyComplete
 			);
 			// Extract ResourceId from proposal data to get corresponding asset (Asset)
-			let asset_id =
-				Self::rid_to_assetid(&proposal.resource_id).ok_or(Error::<T>::AssetNotBound)?;
+			let asset_id = Self::rid_to_assetid(&proposal.resource_id).ok_or(Error::<T>::AssetNotBound)?;
 			// Extract Receipt from proposal data to get corresponding location (Location)
 			let (amount, location) = Self::extract_deposit_data(&proposal.data)?;
 
 			// convert the asset decimal
-			let decimal_converted_asset =
-				T::DecimalConverter::convert_from(&(asset_id, amount).into())
-					.ok_or(Error::<T>::DecimalConversionFail)?;
+			let decimal_converted_asset = T::DecimalConverter::convert_from(&(asset_id, amount).into())
+				.ok_or(Error::<T>::DecimalConversionFail)?;
 
-			let token_reserved_account = Self::get_token_reserved_account(&asset_id)
-				.ok_or(Error::<T>::NoLiquidityHolderAccountBound)?;
+			let token_reserved_account =
+				Self::get_token_reserved_account(&asset_id).ok_or(Error::<T>::NoLiquidityHolderAccountBound)?;
 
 			// Withdraw `decimal_converted_asset` of asset from reserve account
 			if T::IsReserve::contains(&decimal_converted_asset, &Location::here()) {
@@ -952,8 +888,7 @@ pub mod pallet {
 	mod test {
 		use codec::{self, Encode};
 		use frame_support::{
-			assert_noop, assert_ok, crypto::ecdsa::ECDSAExt,
-			traits::tokens::fungibles::Create as FungibleCerate,
+			assert_noop, assert_ok, crypto::ecdsa::ECDSAExt, traits::tokens::fungibles::Create as FungibleCerate,
 		};
 		use parachains_common::AccountId;
 		use primitive_types::U256;
@@ -962,12 +897,11 @@ pub mod pallet {
 		use xcm::latest::prelude::*;
 
 		use bridge::mock::{
-			assert_events, new_test_ext, slice_to_generalkey, AccessSegregator, Assets, Balances,
-			BridgeAccountNative, BridgeAccountOtherTokens, BridgePalletIndex, NativeLocation,
-			NativeResourceId, Runtime, RuntimeEvent, RuntimeOrigin as Origin, BridgeBasicFeeHandler,
-			Bridge, BridgeFeeHandlerRouter, BridgePercentageFeeHandler, TreasuryAccount,
-			UsdtAssetId, UsdtLocation, UsdtResourceId, ALICE, ASSET_OWNER, BOB, DEST_DOMAIN_ID,
-			ENDOWED_BALANCE,
+			assert_events, new_test_ext, slice_to_generalkey, AccessSegregator, Assets, Balances, Bridge,
+			BridgeAccountNative, BridgeAccountOtherTokens, BridgeBasicFeeHandler, BridgeFeeHandlerRouter,
+			BridgePalletIndex, BridgePercentageFeeHandler, NativeLocation, NativeResourceId, Runtime, RuntimeEvent,
+			RuntimeOrigin as Origin, TreasuryAccount, UsdtAssetId, UsdtLocation, UsdtResourceId, ALICE, ASSET_OWNER,
+			BOB, DEST_DOMAIN_ID, ENDOWED_BALANCE,
 		};
 		use module_bridge_fee_handler_router::FeeHandlerType;
 		use module_bridge_traits::{Bridge, DomainID, MpcAddress, TransferType};
@@ -975,8 +909,7 @@ pub mod pallet {
 		use crate as bridge;
 		use crate::{
 			mock::{AstrAssetId, AstrLocation, AstrResourceId},
-			DestChainIds, DestDomainIds, Error, Event as BridgeEvent, IsPaused, MpcAddr,
-			Proposal,
+			DestChainIds, DestDomainIds, Error, Event as BridgeEvent, IsPaused, MpcAddr, Proposal,
 		};
 
 		#[test]
@@ -1000,11 +933,7 @@ pub mod pallet {
 					Bridge::get_token_reserved_account(
 						&Location::new(
 							2,
-							X3(
-								Parachain(1000),
-								slice_to_generalkey(b"sygma"),
-								slice_to_generalkey(b"unknown"),
-							),
+							X3(Parachain(1000), slice_to_generalkey(b"sygma"), slice_to_generalkey(b"unknown"),),
 						)
 						.into()
 					),
@@ -1049,25 +978,17 @@ pub mod pallet {
 				assert_eq!(MpcAddr::<Runtime>::get(), default_addr);
 
 				// register domain
-				assert_ok!(Bridge::register_domain(
-					Origin::root(),
-					DEST_DOMAIN_ID,
-					U256::from(1)
-				));
+				assert_ok!(Bridge::register_domain(Origin::root(), DEST_DOMAIN_ID, U256::from(1)));
 
 				// pause bridge, should be ok
 				assert_ok!(Bridge::pause_bridge(Origin::root(), DEST_DOMAIN_ID));
 				assert!(IsPaused::<Runtime>::get(DEST_DOMAIN_ID));
-				assert_events(vec![RuntimeEvent::Bridge(BridgeEvent::BridgePaused {
-					dest_domain_id: DEST_DOMAIN_ID,
-				})]);
+				assert_events(vec![RuntimeEvent::Bridge(BridgeEvent::BridgePaused { dest_domain_id: DEST_DOMAIN_ID })]);
 
 				// pause bridge again after paused, should be ok
 				assert_ok!(Bridge::pause_bridge(Origin::root(), DEST_DOMAIN_ID));
 				assert!(IsPaused::<Runtime>::get(DEST_DOMAIN_ID));
-				assert_events(vec![RuntimeEvent::Bridge(BridgeEvent::BridgePaused {
-					dest_domain_id: DEST_DOMAIN_ID,
-				})]);
+				assert_events(vec![RuntimeEvent::Bridge(BridgeEvent::BridgePaused { dest_domain_id: DEST_DOMAIN_ID })]);
 
 				// permission test: unauthorized account should not be able to pause bridge
 				let unauthorized_account = Origin::from(Some(ALICE));
@@ -1086,16 +1007,10 @@ pub mod pallet {
 				assert_eq!(MpcAddr::<Runtime>::get(), default_addr);
 
 				// register domain
-				assert_ok!(Bridge::register_domain(
-					Origin::root(),
-					DEST_DOMAIN_ID,
-					U256::from(1)
-				));
+				assert_ok!(Bridge::register_domain(Origin::root(), DEST_DOMAIN_ID, U256::from(1)));
 
 				assert_ok!(Bridge::pause_bridge(Origin::root(), DEST_DOMAIN_ID));
-				assert_events(vec![RuntimeEvent::Bridge(BridgeEvent::BridgePaused {
-					dest_domain_id: DEST_DOMAIN_ID,
-				})]);
+				assert_events(vec![RuntimeEvent::Bridge(BridgeEvent::BridgePaused { dest_domain_id: DEST_DOMAIN_ID })]);
 
 				// bridge should be paused here
 				assert!(IsPaused::<Runtime>::get(DEST_DOMAIN_ID));
@@ -1129,18 +1044,8 @@ pub mod pallet {
 				let signature = vec![1u8];
 
 				// dummy proposals
-				let p1 = Proposal {
-					origin_domain_id: 1,
-					deposit_nonce: 1,
-					resource_id: [1u8; 32],
-					data: vec![1u8],
-				};
-				let p2 = Proposal {
-					origin_domain_id: 2,
-					deposit_nonce: 2,
-					resource_id: [2u8; 32],
-					data: vec![2u8],
-				};
+				let p1 = Proposal { origin_domain_id: 1, deposit_nonce: 1, resource_id: [1u8; 32], data: vec![1u8] };
+				let p2 = Proposal { origin_domain_id: 2, deposit_nonce: 2, resource_id: [2u8; 32], data: vec![2u8] };
 				let proposals = vec![p1, p2];
 
 				let final_message = Bridge::construct_ecdsa_signing_proposals_data(&proposals);
@@ -1164,18 +1069,8 @@ pub mod pallet {
 				assert!(!ecdsa::Pair::verify(&signature, b"Something else", &public));
 
 				// dummy proposals
-				let p1 = Proposal {
-					origin_domain_id: 1,
-					deposit_nonce: 1,
-					resource_id: [1u8; 32],
-					data: vec![1u8],
-				};
-				let p2 = Proposal {
-					origin_domain_id: 2,
-					deposit_nonce: 2,
-					resource_id: [2u8; 32],
-					data: vec![2u8],
-				};
+				let p1 = Proposal { origin_domain_id: 1, deposit_nonce: 1, resource_id: [1u8; 32], data: vec![1u8] };
+				let p2 = Proposal { origin_domain_id: 2, deposit_nonce: 2, resource_id: [2u8; 32], data: vec![2u8] };
 				let proposals = vec![p1, p2];
 
 				let final_message = Bridge::construct_ecdsa_signing_proposals_data(&proposals);
@@ -1197,18 +1092,8 @@ pub mod pallet {
 				assert_eq!(MpcAddr::<Runtime>::get(), test_mpc_addr);
 
 				// dummy proposals
-				let p1 = Proposal {
-					origin_domain_id: 1,
-					deposit_nonce: 1,
-					resource_id: [1u8; 32],
-					data: vec![1u8],
-				};
-				let p2 = Proposal {
-					origin_domain_id: 2,
-					deposit_nonce: 2,
-					resource_id: [2u8; 32],
-					data: vec![2u8],
-				};
+				let p1 = Proposal { origin_domain_id: 1, deposit_nonce: 1, resource_id: [1u8; 32], data: vec![1u8] };
+				let p2 = Proposal { origin_domain_id: 2, deposit_nonce: 2, resource_id: [2u8; 32], data: vec![2u8] };
 				let proposals = vec![p1, p2];
 
 				let final_message = Bridge::construct_ecdsa_signing_proposals_data(&proposals);
@@ -1233,18 +1118,8 @@ pub mod pallet {
 				assert_eq!(MpcAddr::<Runtime>::get(), test_mpc_addr);
 
 				// dummy proposals
-				let p1 = Proposal {
-					origin_domain_id: 1,
-					deposit_nonce: 1,
-					resource_id: [1u8; 32],
-					data: vec![1u8],
-				};
-				let p2 = Proposal {
-					origin_domain_id: 2,
-					deposit_nonce: 2,
-					resource_id: [2u8; 32],
-					data: vec![2u8],
-				};
+				let p1 = Proposal { origin_domain_id: 1, deposit_nonce: 1, resource_id: [1u8; 32], data: vec![1u8] };
+				let p2 = Proposal { origin_domain_id: 2, deposit_nonce: 2, resource_id: [2u8; 32], data: vec![2u8] };
 				let proposals = vec![p1, p2];
 
 				let final_message = Bridge::construct_ecdsa_signing_proposals_data(&proposals);
@@ -1267,11 +1142,7 @@ pub mod pallet {
 				let amount = 200_000_000_000_000u128; // 200 with 12 decimals
 				let final_amount_in_deposit_event = 199_000_000_000_000_000_000; // 200 - 1 then adjust to 18 decimals
 
-				assert_ok!(Bridge::register_domain(
-					Origin::root(),
-					DEST_DOMAIN_ID,
-					U256::from(1)
-				));
+				assert_ok!(Bridge::register_domain(Origin::root(), DEST_DOMAIN_ID, U256::from(1)));
 				assert_ok!(BridgeBasicFeeHandler::set_fee(
 					Origin::root(),
 					DEST_DOMAIN_ID,
@@ -1291,18 +1162,14 @@ pub mod pallet {
 					Box::new((Concrete(NativeLocation::get()), Fungible(amount)).into()),
 					Box::new(Location {
 						parents: 0,
-						interior: X2(
-							slice_to_generalkey(b"ethereum recipient"),
-							slice_to_generalkey(&[1]),
-						)
+						interior: X2(slice_to_generalkey(b"ethereum recipient"), slice_to_generalkey(&[1]),)
 					}),
 				));
 				// Check balances
 				assert_eq!(Balances::free_balance(ALICE), ENDOWED_BALANCE - amount);
 				assert_eq!(
 					Balances::free_balance(AccountId::new(
-						Bridge::get_token_reserved_account(&NativeLocation::get().into())
-							.unwrap()
+						Bridge::get_token_reserved_account(&NativeLocation::get().into()).unwrap()
 					)),
 					amount - fee
 				);
@@ -1340,11 +1207,7 @@ pub mod pallet {
 				let amount = 200_000_000_000_000u128; // 200 with 12 decimals
 				let final_amount_in_deposit_event = 199_000_000_000_000_000_000; // 200 - 1 then adjust to 18 decimals
 
-				assert_ok!(Bridge::register_domain(
-					Origin::root(),
-					DEST_DOMAIN_ID,
-					U256::from(1)
-				));
+				assert_ok!(Bridge::register_domain(Origin::root(), DEST_DOMAIN_ID, U256::from(1)));
 				assert_ok!(BridgeBasicFeeHandler::set_fee(
 					Origin::root(),
 					DEST_DOMAIN_ID,
@@ -1362,10 +1225,7 @@ pub mod pallet {
 				let asset: Asset = (Concrete(NativeLocation::get()), Fungible(amount)).into();
 				let dest: Location = Location {
 					parents: 0,
-					interior: X2(
-						slice_to_generalkey(b"ethereum recipient"),
-						slice_to_generalkey(&[1]),
-					),
+					interior: X2(slice_to_generalkey(b"ethereum recipient"), slice_to_generalkey(&[1])),
 				};
 
 				// Call transfer instead of deposit
@@ -1375,8 +1235,7 @@ pub mod pallet {
 				assert_eq!(Balances::free_balance(ALICE), ENDOWED_BALANCE - amount);
 				assert_eq!(
 					Balances::free_balance(AccountId::new(
-						Bridge::get_token_reserved_account(&NativeLocation::get().into())
-							.unwrap()
+						Bridge::get_token_reserved_account(&NativeLocation::get().into()).unwrap()
 					)),
 					amount - fee
 				);
@@ -1412,16 +1271,16 @@ pub mod pallet {
 				assert_eq!(
 					Bridge::hex_zero_padding_32(100).to_vec(),
 					vec![
-						0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-						0, 0, 0, 0, 0, 0, 100,
+						0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+						100,
 					]
 				);
 				let recipient = String::from("0x95ECF5ae000e0fe0e0dE63aDE9b7D82a372038b4");
 				assert_eq!(
 					Bridge::hex_zero_padding_32(recipient.len() as u128).to_vec(),
 					vec![
-						0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-						0, 0, 0, 0, 0, 0, 42,
+						0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+						42,
 					]
 				);
 			})
@@ -1437,11 +1296,10 @@ pub mod pallet {
 				assert_eq!(
 					data.to_vec(),
 					vec![
-						0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-						0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-						0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 42, 48, 120, 57, 53, 69, 67, 70,
-						53, 97, 101, 48, 48, 48, 101, 48, 102, 101, 48, 101, 48, 100, 69, 54, 51,
-						97, 68, 69, 57, 98, 55, 68, 56, 50, 97, 51, 55, 50, 48, 51, 56, 98, 52,
+						0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+						100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+						0, 42, 48, 120, 57, 53, 69, 67, 70, 53, 97, 101, 48, 48, 48, 101, 48, 102, 101, 48, 101, 48,
+						100, 69, 54, 51, 97, 68, 69, 57, 98, 55, 68, 56, 50, 97, 51, 55, 50, 48, 51, 56, 98, 52,
 					]
 				);
 			})
@@ -1466,11 +1324,7 @@ pub mod pallet {
 					Box::new(UsdtLocation::get().into()),
 					FeeHandlerType::BasicFeeHandler,
 				));
-				assert_ok!(Bridge::register_domain(
-					Origin::root(),
-					DEST_DOMAIN_ID,
-					U256::from(1)
-				));
+				assert_ok!(Bridge::register_domain(Origin::root(), DEST_DOMAIN_ID, U256::from(1)));
 				assert_ok!(Bridge::set_mpc_address(Origin::root(), test_mpc_addr));
 
 				// Register foreign asset (USDT) with asset id 0
@@ -1479,12 +1333,7 @@ pub mod pallet {
 				>>::create(UsdtAssetId::get(), ASSET_OWNER, true, 1,));
 
 				// Mint some USDT to ALICE for test
-				assert_ok!(Assets::mint(
-					Origin::signed(ASSET_OWNER),
-					codec::Compact(0),
-					ALICE,
-					ENDOWED_BALANCE,
-				));
+				assert_ok!(Assets::mint(Origin::signed(ASSET_OWNER), codec::Compact(0), ALICE, ENDOWED_BALANCE,));
 				assert_eq!(Assets::balance(UsdtAssetId::get(), &ALICE), ENDOWED_BALANCE);
 
 				assert_ok!(Bridge::deposit(
@@ -1492,10 +1341,7 @@ pub mod pallet {
 					Box::new((Concrete(UsdtLocation::get()), Fungible(amount)).into()),
 					Box::new(Location {
 						parents: 0,
-						interior: X2(
-							slice_to_generalkey(b"ethereum recipient"),
-							slice_to_generalkey(&[1]),
-						)
+						interior: X2(slice_to_generalkey(b"ethereum recipient"), slice_to_generalkey(&[1]),)
 					}),
 				));
 				// Check balances
@@ -1504,10 +1350,7 @@ pub mod pallet {
 				assert_eq!(
 					Assets::balance(
 						UsdtAssetId::get(),
-						AccountId::new(
-							Bridge::get_token_reserved_account(&UsdtLocation::get().into())
-								.unwrap()
-						),
+						AccountId::new(Bridge::get_token_reserved_account(&UsdtLocation::get().into()).unwrap()),
 					),
 					amount - fee
 				);
@@ -1520,10 +1363,7 @@ pub mod pallet {
 						deposit_nonce: 0,
 						sender: ALICE,
 						transfer_type: TransferType::FungibleTransfer,
-						deposit_data: Bridge::create_deposit_data(
-							amount - fee,
-							b"ethereum recipient".to_vec(),
-						),
+						deposit_data: Bridge::create_deposit_data(amount - fee, b"ethereum recipient".to_vec()),
 						handler_response: vec![],
 					}),
 					RuntimeEvent::Bridge(BridgeEvent::FeeCollected {
@@ -1552,11 +1392,7 @@ pub mod pallet {
 					Box::new(unbounded_asset_location.into()),
 					fee
 				));
-				assert_ok!(Bridge::register_domain(
-					Origin::root(),
-					DEST_DOMAIN_ID,
-					U256::from(1)
-				));
+				assert_ok!(Bridge::register_domain(Origin::root(), DEST_DOMAIN_ID, U256::from(1)));
 
 				assert_noop!(
 					Bridge::deposit(
@@ -1564,10 +1400,7 @@ pub mod pallet {
 						Box::new((Concrete(unbounded_asset_location), Fungible(amount)).into()),
 						Box::new(Location {
 							parents: 0,
-							interior: X2(
-								slice_to_generalkey(b"ethereum recipient"),
-								slice_to_generalkey(&[1]),
-							)
+							interior: X2(slice_to_generalkey(b"ethereum recipient"), slice_to_generalkey(&[1]),)
 						}),
 					),
 					bridge::Error::<Runtime>::AssetNotBound
@@ -1578,10 +1411,7 @@ pub mod pallet {
 		#[test]
 		fn deposit_to_unrecognized_dest_should_fail() {
 			new_test_ext().execute_with(|| {
-				let invalid_dest = Location::new(
-					0,
-					X2(GeneralIndex(0), slice_to_generalkey(b"ethereum recipient")),
-				);
+				let invalid_dest = Location::new(0, X2(GeneralIndex(0), slice_to_generalkey(b"ethereum recipient")));
 				let test_mpc_addr: MpcAddress = MpcAddress([1u8; 20]);
 				let fee = 100u128;
 				let amount = 200u128;
@@ -1593,11 +1423,7 @@ pub mod pallet {
 					Box::new(NativeLocation::get().into()),
 					fee
 				));
-				assert_ok!(Bridge::register_domain(
-					Origin::root(),
-					DEST_DOMAIN_ID,
-					U256::from(1)
-				));
+				assert_ok!(Bridge::register_domain(Origin::root(), DEST_DOMAIN_ID, U256::from(1)));
 
 				assert_noop!(
 					Bridge::deposit(
@@ -1616,21 +1442,14 @@ pub mod pallet {
 				let test_mpc_addr: MpcAddress = MpcAddress([1u8; 20]);
 				let amount = 200u128;
 				assert_ok!(Bridge::set_mpc_address(Origin::root(), test_mpc_addr));
-				assert_ok!(Bridge::register_domain(
-					Origin::root(),
-					DEST_DOMAIN_ID,
-					U256::from(1)
-				));
+				assert_ok!(Bridge::register_domain(Origin::root(), DEST_DOMAIN_ID, U256::from(1)));
 				assert_noop!(
 					Bridge::deposit(
 						Origin::signed(ALICE),
 						Box::new((Concrete(NativeLocation::get()), Fungible(amount)).into()),
 						Box::new(Location {
 							parents: 0,
-							interior: X2(
-								slice_to_generalkey(b"ethereum recipient"),
-								slice_to_generalkey(&[1]),
-							)
+							interior: X2(slice_to_generalkey(b"ethereum recipient"), slice_to_generalkey(&[1]),)
 						}),
 					),
 					bridge::Error::<Runtime>::MissingFeeConfig
@@ -1658,21 +1477,14 @@ pub mod pallet {
 					Box::new(NativeLocation::get().into()),
 					FeeHandlerType::BasicFeeHandler,
 				));
-				assert_ok!(Bridge::register_domain(
-					Origin::root(),
-					DEST_DOMAIN_ID,
-					U256::from(1)
-				));
+				assert_ok!(Bridge::register_domain(Origin::root(), DEST_DOMAIN_ID, U256::from(1)));
 				assert_noop!(
 					Bridge::deposit(
 						Origin::signed(ALICE),
 						Box::new((Concrete(NativeLocation::get()), Fungible(amount)).into()),
 						Box::new(Location {
 							parents: 0,
-							interior: X2(
-								slice_to_generalkey(b"ethereum recipient"),
-								slice_to_generalkey(&[1]),
-							)
+							interior: X2(slice_to_generalkey(b"ethereum recipient"), slice_to_generalkey(&[1]),)
 						}),
 					),
 					bridge::Error::<Runtime>::FeeTooExpensive
@@ -1700,11 +1512,7 @@ pub mod pallet {
 					FeeHandlerType::BasicFeeHandler,
 				));
 				// register domain
-				assert_ok!(Bridge::register_domain(
-					Origin::root(),
-					DEST_DOMAIN_ID,
-					U256::from(1)
-				));
+				assert_ok!(Bridge::register_domain(Origin::root(), DEST_DOMAIN_ID, U256::from(1)));
 				// set mpc address will also unpause all bridges
 				assert_ok!(Bridge::set_mpc_address(Origin::root(), test_mpc_addr));
 
@@ -1717,10 +1525,7 @@ pub mod pallet {
 						Box::new((Concrete(NativeLocation::get()), Fungible(amount)).into()),
 						Box::new(Location {
 							parents: 0,
-							interior: X2(
-								slice_to_generalkey(b"ethereum recipient"),
-								slice_to_generalkey(&[1]),
-							)
+							interior: X2(slice_to_generalkey(b"ethereum recipient"), slice_to_generalkey(&[1]),)
 						}),
 					),
 					bridge::Error::<Runtime>::BridgePaused
@@ -1733,10 +1538,7 @@ pub mod pallet {
 					Box::new((Concrete(NativeLocation::get()), Fungible(amount)).into()),
 					Box::new(Location {
 						parents: 0,
-						interior: X2(
-							slice_to_generalkey(b"ethereum recipient"),
-							slice_to_generalkey(&[1]),
-						)
+						interior: X2(slice_to_generalkey(b"ethereum recipient"), slice_to_generalkey(&[1]),)
 					}),
 				));
 			})
@@ -1760,10 +1562,7 @@ pub mod pallet {
 						Box::new((Concrete(NativeLocation::get()), Fungible(amount)).into()),
 						Box::new(Location {
 							parents: 0,
-							interior: X2(
-								slice_to_generalkey(b"ethereum recipient"),
-								slice_to_generalkey(&[1]),
-							)
+							interior: X2(slice_to_generalkey(b"ethereum recipient"), slice_to_generalkey(&[1]),)
 						}),
 					),
 					bridge::Error::<Runtime>::MissingMpcAddress
@@ -1797,11 +1596,7 @@ pub mod pallet {
 				// set mpc address
 				let test_mpc_addr: MpcAddress = MpcAddress([1u8; 20]);
 				assert_ok!(Bridge::set_mpc_address(Origin::root(), test_mpc_addr));
-				assert_ok!(Bridge::register_domain(
-					Origin::root(),
-					DEST_DOMAIN_ID,
-					U256::from(1)
-				));
+				assert_ok!(Bridge::register_domain(Origin::root(), DEST_DOMAIN_ID, U256::from(1)));
 
 				// pause bridge after set mpc address and retry, should fail
 				assert_ok!(Bridge::pause_bridge(Origin::root(), DEST_DOMAIN_ID));
@@ -1838,11 +1633,7 @@ pub mod pallet {
 				assert_ok!(Bridge::set_mpc_address(Origin::root(), test_mpc_addr));
 				assert_eq!(MpcAddr::<Runtime>::get(), test_mpc_addr);
 				// register domain
-				assert_ok!(Bridge::register_domain(
-					Origin::root(),
-					DEST_DOMAIN_ID,
-					U256::from(1)
-				));
+				assert_ok!(Bridge::register_domain(Origin::root(), DEST_DOMAIN_ID, U256::from(1)));
 
 				// Generate an evil key
 				let (evil_pair, _): (ecdsa::Pair, _) = Pair::generate();
@@ -1867,10 +1658,7 @@ pub mod pallet {
 					Box::new((Concrete(NativeLocation::get()), Fungible(amount)).into()),
 					Box::new(Location {
 						parents: 0,
-						interior: X2(
-							slice_to_generalkey(b"ethereum recipient"),
-							slice_to_generalkey(&[1]),
-						)
+						interior: X2(slice_to_generalkey(b"ethereum recipient"), slice_to_generalkey(&[1]),)
 					}),
 				));
 
@@ -1883,17 +1671,13 @@ pub mod pallet {
 				assert_ok!(Assets::mint(
 					Origin::signed(ASSET_OWNER),
 					codec::Compact(0),
-					AccountId::new(
-						Bridge::get_token_reserved_account(&UsdtLocation::get().into())
-							.unwrap()
-					),
+					AccountId::new(Bridge::get_token_reserved_account(&UsdtLocation::get().into()).unwrap()),
 					400_000_000_000_000,
 				));
 				// alice deposit 200 - 1 token fee native token, so the native token holder should have 199 tokens
 				assert_eq!(
 					Balances::free_balance(AccountId::new(
-						Bridge::get_token_reserved_account(&NativeLocation::get().into())
-							.unwrap()
+						Bridge::get_token_reserved_account(&NativeLocation::get().into()).unwrap()
 					)),
 					199_000_000_000_000
 				);
@@ -1901,10 +1685,7 @@ pub mod pallet {
 				assert_eq!(
 					Assets::balance(
 						UsdtAssetId::get(),
-						AccountId::new(
-							Bridge::get_token_reserved_account(&UsdtLocation::get().into())
-								.unwrap()
-						),
+						AccountId::new(Bridge::get_token_reserved_account(&UsdtLocation::get().into()).unwrap()),
 					),
 					400_000_000_000_000
 				);
@@ -1918,8 +1699,7 @@ pub mod pallet {
 					resource_id: NativeResourceId::get(),
 					data: Bridge::create_deposit_data(
 						amount,
-						Location::new(0, X1(AccountId32 { network: None, id: BOB.into() }))
-							.encode(),
+						Location::new(0, X1(AccountId32 { network: None, id: BOB.into() })).encode(),
 					),
 				};
 				// amount is in 18 decimal 0.000200000000000000, will be convert to 18 decimal
@@ -1930,8 +1710,7 @@ pub mod pallet {
 					resource_id: UsdtResourceId::get(),
 					data: Bridge::create_deposit_data(
 						amount,
-						Location::new(0, X1(AccountId32 { network: None, id: BOB.into() }))
-							.encode(),
+						Location::new(0, X1(AccountId32 { network: None, id: BOB.into() })).encode(),
 					),
 				};
 				let invalid_depositnonce_proposal = Proposal {
@@ -1940,8 +1719,7 @@ pub mod pallet {
 					resource_id: NativeResourceId::get(),
 					data: Bridge::create_deposit_data(
 						amount,
-						Location::new(0, X1(AccountId32 { network: None, id: BOB.into() }))
-							.encode(),
+						Location::new(0, X1(AccountId32 { network: None, id: BOB.into() })).encode(),
 					),
 				};
 				let invalid_domainid_proposal = Proposal {
@@ -1950,8 +1728,7 @@ pub mod pallet {
 					resource_id: NativeResourceId::get(),
 					data: Bridge::create_deposit_data(
 						amount,
-						Location::new(0, X1(AccountId32 { network: None, id: BOB.into() }))
-							.encode(),
+						Location::new(0, X1(AccountId32 { network: None, id: BOB.into() })).encode(),
 					),
 				};
 				let invalid_resourceid_proposal = Proposal {
@@ -1960,8 +1737,7 @@ pub mod pallet {
 					resource_id: [2u8; 32],
 					data: Bridge::create_deposit_data(
 						amount,
-						Location::new(0, X1(AccountId32 { network: None, id: BOB.into() }))
-							.encode(),
+						Location::new(0, X1(AccountId32 { network: None, id: BOB.into() })).encode(),
 					),
 				};
 				let invalid_recipient_proposal = Proposal {
@@ -2000,13 +1776,11 @@ pub mod pallet {
 					proposals_with_valid_signature.encode()
 				));
 				// should emit FailedHandlerExecution event
-				assert_events(vec![RuntimeEvent::Bridge(
-					BridgeEvent::FailedHandlerExecution {
-						error: vec![66, 114, 105, 100, 103, 101, 80, 97, 117, 115, 101, 100],
-						origin_domain_id: 1,
-						deposit_nonce: 3,
-					},
-				)]);
+				assert_events(vec![RuntimeEvent::Bridge(BridgeEvent::FailedHandlerExecution {
+					error: vec![66, 114, 105, 100, 103, 101, 80, 97, 117, 115, 101, 100],
+					origin_domain_id: 1,
+					deposit_nonce: 3,
+				})]);
 				assert_ok!(Bridge::unpause_bridge(Origin::root(), DEST_DOMAIN_ID));
 
 				assert_noop!(
@@ -2019,10 +1793,7 @@ pub mod pallet {
 				);
 				assert_eq!(Balances::free_balance(&BOB), ENDOWED_BALANCE);
 				assert_eq!(Assets::balance(UsdtAssetId::get(), &BOB), 0);
-				assert!(Bridge::verify_by_mpc_address(
-					final_message,
-					proposals_with_valid_signature.encode(),
-				));
+				assert!(Bridge::verify_by_mpc_address(final_message, proposals_with_valid_signature.encode(),));
 				assert_ok!(Bridge::execute_proposal(
 					Origin::signed(ALICE),
 					proposals,
@@ -2038,8 +1809,7 @@ pub mod pallet {
 				// 199 - 0.0002 native token is 198.999800000000
 				assert_eq!(
 					Balances::free_balance(AccountId::new(
-						Bridge::get_token_reserved_account(&NativeLocation::get().into())
-							.unwrap()
+						Bridge::get_token_reserved_account(&NativeLocation::get().into()).unwrap()
 					)),
 					199_000_000_000_000 - 200_000_000
 				);
@@ -2047,10 +1817,7 @@ pub mod pallet {
 				assert_eq!(
 					Assets::balance(
 						UsdtAssetId::get(),
-						AccountId::new(
-							Bridge::get_token_reserved_account(&UsdtLocation::get().into())
-								.unwrap()
-						),
+						AccountId::new(Bridge::get_token_reserved_account(&UsdtLocation::get().into()).unwrap()),
 					),
 					200_000_000_000_000
 				);
@@ -2066,11 +1833,7 @@ pub mod pallet {
 				let test_mpc_addr: MpcAddress = MpcAddress([1u8; 20]);
 				assert_ok!(Bridge::set_mpc_address(Origin::root(), test_mpc_addr));
 				// register domain
-				assert_ok!(Bridge::register_domain(
-					Origin::root(),
-					DEST_DOMAIN_ID,
-					U256::from(1)
-				));
+				assert_ok!(Bridge::register_domain(Origin::root(), DEST_DOMAIN_ID, U256::from(1)));
 
 				// pause bridge
 				assert_ok!(Bridge::pause_bridge(Origin::root(), DEST_DOMAIN_ID));
@@ -2130,11 +1893,7 @@ pub mod pallet {
 				// ALICE set mpc address should work
 				assert_ok!(Bridge::set_mpc_address(Some(ALICE).into(), test_mpc_addr));
 				// register domain
-				assert_ok!(Bridge::register_domain(
-					Origin::root(),
-					DEST_DOMAIN_ID,
-					U256::from(1)
-				));
+				assert_ok!(Bridge::register_domain(Origin::root(), DEST_DOMAIN_ID, U256::from(1)));
 
 				// ALICE pause&unpause bridge should still failed
 				assert_noop!(
@@ -2174,19 +1933,13 @@ pub mod pallet {
 					ALICE
 				));
 				// alice register domainID 1 with chainID 1, should be ok
-				assert_ok!(Bridge::register_domain(
-					Origin::from(Some(ALICE)),
-					1u8,
-					U256::from(1)
-				));
+				assert_ok!(Bridge::register_domain(Origin::from(Some(ALICE)), 1u8, U256::from(1)));
 				// should emit RegisterDestDomain event
-				assert_events(vec![RuntimeEvent::Bridge(
-					BridgeEvent::RegisterDestDomain {
-						sender: ALICE,
-						domain_id: 1,
-						chain_id: U256::from(1),
-					},
-				)]);
+				assert_events(vec![RuntimeEvent::Bridge(BridgeEvent::RegisterDestDomain {
+					sender: ALICE,
+					domain_id: 1,
+					chain_id: U256::from(1),
+				})]);
 				// storage check
 				assert!(DestDomainIds::<Runtime>::get(1u8));
 				assert_eq!(DestChainIds::<Runtime>::get(1u8).unwrap(), U256::from(1));
@@ -2216,19 +1969,13 @@ pub mod pallet {
 					Error::<Runtime>::DestDomainNotSupported
 				);
 				// alice unregister domainID 1 with chainID 1, should success
-				assert_ok!(Bridge::unregister_domain(
-					Origin::from(Some(ALICE)),
-					1u8,
-					U256::from(1)
-				));
+				assert_ok!(Bridge::unregister_domain(Origin::from(Some(ALICE)), 1u8, U256::from(1)));
 				// should emit UnregisterDestDomain event
-				assert_events(vec![RuntimeEvent::Bridge(
-					BridgeEvent::UnregisterDestDomain {
-						sender: ALICE,
-						domain_id: 1,
-						chain_id: U256::from(1),
-					},
-				)]);
+				assert_events(vec![RuntimeEvent::Bridge(BridgeEvent::UnregisterDestDomain {
+					sender: ALICE,
+					domain_id: 1,
+					chain_id: U256::from(1),
+				})]);
 
 				// storage check
 				// DomainID 1 should not support anymore
@@ -2297,24 +2044,15 @@ pub mod pallet {
 					FeeHandlerType::BasicFeeHandler,
 				));
 
-				assert_ok!(Bridge::register_domain(
-					Origin::root(),
-					DEST_DOMAIN_ID,
-					U256::from(1)
-				));
+				assert_ok!(Bridge::register_domain(Origin::root(), DEST_DOMAIN_ID, U256::from(1)));
 
 				// deposit native asset which has 12 decimal
 				assert_ok!(Bridge::deposit(
 					Origin::signed(ALICE),
-					Box::new(
-						(Concrete(NativeLocation::get()), Fungible(amount_native_asset)).into()
-					),
+					Box::new((Concrete(NativeLocation::get()), Fungible(amount_native_asset)).into()),
 					Box::new(Location {
 						parents: 0,
-						interior: X2(
-							slice_to_generalkey(b"ethereum recipient"),
-							slice_to_generalkey(&[1]),
-						)
+						interior: X2(slice_to_generalkey(b"ethereum recipient"), slice_to_generalkey(&[1]),)
 					}),
 				));
 				// Check balances
@@ -2322,8 +2060,7 @@ pub mod pallet {
 				// native asset should be reserved so that BridgeAccount should hold it
 				assert_eq!(
 					Balances::free_balance(AccountId::new(
-						Bridge::get_token_reserved_account(&NativeLocation::get().into())
-							.unwrap()
+						Bridge::get_token_reserved_account(&NativeLocation::get().into()).unwrap()
 					)),
 					amount_native_asset - fee_native_asset
 				);
@@ -2359,12 +2096,7 @@ pub mod pallet {
 				>>::create(UsdtAssetId::get(), ASSET_OWNER, true, 1,));
 
 				// Mint some usdt to ALICE for test
-				assert_ok!(Assets::mint(
-					Origin::signed(ASSET_OWNER),
-					codec::Compact(0),
-					ALICE,
-					ENDOWED_BALANCE,
-				)); // make sure Alice owns enough funds here
+				assert_ok!(Assets::mint(Origin::signed(ASSET_OWNER), codec::Compact(0), ALICE, ENDOWED_BALANCE,)); // make sure Alice owns enough funds here
 				assert_eq!(Assets::balance(UsdtAssetId::get(), &ALICE), ENDOWED_BALANCE);
 
 				// deposit
@@ -2373,32 +2105,20 @@ pub mod pallet {
 					Box::new((Concrete(UsdtLocation::get()), Fungible(amount_usdt_asset)).into()),
 					Box::new(Location {
 						parents: 0,
-						interior: X2(
-							slice_to_generalkey(b"ethereum recipient"),
-							slice_to_generalkey(&[1]),
-						)
+						interior: X2(slice_to_generalkey(b"ethereum recipient"), slice_to_generalkey(&[1]),)
 					}),
 				));
 				// Check balances
-				assert_eq!(
-					Assets::balance(UsdtAssetId::get(), &ALICE),
-					ENDOWED_BALANCE - amount_usdt_asset
-				);
+				assert_eq!(Assets::balance(UsdtAssetId::get(), &ALICE), ENDOWED_BALANCE - amount_usdt_asset);
 				assert_eq!(
 					Assets::balance(
 						UsdtAssetId::get(),
-						AccountId::new(
-							Bridge::get_token_reserved_account(&UsdtLocation::get().into())
-								.unwrap()
-						),
+						AccountId::new(Bridge::get_token_reserved_account(&UsdtLocation::get().into()).unwrap()),
 					),
 					122_456_789_123_456_789_123
 				);
 				// TreasuryAccount is collecting the bridging fee
-				assert_eq!(
-					Assets::balance(UsdtAssetId::get(), TreasuryAccount::get()),
-					fee_usdt_asset
-				);
+				assert_eq!(Assets::balance(UsdtAssetId::get(), TreasuryAccount::get()), fee_usdt_asset);
 
 				// Check event
 				assert_events(vec![
@@ -2430,12 +2150,7 @@ pub mod pallet {
 				>>::create(AstrAssetId::get(), ASSET_OWNER, true, 1,));
 
 				// Mint some astr to ALICE for test
-				assert_ok!(Assets::mint(
-					Origin::signed(ASSET_OWNER),
-					codec::Compact(1),
-					ALICE,
-					ENDOWED_BALANCE,
-				)); // make sure Alice owns enough funds here
+				assert_ok!(Assets::mint(Origin::signed(ASSET_OWNER), codec::Compact(1), ALICE, ENDOWED_BALANCE,)); // make sure Alice owns enough funds here
 				assert_eq!(Assets::balance(AstrAssetId::get(), &ALICE), ENDOWED_BALANCE);
 
 				// deposit
@@ -2444,34 +2159,22 @@ pub mod pallet {
 					Box::new((Concrete(AstrLocation::get()), Fungible(amount_astr_asset)).into()),
 					Box::new(Location {
 						parents: 0,
-						interior: X2(
-							slice_to_generalkey(b"ethereum recipient"),
-							slice_to_generalkey(&[1]),
-						)
+						interior: X2(slice_to_generalkey(b"ethereum recipient"), slice_to_generalkey(&[1]),)
 					}),
 				));
 				// Check balances
-				assert_eq!(
-					Assets::balance(AstrAssetId::get(), &ALICE),
-					ENDOWED_BALANCE - amount_astr_asset
-				);
+				assert_eq!(Assets::balance(AstrAssetId::get(), &ALICE), ENDOWED_BALANCE - amount_astr_asset);
 				// astr asset should be reserved so that BridgeAccount should hold it(Astr is not
 				// defined in ConcrateSygmaAsset)
 				assert_eq!(
 					Assets::balance(
 						AstrAssetId::get(),
-						AccountId::new(
-							Bridge::get_token_reserved_account(&AstrLocation::get().into())
-								.unwrap()
-						),
+						AccountId::new(Bridge::get_token_reserved_account(&AstrLocation::get().into()).unwrap()),
 					),
 					amount_astr_asset - fee_astr_asset
 				);
 				// TreasuryAccount is collecting the bridging fee
-				assert_eq!(
-					Assets::balance(AstrAssetId::get(), TreasuryAccount::get()),
-					fee_astr_asset
-				);
+				assert_eq!(Assets::balance(AstrAssetId::get(), TreasuryAccount::get()), fee_astr_asset);
 
 				// Check event
 				assert_events(vec![
@@ -2512,18 +2215,11 @@ pub mod pallet {
 					Bridge::deposit(
 						Origin::signed(ALICE),
 						Box::new(
-							(
-								Concrete(AstrLocation::get()),
-								Fungible(amount_astr_asset_extreme_small_amount)
-							)
-								.into()
+							(Concrete(AstrLocation::get()), Fungible(amount_astr_asset_extreme_small_amount)).into()
 						),
 						Box::new(Location {
 							parents: 0,
-							interior: X2(
-								slice_to_generalkey(b"ethereum recipient"),
-								slice_to_generalkey(&[1]),
-							)
+							interior: X2(slice_to_generalkey(b"ethereum recipient"), slice_to_generalkey(&[1]),)
 						}),
 					),
 					bridge::Error::<Runtime>::DecimalConversionFail
@@ -2540,11 +2236,7 @@ pub mod pallet {
 				// set mpc address
 				assert_ok!(Bridge::set_mpc_address(Origin::root(), test_mpc_addr));
 				// register domain
-				assert_ok!(Bridge::register_domain(
-					Origin::root(),
-					DEST_DOMAIN_ID,
-					U256::from(1)
-				));
+				assert_ok!(Bridge::register_domain(Origin::root(), DEST_DOMAIN_ID, U256::from(1)));
 				let fee = 1_000_000_000_000u128; // 1 token in 12 decimals
 				let init_deposit = 10_000_000_000_000u128;
 				// 12 token in 12 decimal
@@ -2565,22 +2257,16 @@ pub mod pallet {
 				// asset - fee) into TransferReserveAccount
 				assert_ok!(Bridge::deposit(
 					Origin::signed(ALICE),
-					Box::new(
-						(Concrete(NativeLocation::get()), Fungible(ENDOWED_BALANCE / 2)).into()
-					),
+					Box::new((Concrete(NativeLocation::get()), Fungible(ENDOWED_BALANCE / 2)).into()),
 					Box::new(Location {
 						parents: 0,
-						interior: X2(
-							slice_to_generalkey(b"ethereum recipient"),
-							slice_to_generalkey(&[1]),
-						)
+						interior: X2(slice_to_generalkey(b"ethereum recipient"), slice_to_generalkey(&[1]),)
 					}),
 				));
 				// BridgeAccount should have half of alice native asset - fee
 				assert_eq!(
 					Balances::free_balance(AccountId::new(
-						Bridge::get_token_reserved_account(&NativeLocation::get().into())
-							.unwrap()
+						Bridge::get_token_reserved_account(&NativeLocation::get().into()).unwrap()
 					)),
 					ENDOWED_BALANCE / 2 - fee
 				);
@@ -2596,8 +2282,7 @@ pub mod pallet {
 					deposit_nonce: 1,
 					data: Bridge::create_deposit_data(
 						bridge_amount,
-						Location::new(0, X1(AccountId32 { network: None, id: ALICE.into() }))
-							.encode(),
+						Location::new(0, X1(AccountId32 { network: None, id: ALICE.into() })).encode(),
 					),
 				};
 				let proposals = vec![p_native];
@@ -2607,17 +2292,10 @@ pub mod pallet {
 				// check Alice balance of native asset before executing, should have half of the
 				// init native asset
 				assert_eq!(Balances::free_balance(ALICE), ENDOWED_BALANCE / 2);
-				assert_ok!(Bridge::execute_proposal(
-					Origin::signed(ALICE),
-					proposals,
-					signature.encode()
-				));
+				assert_ok!(Bridge::execute_proposal(Origin::signed(ALICE), proposals, signature.encode()));
 				// check Alice balance of native asset after executing, should have half of the init
 				// native asset + 100_000_000_000_000(12 decimal)
-				assert_eq!(
-					Balances::free_balance(ALICE),
-					ENDOWED_BALANCE / 2 + 100_000_000_000_000
-				);
+				assert_eq!(Balances::free_balance(ALICE), ENDOWED_BALANCE / 2 + 100_000_000_000_000);
 
 				// proposal for bridging usdt asset to alice(usdt asset is 18 decimal)
 				// Register foreign asset (usdt) with asset id 0
@@ -2629,19 +2307,13 @@ pub mod pallet {
 				assert_ok!(Assets::mint(
 					Origin::signed(ASSET_OWNER),
 					codec::Compact(0),
-					AccountId::new(
-						Bridge::get_token_reserved_account(&UsdtLocation::get().into())
-							.unwrap()
-					),
+					AccountId::new(Bridge::get_token_reserved_account(&UsdtLocation::get().into()).unwrap()),
 					ENDOWED_BALANCE,
 				));
 				assert_eq!(
 					Assets::balance(
 						UsdtAssetId::get(),
-						AccountId::new(
-							Bridge::get_token_reserved_account(&UsdtLocation::get().into())
-								.unwrap()
-						),
+						AccountId::new(Bridge::get_token_reserved_account(&UsdtLocation::get().into()).unwrap()),
 					),
 					ENDOWED_BALANCE
 				);
@@ -2652,27 +2324,18 @@ pub mod pallet {
 					resource_id: UsdtResourceId::get(),
 					data: Bridge::create_deposit_data(
 						bridge_amount,
-						Location::new(0, X1(AccountId32 { network: None, id: ALICE.into() }))
-							.encode(),
+						Location::new(0, X1(AccountId32 { network: None, id: ALICE.into() })).encode(),
 					),
 				};
 				let proposals_usdt = vec![p_usdt];
-				let final_message_usdt =
-					Bridge::construct_ecdsa_signing_proposals_data(&proposals_usdt);
+				let final_message_usdt = Bridge::construct_ecdsa_signing_proposals_data(&proposals_usdt);
 				let signature_usdt = pair.sign_prehashed(&final_message_usdt);
 
 				// alice does not have any usdt at this moment
 				assert_eq!(Assets::balance(UsdtAssetId::get(), &ALICE), 0);
-				assert_ok!(Bridge::execute_proposal(
-					Origin::signed(ALICE),
-					proposals_usdt,
-					signature_usdt.encode()
-				));
+				assert_ok!(Bridge::execute_proposal(Origin::signed(ALICE), proposals_usdt, signature_usdt.encode()));
 				// alice should have 100 usdt at this moment (100 usdt with 18 decimals)
-				assert_eq!(
-					Assets::balance(UsdtAssetId::get(), &ALICE),
-					100_000_000_000_000_000_000
-				);
+				assert_eq!(Assets::balance(UsdtAssetId::get(), &ALICE), 100_000_000_000_000_000_000);
 
 				// proposal for bridging astr asset to alice(astr asset is 24 decimal)
 				// Register foreign asset (astr) with asset id 1
@@ -2684,19 +2347,13 @@ pub mod pallet {
 				assert_ok!(Assets::mint(
 					Origin::signed(ASSET_OWNER),
 					codec::Compact(1),
-					AccountId::new(
-						Bridge::get_token_reserved_account(&AstrLocation::get().into())
-							.unwrap()
-					),
+					AccountId::new(Bridge::get_token_reserved_account(&AstrLocation::get().into()).unwrap()),
 					ENDOWED_BALANCE
 				));
 				assert_eq!(
 					Assets::balance(
 						AstrAssetId::get(),
-						AccountId::new(
-							Bridge::get_token_reserved_account(&AstrLocation::get().into())
-								.unwrap()
-						),
+						AccountId::new(Bridge::get_token_reserved_account(&AstrLocation::get().into()).unwrap()),
 					),
 					ENDOWED_BALANCE
 				);
@@ -2707,44 +2364,33 @@ pub mod pallet {
 					resource_id: AstrResourceId::get(),
 					data: Bridge::create_deposit_data(
 						bridge_amount,
-						Location::new(0, X1(AccountId32 { network: None, id: ALICE.into() }))
-							.encode(),
+						Location::new(0, X1(AccountId32 { network: None, id: ALICE.into() })).encode(),
 					),
 				};
 				let proposals_astr = vec![p_astr];
-				let final_message_astr =
-					Bridge::construct_ecdsa_signing_proposals_data(&proposals_astr);
+				let final_message_astr = Bridge::construct_ecdsa_signing_proposals_data(&proposals_astr);
 				let signature_astr = pair.sign_prehashed(&final_message_astr);
 
 				// alice does not have any astr at this moment
 				assert_eq!(Assets::balance(AstrAssetId::get(), &ALICE), 0);
-				assert_ok!(Bridge::execute_proposal(
-					Origin::signed(ALICE),
-					proposals_astr,
-					signature_astr.encode()
-				));
+				assert_ok!(Bridge::execute_proposal(Origin::signed(ALICE), proposals_astr, signature_astr.encode()));
 				// alice should have 100 astr at this moment (100 astr with 24 decimals)
-				assert_eq!(
-					Assets::balance(AstrAssetId::get(), &ALICE),
-					100_000_000_000_000_000_000_000_000
-				);
+				assert_eq!(Assets::balance(AstrAssetId::get(), &ALICE), 100_000_000_000_000_000_000_000_000);
 
 				// extreme small amount edge case
 				let extreme_small_bridge_amount = 100_000; // 0.000000000000100000 native asset with 18 decimals
-										   // proposal for bridging native asset to alice(native asset is 12 decimal)
+											   // proposal for bridging native asset to alice(native asset is 12 decimal)
 				let p_native_extreme = Proposal {
 					origin_domain_id: 1,
 					resource_id: NativeResourceId::get(),
 					deposit_nonce: 4,
 					data: Bridge::create_deposit_data(
 						extreme_small_bridge_amount,
-						Location::new(0, X1(AccountId32 { network: None, id: ALICE.into() }))
-							.encode(),
+						Location::new(0, X1(AccountId32 { network: None, id: ALICE.into() })).encode(),
 					),
 				};
 				let proposals_extreme = vec![p_native_extreme];
-				let final_message_extreme =
-					Bridge::construct_ecdsa_signing_proposals_data(&proposals_extreme);
+				let final_message_extreme = Bridge::construct_ecdsa_signing_proposals_data(&proposals_extreme);
 				let signature_extreme = pair.sign_prehashed(&final_message_extreme);
 
 				// execute_proposal extrinsic should work but it will actually failed at decimal
@@ -2756,16 +2402,14 @@ pub mod pallet {
 					signature_extreme.encode()
 				));
 				// should emit FailedHandlerExecution event
-				assert_events(vec![RuntimeEvent::Bridge(
-					BridgeEvent::FailedHandlerExecution {
-						error: vec![
-							68, 101, 99, 105, 109, 97, 108, 67, 111, 110, 118, 101, 114, 115, 105,
-							111, 110, 70, 97, 105, 108,
-						],
-						origin_domain_id: 1,
-						deposit_nonce: 4,
-					},
-				)]);
+				assert_events(vec![RuntimeEvent::Bridge(BridgeEvent::FailedHandlerExecution {
+					error: vec![
+						68, 101, 99, 105, 109, 97, 108, 67, 111, 110, 118, 101, 114, 115, 105, 111, 110, 70, 97, 105,
+						108,
+					],
+					origin_domain_id: 1,
+					deposit_nonce: 4,
+				})]);
 			})
 		}
 
@@ -2786,21 +2430,9 @@ pub mod pallet {
 					ALICE
 				));
 				// alice register some domains
-				assert_ok!(Bridge::register_domain(
-					Origin::from(Some(ALICE)),
-					1u8,
-					U256::from(1)
-				));
-				assert_ok!(Bridge::register_domain(
-					Origin::from(Some(ALICE)),
-					2u8,
-					U256::from(2)
-				));
-				assert_ok!(Bridge::register_domain(
-					Origin::from(Some(ALICE)),
-					3u8,
-					U256::from(3)
-				));
+				assert_ok!(Bridge::register_domain(Origin::from(Some(ALICE)), 1u8, U256::from(1)));
+				assert_ok!(Bridge::register_domain(Origin::from(Some(ALICE)), 2u8, U256::from(2)));
+				assert_ok!(Bridge::register_domain(Origin::from(Some(ALICE)), 3u8, U256::from(3)));
 
 				// pause all
 				assert_ok!(Bridge::pause_bridge(Some(ALICE).into(), 1));
@@ -2861,22 +2493,10 @@ pub mod pallet {
 				));
 
 				// alice setup bridges without mpc address setup
-				assert_ok!(Bridge::register_domain(
-					Origin::from(Some(ALICE)),
-					DEST_DOMAIN_ID,
-					U256::from(1)
-				));
-				assert_ok!(Bridge::unregister_domain(
-					Origin::from(Some(ALICE)),
-					DEST_DOMAIN_ID,
-					U256::from(1)
-				));
+				assert_ok!(Bridge::register_domain(Origin::from(Some(ALICE)), DEST_DOMAIN_ID, U256::from(1)));
+				assert_ok!(Bridge::unregister_domain(Origin::from(Some(ALICE)), DEST_DOMAIN_ID, U256::from(1)));
 				// register it back
-				assert_ok!(Bridge::register_domain(
-					Origin::from(Some(ALICE)),
-					DEST_DOMAIN_ID,
-					U256::from(1)
-				));
+				assert_ok!(Bridge::register_domain(Origin::from(Some(ALICE)), DEST_DOMAIN_ID, U256::from(1)));
 				assert_ok!(Bridge::pause_bridge(Origin::from(Some(ALICE)), 1u8));
 				assert_ok!(Bridge::unpause_bridge(Origin::from(Some(ALICE)), 1u8));
 				// pause domain 2 again to see if mpc address setup will unpause it
@@ -2897,10 +2517,7 @@ pub mod pallet {
 						Box::new((Concrete(AstrLocation::get()), Fungible(100)).into()),
 						Box::new(Location {
 							parents: 0,
-							interior: X2(
-								slice_to_generalkey(b"ethereum recipient"),
-								slice_to_generalkey(&[1]),
-							)
+							interior: X2(slice_to_generalkey(b"ethereum recipient"), slice_to_generalkey(&[1]),)
 						}),
 					),
 					bridge::Error::<Runtime>::MissingMpcAddress
@@ -2948,18 +2565,14 @@ pub mod pallet {
 					Box::new((Concrete(NativeLocation::get()), Fungible(amount)).into()),
 					Box::new(Location {
 						parents: 0,
-						interior: X2(
-							slice_to_generalkey(b"ethereum recipient"),
-							slice_to_generalkey(&[1]),
-						)
+						interior: X2(slice_to_generalkey(b"ethereum recipient"), slice_to_generalkey(&[1]),)
 					}),
 				));
 				// Check balances
 				assert_eq!(Balances::free_balance(ALICE), ENDOWED_BALANCE - amount);
 				assert_eq!(
 					Balances::free_balance(AccountId::new(
-						Bridge::get_token_reserved_account(&NativeLocation::get().into())
-							.unwrap()
+						Bridge::get_token_reserved_account(&NativeLocation::get().into()).unwrap()
 					)),
 					amount - fee
 				);
@@ -2972,8 +2585,7 @@ pub mod pallet {
 					resource_id: NativeResourceId::get(),
 					data: Bridge::create_deposit_data(
 						amount,
-						Location::new(0, X1(AccountId32 { network: None, id: BOB.into() }))
-							.encode(),
+						Location::new(0, X1(AccountId32 { network: None, id: BOB.into() })).encode(),
 					),
 				};
 				let proposals = vec![valid_native_transfer_proposal];
@@ -3004,11 +2616,7 @@ pub mod pallet {
 				let fee_rate_4 = 0u32; // 0%
 				let fee_rate_5 = 15000u32; // 150%
 
-				assert_ok!(Bridge::register_domain(
-					Origin::root(),
-					DEST_DOMAIN_ID,
-					U256::from(1)
-				));
+				assert_ok!(Bridge::register_domain(Origin::root(), DEST_DOMAIN_ID, U256::from(1)));
 				assert_ok!(BridgeFeeHandlerRouter::set_fee_handler(
 					Origin::root(),
 					DEST_DOMAIN_ID,
@@ -3031,10 +2639,7 @@ pub mod pallet {
 					Box::new((Concrete(NativeLocation::get()), Fungible(amount)).into()),
 					Box::new(Location {
 						parents: 0,
-						interior: X2(
-							slice_to_generalkey(b"ethereum recipient"),
-							slice_to_generalkey(&[1]),
-						)
+						interior: X2(slice_to_generalkey(b"ethereum recipient"), slice_to_generalkey(&[1]),)
 					}),
 				));
 				// Check balances of Alice after deposit 200 native token
@@ -3042,8 +2647,7 @@ pub mod pallet {
 				// Check reserved native token
 				assert_eq!(
 					Balances::free_balance(AccountId::new(
-						Bridge::get_token_reserved_account(&NativeLocation::get().into())
-							.unwrap()
+						Bridge::get_token_reserved_account(&NativeLocation::get().into()).unwrap()
 					)),
 					190_000_000_000_000u128
 				);
@@ -3102,17 +2706,13 @@ pub mod pallet {
 					Box::new((Concrete(NativeLocation::get()), Fungible(amount)).into()),
 					Box::new(Location {
 						parents: 0,
-						interior: X2(
-							slice_to_generalkey(b"ethereum recipient"),
-							slice_to_generalkey(&[1]),
-						)
+						interior: X2(slice_to_generalkey(b"ethereum recipient"), slice_to_generalkey(&[1]),)
 					}),
 				));
 				// Check reserved native token, should increase by 0.02 to 190.020000000000
 				assert_eq!(
 					Balances::free_balance(AccountId::new(
-						Bridge::get_token_reserved_account(&NativeLocation::get().into())
-							.unwrap()
+						Bridge::get_token_reserved_account(&NativeLocation::get().into()).unwrap()
 					)),
 					190_020_000_000_000u128
 				);
@@ -3134,17 +2734,13 @@ pub mod pallet {
 					Box::new((Concrete(NativeLocation::get()), Fungible(amount)).into()),
 					Box::new(Location {
 						parents: 0,
-						interior: X2(
-							slice_to_generalkey(b"ethereum recipient"),
-							slice_to_generalkey(&[1]),
-						)
+						interior: X2(slice_to_generalkey(b"ethereum recipient"), slice_to_generalkey(&[1]),)
 					}),
 				));
 				// Check reserved native token, should increase by 200 to 390.020000000000
 				assert_eq!(
 					Balances::free_balance(AccountId::new(
-						Bridge::get_token_reserved_account(&NativeLocation::get().into())
-							.unwrap()
+						Bridge::get_token_reserved_account(&NativeLocation::get().into()).unwrap()
 					)),
 					390_020_000_000_000u128
 				);
@@ -3168,8 +2764,7 @@ pub mod pallet {
 				// Check reserved native token, should remain as 390.020000000000
 				assert_eq!(
 					Balances::free_balance(AccountId::new(
-						Bridge::get_token_reserved_account(&NativeLocation::get().into())
-							.unwrap()
+						Bridge::get_token_reserved_account(&NativeLocation::get().into()).unwrap()
 					)),
 					390_020_000_000_000u128
 				);
@@ -3196,17 +2791,13 @@ pub mod pallet {
 					Box::new((Concrete(NativeLocation::get()), Fungible(amount)).into()),
 					Box::new(Location {
 						parents: 0,
-						interior: X2(
-							slice_to_generalkey(b"ethereum recipient"),
-							slice_to_generalkey(&[1]),
-						)
+						interior: X2(slice_to_generalkey(b"ethereum recipient"), slice_to_generalkey(&[1]),)
 					}),
 				));
 				// Check reserved native token, should increase by 100 to 490.020000000000
 				assert_eq!(
 					Balances::free_balance(AccountId::new(
-						Bridge::get_token_reserved_account(&NativeLocation::get().into())
-							.unwrap()
+						Bridge::get_token_reserved_account(&NativeLocation::get().into()).unwrap()
 					)),
 					490_020_000_000_000u128
 				);
@@ -3218,30 +2809,21 @@ pub mod pallet {
 				// 1000 now
 				assert_ok!(Bridge::deposit(
 					Origin::signed(ALICE),
-					Box::new(
-						(Concrete(NativeLocation::get()), Fungible(200_000_000_000_000_000)).into()
-					),
+					Box::new((Concrete(NativeLocation::get()), Fungible(200_000_000_000_000_000)).into()),
 					Box::new(Location {
 						parents: 0,
-						interior: X2(
-							slice_to_generalkey(b"ethereum recipient"),
-							slice_to_generalkey(&[1]),
-						)
+						interior: X2(slice_to_generalkey(b"ethereum recipient"), slice_to_generalkey(&[1]),)
 					}),
 				));
 				// Check reserved native token, should increase by 199000 to 199490.020000000000
 				assert_eq!(
 					Balances::free_balance(AccountId::new(
-						Bridge::get_token_reserved_account(&NativeLocation::get().into())
-							.unwrap()
+						Bridge::get_token_reserved_account(&NativeLocation::get().into()).unwrap()
 					)),
 					199_490_020_000_000_000u128
 				);
 				// Check fee collected, should increase by 1000 to 1309.980000000000
-				assert_eq!(
-					Balances::free_balance(TreasuryAccount::get()),
-					1_309_980_000_000_000u128
-				);
+				assert_eq!(Balances::free_balance(TreasuryAccount::get()), 1_309_980_000_000_000u128);
 			})
 		}
 
@@ -3251,11 +2833,7 @@ pub mod pallet {
 				let test_mpc_addr: MpcAddress = MpcAddress([1u8; 20]);
 				let amount = 200_000_000_000_000u128; // 200 with 12 decimals
 
-				assert_ok!(Bridge::register_domain(
-					Origin::root(),
-					DEST_DOMAIN_ID,
-					U256::from(1)
-				));
+				assert_ok!(Bridge::register_domain(Origin::root(), DEST_DOMAIN_ID, U256::from(1)));
 				assert_ok!(Bridge::set_mpc_address(Origin::root(), test_mpc_addr));
 
 				// only set fee handler but not set fee rate for domain and asset
@@ -3274,10 +2852,7 @@ pub mod pallet {
 						Box::new((Concrete(NativeLocation::get()), Fungible(amount)).into()),
 						Box::new(Location {
 							parents: 0,
-							interior: X2(
-								slice_to_generalkey(b"ethereum recipient"),
-								slice_to_generalkey(&[1]),
-							)
+							interior: X2(slice_to_generalkey(b"ethereum recipient"), slice_to_generalkey(&[1]),)
 						}),
 					),
 					bridge::Error::<Runtime>::MissingFeeConfig
@@ -3292,11 +2867,7 @@ pub mod pallet {
 				let amount = 200_000_000_000_000u128; // 200 with 12 decimals
 				let fee = 1_000_000_000_000u128; // 1 with 12 decimals
 
-				assert_ok!(Bridge::register_domain(
-					Origin::root(),
-					DEST_DOMAIN_ID,
-					U256::from(1)
-				));
+				assert_ok!(Bridge::register_domain(Origin::root(), DEST_DOMAIN_ID, U256::from(1)));
 				assert_ok!(Bridge::set_mpc_address(Origin::root(), test_mpc_addr));
 
 				// set fee handler with basic fee handler and fixed fee
@@ -3318,18 +2889,14 @@ pub mod pallet {
 					Box::new((Concrete(NativeLocation::get()), Fungible(amount)).into()),
 					Box::new(Location {
 						parents: 0,
-						interior: X2(
-							slice_to_generalkey(b"ethereum recipient"),
-							slice_to_generalkey(&[1]),
-						)
+						interior: X2(slice_to_generalkey(b"ethereum recipient"), slice_to_generalkey(&[1]),)
 					}),
 				));
 				// Check balances
 				assert_eq!(Balances::free_balance(ALICE), ENDOWED_BALANCE - amount);
 				assert_eq!(
 					Balances::free_balance(AccountId::new(
-						Bridge::get_token_reserved_account(&NativeLocation::get().into())
-							.unwrap()
+						Bridge::get_token_reserved_account(&NativeLocation::get().into()).unwrap()
 					)),
 					amount - fee
 				);
@@ -3356,10 +2923,7 @@ pub mod pallet {
 					Box::new((Concrete(NativeLocation::get()), Fungible(amount)).into()),
 					Box::new(Location {
 						parents: 0,
-						interior: X2(
-							slice_to_generalkey(b"ethereum recipient"),
-							slice_to_generalkey(&[1]),
-						)
+						interior: X2(slice_to_generalkey(b"ethereum recipient"), slice_to_generalkey(&[1]),)
 					}),
 				));
 				// Check balances
@@ -3367,16 +2931,12 @@ pub mod pallet {
 				// Check reserved native token, should increase by 190
 				assert_eq!(
 					Balances::free_balance(AccountId::new(
-						Bridge::get_token_reserved_account(&NativeLocation::get().into())
-							.unwrap()
+						Bridge::get_token_reserved_account(&NativeLocation::get().into()).unwrap()
 					)),
 					amount - fee + 190_000_000_000_000u128
 				);
 				// Check fee collected, should increase by 10
-				assert_eq!(
-					Balances::free_balance(TreasuryAccount::get()),
-					fee + 10_000_000_000_000u128
-				);
+				assert_eq!(Balances::free_balance(TreasuryAccount::get()), fee + 10_000_000_000_000u128);
 			})
 		}
 
@@ -3398,10 +2958,7 @@ pub mod pallet {
 
 				// permission test: unauthorized account should not be able to pause bridge
 				let unauthorized_account = Origin::from(Some(ALICE));
-				assert_noop!(
-					Bridge::pause_all_bridges(unauthorized_account),
-					bridge::Error::<Runtime>::AccessDenied
-				);
+				assert_noop!(Bridge::pause_all_bridges(unauthorized_account), bridge::Error::<Runtime>::AccessDenied);
 				// Grant ALICE the access
 				assert_ok!(AccessSegregator::grant_access(
 					Origin::root(),
@@ -3417,9 +2974,7 @@ pub mod pallet {
 				assert!(IsPaused::<Runtime>::get(domain_2));
 				assert!(IsPaused::<Runtime>::get(domain_3));
 
-				assert_events(vec![RuntimeEvent::Bridge(BridgeEvent::AllBridgePaused {
-					sender: ALICE,
-				})]);
+				assert_events(vec![RuntimeEvent::Bridge(BridgeEvent::AllBridgePaused { sender: ALICE })]);
 			})
 		}
 
@@ -3437,19 +2992,13 @@ pub mod pallet {
 				assert_ok!(Bridge::register_domain(Origin::root(), domain_3, U256::from(3)));
 
 				// mpc address not setup, should be error
-				assert_noop!(
-					Bridge::unpause_all_bridges(Origin::root()),
-					bridge::Error::<Runtime>::MissingMpcAddress
-				);
+				assert_noop!(Bridge::unpause_all_bridges(Origin::root()), bridge::Error::<Runtime>::MissingMpcAddress);
 
 				assert_ok!(Bridge::set_mpc_address(Origin::root(), test_mpc_addr));
 
 				// permission test: unauthorized account should not be able to pause bridge
 				let unauthorized_account = Origin::from(Some(ALICE));
-				assert_noop!(
-					Bridge::unpause_all_bridges(unauthorized_account),
-					bridge::Error::<Runtime>::AccessDenied
-				);
+				assert_noop!(Bridge::unpause_all_bridges(unauthorized_account), bridge::Error::<Runtime>::AccessDenied);
 
 				// Grant ALICE the access
 				assert_ok!(AccessSegregator::grant_access(
@@ -3475,9 +3024,7 @@ pub mod pallet {
 				assert!(!IsPaused::<Runtime>::get(domain_2));
 				assert!(!IsPaused::<Runtime>::get(domain_3));
 
-				assert_events(vec![RuntimeEvent::Bridge(
-					BridgeEvent::AllBridgeUnpaused { sender: ALICE },
-				)]);
+				assert_events(vec![RuntimeEvent::Bridge(BridgeEvent::AllBridgeUnpaused { sender: ALICE })]);
 			})
 		}
 

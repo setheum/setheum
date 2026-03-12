@@ -45,11 +45,7 @@ use sp_runtime::traits::BadOrigin;
 const BALANCE_TRANSFER: &<Runtime as frame_system::Config>::RuntimeCall =
 	&mock::RuntimeCall::Balances(pallet_balances::Call::transfer_allow_death { dest: ALICE, value: 10 });
 const TOKENS_TRANSFER: &<Runtime as frame_system::Config>::RuntimeCall =
-	&mock::RuntimeCall::Tokens(module_tokens::Call::transfer {
-		dest: ALICE,
-		currency_id: SEUSD,
-		amount: 10,
-	});
+	&mock::RuntimeCall::Tokens(module_tokens::Call::transfer { dest: ALICE, currency_id: SEUSD, amount: 10 });
 
 #[test]
 fn pause_transaction_work() {
@@ -61,10 +57,7 @@ fn pause_transaction_work() {
 			BadOrigin
 		);
 
-		assert_eq!(
-			TransactionPause::paused_transactions((b"Balances".to_vec(), b"transfer".to_vec())),
-			None
-		);
+		assert_eq!(TransactionPause::paused_transactions((b"Balances".to_vec(), b"transfer".to_vec())), None);
 		assert_ok!(TransactionPause::pause_transaction(
 			RuntimeOrigin::signed(1),
 			b"Balances".to_vec(),
@@ -74,10 +67,7 @@ fn pause_transaction_work() {
 			pallet_name_bytes: b"Balances".to_vec(),
 			function_name_bytes: b"transfer".to_vec(),
 		}));
-		assert_eq!(
-			TransactionPause::paused_transactions((b"Balances".to_vec(), b"transfer".to_vec())),
-			Some(())
-		);
+		assert_eq!(TransactionPause::paused_transactions((b"Balances".to_vec(), b"transfer".to_vec())), Some(()));
 
 		assert_noop!(
 			TransactionPause::pause_transaction(
@@ -113,10 +103,7 @@ fn unpause_transaction_work() {
 			b"Balances".to_vec(),
 			b"transfer".to_vec()
 		));
-		assert_eq!(
-			TransactionPause::paused_transactions((b"Balances".to_vec(), b"transfer".to_vec())),
-			Some(())
-		);
+		assert_eq!(TransactionPause::paused_transactions((b"Balances".to_vec(), b"transfer".to_vec())), Some(()));
 
 		assert_noop!(
 			TransactionPause::unpause_transaction(RuntimeOrigin::signed(5), b"Balances".to_vec(), b"transfer".to_vec()),
@@ -132,10 +119,7 @@ fn unpause_transaction_work() {
 			pallet_name_bytes: b"Balances".to_vec(),
 			function_name_bytes: b"transfer".to_vec(),
 		}));
-		assert_eq!(
-			TransactionPause::paused_transactions((b"Balances".to_vec(), b"transfer".to_vec())),
-			None
-		);
+		assert_eq!(TransactionPause::paused_transactions((b"Balances".to_vec(), b"transfer".to_vec())), None);
 	});
 }
 
@@ -177,19 +161,13 @@ fn pause_and_unpause_evm_precompile_works() {
 	ExtBuilder::default().build().execute_with(|| {
 		let one = H160::from_low_u64_be(1);
 
-		assert_noop!(
-			TransactionPause::pause_evm_precompile(RuntimeOrigin::signed(2), one),
-			BadOrigin
-		);
+		assert_noop!(TransactionPause::pause_evm_precompile(RuntimeOrigin::signed(2), one), BadOrigin);
 
 		assert!(!PausedPrecompileFilter::<Runtime>::is_paused(one));
 		assert_ok!(TransactionPause::pause_evm_precompile(RuntimeOrigin::signed(1), one));
 		assert!(PausedPrecompileFilter::<Runtime>::is_paused(one));
 
-		assert_noop!(
-			TransactionPause::unpause_evm_precompile(RuntimeOrigin::signed(2), one),
-			BadOrigin
-		);
+		assert_noop!(TransactionPause::unpause_evm_precompile(RuntimeOrigin::signed(2), one), BadOrigin);
 
 		assert_ok!(TransactionPause::unpause_evm_precompile(RuntimeOrigin::signed(1), one));
 		assert!(!PausedPrecompileFilter::<Runtime>::is_paused(one));

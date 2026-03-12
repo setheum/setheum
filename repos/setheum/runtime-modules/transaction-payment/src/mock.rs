@@ -46,10 +46,7 @@ use frame_support::{
 	PalletId,
 };
 use frame_system::EnsureSignedBy;
-use module_support::{
-	mocks::MockAddressMapping,
-	Price, SpecificJointsSwap,
-};
+use module_support::{mocks::MockAddressMapping, Price, SpecificJointsSwap};
 use module_traits::parameter_type_with_key;
 use primitives::{Amount, ReserveIdentifier, TokenSymbol, TradingPair};
 use smallvec::smallvec;
@@ -330,9 +327,7 @@ pub struct ExtBuilder {
 impl Default for ExtBuilder {
 	fn default() -> Self {
 		Self {
-			balances: vec![
-				(ALICE, SEUSD, 10000),
-			],
+			balances: vec![(ALICE, SEUSD, 10000)],
 			base_weight: Weight::zero(),
 			byte_fee: 2,
 			weight_to_fee: 1,
@@ -371,21 +366,15 @@ impl ExtBuilder {
 	}
 	pub fn build(self) -> sp_io::TestExternalities {
 		self.set_constants();
-		let mut t = frame_system::GenesisConfig::<Runtime>::default()
-			.build_storage()
+		let mut t = frame_system::GenesisConfig::<Runtime>::default().build_storage().unwrap();
+
+		pallet_balances::GenesisConfig::<Runtime> { balances: self.native_balances }
+			.assimilate_storage(&mut t)
 			.unwrap();
 
-		pallet_balances::GenesisConfig::<Runtime> {
-			balances: self.native_balances,
-		}
-		.assimilate_storage(&mut t)
-		.unwrap();
-
-		module_tokens::GenesisConfig::<Runtime> {
-			balances: self.balances,
-		}
-		.assimilate_storage(&mut t)
-		.unwrap();
+		module_tokens::GenesisConfig::<Runtime> { balances: self.balances }
+			.assimilate_storage(&mut t)
+			.unwrap();
 
 		swap_legacy_module::GenesisConfig::<Runtime> {
 			initial_listing_trading_pairs: vec![],

@@ -79,7 +79,7 @@ pub use module::*;
 pub mod module {
 	use super::*;
 
-/// EvmBridge module trait
+	/// EvmBridge module trait
 	#[pallet::config]
 	pub trait Config: frame_system::Config {
 		type EVM: EVM<AccountIdOf<Self>>;
@@ -87,15 +87,15 @@ pub mod module {
 
 	#[pallet::error]
 	pub enum Error<T> {
-/// Execution failed
+		/// Execution failed
 		ExecutionFail,
-/// Execution reverted
+		/// Execution reverted
 		ExecutionRevert,
-/// Execution fatal
+		/// Execution fatal
 		ExecutionFatal,
-/// Execution error
+		/// Execution error
 		ExecutionError,
-/// Invalid return value
+		/// Invalid return value
 		InvalidReturnValue,
 	}
 
@@ -113,10 +113,10 @@ pub mod module {
 pub struct EVMBridge<T>(sp_std::marker::PhantomData<T>);
 
 impl<T: Config> EVMBridgeTrait<AccountIdOf<T>, BalanceOf<T>> for EVMBridge<T> {
-// Calls the name method on an ERC20 contract using the given context
-// and returns the token name.
+	// Calls the name method on an ERC20 contract using the given context
+	// and returns the token name.
 	fn name(context: InvokeContext) -> Result<Vec<u8>, DispatchError> {
-// ERC20.name method hash
+		// ERC20.name method hash
 		let input = Into::<u32>::into(Action::Name).to_be_bytes().to_vec();
 
 		let info = T::EVM::execute(
@@ -132,10 +132,10 @@ impl<T: Config> EVMBridgeTrait<AccountIdOf<T>, BalanceOf<T>> for EVMBridge<T> {
 		Pallet::<T>::decode_string(info.value.as_slice().to_vec())
 	}
 
-// Calls the symbol method on an ERC20 contract using the given context
-// and returns the token symbol.
+	// Calls the symbol method on an ERC20 contract using the given context
+	// and returns the token symbol.
 	fn symbol(context: InvokeContext) -> Result<Vec<u8>, DispatchError> {
-// ERC20.symbol method hash
+		// ERC20.symbol method hash
 		let input = Into::<u32>::into(Action::Symbol).to_be_bytes().to_vec();
 
 		let info = T::EVM::execute(
@@ -151,10 +151,10 @@ impl<T: Config> EVMBridgeTrait<AccountIdOf<T>, BalanceOf<T>> for EVMBridge<T> {
 		Pallet::<T>::decode_string(info.value.as_slice().to_vec())
 	}
 
-// Calls the decimals method on an ERC20 contract using the given context
-// and returns the decimals.
+	// Calls the decimals method on an ERC20 contract using the given context
+	// and returns the decimals.
 	fn decimals(context: InvokeContext) -> Result<u8, DispatchError> {
-// ERC20.decimals method hash
+		// ERC20.decimals method hash
 		let input = Into::<u32>::into(Action::Decimals).to_be_bytes().to_vec();
 
 		let info = T::EVM::execute(
@@ -169,16 +169,14 @@ impl<T: Config> EVMBridgeTrait<AccountIdOf<T>, BalanceOf<T>> for EVMBridge<T> {
 		Pallet::<T>::handle_exit_reason(info.exit_reason)?;
 
 		ensure!(info.value.len() == 32, Error::<T>::InvalidReturnValue);
-		let value: u8 = U256::from(info.value.as_slice())
-			.try_into()
-			.map_err(|_| ArithmeticError::Overflow)?;
+		let value: u8 = U256::from(info.value.as_slice()).try_into().map_err(|_| ArithmeticError::Overflow)?;
 		Ok(value)
 	}
 
-// Calls the totalSupply method on an ERC20 contract using the given context
-// and returns the total supply.
+	// Calls the totalSupply method on an ERC20 contract using the given context
+	// and returns the total supply.
 	fn total_supply(context: InvokeContext) -> Result<BalanceOf<T>, DispatchError> {
-// ERC20.totalSupply method hash
+		// ERC20.totalSupply method hash
 		let input = Into::<u32>::into(Action::TotalSupply).to_be_bytes().to_vec();
 
 		let info = T::EVM::execute(
@@ -193,19 +191,17 @@ impl<T: Config> EVMBridgeTrait<AccountIdOf<T>, BalanceOf<T>> for EVMBridge<T> {
 		Pallet::<T>::handle_exit_reason(info.exit_reason)?;
 
 		ensure!(info.value.len() == 32, Error::<T>::InvalidReturnValue);
-		let value: u128 = U256::from(info.value.as_slice())
-			.try_into()
-			.map_err(|_| ArithmeticError::Overflow)?;
+		let value: u128 = U256::from(info.value.as_slice()).try_into().map_err(|_| ArithmeticError::Overflow)?;
 		let supply = value.try_into().map_err(|_| ArithmeticError::Overflow)?;
 		Ok(supply)
 	}
 
-// Calls the balanceOf method on an ERC20 contract using the given context
-// and returns the address's balance.
+	// Calls the balanceOf method on an ERC20 contract using the given context
+	// and returns the address's balance.
 	fn balance_of(context: InvokeContext, address: H160) -> Result<BalanceOf<T>, DispatchError> {
-// ERC20.balanceOf method hash
+		// ERC20.balanceOf method hash
 		let mut input = Into::<u32>::into(Action::BalanceOf).to_be_bytes().to_vec();
-// append address
+		// append address
 		input.extend_from_slice(H256::from(address).as_bytes());
 
 		let info = T::EVM::execute(
@@ -219,27 +215,21 @@ impl<T: Config> EVMBridgeTrait<AccountIdOf<T>, BalanceOf<T>> for EVMBridge<T> {
 
 		Pallet::<T>::handle_exit_reason(info.exit_reason)?;
 
-		let value: u128 = U256::from(info.value.as_slice())
-			.try_into()
-			.map_err(|_| ArithmeticError::Overflow)?;
+		let value: u128 = U256::from(info.value.as_slice()).try_into().map_err(|_| ArithmeticError::Overflow)?;
 		let balance = value.try_into().map_err(|_| ArithmeticError::Overflow)?;
 		Ok(balance)
 	}
 
-// Calls the transfer method on an ERC20 contract using the given context.
+	// Calls the transfer method on an ERC20 contract using the given context.
 	fn transfer(context: InvokeContext, to: H160, value: BalanceOf<T>) -> DispatchResult {
-// ERC20.transfer method hash
+		// ERC20.transfer method hash
 		let mut input = Into::<u32>::into(Action::Transfer).to_be_bytes().to_vec();
-// append receiver address
+		// append receiver address
 		input.extend_from_slice(H256::from(to).as_bytes());
-// append amount to be transferred
+		// append amount to be transferred
 		input.extend_from_slice(H256::from_uint(&U256::from(value.saturated_into::<u128>())).as_bytes());
 
-		let storage_limit = if context.origin == Default::default() {
-			0
-		} else {
-			erc20::TRANSFER.storage
-		};
+		let storage_limit = if context.origin == Default::default() { 0 } else { erc20::TRANSFER.storage };
 
 		let info = T::EVM::execute(
 			context,
@@ -252,15 +242,12 @@ impl<T: Config> EVMBridgeTrait<AccountIdOf<T>, BalanceOf<T>> for EVMBridge<T> {
 
 		Pallet::<T>::handle_exit_reason(info.exit_reason)?;
 
-// return value is true.
+		// return value is true.
 		let mut bytes = [0u8; 32];
 		U256::from(1).to_big_endian(&mut bytes);
 
-// Check return value to make sure not calling on empty contracts.
-		ensure!(
-			!info.value.is_empty() && info.value == bytes,
-			Error::<T>::InvalidReturnValue
-		);
+		// Check return value to make sure not calling on empty contracts.
+		ensure!(!info.value.is_empty() && info.value == bytes, Error::<T>::InvalidReturnValue);
 		Ok(())
 	}
 
@@ -303,16 +290,16 @@ impl<T: Config> LiquidationEvmBridgeT for LiquidationEvmBridge<T> {
 		amount: Balance,
 		min_repayment: Balance,
 	) -> DispatchResult {
-// liquidation contract method hash
+		// liquidation contract method hash
 		let mut input = Into::<u32>::into(Action::Liquidate).to_be_bytes().to_vec();
 
-// append collateral ERC20 address
+		// append collateral ERC20 address
 		input.extend_from_slice(H256::from(collateral).as_bytes());
-// append repay dest address
+		// append repay dest address
 		input.extend_from_slice(H256::from(repay_dest).as_bytes());
-// append collateral amount
+		// append collateral amount
 		input.extend_from_slice(H256::from_uint(&U256::from(amount)).as_bytes());
-// append minimum repayment amount
+		// append minimum repayment amount
 		input.extend_from_slice(H256::from_uint(&U256::from(min_repayment)).as_bytes());
 
 		let info = T::EVM::execute(
@@ -328,11 +315,11 @@ impl<T: Config> LiquidationEvmBridgeT for LiquidationEvmBridge<T> {
 	}
 
 	fn on_collateral_transfer(context: InvokeContext, collateral: EvmAddress, amount: Balance) {
-// liquidation contract method hash
+		// liquidation contract method hash
 		let mut input = Into::<u32>::into(Action::OnCollateralTransfer).to_be_bytes().to_vec();
-// append collateral ERC20 address
+		// append collateral ERC20 address
 		input.extend_from_slice(H256::from(collateral).as_bytes());
-// append collateral amount
+		// append collateral amount
 		input.extend_from_slice(H256::from_uint(&U256::from(amount)).as_bytes());
 
 		let _ = T::EVM::execute(
@@ -346,11 +333,11 @@ impl<T: Config> LiquidationEvmBridgeT for LiquidationEvmBridge<T> {
 	}
 
 	fn on_repayment_refund(context: InvokeContext, collateral: EvmAddress, repayment: Balance) {
-// liquidation contract method hash
+		// liquidation contract method hash
 		let mut input = Into::<u32>::into(Action::OnRepaymentRefund).to_be_bytes().to_vec();
-// append collateral ERC20 address
+		// append collateral ERC20 address
 		input.extend_from_slice(H256::from(collateral).as_bytes());
-// append repayment amount
+		// append repayment amount
 		input.extend_from_slice(H256::from_uint(&U256::from(repayment)).as_bytes());
 
 		let _ = T::EVM::execute(
@@ -377,20 +364,17 @@ impl<T: Config> Pallet<T> {
 	}
 
 	fn decode_string(output: Vec<u8>) -> Result<Vec<u8>, DispatchError> {
-// output is 32-byte aligned and consists of 3 parts:
-// - part 1: 32 byte, the offset of its description is passed in the position of
-// the corresponding parameter or return value.
-// - part 2: 32 byte, string length
-// - part 3: string data
-		ensure!(
-			output.len() >= 64 && output.len() % 32 == 0,
-			Error::<T>::InvalidReturnValue
-		);
+		// output is 32-byte aligned and consists of 3 parts:
+		// - part 1: 32 byte, the offset of its description is passed in the position of
+		// the corresponding parameter or return value.
+		// - part 2: 32 byte, string length
+		// - part 3: string data
+		ensure!(output.len() >= 64 && output.len() % 32 == 0, Error::<T>::InvalidReturnValue);
 
 		let offset = U256::from_big_endian(&output[0..32]);
 		let length = U256::from_big_endian(&output[offset.as_usize()..offset.as_usize() + 32]);
 		ensure!(
-// output is 32-byte aligned. ensure total_length >= offset + string length + string data length.
+			// output is 32-byte aligned. ensure total_length >= offset + string length + string data length.
 			output.len() >= offset.as_usize() + 32 + length.as_usize(),
 			Error::<T>::InvalidReturnValue
 		);

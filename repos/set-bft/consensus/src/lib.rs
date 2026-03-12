@@ -57,6 +57,12 @@ mod task_queue;
 #[cfg(test)]
 mod testing;
 
+pub use config::{
+    create_config, default_config, default_delay_config, exponential_slowdown, Config, DelayConfig,
+};
+pub use consensus::run_session;
+pub use interface::LocalIO;
+pub use network::NetworkData;
 pub use set_bft_types::{
     Data, DataProvider, FinalizationHandler, Hasher, IncompleteMultisignatureError, Index, Indexed,
     Keychain, MultiKeychain, Multisigned, Network, NodeCount, NodeIndex, NodeMap, NodeSubset,
@@ -64,12 +70,6 @@ pub use set_bft_types::{
     Signable, Signature, SignatureError, SignatureSet, Signed, SpawnHandle, TaskHandle,
     UncheckedSigned, UnitFinalizationHandler,
 };
-pub use config::{
-    create_config, default_config, default_delay_config, exponential_slowdown, Config, DelayConfig,
-};
-pub use consensus::run_session;
-pub use interface::LocalIO;
-pub use network::NetworkData;
 pub use terminator::{handle_task_termination, Terminator};
 
 type Receiver<T> = futures::channel::mpsc::UnboundedReceiver<T>;

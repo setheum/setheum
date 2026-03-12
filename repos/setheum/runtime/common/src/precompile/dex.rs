@@ -22,7 +22,9 @@ use super::input::{Input, InputT, Output};
 use crate::precompile::PrecompileOutput;
 use frame_support::log;
 use module_evm::{Context, ExitError, ExitSucceed, Precompile};
-use module_support::{AddressMapping as AddressMappingT, CurrencyIdMapping as CurrencyIdMappingT, SwapManager, SwapLimit};
+use module_support::{
+	AddressMapping as AddressMappingT, CurrencyIdMapping as CurrencyIdMappingT, SwapLimit, SwapManager,
+};
 use num_enum::{IntoPrimitive, TryFromPrimitive};
 use primitives::{Balance, CurrencyId};
 use sp_runtime::RuntimeDebug;
@@ -90,7 +92,7 @@ where
 					output: Output::default().encode_u128_tuple(balance_a, balance_b),
 					logs: Default::default(),
 				})
-			}
+			},
 			Action::GetLiquidityTokenAddress => {
 				let currency_id_a = input.currency_id_at(1)?;
 				let currency_id_b = input.currency_id_at(2)?;
@@ -109,9 +111,9 @@ where
 					output: Output::default().encode_address(&value),
 					logs: Default::default(),
 				})
-			}
+			},
 			Action::GetSwapTargetAmount => {
-// solidity abi enocde array will add an offset at input[1]
+				// solidity abi enocde array will add an offset at input[1]
 				let supply_amount = input.balance_at(2)?;
 				let path_len = input.u32_at(3)?;
 				let mut path = vec![];
@@ -134,9 +136,9 @@ where
 					output: Output::default().encode_u128(value),
 					logs: Default::default(),
 				})
-			}
+			},
 			Action::GetSwapSupplyAmount => {
-// solidity abi enocde array will add an offset at input[1]
+				// solidity abi enocde array will add an offset at input[1]
 				let target_amount = input.balance_at(2)?;
 				let path_len = input.u32_at(3)?;
 				let mut path = vec![];
@@ -159,10 +161,10 @@ where
 					output: Output::default().encode_u128(value),
 					logs: Default::default(),
 				})
-			}
+			},
 			Action::SwapWithExactSupply => {
 				let who = input.account_id_at(1)?;
-// solidity abi enocde array will add an offset at input[2]
+				// solidity abi enocde array will add an offset at input[2]
 				let supply_amount = input.balance_at(3)?;
 				let min_target_amount = input.balance_at(4)?;
 				let path_len = input.u32_at(5)?;
@@ -177,10 +179,11 @@ where
 				);
 
 				let (_, value) =
-					Dex::swap_with_specific_path(&who, &path, SwapLimit::ExactSupply(supply_amount, min_target_amount)).map_err(|e| {
-						let err_msg: &str = e.into();
-						ExitError::Other(err_msg.into())
-					})?;
+					Dex::swap_with_specific_path(&who, &path, SwapLimit::ExactSupply(supply_amount, min_target_amount))
+						.map_err(|e| {
+							let err_msg: &str = e.into();
+							ExitError::Other(err_msg.into())
+						})?;
 
 				Ok(PrecompileOutput {
 					exit_status: ExitSucceed::Returned,
@@ -188,10 +191,10 @@ where
 					output: Output::default().encode_u128(value),
 					logs: Default::default(),
 				})
-			}
+			},
 			Action::SwapWithExactTarget => {
 				let who = input.account_id_at(1)?;
-// solidity abi enocde array will add an offset at input[2]
+				// solidity abi enocde array will add an offset at input[2]
 				let target_amount = input.balance_at(3)?;
 				let max_supply_amount = input.balance_at(4)?;
 				let path_len = input.u32_at(5)?;
@@ -206,10 +209,11 @@ where
 				);
 
 				let (value, _) =
-					Dex::swap_with_specific_path(&who, &path, SwapLimit::ExactTarget(max_supply_amount, target_amount)).map_err(|e| {
-						let err_msg: &str = e.into();
-						ExitError::Other(err_msg.into())
-					})?;
+					Dex::swap_with_specific_path(&who, &path, SwapLimit::ExactTarget(max_supply_amount, target_amount))
+						.map_err(|e| {
+							let err_msg: &str = e.into();
+							ExitError::Other(err_msg.into())
+						})?;
 
 				Ok(PrecompileOutput {
 					exit_status: ExitSucceed::Returned,
@@ -217,7 +221,7 @@ where
 					output: Output::default().encode_u128(value),
 					logs: Default::default(),
 				})
-			}
+			},
 			Action::AddLiquidity => {
 				let who = input.account_id_at(1)?;
 				let currency_id_a = input.currency_id_at(2)?;
@@ -232,18 +236,11 @@ where
 					who, currency_id_a, currency_id_b, max_amount_a, max_amount_b, min_share_increment,
 				);
 
-				Dex::add_liquidity(
-					&who,
-					currency_id_a,
-					currency_id_b,
-					max_amount_a,
-					max_amount_b,
-					min_share_increment,
-				)
-				.map_err(|e| {
-					let err_msg: &str = e.into();
-					ExitError::Other(err_msg.into())
-				})?;
+				Dex::add_liquidity(&who, currency_id_a, currency_id_b, max_amount_a, max_amount_b, min_share_increment)
+					.map_err(|e| {
+						let err_msg: &str = e.into();
+						ExitError::Other(err_msg.into())
+					})?;
 
 				Ok(PrecompileOutput {
 					exit_status: ExitSucceed::Returned,
@@ -251,7 +248,7 @@ where
 					output: vec![],
 					logs: Default::default(),
 				})
-			}
+			},
 			Action::RemoveLiquidity => {
 				let who = input.account_id_at(1)?;
 				let currency_id_a = input.currency_id_at(2)?;
@@ -285,7 +282,7 @@ where
 					output: vec![],
 					logs: Default::default(),
 				})
-			}
+			},
 		}
 	}
 }

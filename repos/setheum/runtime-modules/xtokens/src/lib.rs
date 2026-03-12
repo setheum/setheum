@@ -161,12 +161,7 @@ pub mod module {
 	#[pallet::generate_deposit(fn deposit_event)]
 	pub enum Event<T: Config> {
 		/// Transferred `Asset` with fee.
-		TransferredAssets {
-			sender: T::AccountId,
-			assets: Assets,
-			fee: Asset,
-			dest: Location,
-		},
+		TransferredAssets { sender: T::AccountId, assets: Assets, fee: Asset, dest: Location },
 	}
 
 	#[pallet::error]
@@ -495,18 +490,14 @@ pub mod module {
 			dest: Location,
 			dest_weight_limit: WeightLimit,
 		) -> Result<Transferred<T::AccountId>, DispatchError> {
-			ensure!(
-				currencies.len() <= T::MaxAssetsForTransfer::get(),
-				Error::<T>::TooManyAssetsBeingSent
-			);
+			ensure!(currencies.len() <= T::MaxAssetsForTransfer::get(), Error::<T>::TooManyAssetsBeingSent);
 			ensure!(T::LocationsFilter::contains(&dest), Error::<T>::NotSupportedLocation);
 
 			let mut assets = Assets::new();
 
 			// Lets grab the fee amount and location first
-			let (fee_currency_id, fee_amount) = currencies
-				.get(fee_item as usize)
-				.ok_or(Error::<T>::AssetIndexNonExistent)?;
+			let (fee_currency_id, fee_amount) =
+				currencies.get(fee_item as usize).ok_or(Error::<T>::AssetIndexNonExistent)?;
 
 			for (currency_id, amount) in &currencies {
 				let location: Location = T::CurrencyIdConvert::convert(currency_id.clone())
@@ -534,17 +525,11 @@ pub mod module {
 			dest: Location,
 			dest_weight_limit: WeightLimit,
 		) -> Result<Transferred<T::AccountId>, DispatchError> {
-			ensure!(
-				assets.len() <= T::MaxAssetsForTransfer::get(),
-				Error::<T>::TooManyAssetsBeingSent
-			);
+			ensure!(assets.len() <= T::MaxAssetsForTransfer::get(), Error::<T>::TooManyAssetsBeingSent);
 			ensure!(T::LocationsFilter::contains(&dest), Error::<T>::NotSupportedLocation);
 
 			// Fee payment can only be made by using the non-zero amount of fungibles
-			ensure!(
-				matches!(fee.fun, Fungibility::Fungible(x) if !x.is_zero()),
-				Error::<T>::InvalidAsset
-			);
+			ensure!(matches!(fee.fun, Fungibility::Fungible(x) if !x.is_zero()), Error::<T>::InvalidAsset);
 
 			let origin_location = T::AccountIdToLocation::convert(who.clone());
 
@@ -556,7 +541,7 @@ pub mod module {
 				match asset.fun {
 					Fungibility::Fungible(x) => ensure!(!x.is_zero(), Error::<T>::InvalidAsset),
 					Fungibility::NonFungible(AssetInstance::Undefined) => return Err(Error::<T>::InvalidAsset.into()),
-					_ => {}
+					_ => {},
 				}
 
 				// `assets` includes fee, the reserve location is decided by non fee asset
@@ -667,12 +652,7 @@ pub mod module {
 				dest: dest.clone(),
 			});
 
-			Ok(Transferred {
-				sender: who,
-				assets,
-				fee,
-				dest,
-			})
+			Ok(Transferred { sender: who, assets, fee, dest })
 		}
 
 		/// Execute and send xcm with given assets and fee to dest chain or
@@ -822,10 +802,7 @@ pub mod module {
 		}
 
 		fn deposit_asset(recipient: Location, max_assets: u32) -> Instruction<()> {
-			DepositAsset {
-				assets: AllCounted(max_assets).into(),
-				beneficiary: recipient,
-			}
+			DepositAsset { assets: AllCounted(max_assets).into(), beneficiary: recipient }
 		}
 
 		fn buy_execution(
@@ -834,9 +811,7 @@ pub mod module {
 			weight_limit: WeightLimit,
 		) -> Result<Instruction<()>, DispatchError> {
 			let ancestry = T::UniversalLocation::get();
-			let fees = asset
-				.reanchored(at, &ancestry)
-				.map_err(|_| Error::<T>::CannotReanchor)?;
+			let fees = asset.reanchored(at, &ancestry).map_err(|_| Error::<T>::CannotReanchor)?;
 
 			Ok(BuyExecution { fees, weight_limit })
 		}
@@ -881,11 +856,7 @@ pub mod module {
 		/// includes fee asset and non fee asset. make sure assets have ge one
 		/// asset. all non fee asset should share same reserve location.
 		fn get_reserve_location(assets: &Assets, fee_item: &u32) -> Option<Location> {
-			let reserve_idx = if assets.len() == 1 {
-				0
-			} else {
-				(*fee_item == 0) as usize
-			};
+			let reserve_idx = if assets.len() == 1 { 0 } else { (*fee_item == 0) as usize };
 			let asset = assets.get(reserve_idx);
 			asset.and_then(T::ReserveProvider::reserve)
 		}
@@ -905,11 +876,7 @@ pub mod module {
 					let mut msg = match transfer_kind {
 						SelfReserveAsset => Xcm(vec![
 							SetFeesMode { jit_withdraw: true },
-							TransferReserveAsset {
-								assets: vec![asset].into(),
-								dest,
-								xcm: Xcm(vec![]),
-							},
+							TransferReserveAsset { assets: vec![asset].into(), dest, xcm: Xcm(vec![]) },
 						]),
 						ToReserve | ToNonReserve => Xcm(vec![
 							WithdrawAsset(Assets::from(asset)),
@@ -972,11 +939,7 @@ pub mod module {
 					let mut msg = match transfer_kind {
 						SelfReserveAsset => Xcm(vec![
 							SetFeesMode { jit_withdraw: true },
-							TransferReserveAsset {
-								assets,
-								dest,
-								xcm: Xcm(vec![]),
-							},
+							TransferReserveAsset { assets, dest, xcm: Xcm(vec![]) },
 						]),
 						ToReserve | ToNonReserve => Xcm(vec![
 							WithdrawAsset(assets),
@@ -1076,21 +1039,13 @@ fn fungible_amount(asset: &Asset) -> u128 {
 }
 
 fn half(asset: &Asset) -> Asset {
-	let half_amount = fungible_amount(asset)
-		.checked_div(2)
-		.expect("div 2 can't overflow; qed");
-	Asset {
-		fun: Fungible(half_amount),
-		id: asset.id.clone(),
-	}
+	let half_amount = fungible_amount(asset).checked_div(2).expect("div 2 can't overflow; qed");
+	Asset { fun: Fungible(half_amount), id: asset.id.clone() }
 }
 
 fn subtract_fee(asset: &Asset, amount: u128) -> Asset {
 	let final_amount = fungible_amount(asset).checked_sub(amount).expect("fee too low; qed");
-	Asset {
-		fun: Fungible(final_amount),
-		id: asset.id.clone(),
-	}
+	Asset { fun: Fungible(final_amount), id: asset.id.clone() }
 }
 
 fn is_chain_junction(junction: Option<&Junction>) -> bool {

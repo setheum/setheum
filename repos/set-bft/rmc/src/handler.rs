@@ -36,11 +36,11 @@
 // SOFTWARE.
 
 //! Reliable MultiCast - a primitive for Reliable Broadcast protocol.
+use core::fmt::Debug;
 pub use set_bft_crypto::{
     Indexed, MultiKeychain, Multisigned, PartialMultisignature, PartiallyMultisigned, Signable,
     Signed, UncheckedSigned,
 };
-use core::fmt::Debug;
 use std::{
     collections::HashMap,
     fmt::{Display, Formatter},

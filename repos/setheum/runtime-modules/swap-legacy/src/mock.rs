@@ -118,8 +118,7 @@ parameter_types! {
 	];
 }
 
-thread_local! {
-}
+thread_local! {}
 
 pub struct MockOnLiquidityPoolUpdated;
 impl Happened<(TradingPair, Balance, Balance)> for MockOnLiquidityPoolUpdated {
@@ -191,25 +190,16 @@ impl ExtBuilder {
 	}
 
 	pub fn initialize_added_liquidity_pools(mut self, who: AccountId) -> Self {
-		self.initial_added_liquidity_pools = vec![(
-			who,
-			vec![
-				(SEUSDWBTCPair::get(), (1_000_000u128, 2_000_000u128)),
-			],
-		)];
+		self.initial_added_liquidity_pools = vec![(who, vec![(SEUSDWBTCPair::get(), (1_000_000u128, 2_000_000u128))])];
 		self
 	}
 
 	pub fn build(self) -> sp_io::TestExternalities {
-		let mut t = frame_system::GenesisConfig::<Runtime>::default()
-			.build_storage()
-			.unwrap();
+		let mut t = frame_system::GenesisConfig::<Runtime>::default().build_storage().unwrap();
 
-		module_tokens::GenesisConfig::<Runtime> {
-			balances: self.balances,
-		}
-		.assimilate_storage(&mut t)
-		.unwrap();
+		module_tokens::GenesisConfig::<Runtime> { balances: self.balances }
+			.assimilate_storage(&mut t)
+			.unwrap();
 
 		swap_legacy::GenesisConfig::<Runtime> {
 			initial_listing_trading_pairs: self.initial_listing_trading_pairs,

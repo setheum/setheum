@@ -21,9 +21,6 @@ mod benchmarks {
 		#[extrinsic_call]
 		grant_access(SystemOrigin::Root, 100, b"grant_access".to_vec(), caller.clone());
 
-		assert_eq!(
-			ExtrinsicAccess::<T>::get(&(100, b"grant_access".to_vec())),
-			Some(caller).into(),
-		);
+		assert_eq!(ExtrinsicAccess::<T>::get(&(100, b"grant_access".to_vec())), Some(caller).into(),);
 	}
 }

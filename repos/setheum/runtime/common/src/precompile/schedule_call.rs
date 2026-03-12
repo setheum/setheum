@@ -121,7 +121,8 @@ impl<
 		Origin,
 		PalletsOrigin,
 		Runtime,
-	> where
+	>
+where
 	AccountId: Debug + Clone,
 	AddressMapping: AddressMappingT<AccountId>,
 	CurrencyIdMapping: CurrencyIdMappingT,
@@ -152,7 +153,7 @@ impl<
 				let gas_limit = input.u64_at(4)?;
 				let storage_limit = input.u32_at(5)?;
 				let min_delay = input.u32_at(6)?;
-// solidity abi enocde bytes will add an length at input[7]
+				// solidity abi enocde bytes will add an length at input[7]
 				let input_len = input.u32_at(8)?;
 				let input_data = input.bytes_at(9, input_len as usize)?;
 
@@ -172,9 +173,9 @@ impl<
 				let mut _fee: PalletBalanceOf<Runtime> = Default::default();
 				#[cfg(not(feature = "with-ethereum-compatibility"))]
 				{
-// reserve the transaction fee for gas_limit and storage_limit
-// TODO: reserve storage_limit here
-// Manually charge weight fee in scheduled_call
+					// reserve the transaction fee for gas_limit and storage_limit
+					// TODO: reserve storage_limit here
+					// Manually charge weight fee in scheduled_call
 					use sp_runtime::traits::Convert;
 					let from_account = AddressMapping::get_account_id(&from);
 					let weight = <Runtime as module_evm::Config>::GasToWeight::convert(gas_limit);
@@ -195,18 +196,13 @@ impl<
 				.into();
 
 				let current_id = EvmSchedulerNextID::get();
-				let next_id = current_id
-					.checked_add(1)
-					.ok_or_else(|| ExitError::Other("Scheduler next id overflow".into()))?;
+				let next_id =
+					current_id.checked_add(1).ok_or_else(|| ExitError::Other("Scheduler next id overflow".into()))?;
 				EvmSchedulerNextID::set(&next_id);
 
-				let task_id = TaskInfo {
-					prefix: b"ScheduleCall".to_vec(),
-					id: current_id,
-					sender: from,
-					fee: _fee.into(),
-				}
-				.encode();
+				let task_id =
+					TaskInfo { prefix: b"ScheduleCall".to_vec(), id: current_id, sender: from, fee: _fee.into() }
+						.encode();
 
 				log::debug!(
 					target: "evm",
@@ -230,10 +226,10 @@ impl<
 					output: Output::default().encode_bytes(&task_id),
 					logs: Default::default(),
 				})
-			}
+			},
 			Action::Cancel => {
 				let from = input.evm_address_at(1)?;
-// solidity abi enocde bytes will add an length at input[2]
+				// solidity abi enocde bytes will add an length at input[2]
 				let task_id_len = input.u32_at(3)?;
 				let task_id = input.bytes_at(4, task_id_len as usize)?;
 
@@ -252,7 +248,7 @@ impl<
 
 				#[cfg(not(feature = "with-ethereum-compatibility"))]
 				{
-// unreserve the transaction fee for gas_limit
+					// unreserve the transaction fee for gas_limit
 					let from_account = AddressMapping::get_account_id(&from);
 					ChargeTransactionPayment::unreserve_fee(&from_account, task_info.fee.into());
 				}
@@ -263,11 +259,11 @@ impl<
 					output: vec![],
 					logs: Default::default(),
 				})
-			}
+			},
 			Action::Reschedule => {
 				let from = input.evm_address_at(1)?;
 				let min_delay = input.u32_at(2)?;
-// solidity abi enocde bytes will add an length at input[3]
+				// solidity abi enocde bytes will add an length at input[3]
 				let task_id_len = input.u32_at(4)?;
 				let task_id = input.bytes_at(5, task_id_len as usize)?;
 
@@ -294,7 +290,7 @@ impl<
 					output: vec![],
 					logs: Default::default(),
 				})
-			}
+			},
 		}
 	}
 }

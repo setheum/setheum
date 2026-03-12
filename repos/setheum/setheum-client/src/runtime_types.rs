@@ -37,13 +37,13 @@
 
 pub use crate::setheum::api::runtime_types::*;
 use crate::{
-    setheum_runtime::SessionKeys,
     api::runtime_types::{
         primitives::app::Public as SetBFTPublic,
         sp_consensus_aura::sr25519::app_sr25519::Public as AuraPublic,
         sp_core::{ed25519::Public as EdPublic, sr25519::Public as SrPublic},
     },
     pallet_staking::EraRewardPoints,
+    setheum_runtime::SessionKeys,
     sp_weights::weight_v2::Weight,
 };
 
@@ -88,7 +88,7 @@ impl TryFrom<String> for SessionKeys {
 }
 
 impl Weight {
-/// Returns new instance of weight v2 object.
+    /// Returns new instance of weight v2 object.
     pub const fn new(ref_time: u64, proof_size: u64) -> Self {
         Self {
             ref_time,

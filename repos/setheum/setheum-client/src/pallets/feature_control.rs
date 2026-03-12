@@ -43,16 +43,16 @@ use crate::{
 /// Read only pallet feature control API.
 #[async_trait::async_trait]
 pub trait FeatureControlApi {
-/// Check if a feature is active.
+    /// Check if a feature is active.
     async fn is_feature_active(&self, feature: Feature, at: Option<BlockHash>) -> bool;
 }
 
 /// Pallet feature control API that requires sudo.
 #[async_trait::async_trait]
 pub trait FeatureControlSudoApi {
-/// Enable a feature.
+    /// Enable a feature.
     async fn enable_feature(&self, feature: Feature, status: TxStatus) -> anyhow::Result<TxInfo>;
-/// Disable a feature.
+    /// Disable a feature.
     async fn disable_feature(&self, feature: Feature, status: TxStatus) -> anyhow::Result<TxInfo>;
 }
 

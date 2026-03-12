@@ -158,8 +158,8 @@ mod tests {
         },
         NodeCount, NodeIndex,
     };
-    use set_bft_mock::Keychain;
     use codec::{Decode, Encode};
+    use set_bft_mock::Keychain;
 
     type Validator = GenericValidator<Keychain>;
 

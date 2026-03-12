@@ -36,10 +36,10 @@
 // SOFTWARE.
 
 use crate::crypto::{PartialMultisignature, Signature};
+use codec::{Decode, Encode};
 use set_bft_types::{
     Index, Keychain as KeychainT, MultiKeychain as MultiKeychainT, NodeCount, NodeIndex,
 };
-use codec::{Decode, Encode};
 use std::fmt::Debug;
 
 pub trait MK:

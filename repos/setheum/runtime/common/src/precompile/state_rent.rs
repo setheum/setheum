@@ -83,7 +83,7 @@ where
 					output: Output::default().encode_u32(output),
 					logs: Default::default(),
 				})
-			}
+			},
 			Action::QueryStorageDepositPerByte => {
 				let deposit = EVM::query_storage_deposit_per_byte();
 				Ok(PrecompileOutput {
@@ -92,7 +92,7 @@ where
 					output: Output::default().encode_u128(deposit),
 					logs: Default::default(),
 				})
-			}
+			},
 			Action::QueryMaintainer => {
 				let contract = input.evm_address_at(1)?;
 
@@ -105,7 +105,7 @@ where
 					output: Output::default().encode_address(&maintainer),
 					logs: Default::default(),
 				})
-			}
+			},
 			Action::QueryDeveloperDeposit => {
 				let deposit = EVM::query_developer_deposit();
 				Ok(PrecompileOutput {
@@ -114,7 +114,7 @@ where
 					output: Output::default().encode_u128(deposit),
 					logs: Default::default(),
 				})
-			}
+			},
 			Action::QueryDeploymentFee => {
 				let fee = EVM::query_deployment_fee();
 				Ok(PrecompileOutput {
@@ -123,7 +123,7 @@ where
 					output: Output::default().encode_u128(fee),
 					logs: Default::default(),
 				})
-			}
+			},
 			Action::TransferMaintainer => {
 				let from = input.account_id_at(1)?;
 				let contract = input.evm_address_at(2)?;
@@ -144,7 +144,7 @@ where
 					output: vec![],
 					logs: Default::default(),
 				})
-			}
+			},
 		}
 	}
 }

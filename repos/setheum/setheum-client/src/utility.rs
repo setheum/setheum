@@ -44,53 +44,54 @@ use crate::{
     api::transaction_payment::events::TransactionFeePaid,
     connections::{AsConnection, TxInfo},
     pallets::{committee_management::CommitteeManagementApi, staking::StakingApi},
-    SetBFTConfig, BlockHash, BlockNumber, EraIndex, SessionIndex,
+    BlockHash, BlockNumber, EraIndex, SessionIndex, SetBFTConfig,
 };
 
 /// Block info API.
 #[async_trait::async_trait]
 pub trait BlocksApi {
-/// Returns the first block of a session.
-/// * `session` - number of the session to query the first block from
+    /// Returns the first block of a session.
+    /// * `session` - number of the session to query the first block from
     async fn first_block_of_session(
         &self,
         session: SessionIndex,
     ) -> anyhow::Result<Option<BlockHash>>;
 
-/// Returns hash of a given block if the given block exists, otherwise `None`
-/// * `block` - number of the block
+    /// Returns hash of a given block if the given block exists, otherwise `None`
+    /// * `block` - number of the block
     async fn get_block_hash(&self, block: BlockNumber) -> anyhow::Result<Option<BlockHash>>;
 
-/// Returns the most recent block from the current best chain.
+    /// Returns the most recent block from the current best chain.
     async fn get_best_block(&self) -> anyhow::Result<Option<BlockNumber>>;
 
-/// Returns the most recent block from the finalized chain.
+    /// Returns the most recent block from the finalized chain.
     async fn get_finalized_block_hash(&self) -> anyhow::Result<BlockHash>;
 
-/// Returns number of a given block hash, if the given block exists, otherwise `None`
-/// This is version that returns `Result`
-/// * `block` - hash of the block to query its number
+    /// Returns number of a given block hash, if the given block exists, otherwise `None`
+    /// This is version that returns `Result`
+    /// * `block` - hash of the block to query its number
     async fn get_block_number(&self, block: BlockHash) -> anyhow::Result<Option<BlockNumber>>;
 
-/// Returns number of a given block hash, if the given block exists, otherwise `None`
-/// * `block` - hash of the block to query its number
+    /// Returns number of a given block hash, if the given block exists, otherwise `None`
+    /// * `block` - hash of the block to query its number
     async fn get_block_number_opt(
         &self,
         block: Option<BlockHash>,
     ) -> anyhow::Result<Option<BlockNumber>>;
 
-/// Fetch all events that corresponds to the transaction identified by `tx_info`.
-    async fn get_tx_events(&self, tx_info: TxInfo) -> anyhow::Result<ExtrinsicEvents<SetBFTConfig>>;
+    /// Fetch all events that corresponds to the transaction identified by `tx_info`.
+    async fn get_tx_events(&self, tx_info: TxInfo)
+        -> anyhow::Result<ExtrinsicEvents<SetBFTConfig>>;
 
-/// Returns the fee that was paid for the transaction identified by `tx_info`.
+    /// Returns the fee that was paid for the transaction identified by `tx_info`.
     async fn get_tx_fee(&self, tx_info: TxInfo) -> anyhow::Result<Balance>;
 }
 
 /// Interaction logic between pallet session and pallet staking.
 #[async_trait::async_trait]
 pub trait SessionEraApi {
-/// Returns which era given session is.
-/// * `session` - session index
+    /// Returns which era given session is.
+    /// * `session` - session index
     async fn get_active_era_for_session(&self, session: SessionIndex) -> anyhow::Result<EraIndex>;
 }
 
@@ -146,7 +147,10 @@ impl<C: AsConnection + Sync> BlocksApi for C {
             .map_err(|e| e.into())
     }
 
-    async fn get_tx_events(&self, tx_info: TxInfo) -> anyhow::Result<ExtrinsicEvents<SetBFTConfig>> {
+    async fn get_tx_events(
+        &self,
+        tx_info: TxInfo,
+    ) -> anyhow::Result<ExtrinsicEvents<SetBFTConfig>> {
         let block_body = self
             .as_connection()
             .as_client()

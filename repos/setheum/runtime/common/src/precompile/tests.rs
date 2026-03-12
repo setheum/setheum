@@ -23,9 +23,9 @@
 use super::*;
 use crate::precompile::{
 	mock::{
-		setm_evm_address, alice, alice_evm_addr, setusd_evm_address, bob, bob_evm_addr, erc20_address_not_exists,
-		get_task_id, lp_setm_setusd_evm_address, new_test_ext, serp_evm_address, run_to_block, Balances, SwapLegacyModule,
-		DexPrecompile, Event as TestEvent, MultiCurrencyPrecompile, Oracle, OraclePrecompile, Origin, Price,
+		alice, alice_evm_addr, bob, bob_evm_addr, erc20_address_not_exists, get_task_id, lp_setm_setusd_evm_address,
+		new_test_ext, run_to_block, serp_evm_address, setm_evm_address, setusd_evm_address, Balances, DexPrecompile,
+		Event as TestEvent, MultiCurrencyPrecompile, Oracle, OraclePrecompile, Origin, Price, SwapLegacyModule,
 	},
 	schedule_call::TaskInfo,
 };
@@ -47,12 +47,7 @@ impl Precompile for DummyPrecompile {
 		_target_gas: Option<u64>,
 		_context: &Context,
 	) -> core::result::Result<PrecompileOutput, ExitError> {
-		Ok(PrecompileOutput {
-			exit_status: ExitSucceed::Returned,
-			cost: 0,
-			output: vec![],
-			logs: Default::default(),
-		})
+		Ok(PrecompileOutput { exit_status: ExitSucceed::Returned, cost: 0, output: vec![], logs: Default::default() })
 	}
 }
 
@@ -73,11 +68,8 @@ fn precompile_filter_works_on_setheum_precompiles() {
 	let mut non_system = [0u8; 20];
 	non_system[0] = 1;
 
-	let non_system_caller_context = Context {
-		address: precompile,
-		caller: non_system.into(),
-		apparent_value: 0.into(),
-	};
+	let non_system_caller_context =
+		Context { address: precompile, caller: non_system.into(), apparent_value: 0.into() };
 	assert_eq!(
 		WithSystemContractFilter::execute(precompile, &[0u8; 1], None, &non_system_caller_context),
 		Some(Err(ExitError::Other("no permission".into()))),
@@ -91,14 +83,8 @@ fn precompile_filter_does_not_work_on_system_contracts() {
 	let mut non_system = [0u8; 20];
 	non_system[0] = 1;
 
-	let non_system_caller_context = Context {
-		address: system,
-		caller: non_system.into(),
-		apparent_value: 0.into(),
-	};
-	assert!(
-		WithSystemContractFilter::execute(non_system.into(), &[0u8; 1], None, &non_system_caller_context).is_none()
-	);
+	let non_system_caller_context = Context { address: system, caller: non_system.into(), apparent_value: 0.into() };
+	assert!(WithSystemContractFilter::execute(non_system.into(), &[0u8; 1], None, &non_system_caller_context).is_none());
 }
 
 #[test]
@@ -108,14 +94,9 @@ fn precompile_filter_does_not_work_on_non_system_contracts() {
 	let mut another_non_system = [0u8; 20];
 	another_non_system[0] = 2;
 
-	let non_system_caller_context = Context {
-		address: non_system.into(),
-		caller: another_non_system.into(),
-		apparent_value: 0.into(),
-	};
-	assert!(
-		WithSystemContractFilter::execute(non_system.into(), &[0u8; 1], None, &non_system_caller_context).is_none()
-	);
+	let non_system_caller_context =
+		Context { address: non_system.into(), caller: another_non_system.into(), apparent_value: 0.into() };
+	assert!(WithSystemContractFilter::execute(non_system.into(), &[0u8; 1], None, &non_system_caller_context).is_none());
 }
 // TODO - FIXME: Fix Mock Prefix
 // #[test]
@@ -855,23 +836,15 @@ fn precompile_filter_does_not_work_on_non_system_contracts() {
 
 #[test]
 fn task_id_max_and_min() {
-	let task_id = TaskInfo {
-		prefix: b"ScheduleCall".to_vec(),
-		id: u32::MAX,
-		sender: H160::default(),
-		fee: Balance::MAX,
-	}
-	.encode();
+	let task_id =
+		TaskInfo { prefix: b"ScheduleCall".to_vec(), id: u32::MAX, sender: H160::default(), fee: Balance::MAX }
+			.encode();
 
 	assert_eq!(54, task_id.len());
 
-	let task_id = TaskInfo {
-		prefix: b"ScheduleCall".to_vec(),
-		id: u32::MIN,
-		sender: H160::default(),
-		fee: Balance::MIN,
-	}
-	.encode();
+	let task_id =
+		TaskInfo { prefix: b"ScheduleCall".to_vec(), id: u32::MIN, sender: H160::default(), fee: Balance::MIN }
+			.encode();
 
 	assert_eq!(38, task_id.len());
 }

@@ -61,20 +61,13 @@ pub struct BaseBenchmarkHelper<T>(sp_std::marker::PhantomData<T>);
 impl<T: Config> BenchmarkHelper<BlockNumberFor<T>, T::AccountId, T::Balance> for BaseBenchmarkHelper<T> {
 	fn setup_bid() -> Option<(T::AccountId, T::Balance)> {
 		let end_block: BlockNumberFor<T> = frame_system::Pallet::<T>::block_number() + 10u32.into();
-		assert_ok!(Pallet::<T>::new_auction(
-			frame_system::Pallet::<T>::block_number(),
-			Some(end_block),
-		));
+		assert_ok!(Pallet::<T>::new_auction(frame_system::Pallet::<T>::block_number(), Some(end_block),));
 
 		let auction_id: T::AuctionId = 0u32.into();
 		let pre_bidder: T::AccountId = account("pre_bidder", 0, 0);
 		let pre_bid_price: T::Balance = 10_000u32.into();
 
-		assert_ok!(Pallet::<T>::bid(
-			RawOrigin::Signed(pre_bidder).into(),
-			auction_id,
-			pre_bid_price
-		));
+		assert_ok!(Pallet::<T>::bid(RawOrigin::Signed(pre_bidder).into(), auction_id, pre_bid_price));
 
 		let bidder: T::AccountId = account("bidder", 0, 0);
 		let bid_price: T::Balance = 20_000u32.into();
@@ -86,10 +79,7 @@ impl<T: Config> BenchmarkHelper<BlockNumberFor<T>, T::AccountId, T::Balance> for
 		let end_block: BlockNumberFor<T> = frame_system::Pallet::<T>::block_number() + 10u32.into();
 
 		for _auction_id in 0..rand {
-			assert_ok!(Pallet::<T>::new_auction(
-				frame_system::Pallet::<T>::block_number(),
-				Some(end_block),
-			));
+			assert_ok!(Pallet::<T>::new_auction(frame_system::Pallet::<T>::block_number(), Some(end_block),));
 		}
 		Some(end_block)
 	}
@@ -109,14 +99,7 @@ mod benchmarks {
 		#[extrinsic_call]
 		_(RawOrigin::Signed(bidder.clone()), auction_id, bid_price);
 
-		frame_system::Pallet::<T>::assert_last_event(
-			Event::Bid {
-				auction_id,
-				bidder: bidder,
-				amount: bid_price,
-			}
-			.into(),
-		);
+		frame_system::Pallet::<T>::assert_last_event(Event::Bid { auction_id, bidder, amount: bid_price }.into());
 	}
 
 	#[benchmark]

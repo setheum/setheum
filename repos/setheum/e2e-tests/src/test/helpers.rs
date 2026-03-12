@@ -20,13 +20,13 @@
 
 use std::ops::Deref;
 
-use setheum_client::{
-    pallets::balances::BalanceUserApi, AccountId, Connection, KeyPair, Pair, SignedConnection,
-    SignedConnectionApi, TxStatus,
-};
 use anyhow::Result;
 use primitives::Balance;
 use rand::Rng;
+use setheum_client::{
+	pallets::balances::BalanceUserApi, AccountId, Connection, KeyPair, Pair, SignedConnection, SignedConnectionApi,
+	TxStatus,
+};
 
 use crate::config::Config;
 
@@ -34,71 +34,60 @@ use crate::config::Config;
 pub struct KeyPairWrapper(KeyPair);
 
 impl KeyPairWrapper {
-    /// Creates a copy of the `connection` signed by `signer`
-    pub fn sign(&self, conn: &Connection) -> SignedConnection {
-        SignedConnection::from_connection(conn.clone(), self.clone().0)
-    }
+	/// Creates a copy of the `connection` signed by `signer`
+	pub fn sign(&self, conn: &Connection) -> SignedConnection {
+		SignedConnection::from_connection(conn.clone(), self.clone().0)
+	}
 }
 
 impl Clone for KeyPairWrapper {
-    fn clone(&self) -> Self {
-        Self(KeyPair::new(self.0.signer().clone()))
-    }
+	fn clone(&self) -> Self {
+		Self(KeyPair::new(self.0.signer().clone()))
+	}
 }
 
 impl Deref for KeyPairWrapper {
-    type Target = KeyPair;
+	type Target = KeyPair;
 
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
+	fn deref(&self) -> &Self::Target {
+		&self.0
+	}
 }
 
 impl From<&KeyPairWrapper> for AccountId {
-    fn from(keypair: &KeyPairWrapper) -> Self {
-        keypair.signer().public().into()
-    }
+	fn from(keypair: &KeyPairWrapper) -> Self {
+		keypair.signer().public().into()
+	}
 }
 
 impl From<KeyPairWrapper> for AccountId {
-    fn from(keypair: KeyPairWrapper) -> Self {
-        (&keypair).into()
-    }
+	fn from(keypair: KeyPairWrapper) -> Self {
+		(&keypair).into()
+	}
 }
 
 /// Derives a test account based on a randomized string
 pub fn random_account() -> KeyPairWrapper {
-    KeyPairWrapper(setheum_client::keypair_from_string(&format!(
-        "//TestAccount/{}",
-        rand::thread_rng().gen::<u128>()
-    )))
+	KeyPairWrapper(setheum_client::keypair_from_string(&format!("//TestAccount/{}", rand::thread_rng().gen::<u128>())))
 }
 
 /// Transfer `amount` from `from` to `to`
-pub async fn transfer<S: SignedConnectionApi>(
-    conn: &S,
-    to: &KeyPair,
-    amount: Balance,
-) -> Result<()> {
-    conn.transfer_keep_alive(to.signer().public().into(), amount, TxStatus::Finalized)
-        .await
-        .map(|_| ())
+pub async fn transfer<S: SignedConnectionApi>(conn: &S, to: &KeyPair, amount: Balance) -> Result<()> {
+	conn.transfer_keep_alive(to.signer().public().into(), amount, TxStatus::Finalized).await.map(|_| ())
 }
 
 /// Returns a number representing the given amount of setheums (adding decimals)
 pub fn setheums(basic_unit_amount: Balance) -> Balance {
-    basic_unit_amount * 1_000_000_000_000
+	basic_unit_amount * 1_000_000_000_000
 }
 
 /// Prepares a `(conn, authority, account)` triple with some money in `account` for fees.
-pub async fn basic_test_context(
-    config: &Config,
-) -> Result<(Connection, KeyPairWrapper, KeyPairWrapper)> {
-    let conn = Connection::new(&config.node).await;
-    let authority = KeyPairWrapper(setheum_client::keypair_from_string(&config.sudo_seed));
-    let account = random_account();
+pub async fn basic_test_context(config: &Config) -> Result<(Connection, KeyPairWrapper, KeyPairWrapper)> {
+	let conn = Connection::new(&config.node).await;
+	let authority = KeyPairWrapper(setheum_client::keypair_from_string(&config.sudo_seed));
+	let account = random_account();
 
-    transfer(&authority.sign(&conn), &account, setheums(1)).await?;
+	transfer(&authority.sign(&conn), &account, setheums(1)).await?;
 
-    Ok((conn, authority, account))
+	Ok((conn, authority, account))
 }

@@ -38,14 +38,15 @@
 use subxt::utils::MultiAddress;
 
 use crate::{
+    api,
     setheum_runtime::{ProxyType, RuntimeCall},
-    api, AccountId, SignedConnectionApi, TxInfo, TxStatus,
+    AccountId, SignedConnectionApi, TxInfo, TxStatus,
 };
 
 /// any object that implements pallet proxy api
 #[async_trait::async_trait]
 pub trait ProxyUserApi {
-/// API for [`proxy`](https://paritytech.github.io/polkadot-sdk/master/pallet_proxy/pallet/struct.Pallet.html#method.proxy) call.
+    /// API for [`proxy`](https://paritytech.github.io/polkadot-sdk/master/pallet_proxy/pallet/struct.Pallet.html#method.proxy) call.
     async fn proxy(
         &self,
         real: AccountId,
@@ -53,7 +54,7 @@ pub trait ProxyUserApi {
         status: TxStatus,
     ) -> anyhow::Result<TxInfo>;
 
-/// API for [`add_proxy`](https://paritytech.github.io/polkadot-sdk/master/pallet_proxy/pallet/struct.Pallet.html#method.add_proxy) call.
+    /// API for [`add_proxy`](https://paritytech.github.io/polkadot-sdk/master/pallet_proxy/pallet/struct.Pallet.html#method.add_proxy) call.
     async fn add_proxy(
         &self,
         delegate: AccountId,
@@ -62,7 +63,7 @@ pub trait ProxyUserApi {
         status: TxStatus,
     ) -> anyhow::Result<TxInfo>;
 
-/// API for [`remove_proxy`](https://paritytech.github.io/polkadot-sdk/master/pallet_proxy/pallet/struct.Pallet.html#method.remove_proxy) call.
+    /// API for [`remove_proxy`](https://paritytech.github.io/polkadot-sdk/master/pallet_proxy/pallet/struct.Pallet.html#method.remove_proxy) call.
     async fn remove_proxy(
         &self,
         delegate: AccountId,

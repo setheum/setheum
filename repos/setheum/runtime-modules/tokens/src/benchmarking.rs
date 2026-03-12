@@ -97,10 +97,7 @@ mod benchmarks {
 		#[extrinsic_call]
 		_(RawOrigin::Signed(from.clone()), to_lookup, currency_id, false);
 
-		assert_eq!(
-			<Pallet::<T> as MultiCurrency<_>>::total_balance(currency_id, &from),
-			0u32.into()
-		);
+		assert_eq!(<Pallet::<T> as MultiCurrency<_>>::total_balance(currency_id, &from), 0u32.into());
 	}
 
 	#[benchmark]
@@ -121,10 +118,7 @@ mod benchmarks {
 		#[extrinsic_call]
 		_(RawOrigin::Signed(from), to_lookup, currency_id, amount);
 
-		assert_eq!(
-			<Pallet::<T> as MultiCurrency<_>>::total_balance(currency_id, &to),
-			amount
-		);
+		assert_eq!(<Pallet::<T> as MultiCurrency<_>>::total_balance(currency_id, &to), amount);
 	}
 
 	#[benchmark]
@@ -146,10 +140,7 @@ mod benchmarks {
 		#[extrinsic_call]
 		_(RawOrigin::Root, from_lookup, to_lookup, currency_id, amount);
 
-		assert_eq!(
-			<Pallet::<T> as MultiCurrency<_>>::total_balance(currency_id, &to),
-			amount
-		);
+		assert_eq!(<Pallet::<T> as MultiCurrency<_>>::total_balance(currency_id, &to), amount);
 	}
 
 	#[benchmark]

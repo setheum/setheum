@@ -68,20 +68,14 @@ fn update_rate_limit_rule_work() {
 			encoded_key: DOT.encode(),
 			update: Some(RateLimitRule::NotAllowed),
 		}));
-		assert_eq!(
-			RateLimit::rate_limit_rules(0, DOT.encode()),
-			Some(RateLimitRule::NotAllowed)
-		);
+		assert_eq!(RateLimit::rate_limit_rules(0, DOT.encode()), Some(RateLimitRule::NotAllowed));
 
 		assert_noop!(
 			RateLimit::update_rate_limit_rule(
 				RuntimeOrigin::root(),
 				0,
 				DOT.encode(),
-				Some(RateLimitRule::PerPeriod {
-					period: Period::Blocks(0),
-					quota: 1,
-				}),
+				Some(RateLimitRule::PerPeriod { period: Period::Blocks(0), quota: 1 }),
 			),
 			Error::<Runtime>::InvalidRateLimitRule
 		);
@@ -90,10 +84,7 @@ fn update_rate_limit_rule_work() {
 				RuntimeOrigin::root(),
 				0,
 				DOT.encode(),
-				Some(RateLimitRule::PerPeriod {
-					period: Period::Blocks(1),
-					quota: 0,
-				}),
+				Some(RateLimitRule::PerPeriod { period: Period::Blocks(1), quota: 0 }),
 			),
 			Error::<Runtime>::InvalidRateLimitRule
 		);
@@ -102,10 +93,7 @@ fn update_rate_limit_rule_work() {
 				RuntimeOrigin::root(),
 				0,
 				DOT.encode(),
-				Some(RateLimitRule::PerPeriod {
-					period: Period::Seconds(0),
-					quota: 1,
-				}),
+				Some(RateLimitRule::PerPeriod { period: Period::Seconds(0), quota: 1 }),
 			),
 			Error::<Runtime>::InvalidRateLimitRule
 		);
@@ -114,10 +102,7 @@ fn update_rate_limit_rule_work() {
 				RuntimeOrigin::root(),
 				0,
 				DOT.encode(),
-				Some(RateLimitRule::PerPeriod {
-					period: Period::Seconds(1),
-					quota: 0,
-				}),
+				Some(RateLimitRule::PerPeriod { period: Period::Seconds(1), quota: 0 }),
 			),
 			Error::<Runtime>::InvalidRateLimitRule
 		);
@@ -126,11 +111,7 @@ fn update_rate_limit_rule_work() {
 				RuntimeOrigin::root(),
 				0,
 				DOT.encode(),
-				Some(RateLimitRule::TokenBucket {
-					period: Period::Blocks(0),
-					quota_increment: 1000,
-					max_quota: 10000,
-				}),
+				Some(RateLimitRule::TokenBucket { period: Period::Blocks(0), quota_increment: 1000, max_quota: 10000 }),
 			),
 			Error::<Runtime>::InvalidRateLimitRule
 		);
@@ -152,11 +133,7 @@ fn update_rate_limit_rule_work() {
 				RuntimeOrigin::root(),
 				0,
 				DOT.encode(),
-				Some(RateLimitRule::TokenBucket {
-					period: Period::Blocks(100),
-					quota_increment: 1000,
-					max_quota: 0,
-				}),
+				Some(RateLimitRule::TokenBucket { period: Period::Blocks(100), quota_increment: 1000, max_quota: 0 }),
 			),
 			Error::<Runtime>::InvalidRateLimitRule
 		);
@@ -165,11 +142,7 @@ fn update_rate_limit_rule_work() {
 				RuntimeOrigin::root(),
 				0,
 				DOT.encode(),
-				Some(RateLimitRule::TokenBucket {
-					period: Period::Seconds(100),
-					quota_increment: 1000,
-					max_quota: 0,
-				}),
+				Some(RateLimitRule::TokenBucket { period: Period::Seconds(100), quota_increment: 1000, max_quota: 0 }),
 			),
 			Error::<Runtime>::InvalidRateLimitRule
 		);
@@ -178,11 +151,7 @@ fn update_rate_limit_rule_work() {
 				RuntimeOrigin::root(),
 				0,
 				DOT.encode(),
-				Some(RateLimitRule::TokenBucket {
-					period: Period::Blocks(100),
-					quota_increment: 0,
-					max_quota: 10000,
-				}),
+				Some(RateLimitRule::TokenBucket { period: Period::Blocks(100), quota_increment: 0, max_quota: 10000 }),
 			),
 			Error::<Runtime>::InvalidRateLimitRule
 		);
@@ -191,11 +160,7 @@ fn update_rate_limit_rule_work() {
 				RuntimeOrigin::root(),
 				0,
 				DOT.encode(),
-				Some(RateLimitRule::TokenBucket {
-					period: Period::Seconds(100),
-					quota_increment: 0,
-					max_quota: 10000,
-				}),
+				Some(RateLimitRule::TokenBucket { period: Period::Seconds(100), quota_increment: 0, max_quota: 10000 }),
 			),
 			Error::<Runtime>::InvalidRateLimitRule
 		);
@@ -207,11 +172,7 @@ fn update_rate_limit_rule_work() {
 			RuntimeOrigin::root(),
 			0,
 			DOT.encode(),
-			Some(RateLimitRule::TokenBucket {
-				period: Period::Blocks(100),
-				quota_increment: 1000,
-				max_quota: 10000,
-			}),
+			Some(RateLimitRule::TokenBucket { period: Period::Blocks(100), quota_increment: 1000, max_quota: 10000 }),
 		));
 		System::assert_last_event(RuntimeEvent::RateLimit(crate::Event::RateLimitRuleUpdated {
 			rate_limiter_id: 0,
@@ -224,11 +185,7 @@ fn update_rate_limit_rule_work() {
 		}));
 		assert_eq!(
 			RateLimit::rate_limit_rules(0, DOT.encode()),
-			Some(RateLimitRule::TokenBucket {
-				period: Period::Blocks(100),
-				quota_increment: 1000,
-				max_quota: 10000,
-			})
+			Some(RateLimitRule::TokenBucket { period: Period::Blocks(100), quota_increment: 1000, max_quota: 10000 })
 		);
 		assert_eq!(RateLimit::rate_limit_quota(0, DOT.encode()), (0, 0));
 	});
@@ -252,21 +209,12 @@ fn add_whitelist_work() {
 			0,
 			KeyFilter::Match(ALICE.encode().try_into().unwrap()),
 		));
-		System::assert_last_event(RuntimeEvent::RateLimit(crate::Event::WhitelistFilterAdded {
-			rate_limiter_id: 0,
-		}));
-		assert_eq!(
-			RateLimit::limit_whitelist(0).0,
-			vec![KeyFilter::Match(ALICE.encode().try_into().unwrap())]
-		);
+		System::assert_last_event(RuntimeEvent::RateLimit(crate::Event::WhitelistFilterAdded { rate_limiter_id: 0 }));
+		assert_eq!(RateLimit::limit_whitelist(0).0, vec![KeyFilter::Match(ALICE.encode().try_into().unwrap())]);
 
 		// add already existed.
 		assert_noop!(
-			RateLimit::add_whitelist(
-				RuntimeOrigin::root(),
-				0,
-				KeyFilter::Match(ALICE.encode().try_into().unwrap())
-			),
+			RateLimit::add_whitelist(RuntimeOrigin::root(), 0, KeyFilter::Match(ALICE.encode().try_into().unwrap())),
 			Error::<Runtime>::FilterExisted
 		);
 
@@ -291,11 +239,7 @@ fn add_whitelist_work() {
 
 		// exceed filters limit
 		assert_noop!(
-			RateLimit::add_whitelist(
-				RuntimeOrigin::root(),
-				0,
-				KeyFilter::Match(DAVE.encode().try_into().unwrap())
-			),
+			RateLimit::add_whitelist(RuntimeOrigin::root(), 0, KeyFilter::Match(DAVE.encode().try_into().unwrap())),
 			Error::<Runtime>::MaxFilterExceeded
 		);
 	});
@@ -345,13 +289,8 @@ fn remove_whitelist_work() {
 			0,
 			KeyFilter::Match(ALICE.encode().try_into().unwrap())
 		));
-		System::assert_last_event(RuntimeEvent::RateLimit(crate::Event::WhitelistFilterRemoved {
-			rate_limiter_id: 0,
-		}));
-		assert_eq!(
-			RateLimit::limit_whitelist(0).0,
-			vec![KeyFilter::Match(BOB.encode().try_into().unwrap())]
-		);
+		System::assert_last_event(RuntimeEvent::RateLimit(crate::Event::WhitelistFilterRemoved { rate_limiter_id: 0 }));
+		assert_eq!(RateLimit::limit_whitelist(0).0, vec![KeyFilter::Match(BOB.encode().try_into().unwrap())]);
 	});
 }
 
@@ -391,9 +330,7 @@ fn reset_whitelist_work() {
 				KeyFilter::Match(BOB.encode().try_into().unwrap())
 			]
 		));
-		System::assert_last_event(RuntimeEvent::RateLimit(crate::Event::WhitelistFilterReset {
-			rate_limiter_id: 0,
-		}));
+		System::assert_last_event(RuntimeEvent::RateLimit(crate::Event::WhitelistFilterReset { rate_limiter_id: 0 }));
 		assert_eq!(
 			RateLimit::limit_whitelist(0).0,
 			vec![
@@ -412,9 +349,7 @@ fn reset_whitelist_work() {
 				KeyFilter::Match(ALICE.encode().try_into().unwrap()),
 			]
 		));
-		System::assert_last_event(RuntimeEvent::RateLimit(crate::Event::WhitelistFilterReset {
-			rate_limiter_id: 0,
-		}));
+		System::assert_last_event(RuntimeEvent::RateLimit(crate::Event::WhitelistFilterReset { rate_limiter_id: 0 }));
 		assert_eq!(
 			RateLimit::limit_whitelist(0).0,
 			vec![
@@ -486,10 +421,7 @@ fn access_remainer_quota_after_update_per_blocks() {
 		// current - last_updated >= blocks_count, will update RateLimitQuota firstly
 		assert_eq!(
 			RateLimit::access_remainer_quota_after_update(
-				RateLimitRule::PerPeriod {
-					period: Period::Blocks(30),
-					quota: 500,
-				},
+				RateLimitRule::PerPeriod { period: Period::Blocks(30), quota: 500 },
 				&0,
 				&DOT.encode(),
 			),
@@ -504,10 +436,7 @@ fn access_remainer_quota_after_update_per_blocks() {
 		// current - last_updated < blocks_count, will not update RateLimitQuota
 		assert_eq!(
 			RateLimit::access_remainer_quota_after_update(
-				RateLimitRule::PerPeriod {
-					period: Period::Blocks(30),
-					quota: 5000,
-				},
+				RateLimitRule::PerPeriod { period: Period::Blocks(30), quota: 5000 },
 				&0,
 				&DOT.encode(),
 			),
@@ -521,10 +450,7 @@ fn access_remainer_quota_after_update_per_blocks() {
 		// current - last_updated < blocks_count, will not update RateLimitQuota
 		assert_eq!(
 			RateLimit::access_remainer_quota_after_update(
-				RateLimitRule::PerPeriod {
-					period: Period::Blocks(20),
-					quota: 100,
-				},
+				RateLimitRule::PerPeriod { period: Period::Blocks(20), quota: 100 },
 				&0,
 				&DOT.encode(),
 			),
@@ -538,10 +464,7 @@ fn access_remainer_quota_after_update_per_blocks() {
 		// current - last_updated > blocks_count, will reset remainer_quota
 		assert_eq!(
 			RateLimit::access_remainer_quota_after_update(
-				RateLimitRule::PerPeriod {
-					period: Period::Blocks(20),
-					quota: 100,
-				},
+				RateLimitRule::PerPeriod { period: Period::Blocks(20), quota: 100 },
 				&0,
 				&DOT.encode(),
 			),
@@ -561,10 +484,7 @@ fn access_remainer_quota_after_update_per_seconds() {
 		// current - last_updated >= secs_count, will update RateLimitQuota firstly
 		assert_eq!(
 			RateLimit::access_remainer_quota_after_update(
-				RateLimitRule::PerPeriod {
-					period: Period::Seconds(30),
-					quota: 500,
-				},
+				RateLimitRule::PerPeriod { period: Period::Seconds(30), quota: 500 },
 				&0,
 				&DOT.encode(),
 			),
@@ -579,10 +499,7 @@ fn access_remainer_quota_after_update_per_seconds() {
 		// current - last_updated < secs_count, will not update RateLimitQuota
 		assert_eq!(
 			RateLimit::access_remainer_quota_after_update(
-				RateLimitRule::PerPeriod {
-					period: Period::Seconds(30),
-					quota: 5000,
-				},
+				RateLimitRule::PerPeriod { period: Period::Seconds(30), quota: 5000 },
 				&0,
 				&DOT.encode(),
 			),
@@ -596,10 +513,7 @@ fn access_remainer_quota_after_update_per_seconds() {
 		// current - last_updated < secs_count, will not update RateLimitQuota
 		assert_eq!(
 			RateLimit::access_remainer_quota_after_update(
-				RateLimitRule::PerPeriod {
-					period: Period::Seconds(20),
-					quota: 100,
-				},
+				RateLimitRule::PerPeriod { period: Period::Seconds(20), quota: 100 },
 				&0,
 				&DOT.encode(),
 			),
@@ -613,10 +527,7 @@ fn access_remainer_quota_after_update_per_seconds() {
 		// current - last_updated > secs_count, will reset remainer_quota
 		assert_eq!(
 			RateLimit::access_remainer_quota_after_update(
-				RateLimitRule::PerPeriod {
-					period: Period::Seconds(20),
-					quota: 100,
-				},
+				RateLimitRule::PerPeriod { period: Period::Seconds(20), quota: 100 },
 				&0,
 				&DOT.encode(),
 			),
@@ -636,11 +547,7 @@ fn access_remainer_quota_after_update_token_bucket() {
 		// (current - last_updated) / blocks_count = 3, will inc 3 * quota_increment
 		assert_eq!(
 			RateLimit::access_remainer_quota_after_update(
-				RateLimitRule::TokenBucket {
-					period: Period::Blocks(30),
-					quota_increment: 500,
-					max_quota: 1500,
-				},
+				RateLimitRule::TokenBucket { period: Period::Blocks(30), quota_increment: 500, max_quota: 1500 },
 				&0,
 				&DOT.encode(),
 			),
@@ -658,11 +565,7 @@ fn access_remainer_quota_after_update_token_bucket() {
 		// (current - last_updated) / blocks_count = 0, will not update RateLimitQuota
 		assert_eq!(
 			RateLimit::access_remainer_quota_after_update(
-				RateLimitRule::TokenBucket {
-					period: Period::Blocks(30),
-					quota_increment: 500,
-					max_quota: 1500,
-				},
+				RateLimitRule::TokenBucket { period: Period::Blocks(30), quota_increment: 500, max_quota: 1500 },
 				&0,
 				&DOT.encode(),
 			),
@@ -677,11 +580,7 @@ fn access_remainer_quota_after_update_token_bucket() {
 		// remainer_quota always <= max_quota
 		assert_eq!(
 			RateLimit::access_remainer_quota_after_update(
-				RateLimitRule::TokenBucket {
-					period: Period::Blocks(30),
-					quota_increment: 500,
-					max_quota: 1500,
-				},
+				RateLimitRule::TokenBucket { period: Period::Blocks(30), quota_increment: 500, max_quota: 1500 },
 				&0,
 				&DOT.encode(),
 			),
@@ -696,11 +595,7 @@ fn access_remainer_quota_after_update_token_bucket() {
 		// remainer_quota always <= max_quota
 		assert_eq!(
 			RateLimit::access_remainer_quota_after_update(
-				RateLimitRule::TokenBucket {
-					period: Period::Blocks(30),
-					quota_increment: 500,
-					max_quota: 200,
-				},
+				RateLimitRule::TokenBucket { period: Period::Blocks(30), quota_increment: 500, max_quota: 200 },
 				&0,
 				&DOT.encode(),
 			),
@@ -717,29 +612,17 @@ fn access_remainer_quota_after_update_when_not_allowed_or_unlimited() {
 		assert_eq!(System::block_number(), 100);
 		assert_eq!(RateLimit::rate_limit_quota(0, DOT.encode()), (0, 0));
 
-		assert_eq!(
-			RateLimit::access_remainer_quota_after_update(RateLimitRule::NotAllowed, &0, &DOT.encode(),),
-			0
-		);
+		assert_eq!(RateLimit::access_remainer_quota_after_update(RateLimitRule::NotAllowed, &0, &DOT.encode(),), 0);
 		assert_eq!(RateLimit::rate_limit_quota(0, DOT.encode()), (0, 0));
-		assert_eq!(
-			RateLimit::access_remainer_quota_after_update(RateLimitRule::Unlimited, &0, &DOT.encode(),),
-			0
-		);
+		assert_eq!(RateLimit::access_remainer_quota_after_update(RateLimitRule::Unlimited, &0, &DOT.encode(),), 0);
 		assert_eq!(RateLimit::rate_limit_quota(0, DOT.encode()), (0, 0));
 
 		RateLimitQuota::<Runtime>::mutate(0, DOT.encode(), |(_, remainer_quota)| *remainer_quota = 500);
 		assert_eq!(RateLimit::rate_limit_quota(0, DOT.encode()), (0, 500));
 
-		assert_eq!(
-			RateLimit::access_remainer_quota_after_update(RateLimitRule::NotAllowed, &0, &DOT.encode(),),
-			500
-		);
+		assert_eq!(RateLimit::access_remainer_quota_after_update(RateLimitRule::NotAllowed, &0, &DOT.encode(),), 500);
 		assert_eq!(RateLimit::rate_limit_quota(0, DOT.encode()), (0, 500));
-		assert_eq!(
-			RateLimit::access_remainer_quota_after_update(RateLimitRule::Unlimited, &0, &DOT.encode(),),
-			500
-		);
+		assert_eq!(RateLimit::access_remainer_quota_after_update(RateLimitRule::Unlimited, &0, &DOT.encode(),), 500);
 		assert_eq!(RateLimit::rate_limit_quota(0, DOT.encode()), (0, 500));
 	});
 }
@@ -751,10 +634,7 @@ fn consume_work() {
 			RuntimeOrigin::root(),
 			0,
 			DOT.encode(),
-			Some(RateLimitRule::PerPeriod {
-				period: Period::Blocks(30),
-				quota: 500,
-			}),
+			Some(RateLimitRule::PerPeriod { period: Period::Blocks(30), quota: 500 }),
 		));
 		assert_ok!(RateLimit::update_rate_limit_rule(
 			RuntimeOrigin::root(),
@@ -766,10 +646,7 @@ fn consume_work() {
 			RuntimeOrigin::root(),
 			1,
 			ETH.encode(),
-			Some(RateLimitRule::PerPeriod {
-				period: Period::Blocks(30),
-				quota: 500,
-			}),
+			Some(RateLimitRule::PerPeriod { period: Period::Blocks(30), quota: 500 }),
 		));
 
 		RateLimitQuota::<Runtime>::mutate(0, DOT.encode(), |(_, remainer_quota)| *remainer_quota = 10000);
@@ -806,20 +683,13 @@ fn can_consume_work() {
 			RuntimeOrigin::root(),
 			0,
 			DOT.encode(),
-			Some(RateLimitRule::PerPeriod {
-				period: Period::Blocks(30),
-				quota: 500,
-			}),
+			Some(RateLimitRule::PerPeriod { period: Period::Blocks(30), quota: 500 }),
 		));
 		assert_ok!(RateLimit::update_rate_limit_rule(
 			RuntimeOrigin::root(),
 			1,
 			DOT.encode(),
-			Some(RateLimitRule::TokenBucket {
-				period: Period::Blocks(30),
-				quota_increment: 500,
-				max_quota: 1000,
-			}),
+			Some(RateLimitRule::TokenBucket { period: Period::Blocks(30), quota_increment: 500, max_quota: 1000 }),
 		));
 		assert_ok!(RateLimit::update_rate_limit_rule(
 			RuntimeOrigin::root(),

@@ -43,13 +43,11 @@ use crate::{
     Hasher, Network as NetworkT, NetworkData as NetworkDataT, NodeCount, NodeIndex, NodeMap,
     Recipient, Round, SessionId, Signed, SpawnHandle, TaskHandle,
 };
-use set_bft_mock::{
-    Data, DataProvider, Hash64, Hasher64, Keychain, NetworkHook, Router, Spawner,
-};
 use futures::{channel::oneshot, StreamExt};
 use log::{debug, error, trace};
 use parking_lot::Mutex;
 use serial_test::serial;
+use set_bft_mock::{Data, DataProvider, Hash64, Hasher64, Keychain, NetworkHook, Router, Spawner};
 use std::{collections::HashMap, sync::Arc};
 
 struct MaliciousMember<'a> {

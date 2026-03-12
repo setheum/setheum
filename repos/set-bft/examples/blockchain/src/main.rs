@@ -47,11 +47,11 @@ use futures::{channel::oneshot, StreamExt};
 use log::{debug, error, info};
 use time::{macros::format_description, OffsetDateTime};
 
-use set_bft::{run_session, NodeIndex, Terminator};
-use set_bft_mock::{FinalizationHandler, Keychain, Loader, Saver, Spawner};
 use chain::{run_blockchain, Block, BlockNum, ChainConfig};
 use data::{Data, DataProvider, DataStore};
 use network::{Address, NetworkData, NetworkManager};
+use set_bft::{run_session, NodeIndex, Terminator};
+use set_bft_mock::{FinalizationHandler, Keychain, Loader, Saver, Spawner};
 
 mod chain;
 mod data;

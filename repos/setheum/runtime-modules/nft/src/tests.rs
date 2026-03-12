@@ -85,18 +85,11 @@ fn create_class_should_work() {
 
 		let cls_deposit = CREATE_CLASS_DEPOSIT + DATA_DEPOSIT_PER_BYTE * ((metadata.len() as u128) + TEST_ATTR_LEN);
 
-		assert_eq!(
-			reserved_balance(&class_id_account()),
-			cls_deposit + Proxy::deposit(1u32),
-		);
+		assert_eq!(reserved_balance(&class_id_account()), cls_deposit + Proxy::deposit(1u32),);
 
 		assert_eq!(
 			module_nft::Pallet::<Runtime>::classes(0).unwrap().data,
-			ClassData {
-				deposit: cls_deposit,
-				properties: Default::default(),
-				attributes: test_attr(1),
-			}
+			ClassData { deposit: cls_deposit, properties: Default::default(), attributes: test_attr(1) }
 		)
 	});
 }
@@ -228,26 +221,12 @@ fn mint_should_fail() {
 		);
 
 		assert_noop!(
-			NFTModule::mint(
-				RuntimeOrigin::signed(BOB),
-				BOB,
-				CLASS_ID,
-				metadata.clone(),
-				Default::default(),
-				0
-			),
+			NFTModule::mint(RuntimeOrigin::signed(BOB), BOB, CLASS_ID, metadata.clone(), Default::default(), 0),
 			Error::<Runtime>::InvalidQuantity
 		);
 
 		assert_noop!(
-			NFTModule::mint(
-				RuntimeOrigin::signed(BOB),
-				BOB,
-				CLASS_ID,
-				metadata.clone(),
-				Default::default(),
-				2
-			),
+			NFTModule::mint(RuntimeOrigin::signed(BOB), BOB, CLASS_ID, metadata.clone(), Default::default(), 2),
 			Error::<Runtime>::NoPermission
 		);
 
@@ -259,14 +238,7 @@ fn mint_should_fail() {
 			2 * (CREATE_TOKEN_DEPOSIT + DATA_DEPOSIT_PER_BYTE) + Balances::minimum_balance()
 		));
 		assert_noop!(
-			NFTModule::mint(
-				RuntimeOrigin::signed(class_id_account()),
-				BOB,
-				CLASS_ID,
-				metadata,
-				Default::default(),
-				2
-			),
+			NFTModule::mint(RuntimeOrigin::signed(class_id_account()), BOB, CLASS_ID, metadata, Default::default(), 2),
 			module_nft::Error::<Runtime>::NoAvailableTokenId
 		);
 	});
@@ -284,14 +256,7 @@ fn mint_should_fail_without_mintable() {
 		));
 
 		assert_noop!(
-			NFTModule::mint(
-				RuntimeOrigin::signed(class_id_account()),
-				BOB,
-				CLASS_ID,
-				metadata,
-				Default::default(),
-				2
-			),
+			NFTModule::mint(RuntimeOrigin::signed(class_id_account()), BOB, CLASS_ID, metadata, Default::default(), 2),
 			Error::<Runtime>::NonMintable
 		);
 	});
@@ -320,46 +285,26 @@ fn transfer_should_work() {
 			2
 		));
 
-		assert_eq!(
-			reserved_balance(&BOB),
-			2 * (CREATE_TOKEN_DEPOSIT + DATA_DEPOSIT_PER_BYTE)
-		);
+		assert_eq!(reserved_balance(&BOB), 2 * (CREATE_TOKEN_DEPOSIT + DATA_DEPOSIT_PER_BYTE));
 
-		assert_ok!(NFTModule::transfer(
-			RuntimeOrigin::signed(BOB),
-			ALICE,
-			(CLASS_ID, TOKEN_ID)
-		));
+		assert_ok!(NFTModule::transfer(RuntimeOrigin::signed(BOB), ALICE, (CLASS_ID, TOKEN_ID)));
 		System::assert_last_event(RuntimeEvent::NFTModule(crate::Event::TransferredToken {
 			from: BOB,
 			to: ALICE,
 			class_id: CLASS_ID,
 			token_id: TOKEN_ID,
 		}));
-		assert_eq!(
-			reserved_balance(&BOB),
-			1 * (CREATE_TOKEN_DEPOSIT + DATA_DEPOSIT_PER_BYTE)
-		);
-		assert_eq!(
-			reserved_balance(&ALICE),
-			1 * (CREATE_TOKEN_DEPOSIT + DATA_DEPOSIT_PER_BYTE)
-		);
+		assert_eq!(reserved_balance(&BOB), 1 * (CREATE_TOKEN_DEPOSIT + DATA_DEPOSIT_PER_BYTE));
+		assert_eq!(reserved_balance(&ALICE), 1 * (CREATE_TOKEN_DEPOSIT + DATA_DEPOSIT_PER_BYTE));
 
-		assert_ok!(NFTModule::transfer(
-			RuntimeOrigin::signed(ALICE),
-			BOB,
-			(CLASS_ID, TOKEN_ID)
-		));
+		assert_ok!(NFTModule::transfer(RuntimeOrigin::signed(ALICE), BOB, (CLASS_ID, TOKEN_ID)));
 		System::assert_last_event(RuntimeEvent::NFTModule(crate::Event::TransferredToken {
 			from: ALICE,
 			to: BOB,
 			class_id: CLASS_ID,
 			token_id: TOKEN_ID,
 		}));
-		assert_eq!(
-			reserved_balance(&BOB),
-			2 * (CREATE_TOKEN_DEPOSIT + DATA_DEPOSIT_PER_BYTE)
-		);
+		assert_eq!(reserved_balance(&BOB), 2 * (CREATE_TOKEN_DEPOSIT + DATA_DEPOSIT_PER_BYTE));
 		assert_eq!(reserved_balance(&ALICE), 0);
 	});
 }
@@ -497,10 +442,7 @@ fn burn_should_fail() {
 		module_nft::Classes::<Runtime>::mutate(CLASS_ID, |class_info| {
 			class_info.as_mut().unwrap().total_issuance = 0;
 		});
-		assert_noop!(
-			NFTModule::burn(RuntimeOrigin::signed(BOB), (CLASS_ID, TOKEN_ID)),
-			ArithmeticError::Overflow,
-		);
+		assert_noop!(NFTModule::burn(RuntimeOrigin::signed(BOB), (CLASS_ID, TOKEN_ID)), ArithmeticError::Overflow,);
 	});
 
 	ExtBuilder::default().build().execute_with(|| {
@@ -523,10 +465,7 @@ fn burn_should_fail() {
 			Default::default(),
 			1
 		));
-		assert_noop!(
-			NFTModule::burn(RuntimeOrigin::signed(BOB), (CLASS_ID, TOKEN_ID)),
-			Error::<Runtime>::NonBurnable
-		);
+		assert_noop!(NFTModule::burn(RuntimeOrigin::signed(BOB), (CLASS_ID, TOKEN_ID)), Error::<Runtime>::NonBurnable);
 	});
 }
 
@@ -555,11 +494,7 @@ fn burn_with_remark_should_work() {
 
 		let remark = "remark info".as_bytes().to_vec();
 		let remark_hash = BlakeTwo256::hash(&remark[..]);
-		assert_ok!(NFTModule::burn_with_remark(
-			RuntimeOrigin::signed(BOB),
-			(CLASS_ID, TOKEN_ID),
-			remark
-		));
+		assert_ok!(NFTModule::burn_with_remark(RuntimeOrigin::signed(BOB), (CLASS_ID, TOKEN_ID), remark));
 		System::assert_last_event(RuntimeEvent::NFTModule(crate::Event::BurnedTokenWithRemark {
 			owner: BOB,
 			class_id: CLASS_ID,
@@ -607,11 +542,7 @@ fn destroy_class_should_work() {
 			1
 		));
 		assert_ok!(NFTModule::burn(RuntimeOrigin::signed(BOB), (CLASS_ID, TOKEN_ID)));
-		assert_ok!(NFTModule::destroy_class(
-			RuntimeOrigin::signed(class_id_account()),
-			CLASS_ID,
-			ALICE
-		));
+		assert_ok!(NFTModule::destroy_class(RuntimeOrigin::signed(class_id_account()), CLASS_ID, ALICE));
 		System::assert_last_event(RuntimeEvent::NFTModule(crate::Event::DestroyedClass {
 			owner: class_id_account(),
 			class_id: CLASS_ID,
@@ -620,10 +551,7 @@ fn destroy_class_should_work() {
 		assert_eq!(reserved_balance(&class_id_account()), 0);
 		assert_eq!(free_balance(&ALICE), 100000);
 		assert_eq!(reserved_balance(&ALICE), 0);
-		assert_eq!(
-			free_balance(&BOB),
-			CREATE_TOKEN_DEPOSIT + DATA_DEPOSIT_PER_BYTE + Balances::minimum_balance()
-		);
+		assert_eq!(free_balance(&BOB), CREATE_TOKEN_DEPOSIT + DATA_DEPOSIT_PER_BYTE + Balances::minimum_balance());
 		assert_eq!(reserved_balance(&BOB), 0);
 	});
 }
@@ -672,11 +600,7 @@ fn destroy_class_should_fail() {
 			pallet_proxy::Error::<Runtime>::NotFound
 		);
 
-		assert_ok!(NFTModule::destroy_class(
-			RuntimeOrigin::signed(class_id_account()),
-			CLASS_ID,
-			ALICE
-		));
+		assert_ok!(NFTModule::destroy_class(RuntimeOrigin::signed(class_id_account()), CLASS_ID, ALICE));
 	});
 }
 
@@ -706,11 +630,7 @@ fn update_class_properties_should_work() {
 			1
 		));
 
-		assert_ok!(NFTModule::transfer(
-			RuntimeOrigin::signed(BOB),
-			ALICE,
-			(CLASS_ID, TOKEN_ID)
-		));
+		assert_ok!(NFTModule::transfer(RuntimeOrigin::signed(BOB), ALICE, (CLASS_ID, TOKEN_ID)));
 
 		assert_ok!(NFTModule::update_class_properties(
 			RuntimeOrigin::signed(class_id_account()),
@@ -729,11 +649,7 @@ fn update_class_properties_should_work() {
 			Properties(ClassProperty::Transferable.into())
 		));
 
-		assert_ok!(NFTModule::transfer(
-			RuntimeOrigin::signed(ALICE),
-			BOB,
-			(CLASS_ID, TOKEN_ID)
-		));
+		assert_ok!(NFTModule::transfer(RuntimeOrigin::signed(ALICE), BOB, (CLASS_ID, TOKEN_ID)));
 
 		assert_noop!(
 			NFTModule::update_class_properties(RuntimeOrigin::signed(class_id_account()), CLASS_ID, Default::default()),
@@ -741,14 +657,7 @@ fn update_class_properties_should_work() {
 		);
 
 		assert_noop!(
-			NFTModule::mint(
-				RuntimeOrigin::signed(class_id_account()),
-				BOB,
-				CLASS_ID,
-				metadata,
-				Default::default(),
-				1
-			),
+			NFTModule::mint(RuntimeOrigin::signed(class_id_account()), BOB, CLASS_ID, metadata, Default::default(), 1),
 			Error::<Runtime>::NonMintable
 		);
 	});

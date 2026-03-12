@@ -84,7 +84,7 @@ where
 					output: Output::default().encode_u128(balance),
 					logs: Default::default(),
 				})
-			}
+			},
 			Action::QueryOwner => {
 				let class_id = input.u32_at(1)?;
 				let token_id = input.u64_at(2)?;
@@ -103,7 +103,7 @@ where
 					output: Output::default().encode_address(&owner),
 					logs: Default::default(),
 				})
-			}
+			},
 			Action::Transfer => {
 				let from = input.account_id_at(1)?;
 				let to = input.account_id_at(2)?;
@@ -122,7 +122,7 @@ where
 					output: vec![],
 					logs: Default::default(),
 				})
-			}
+			},
 		}
 	}
 }

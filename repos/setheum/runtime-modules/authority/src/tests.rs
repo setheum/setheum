@@ -43,11 +43,7 @@ fn dispatch_as_work() {
 		let ensure_root_call =
 			RuntimeCall::RootTesting(pallet_root_testing::Call::fill_block { ratio: Perbill::one() });
 		let ensure_signed_call = RuntimeCall::System(frame_system::Call::remark { remark: vec![] });
-		assert_ok!(Authority::dispatch_as(
-			RuntimeOrigin::root(),
-			MockAsOriginId::Root,
-			Box::new(ensure_root_call)
-		));
+		assert_ok!(Authority::dispatch_as(RuntimeOrigin::root(), MockAsOriginId::Root, Box::new(ensure_root_call)));
 		assert_ok!(Authority::dispatch_as(
 			RuntimeOrigin::root(),
 			MockAsOriginId::Account1,
@@ -67,11 +63,7 @@ fn dispatch_as_work() {
 			Box::new(ensure_signed_call.clone())
 		));
 		assert_noop!(
-			Authority::dispatch_as(
-				RuntimeOrigin::signed(1),
-				MockAsOriginId::Account2,
-				Box::new(ensure_signed_call)
-			),
+			Authority::dispatch_as(RuntimeOrigin::signed(1), MockAsOriginId::Account2, Box::new(ensure_signed_call)),
 			BadOrigin,
 		);
 	});
@@ -80,9 +72,8 @@ fn dispatch_as_work() {
 #[test]
 fn schedule_dispatch_at_work() {
 	ExtBuilder::default().build().execute_with(|| {
-		let ensure_root_call = RuntimeCall::RootTesting(pallet_root_testing::Call::fill_block {
-			ratio: Perbill::from_percent(50),
-		});
+		let ensure_root_call =
+			RuntimeCall::RootTesting(pallet_root_testing::Call::fill_block { ratio: Perbill::from_percent(50) });
 		let call = RuntimeCall::Authority(authority::Call::dispatch_as {
 			as_origin: MockAsOriginId::Root,
 			call: Box::new(ensure_root_call),
@@ -115,13 +106,11 @@ fn schedule_dispatch_at_work() {
 		}));
 
 		run_to_block(2);
-		System::assert_last_event(mock::RuntimeEvent::Scheduler(
-			pallet_scheduler::Event::<Runtime>::Dispatched {
-				task: (2, 0),
-				id: Some(blake2_256([1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0].as_ref())),
-				result: Ok(()),
-			},
-		));
+		System::assert_last_event(mock::RuntimeEvent::Scheduler(pallet_scheduler::Event::<Runtime>::Dispatched {
+			task: (2, 0),
+			id: Some(blake2_256([1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0].as_ref())),
+			result: Ok(()),
+		}));
 
 		// with_delayed_origin = false
 		assert_ok!(Authority::schedule_dispatch(
@@ -137,22 +126,19 @@ fn schedule_dispatch_at_work() {
 		}));
 
 		run_to_block(3);
-		System::assert_last_event(mock::RuntimeEvent::Scheduler(
-			pallet_scheduler::Event::<Runtime>::Dispatched {
-				task: (3, 0),
-				id: Some(blake2_256([0, 0, 1, 0, 0, 0].as_ref())),
-				result: Ok(()),
-			},
-		));
+		System::assert_last_event(mock::RuntimeEvent::Scheduler(pallet_scheduler::Event::<Runtime>::Dispatched {
+			task: (3, 0),
+			id: Some(blake2_256([0, 0, 1, 0, 0, 0].as_ref())),
+			result: Ok(()),
+		}));
 	});
 }
 
 #[test]
 fn schedule_dispatch_after_work() {
 	ExtBuilder::default().build().execute_with(|| {
-		let ensure_root_call = RuntimeCall::RootTesting(pallet_root_testing::Call::fill_block {
-			ratio: Perbill::from_percent(50),
-		});
+		let ensure_root_call =
+			RuntimeCall::RootTesting(pallet_root_testing::Call::fill_block { ratio: Perbill::from_percent(50) });
 		let call = RuntimeCall::Authority(authority::Call::dispatch_as {
 			as_origin: MockAsOriginId::Root,
 			call: Box::new(ensure_root_call),
@@ -185,13 +171,11 @@ fn schedule_dispatch_after_work() {
 		}));
 
 		run_to_block(2);
-		System::assert_last_event(mock::RuntimeEvent::Scheduler(
-			pallet_scheduler::Event::<Runtime>::Dispatched {
-				task: (2, 0),
-				id: Some(blake2_256([1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0].as_ref())),
-				result: Ok(()),
-			},
-		));
+		System::assert_last_event(mock::RuntimeEvent::Scheduler(pallet_scheduler::Event::<Runtime>::Dispatched {
+			task: (2, 0),
+			id: Some(blake2_256([1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0].as_ref())),
+			result: Ok(()),
+		}));
 
 		// with_delayed_origin = false
 		assert_ok!(Authority::schedule_dispatch(
@@ -207,13 +191,11 @@ fn schedule_dispatch_after_work() {
 		}));
 
 		run_to_block(3);
-		System::assert_last_event(mock::RuntimeEvent::Scheduler(
-			pallet_scheduler::Event::<Runtime>::Dispatched {
-				task: (3, 0),
-				id: Some(blake2_256([0, 0, 1, 0, 0, 0].as_ref())),
-				result: Ok(()),
-			},
-		));
+		System::assert_last_event(mock::RuntimeEvent::Scheduler(pallet_scheduler::Event::<Runtime>::Dispatched {
+			task: (3, 0),
+			id: Some(blake2_256([0, 0, 1, 0, 0, 0].as_ref())),
+			result: Ok(()),
+		}));
 	});
 }
 
@@ -221,9 +203,8 @@ fn schedule_dispatch_after_work() {
 fn fast_track_scheduled_dispatch_work() {
 	ExtBuilder::default().build().execute_with(|| {
 		System::set_block_number(1);
-		let ensure_root_call = RuntimeCall::RootTesting(pallet_root_testing::Call::fill_block {
-			ratio: Perbill::from_percent(50),
-		});
+		let ensure_root_call =
+			RuntimeCall::RootTesting(pallet_root_testing::Call::fill_block { ratio: Perbill::from_percent(50) });
 		let call = RuntimeCall::Authority(authority::Call::dispatch_as {
 			as_origin: MockAsOriginId::Root,
 			call: Box::new(ensure_root_call),
@@ -300,9 +281,8 @@ fn fast_track_scheduled_dispatch_work() {
 fn delay_scheduled_dispatch_work() {
 	ExtBuilder::default().build().execute_with(|| {
 		System::set_block_number(1);
-		let ensure_root_call = RuntimeCall::RootTesting(pallet_root_testing::Call::fill_block {
-			ratio: Perbill::from_percent(50),
-		});
+		let ensure_root_call =
+			RuntimeCall::RootTesting(pallet_root_testing::Call::fill_block { ratio: Perbill::from_percent(50) });
 		let call = RuntimeCall::Authority(authority::Call::dispatch_as {
 			as_origin: MockAsOriginId::Root,
 			call: Box::new(ensure_root_call),
@@ -334,12 +314,7 @@ fn delay_scheduled_dispatch_work() {
 		};
 
 		let pallets_origin = schedule_origin.caller().clone();
-		assert_ok!(Authority::delay_scheduled_dispatch(
-			RuntimeOrigin::root(),
-			Box::new(pallets_origin),
-			0,
-			4,
-		));
+		assert_ok!(Authority::delay_scheduled_dispatch(RuntimeOrigin::root(), Box::new(pallets_origin), 0, 4,));
 		System::assert_last_event(mock::RuntimeEvent::Authority(Event::Delayed {
 			origin: OriginCaller::Authority(DelayedOrigin {
 				delay: 1,
@@ -378,9 +353,8 @@ fn delay_scheduled_dispatch_work() {
 #[test]
 fn cancel_scheduled_dispatch_work() {
 	ExtBuilder::default().build().execute_with(|| {
-		let ensure_root_call = RuntimeCall::RootTesting(pallet_root_testing::Call::fill_block {
-			ratio: Perbill::from_percent(50),
-		});
+		let ensure_root_call =
+			RuntimeCall::RootTesting(pallet_root_testing::Call::fill_block { ratio: Perbill::from_percent(50) });
 		let call = RuntimeCall::Authority(authority::Call::dispatch_as {
 			as_origin: MockAsOriginId::Root,
 			call: Box::new(ensure_root_call),
@@ -412,11 +386,7 @@ fn cancel_scheduled_dispatch_work() {
 		};
 
 		let pallets_origin = schedule_origin.caller().clone();
-		assert_ok!(Authority::cancel_scheduled_dispatch(
-			RuntimeOrigin::root(),
-			Box::new(pallets_origin),
-			0
-		));
+		assert_ok!(Authority::cancel_scheduled_dispatch(RuntimeOrigin::root(), Box::new(pallets_origin), 0));
 		System::assert_last_event(mock::RuntimeEvent::Authority(Event::Cancelled {
 			origin: OriginCaller::Authority(DelayedOrigin {
 				delay: 1,
@@ -463,9 +433,8 @@ fn call_size_limit() {
 fn authorize_call_works() {
 	ExtBuilder::default().build().execute_with(|| {
 		run_to_block(1);
-		let ensure_root_call = RuntimeCall::RootTesting(pallet_root_testing::Call::fill_block {
-			ratio: Perbill::from_percent(50),
-		});
+		let ensure_root_call =
+			RuntimeCall::RootTesting(pallet_root_testing::Call::fill_block { ratio: Perbill::from_percent(50) });
 		let call = RuntimeCall::Authority(authority::Call::dispatch_as {
 			as_origin: MockAsOriginId::Root,
 			call: Box::new(ensure_root_call),
@@ -473,28 +442,14 @@ fn authorize_call_works() {
 		let hash = <Runtime as frame_system::Config>::Hashing::hash_of(&call);
 
 		// works without account
-		assert_ok!(Authority::authorize_call(
-			RuntimeOrigin::root(),
-			Box::new(call.clone()),
-			None
-		));
+		assert_ok!(Authority::authorize_call(RuntimeOrigin::root(), Box::new(call.clone()), None));
 		assert_eq!(Authority::saved_calls(&hash), Some((call.clone(), None)));
-		System::assert_last_event(mock::RuntimeEvent::Authority(Event::AuthorizedCall {
-			hash,
-			caller: None,
-		}));
+		System::assert_last_event(mock::RuntimeEvent::Authority(Event::AuthorizedCall { hash, caller: None }));
 
 		// works with account
-		assert_ok!(Authority::authorize_call(
-			RuntimeOrigin::root(),
-			Box::new(call.clone()),
-			Some(1)
-		));
+		assert_ok!(Authority::authorize_call(RuntimeOrigin::root(), Box::new(call.clone()), Some(1)));
 		assert_eq!(Authority::saved_calls(&hash), Some((call, Some(1))));
-		System::assert_last_event(mock::RuntimeEvent::Authority(Event::AuthorizedCall {
-			hash,
-			caller: Some(1),
-		}));
+		System::assert_last_event(mock::RuntimeEvent::Authority(Event::AuthorizedCall { hash, caller: Some(1) }));
 	});
 }
 
@@ -502,9 +457,8 @@ fn authorize_call_works() {
 fn trigger_call_works() {
 	ExtBuilder::default().build().execute_with(|| {
 		run_to_block(1);
-		let ensure_root_call = RuntimeCall::RootTesting(pallet_root_testing::Call::fill_block {
-			ratio: Perbill::from_percent(50),
-		});
+		let ensure_root_call =
+			RuntimeCall::RootTesting(pallet_root_testing::Call::fill_block { ratio: Perbill::from_percent(50) });
 		let call = RuntimeCall::Authority(authority::Call::dispatch_as {
 			as_origin: MockAsOriginId::Root,
 			call: Box::new(ensure_root_call),
@@ -519,41 +473,22 @@ fn trigger_call_works() {
 			Error::<Runtime>::CallNotAuthorized
 		);
 
-		assert_ok!(Authority::authorize_call(
-			RuntimeOrigin::root(),
-			Box::new(call.clone()),
-			None
-		));
+		assert_ok!(Authority::authorize_call(RuntimeOrigin::root(), Box::new(call.clone()), None));
 
 		// wrong call weight bound
 		assert_noop!(
-			Authority::trigger_call(
-				RuntimeOrigin::signed(1),
-				hash,
-				call_weight_bound - Weight::from_parts(1, 0)
-			),
+			Authority::trigger_call(RuntimeOrigin::signed(1), hash, call_weight_bound - Weight::from_parts(1, 0)),
 			Error::<Runtime>::WrongCallWeightBound
 		);
 
 		// works without caller
-		assert_ok!(Authority::trigger_call(
-			RuntimeOrigin::signed(1),
-			hash,
-			call_weight_bound
-		));
+		assert_ok!(Authority::trigger_call(RuntimeOrigin::signed(1), hash, call_weight_bound));
 		assert_eq!(Authority::saved_calls(&hash), None);
-		System::assert_has_event(mock::RuntimeEvent::Authority(Event::TriggeredCallBy {
-			hash,
-			caller: 1,
-		}));
+		System::assert_has_event(mock::RuntimeEvent::Authority(Event::TriggeredCallBy { hash, caller: 1 }));
 		System::assert_last_event(mock::RuntimeEvent::Authority(Event::Dispatched { result: Ok(()) }));
 
 		// works with caller 1
-		assert_ok!(Authority::authorize_call(
-			RuntimeOrigin::root(),
-			Box::new(call.clone()),
-			Some(1)
-		));
+		assert_ok!(Authority::authorize_call(RuntimeOrigin::root(), Box::new(call.clone()), Some(1)));
 		// caller 2 is not permitted to trigger the call
 		assert_noop!(
 			Authority::trigger_call(RuntimeOrigin::signed(2), hash, call_weight_bound),
@@ -562,16 +497,9 @@ fn trigger_call_works() {
 		assert_eq!(Authority::saved_calls(&hash), Some((call, Some(1))));
 
 		// caller 1 triggering the call
-		assert_ok!(Authority::trigger_call(
-			RuntimeOrigin::signed(1),
-			hash,
-			call_weight_bound
-		));
+		assert_ok!(Authority::trigger_call(RuntimeOrigin::signed(1), hash, call_weight_bound));
 		assert_eq!(Authority::saved_calls(&hash), None);
-		System::assert_has_event(mock::RuntimeEvent::Authority(Event::TriggeredCallBy {
-			hash,
-			caller: 1,
-		}));
+		System::assert_has_event(mock::RuntimeEvent::Authority(Event::TriggeredCallBy { hash, caller: 1 }));
 		System::assert_last_event(mock::RuntimeEvent::Authority(Event::Dispatched { result: Ok(()) }));
 	});
 }
@@ -580,9 +508,8 @@ fn trigger_call_works() {
 fn remove_authorized_call_works() {
 	ExtBuilder::default().build().execute_with(|| {
 		run_to_block(1);
-		let ensure_root_call = RuntimeCall::RootTesting(pallet_root_testing::Call::fill_block {
-			ratio: Perbill::from_percent(50),
-		});
+		let ensure_root_call =
+			RuntimeCall::RootTesting(pallet_root_testing::Call::fill_block { ratio: Perbill::from_percent(50) });
 		let call = RuntimeCall::Authority(authority::Call::dispatch_as {
 			as_origin: MockAsOriginId::Root,
 			call: Box::new(ensure_root_call),
@@ -594,11 +521,7 @@ fn remove_authorized_call_works() {
 			Error::<Runtime>::CallNotAuthorized
 		);
 
-		assert_ok!(Authority::authorize_call(
-			RuntimeOrigin::root(),
-			Box::new(call.clone()),
-			None
-		));
+		assert_ok!(Authority::authorize_call(RuntimeOrigin::root(), Box::new(call.clone()), None));
 		assert_noop!(
 			Authority::remove_authorized_call(RuntimeOrigin::signed(1), hash),
 			Error::<Runtime>::CallNotAuthorized
@@ -607,19 +530,11 @@ fn remove_authorized_call_works() {
 		assert_ok!(Authority::remove_authorized_call(RuntimeOrigin::root(), hash));
 		assert_eq!(Authority::saved_calls(&hash), None);
 
-		assert_ok!(Authority::authorize_call(
-			RuntimeOrigin::root(),
-			Box::new(call.clone()),
-			Some(1)
-		));
+		assert_ok!(Authority::authorize_call(RuntimeOrigin::root(), Box::new(call.clone()), Some(1)));
 		assert_ok!(Authority::remove_authorized_call(RuntimeOrigin::root(), hash));
 		assert_eq!(Authority::saved_calls(&hash), None);
 
-		assert_ok!(Authority::authorize_call(
-			RuntimeOrigin::root(),
-			Box::new(call.clone()),
-			Some(1)
-		));
+		assert_ok!(Authority::authorize_call(RuntimeOrigin::root(), Box::new(call.clone()), Some(1)));
 		assert_noop!(
 			Authority::remove_authorized_call(RuntimeOrigin::signed(2), hash),
 			Error::<Runtime>::CallNotAuthorized
@@ -633,30 +548,18 @@ fn remove_authorized_call_works() {
 #[test]
 fn trigger_call_should_be_free_and_operational() {
 	ExtBuilder::default().build().execute_with(|| {
-		let call = RuntimeCall::RootTesting(pallet_root_testing::Call::fill_block {
-			ratio: Perbill::from_percent(50),
-		});
+		let call = RuntimeCall::RootTesting(pallet_root_testing::Call::fill_block { ratio: Perbill::from_percent(50) });
 		let hash = <Runtime as frame_system::Config>::Hashing::hash_of(&call);
 		let call_weight_bound = call.get_dispatch_info().total_weight();
-		let trigger_call = RuntimeCall::Authority(authority::Call::trigger_call {
-			hash,
-			call_weight_bound,
-		});
+		let trigger_call = RuntimeCall::Authority(authority::Call::trigger_call { hash, call_weight_bound });
 
-		assert_ok!(Authority::authorize_call(
-			RuntimeOrigin::root(),
-			Box::new(call),
-			Some(1)
-		));
+		assert_ok!(Authority::authorize_call(RuntimeOrigin::root(), Box::new(call), Some(1)));
 
 		// bad caller pays fee
 		assert_eq!(
 			trigger_call.clone().dispatch(RuntimeOrigin::signed(2)),
 			Err(DispatchErrorWithPostInfo {
-				post_info: PostDispatchInfo {
-					actual_weight: None,
-					pays_fee: Pays::Yes
-				},
+				post_info: PostDispatchInfo { actual_weight: None, pays_fee: Pays::Yes },
 				error: Error::<Runtime>::TriggerCallNotPermitted.into()
 			})
 		);
@@ -664,10 +567,7 @@ fn trigger_call_should_be_free_and_operational() {
 		// successful call doesn't pay fee
 		assert_eq!(
 			trigger_call.dispatch(RuntimeOrigin::signed(1)),
-			Ok(PostDispatchInfo {
-				actual_weight: None,
-				pays_fee: Pays::No
-			})
+			Ok(PostDispatchInfo { actual_weight: None, pays_fee: Pays::No })
 		);
 	});
 }

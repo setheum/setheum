@@ -72,10 +72,7 @@ impl<'a, Action, AccountId, AddressMapping, CurrencyIdMapping>
 	Input<'a, Action, AccountId, AddressMapping, CurrencyIdMapping>
 {
 	pub fn new(content: &'a [u8]) -> Self {
-		Self {
-			content,
-			_marker: PhantomData,
-		}
+		Self { content, _marker: PhantomData }
 	}
 }
 
@@ -92,7 +89,7 @@ where
 
 	fn nth_param(&self, n: usize, len: Option<usize>) -> Result<&[u8], Self::Error> {
 		let (start, end) = if n == 0 {
-// ACTION_INDEX
+			// ACTION_INDEX
 			let start = 0;
 			let end = start + FUNCTION_SELECTOR_LENGTH;
 			(start, end)
@@ -109,11 +106,7 @@ where
 
 	fn action(&self) -> Result<Self::Action, Self::Error> {
 		let param = self.nth_param(ACTION_INDEX, None)?;
-		let action = u32::from_be_bytes(
-			param
-				.try_into()
-				.map_err(|_| ExitError::Other("invalid action".into()))?,
-		);
+		let action = u32::from_be_bytes(param.try_into().map_err(|_| ExitError::Other("invalid action".into()))?);
 
 		action.try_into().map_err(|_| ExitError::Other("invalid action".into()))
 	}
