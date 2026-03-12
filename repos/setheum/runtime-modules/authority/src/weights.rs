@@ -25,7 +25,7 @@
 //! EXECUTION: Some(Wasm), WASM-EXECUTION: Compiled, CHAIN: Some("dev"), DB CACHE: 128
 
 // Executed Command:
-// /Users/ermal/Acala/target/release/acala
+// /Users/ermal/Setheum/target/release/setheum
 // benchmark
 // --chain=dev
 // --steps=50
