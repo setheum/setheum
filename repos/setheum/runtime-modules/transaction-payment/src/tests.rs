@@ -44,7 +44,7 @@ use frame_support::{
 	dispatch::{DispatchClass, DispatchInfo, Pays},
 };
 use mock::{
-	AccountId, BlockWeights, Currencies, EdfisSwapLegacyModule, ExtBuilder, FeePoolSize, MockPriceSource, Runtime, RuntimeCall,
+	AccountId, BlockWeights, Currencies, SwapLegacyModule, ExtBuilder, FeePoolSize, MockPriceSource, Runtime, RuntimeCall,
 	RuntimeOrigin, System, TransactionPayment, ALICE, BOB, CHARLIE, DAVE, FEE_UNBALANCED_AMOUNT, TIP_UNBALANCED_AMOUNT,
 };
 use module_support::{BuyWeightRate, SwapManager, Price, TransactionPayment as TransactionPaymentT};
@@ -148,7 +148,7 @@ fn enable_dex_and_tx_fee_pool() {
 	}
 
 	// enable dex
-	assert_ok!(EdfisSwapLegacyModule::add_liquidity(
+	assert_ok!(SwapLegacyModule::add_liquidity(
 		RuntimeOrigin::signed(ALICE),
 		SEU,
 		SEUSD,
@@ -157,7 +157,7 @@ fn enable_dex_and_tx_fee_pool() {
 		0,
 		false
 	));
-	assert_ok!(EdfisSwapLegacyModule::add_liquidity(
+	assert_ok!(SwapLegacyModule::add_liquidity(
 		RuntimeOrigin::signed(ALICE),
 		SEUSD,
 		100,
@@ -165,7 +165,7 @@ fn enable_dex_and_tx_fee_pool() {
 		0,
 		false
 	));
-	assert_eq!(EdfisSwapLegacyModule::get_liquidity_pool(SEU, SEUSD), (10000, 1000));
+	assert_eq!(SwapLegacyModule::get_liquidity_pool(SEU, SEUSD), (10000, 1000));
 
 	let tokens = vec![SEUSD];
 	for token in tokens.iter() {
@@ -550,7 +550,7 @@ fn pre_post_dispatch_and_refund_with_fee_call_use_dex(with_fee_call: <Runtime as
 			.unwrap();
 		assert_eq!(pre.2, Some(pallet_balances::NegativeImbalance::new(fee_surplus)));
 		assert_eq!(pre.3, fee_surplus);
-		System::assert_has_event(crate::mock::RuntimeEvent::EdfisSwapLegacyModule(edfis_swap_legacy_module::Event::Swap {
+		System::assert_has_event(crate::mock::RuntimeEvent::SwapLegacyModule(swap_legacy_module::Event::Swap {
 			trader: ALICE,
 			liquidity_changes: vec![43, 300],
 		}));
@@ -779,7 +779,7 @@ fn charges_fee_when_validate_with_fee_call_use_swap(with_fee_call: <Runtime as C
 		assert_eq!(315, fee_surplus);
 
 		assert_ok!(ChargeTransactionPayment::<Runtime>::from(0).validate(&BOB, &with_fee_call, &INFO2, 50));
-		System::assert_has_event(crate::mock::RuntimeEvent::EdfisSwapLegacyModule(edfis_swap_legacy_module::Event::Swap {
+		System::assert_has_event(crate::mock::RuntimeEvent::SwapLegacyModule(swap_legacy_module::Event::Swap {
 			trader: BOB,
 			liquidity_changes: vec![46, 315],
 		}));
@@ -792,7 +792,7 @@ fn charges_fee_when_validate_with_fee_call_use_swap(with_fee_call: <Runtime as C
 		assert_eq!(300, fee_surplus2); // refund 200*1.5=300 SEU
 
 		assert_ok!(ChargeTransactionPayment::<Runtime>::from(0).validate(&BOB, &with_fee_call, &INFO2, 50));
-		System::assert_has_event(crate::mock::RuntimeEvent::EdfisSwapLegacyModule(edfis_swap_legacy_module::Event::Swap {
+		System::assert_has_event(crate::mock::RuntimeEvent::SwapLegacyModule(swap_legacy_module::Event::Swap {
 			trader: BOB,
 			liquidity_changes: vec![114, 300],
 		}));
@@ -878,7 +878,7 @@ fn charges_fee_when_validate_and_native_is_not_enough() {
 // transfer token to Bob, and use Bob as tx sender to test
 // Bob do not have enough native asset(SEU), but he has SEUSD
 		assert_ok!(<Currencies as MultiCurrency<_>>::transfer(SEUSD, &ALICE, &BOB, 4000));
-		assert_eq!(EdfisSwapLegacyModule::get_liquidity_pool(SEU, SEUSD), (10000, 1000));
+		assert_eq!(SwapLegacyModule::get_liquidity_pool(SEU, SEUSD), (10000, 1000));
 		assert_eq!(Currencies::total_balance(SEU, &BOB), 0);
 		assert_eq!(<Currencies as MultiCurrency<_>>::free_balance(SEU, &BOB), 0);
 		assert_eq!(<Currencies as MultiCurrency<_>>::free_balance(SEUSD, &BOB), 4000);
@@ -904,7 +904,7 @@ fn charges_fee_when_validate_and_native_is_not_enough() {
 // surplus=50SEE/500SEUSD, balance=4000, swap_in=2600, left=1400
 // surplus=0, balance=4000, swap_in=2100, left=1900
 		assert_eq!(Currencies::free_balance(SEUSD, &BOB), 1900 - surplus1 * 10);
-		assert_eq!(EdfisSwapLegacyModule::get_liquidity_pool(SEU, SEUSD), (10000, 1000));
+		assert_eq!(SwapLegacyModule::get_liquidity_pool(SEU, SEUSD), (10000, 1000));
 		assert_eq!(
 			Currencies::free_balance(SEU, &sub_account),
 			init_balance - (fee + ed + surplus1)
@@ -1005,35 +1005,35 @@ fn charges_fee_failed_by_slippage_limit() {
 	builder_with_dex_and_fee_pool(true).execute_with(|| {
 		assert_ok!(<Currencies as MultiCurrency<_>>::transfer(SEUSD, &ALICE, &BOB, 1000));
 
-		assert_eq!(EdfisSwapLegacyModule::get_liquidity_pool(SEU, SEUSD), (10000, 1000));
+		assert_eq!(SwapLegacyModule::get_liquidity_pool(SEU, SEUSD), (10000, 1000));
 		assert_eq!(Currencies::total_balance(SEU, &BOB), 0);
 		assert_eq!(<Currencies as MultiCurrency<_>>::free_balance(SEU, &BOB), 0);
 		assert_eq!(<Currencies as MultiCurrency<_>>::free_balance(SEUSD, &BOB), 1000);
 
 		assert_eq!(
-			EdfisSwapLegacyModule::get_swap_amount(&vec![SEUSD, SEU], SwapLimit::ExactTarget(Balance::MAX, 2010)),
+			SwapLegacyModule::get_swap_amount(&vec![SEUSD, SEU], SwapLimit::ExactTarget(Balance::MAX, 2010)),
 			Some((252, 2010))
 		);
 		assert_eq!(
-			EdfisSwapLegacyModule::get_swap_amount(&vec![SEUSD, SEU], SwapLimit::ExactSupply(1000, 0)),
+			SwapLegacyModule::get_swap_amount(&vec![SEUSD, SEU], SwapLimit::ExactSupply(1000, 0)),
 			Some((1000, 5000))
 		);
 
 // pool is enough, but slippage limit the swap
 		MockPriceSource::set_relative_price(Some(Price::saturating_from_rational(252, 4020)));
 		assert_eq!(
-			EdfisSwapLegacyModule::get_swap_amount(&vec![SEUSD, SEU], SwapLimit::ExactTarget(Balance::MAX, 2010)),
+			SwapLegacyModule::get_swap_amount(&vec![SEUSD, SEU], SwapLimit::ExactTarget(Balance::MAX, 2010)),
 			Some((252, 2010))
 		);
 		assert_eq!(
-			EdfisSwapLegacyModule::get_swap_amount(&vec![SEUSD, SEU], SwapLimit::ExactSupply(1000, 0)),
+			SwapLegacyModule::get_swap_amount(&vec![SEUSD, SEU], SwapLimit::ExactSupply(1000, 0)),
 			Some((1000, 5000))
 		);
 		assert_noop!(
 			ChargeTransactionPayment::<Runtime>::from(0).validate(&BOB, &CALL2, &INFO, 500),
 			TransactionValidityError::Invalid(InvalidTransaction::Payment)
 		);
-		assert_eq!(EdfisSwapLegacyModule::get_liquidity_pool(SEU, SEUSD), (10000, 1000));
+		assert_eq!(SwapLegacyModule::get_liquidity_pool(SEU, SEUSD), (10000, 1000));
 	});
 }
 
@@ -1082,7 +1082,7 @@ fn charge_fee_by_alternative_swap_first_priority() {
 		let alternative_fee_swap_deposit: u128 =
 			<<Runtime as Config>::AlternativeFeeSwapDeposit as frame_support::traits::Get<u128>>::get();
 
-		assert_eq!(EdfisSwapLegacyModule::get_liquidity_pool(SEU, SEUSD), (10000, 1000));
+		assert_eq!(SwapLegacyModule::get_liquidity_pool(SEU, SEUSD), (10000, 1000));
 		assert_ok!(Currencies::update_balance(
 			RuntimeOrigin::root(),
 			BOB,
@@ -1123,14 +1123,14 @@ fn charge_fee_by_alternative_swap_first_priority() {
 				.priority,
 			1
 		);
-		System::assert_has_event(crate::mock::RuntimeEvent::EdfisSwapLegacyModule(edfis_swap_legacy_module::Event::Swap {
+		System::assert_has_event(crate::mock::RuntimeEvent::SwapLegacyModule(swap_legacy_module::Event::Swap {
 			trader: BOB,
 			liquidity_changes: vec![51, 334, fee_surplus],
 		}));
 
 		assert_eq!(Currencies::free_balance(SEU, &BOB), ed);
 		assert_eq!(Currencies::free_balance(SEUSD, &BOB), 0);
-		assert_eq!(EdfisSwapLegacyModule::get_liquidity_pool(SEU, SEUSD), (7500, 1334));
+		assert_eq!(SwapLegacyModule::get_liquidity_pool(SEU, SEUSD), (7500, 1334));
 		assert_eq!(Currencies::free_balance(SEU, &sub_account), init_balance,);
 	});
 }
@@ -1185,14 +1185,14 @@ fn charge_fee_by_default_fee_tokens_second_priority() {
 			1
 		);
 // Alternative fee swap directly from dex, not from fee pool.
-		System::assert_has_event(crate::mock::RuntimeEvent::EdfisSwapLegacyModule(edfis_swap_legacy_module::Event::Swap {
+		System::assert_has_event(crate::mock::RuntimeEvent::SwapLegacyModule(swap_legacy_module::Event::Swap {
 			trader: BOB,
 			liquidity_changes: vec![51, 334, fee_surplus],
 		}));
 
 		assert_eq!(Currencies::free_balance(SEU, &BOB), ed);
 		assert_eq!(Currencies::free_balance(SEUSD, &BOB), 0);
-		assert_eq!(EdfisSwapLegacyModule::get_liquidity_pool(SEU, SEUSD), (7500, 1334));
+		assert_eq!(SwapLegacyModule::get_liquidity_pool(SEU, SEUSD), (7500, 1334));
 // sub-account balance not changed, because not passing through sub-account.
 		assert_eq!(Currencies::free_balance(SEU, &sub_account), init_balance,);
 	});
@@ -1694,7 +1694,7 @@ fn swap_from_pool_and_dex_with_higher_threshold() {
 		let trading_path = DotFeeSwapPath::get();
 // here just get swap out amount, the swap not happened
 		let (supply_in_amount, swap_out_native) =
-			edfis_swap_legacy_module::Pallet::<Runtime>::get_swap_amount(&trading_path, SwapLimit::ExactSupply(supply_amount, 0))
+			swap_legacy_module::Pallet::<Runtime>::get_swap_amount(&trading_path, SwapLimit::ExactSupply(supply_amount, 0))
 				.unwrap();
 		assert_eq!(3074, swap_out_native);
 		assert_eq!(supply_in_amount, supply_amount);
@@ -1753,7 +1753,7 @@ fn swap_from_pool_and_dex_with_midd_threshold() {
 // 500 | 4544 | FixedU128(0.110035211267605633)
 // 600 | 4614 | FixedU128(0.130039011703511053) <- this case hit here
 		let (supply_in_amount, swap_out_native) =
-			edfis_swap_legacy_module::Pallet::<Runtime>::get_swap_amount(&trading_path, SwapLimit::ExactSupply(supply_amount, 0))
+			swap_legacy_module::Pallet::<Runtime>::get_swap_amount(&trading_path, SwapLimit::ExactSupply(supply_amount, 0))
 				.unwrap();
 		assert_eq!(600, supply_in_amount);
 		assert_eq!(4614, swap_out_native);
@@ -1787,7 +1787,7 @@ fn swap_from_pool_and_dex_with_midd_threshold() {
 #[test]
 #[should_panic(expected = "Swap tx fee pool should not fail!")]
 fn charge_fee_failed_when_disable_dex() {
-	use edfis_swap_legacy_module::TradingPairStatus;
+	use swap_legacy_module::TradingPairStatus;
 	use primitives::TradingPair;
 
 	ExtBuilder::default().build().execute_with(|| {
@@ -1825,13 +1825,13 @@ fn charge_fee_failed_when_disable_dex() {
 // trading pair is enabled
 		let pair = TradingPair::from_currency_ids(SEUSD, SEU).unwrap();
 		assert_eq!(
-			edfis_swap_legacy_module::Pallet::<Runtime>::trading_pair_statuses(pair),
+			swap_legacy_module::Pallet::<Runtime>::trading_pair_statuses(pair),
 			TradingPairStatus::Enabled
 		);
 // make sure swap is valid
-		let swap_result = edfis_swap_legacy_module::Pallet::<Runtime>::get_swap_amount(&trading_path, SwapLimit::ExactSupply(1, 0));
+		let swap_result = swap_legacy_module::Pallet::<Runtime>::get_swap_amount(&trading_path, SwapLimit::ExactSupply(1, 0));
 		assert!(swap_result.is_some());
-		assert_ok!(edfis_swap_legacy_module::Pallet::<Runtime>::swap_with_specific_path(
+		assert_ok!(swap_legacy_module::Pallet::<Runtime>::swap_with_specific_path(
 			&ALICE,
 			&trading_path,
 			SwapLimit::ExactSupply(100, 0)
@@ -1892,16 +1892,16 @@ fn charge_fee_failed_when_disable_dex() {
 		}
 
 // when trading pair disabled, the swap action will failed
-		assert_ok!(edfis_swap_legacy_module::Pallet::<Runtime>::disable_trading_pair(
+		assert_ok!(swap_legacy_module::Pallet::<Runtime>::disable_trading_pair(
 			RuntimeOrigin::signed(AccountId::new([0u8; 32])),
 			SEUSD,
 			SEU
 		));
 		assert_eq!(
-			edfis_swap_legacy_module::Pallet::<Runtime>::trading_pair_statuses(pair),
+			swap_legacy_module::Pallet::<Runtime>::trading_pair_statuses(pair),
 			TradingPairStatus::Disabled
 		);
-		let res = edfis_swap_legacy_module::Pallet::<Runtime>::swap_with_specific_path(
+		let res = swap_legacy_module::Pallet::<Runtime>::swap_with_specific_path(
 			&ALICE,
 			&trading_path,
 			SwapLimit::ExactSupply(100, 0),
@@ -1961,7 +1961,7 @@ fn charge_fee_pool_operation_works() {
 			10000.unique_saturated_into(),
 		));
 
-		assert_ok!(EdfisSwapLegacyModule::add_liquidity(
+		assert_ok!(SwapLegacyModule::add_liquidity(
 			RuntimeOrigin::signed(ALICE),
 			SEU,
 			SEUSD,

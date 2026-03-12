@@ -40,8 +40,8 @@
 
 use frame_support::{pallet_prelude::*, traits::NamedReservableCurrency};
 use frame_system::pallet_prelude::*;
-use module_support::{EcdpUssdTreasury, EcdpEmergencyShutdown, ExchangeRate, EcdpUssdManager, PriceProvider, Ratio};
-use primitives::{Amount, Balance, CurrencyId, EcdpPosition, ReserveIdentifier};
+use module_support::{UssdTreasury, EmergencyShutdown, ExchangeRate, UssdManager, PriceProvider, Ratio};
+use primitives::{Amount, Balance, CurrencyId, Position, ReserveIdentifier};
 use sp_core::U256;
 use sp_runtime::{
 	traits::{StaticLookup, Zero},
@@ -60,7 +60,7 @@ pub use weights::WeightInfo;
 pub mod module {
 	use super::*;
 
-	pub const RESERVE_ID: ReserveIdentifier = ReserveIdentifier::Ecdp;
+	pub const RESERVE_ID: ReserveIdentifier = ReserveIdentifier::;
 
 	#[pallet::config]
 	pub trait Config: frame_system::Config + module_cdp_engine::Config {
@@ -150,10 +150,10 @@ pub mod module {
 ///
 /// - `currency_id`: collateral currency id.
 /// - `collateral_adjustment`: signed amount, positive means to deposit collateral currency
-///   into ECDP, negative means withdraw collateral currency from ECDP.
+///   into , negative means withdraw collateral currency from .
 /// - `debit_adjustment`: signed amount, positive means to issue some amount of stablecoin
 ///   to caller according to the debit adjustment, negative means caller will payback some
-///   amount of stablecoin to ECDP according to to the debit adjustment.
+///   amount of stablecoin to according to to the debit adjustment.
 		#[pallet::call_index(0)]
 		#[pallet::weight(<T as Config>::WeightInfo::adjust_loan())]
 		pub fn adjust_loan(
@@ -166,8 +166,8 @@ pub mod module {
 			Self::do_adjust_loan(&who, currency_id, collateral_adjustment, debit_adjustment)
 		}
 
-/// Close caller's ECDP which has debit but still in safe by use collateral to swap
-/// stable token on Edfis for clearing debit.
+/// Close caller's which has debit but still in safe by use collateral to swap
+/// stable token on  for clearing debit.
 ///
 /// - `currency_id`: collateral currency id.
 /// - `max_collateral_amount`: the max collateral amount which is used to swap enough
@@ -183,7 +183,7 @@ pub mod module {
 			Self::do_close_loan_by_dex(who, currency_id, max_collateral_amount)
 		}
 
-/// Transfer the whole ECDP of `from` under `currency_id` to caller's ECDP
+/// Transfer the whole of `from` under `currency_id` to caller's 
 /// under the same `currency_id`, caller must have the authorization of
 /// `from` for the specific collateral type
 ///
@@ -198,9 +198,9 @@ pub mod module {
 		) -> DispatchResult {
 			let to = ensure_signed(origin)?;
 			let from = T::Lookup::lookup(from)?;
-			ensure!(!T::EcdpEmergencyShutdown::is_shutdown(), Error::<T>::AlreadyShutdown);
+			ensure!(!T::EmergencyShutdown::is_shutdown(), Error::<T>::AlreadyShutdown);
 			Self::check_authorization(&from, &to, currency_id)?;
-			<module_ecdp_loans::Pallet<T>>::transfer_loan(&from, &to, currency_id)?;
+			<module_loans::Pallet<T>>::transfer_loan(&from, &to, currency_id)?;
 			Ok(())
 		}
 
@@ -272,11 +272,11 @@ pub mod module {
 			Ok(())
 		}
 
-/// Generate new debit in advance, buy collateral and deposit it into ECDP.
+/// Generate new debit in advance, buy collateral and deposit it into .
 ///
 /// - `currency_id`: collateral currency id.
-/// - `increase_debit_value`: the specific increased debit value for ECDP
-/// - `min_increase_collateral`: the minimal increased collateral amount for ECDP
+/// - `increase_debit_value`: the specific increased debit value for 
+/// - `min_increase_collateral`: the minimal increased collateral amount for 
 		#[pallet::call_index(6)]
 		#[pallet::weight(<T as Config>::WeightInfo::expand_position_collateral())]
 		pub fn expand_position_collateral(
@@ -295,11 +295,11 @@ pub mod module {
 			Ok(())
 		}
 
-/// Sell the collateral locked in ECDP to get stable coin to repay the debit.
+/// Sell the collateral locked in to get stable coin to repay the debit.
 ///
 /// - `currency_id`: collateral currency id.
-/// - `decrease_collateral`: the specific decreased collateral amount for ECDP
-/// - `min_decrease_debit_value`: the minimal decreased debit value for ECDP
+/// - `decrease_collateral`: the specific decreased collateral amount for 
+/// - `min_decrease_debit_value`: the minimal decreased debit value for 
 		#[pallet::call_index(7)]
 		#[pallet::weight(<T as Config>::WeightInfo::shrink_position_debit())]
 		pub fn shrink_position_debit(
@@ -323,9 +323,9 @@ pub mod module {
 ///
 /// - `currency_id`: collateral currency id.
 /// - `collateral_adjustment`: signed amount, positive means to deposit collateral currency
-///   into ECDP, negative means withdraw collateral currency from ECDP.
+///   into , negative means withdraw collateral currency from .
 /// - `debit_value_adjustment`: signed amount, positive means to issue some amount of
-///   stablecoin, negative means caller will payback some amount of stablecoin to ECDP.
+///   stablecoin, negative means caller will payback some amount of stablecoin to .
 		#[pallet::call_index(8)]
 		#[pallet::weight(<T as Config>::WeightInfo::adjust_loan())]
 		pub fn adjust_loan_by_debit_value(
@@ -338,7 +338,7 @@ pub mod module {
 
 // not allowed to adjust the debit after system shutdown
 			if !debit_value_adjustment.is_zero() {
-				ensure!(!T::EcdpEmergencyShutdown::is_shutdown(), Error::<T>::AlreadyShutdown);
+				ensure!(!T::EmergencyShutdown::is_shutdown(), Error::<T>::AlreadyShutdown);
 			}
 			<module_cdp_engine::Pallet<T>>::adjust_position_by_debit_value(
 				&who,
@@ -366,12 +366,12 @@ pub mod module {
 			let debit_amount: Amount = debit_transfer.try_into().map_err(|_| ArithmeticError::Overflow)?;
 			let negative_debit = debit_amount.checked_neg().ok_or(ArithmeticError::Overflow)?;
 // Adds SEUSD to user account momentarily to adjust loan
-			<T as module_cdp_engine::Config>::EcdpUssdTreasury::issue_debit(&who, debit_transfer, true)?;
+			<T as module_cdp_engine::Config>::UssdTreasury::issue_debit(&who, debit_transfer, true)?;
 
 			<module_cdp_engine::Pallet<T>>::adjust_position(&who, from_currency, Zero::zero(), negative_debit)?;
 			<module_cdp_engine::Pallet<T>>::adjust_position(&who, to_currency, Zero::zero(), debit_amount)?;
 // Removes debit issued for debit transfer
-			<T as module_cdp_engine::Config>::EcdpUssdTreasury::burn_debit(&who, debit_transfer)?;
+			<T as module_cdp_engine::Config>::UssdTreasury::burn_debit(&who, debit_transfer)?;
 
 			Self::deposit_event(Event::TransferDebit {
 				from_currency,
@@ -401,7 +401,7 @@ impl<T: Config> Pallet<T> {
 	) -> DispatchResult {
 // not allowed to adjust the debit after system shutdown
 		if !debit_adjustment.is_zero() {
-			ensure!(!T::EcdpEmergencyShutdown::is_shutdown(), Error::<T>::AlreadyShutdown);
+			ensure!(!T::EmergencyShutdown::is_shutdown(), Error::<T>::AlreadyShutdown);
 		}
 		<module_cdp_engine::Pallet<T>>::adjust_position(who, currency_id, collateral_adjustment, debit_adjustment)?;
 		Ok(())
@@ -412,13 +412,13 @@ impl<T: Config> Pallet<T> {
 		currency_id: CurrencyId,
 		max_collateral_amount: Balance,
 	) -> DispatchResult {
-		ensure!(!T::EcdpEmergencyShutdown::is_shutdown(), Error::<T>::AlreadyShutdown);
+		ensure!(!T::EmergencyShutdown::is_shutdown(), Error::<T>::AlreadyShutdown);
 		<module_cdp_engine::Pallet<T>>::close_cdp_has_debit_by_dex(who, currency_id, max_collateral_amount)?;
 		Ok(())
 	}
 }
 
-impl<T: Config> EcdpUssdManager<T::AccountId, CurrencyId, Amount, Balance> for Pallet<T> {
+impl<T: Config> UssdManager<T::AccountId, CurrencyId, Amount, Balance> for Pallet<T> {
 	fn adjust_loan(
 		who: &T::AccountId,
 		currency_id: CurrencyId,
@@ -432,8 +432,8 @@ impl<T: Config> EcdpUssdManager<T::AccountId, CurrencyId, Amount, Balance> for P
 		Self::do_close_loan_by_dex(who, currency_id, max_collateral_amount)
 	}
 
-	fn get_position(who: &T::AccountId, currency_id: CurrencyId) -> EcdpPosition {
-		<module_ecdp_loans::Pallet<T>>::positions(currency_id, who)
+	fn get_position(who: &T::AccountId, currency_id: CurrencyId) -> Position {
+		<module_loans::Pallet<T>>::positions(currency_id, who)
 	}
 
 	fn get_collateral_parameters(currency_id: CurrencyId) -> Vec<U256> {
@@ -448,7 +448,7 @@ impl<T: Config> EcdpUssdManager<T::AccountId, CurrencyId, Amount, Balance> for P
 	}
 
 	fn get_current_collateral_ratio(who: &T::AccountId, currency_id: CurrencyId) -> Option<Ratio> {
-		let EcdpPosition { collateral, debit } = <module_ecdp_loans::Pallet<T>>::positions(currency_id, who);
+		let Position { collateral, debit } = <module_loans::Pallet<T>>::positions(currency_id, who);
 		let stable_currency_id = T::GetSEUSDCurrencyId::get();
 
 		T::PriceSource::get_relative_price(currency_id, stable_currency_id).map(|price| {

@@ -28,7 +28,7 @@ use super::utils::{feed_price, set_balance};
 use core::convert::TryInto;
 use frame_benchmarking::{account, whitelisted_caller};
 use frame_system::RawOrigin;
-use edfis_swap_legacy_module::TradingPairStatus;
+use swap_legacy_module::TradingPairStatus;
 use module_benchmarking::runtime_benchmarks;
 use module_traits::{Change, GetByKey, MultiCurrencyExtended};
 use sp_runtime::{

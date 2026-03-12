@@ -255,15 +255,15 @@ impl Incentives<AccountId32, CurrencyId, Balance> for MockIncentives {
 
 parameter_types! {
 	pub const GetExchangeFee: (u32, u32) = (1, 100);
-	pub const EdfisSwapPalletId: PalletId = PalletId(*b"set/edfis");
+	pub const SwapPalletId: PalletId = PalletId(*b"set/edfis");
 }
 
-impl edfis_swap_legacy_module::Config for Runtime {
+impl swap_legacy_module::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type Currency = Tokens;
 	type GetExchangeFee = GetExchangeFee;
 	type TradingPathLimit = TradingPathLimit;
-	type PalletId = EdfisSwapPalletId;
+	type PalletId = SwapPalletId;
 	type Erc20InfoMapping = MockErc20InfoMapping;
 	type WeightInfo = ();
 	type Incentives = MockIncentives;
@@ -279,7 +279,7 @@ pub type Block = generic::Block<Header, UncheckedExtrinsic>;
 construct_runtime!(
 	pub enum Runtime {
 		System: frame_system,
-		Dex: edfis_swap_legacy_module,
+		Dex: swap_legacy_module,
 		EVM: evm_module,
 		Tokens: module_tokens,
 		Balances: pallet_balances,

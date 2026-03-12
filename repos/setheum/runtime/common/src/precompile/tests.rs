@@ -24,7 +24,7 @@ use super::*;
 use crate::precompile::{
 	mock::{
 		setm_evm_address, alice, alice_evm_addr, setusd_evm_address, bob, bob_evm_addr, erc20_address_not_exists,
-		get_task_id, lp_setm_setusd_evm_address, new_test_ext, serp_evm_address, run_to_block, Balances, EdfisSwapLegacyModule,
+		get_task_id, lp_setm_setusd_evm_address, new_test_ext, serp_evm_address, run_to_block, Balances, SwapLegacyModule,
 		DexPrecompile, Event as TestEvent, MultiCurrencyPrecompile, Oracle, OraclePrecompile, Origin, Price,
 	},
 	schedule_call::TaskInfo,
@@ -598,7 +598,7 @@ fn precompile_filter_does_not_work_on_non_system_contracts() {
 // fn dex_precompile_get_liquidity_should_work() {
 // 	new_test_ext().execute_with(|| {
 
-// 		assert_ok!(EdfisSwapLegacyModule::add_liquidity(
+// 		assert_ok!(SwapLegacyModule::add_liquidity(
 // 			Origin::signed(ALICE),
 // 			SEUSD,
 // 			1_000,
@@ -635,7 +635,7 @@ fn precompile_filter_does_not_work_on_non_system_contracts() {
 // fn dex_precompile_get_liquidity_token_address_should_work() {
 // 	new_test_ext().execute_with(|| {
 
-// 		assert_ok!(EdfisSwapLegacyModule::add_liquidity(
+// 		assert_ok!(SwapLegacyModule::add_liquidity(
 // 			Origin::signed(ALICE),
 // 			SEUSD,
 // 			1_000,
@@ -681,7 +681,7 @@ fn precompile_filter_does_not_work_on_non_system_contracts() {
 // fn dex_precompile_get_swap_target_amount_should_work() {
 // 	new_test_ext().execute_with(|| {
 
-// 		assert_ok!(EdfisSwapLegacyModule::add_liquidity(
+// 		assert_ok!(SwapLegacyModule::add_liquidity(
 // 			Origin::signed(ALICE),
 // 			SEUSD,
 // 			1_000,
@@ -723,7 +723,7 @@ fn precompile_filter_does_not_work_on_non_system_contracts() {
 // fn dex_precompile_get_swap_supply_amount_should_work() {
 // 	new_test_ext().execute_with(|| {
 
-// 		assert_ok!(EdfisSwapLegacyModule::add_liquidity(
+// 		assert_ok!(SwapLegacyModule::add_liquidity(
 // 			Origin::signed(ALICE),
 // 			SEUSD,
 // 			1_000,
@@ -765,7 +765,7 @@ fn precompile_filter_does_not_work_on_non_system_contracts() {
 // fn dex_precompile_swap_with_exact_supply_should_work() {
 // 	new_test_ext().execute_with(|| {
 
-// 		assert_ok!(EdfisSwapLegacyModule::add_liquidity(
+// 		assert_ok!(SwapLegacyModule::add_liquidity(
 // 			Origin::signed(ALICE),
 // 			SEUSD,
 // 			1_000,
@@ -811,7 +811,7 @@ fn precompile_filter_does_not_work_on_non_system_contracts() {
 // fn dex_precompile_swap_with_exact_target_should_work() {
 // 	new_test_ext().execute_with(|| {
 
-// 		assert_ok!(EdfisSwapLegacyModule::add_liquidity(
+// 		assert_ok!(SwapLegacyModule::add_liquidity(
 // 			Origin::signed(ALICE),
 // 			SEUSD,
 // 			1_000,

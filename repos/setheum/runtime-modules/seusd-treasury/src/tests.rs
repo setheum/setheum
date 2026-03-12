@@ -1,0 +1,566 @@
+// بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
+// This file is part of Setheum.
+
+// Copyright (C) 2019-Present Afsall Labs.
+// SPDX-License-Identifier: Apache-2.0 OR MIT
+
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// 	http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+// Alternatively, this file is available under the MIT License:
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+#![cfg(test)]
+
+use super::*;
+use frame_support::{assert_noop, assert_ok};
+use mock::{RuntimeEvent, *};
+use module_support::SwapError;
+use sp_runtime::traits::BadOrigin;
+
+#[test]
+fn surplus_pool_work() {
+	ExtBuilder::default().build().execute_with(|| {
+		assert_eq!(UssdTreasuryModule::surplus_pool(), 0);
+		assert_ok!(Currencies::deposit(
+			GetSEUSDCurrencyId::get(),
+			&UssdTreasuryModule::account_id(),
+			500
+		));
+		assert_eq!(UssdTreasuryModule::surplus_pool(), 500);
+	});
+}
+
+#[test]
+fn total_collaterals_work() {
+	ExtBuilder::default().build().execute_with(|| {
+		assert_eq!(UssdTreasuryModule::total_collaterals(BTC), 0);
+		assert_ok!(Currencies::deposit(BTC, &UssdTreasuryModule::account_id(), 10));
+		assert_eq!(UssdTreasuryModule::total_collaterals(BTC), 10);
+	});
+}
+
+#[test]
+fn on_system_debit_work() {
+	ExtBuilder::default().build().execute_with(|| {
+		assert_eq!(UssdTreasuryModule::debit_pool(), 0);
+		assert_ok!(UssdTreasuryModule::on_system_debit(1000));
+		assert_eq!(UssdTreasuryModule::debit_pool(), 1000);
+		assert_noop!(
+			UssdTreasuryModule::on_system_debit(Balance::max_value()),
+			ArithmeticError::Overflow,
+		);
+	});
+}
+
+#[test]
+fn on_system_surplus_work() {
+	ExtBuilder::default().build().execute_with(|| {
+		assert_eq!(Currencies::free_balance(SEUSD, &UssdTreasuryModule::account_id()), 0);
+		assert_eq!(UssdTreasuryModule::surplus_pool(), 0);
+		assert_ok!(UssdTreasuryModule::on_system_surplus(1000));
+		assert_eq!(Currencies::free_balance(SEUSD, &UssdTreasuryModule::account_id()), 1000);
+		assert_eq!(UssdTreasuryModule::surplus_pool(), 1000);
+	});
+}
+
+#[test]
+fn offset_surplus_and_debit_on_finalize_work() {
+	ExtBuilder::default().build().execute_with(|| {
+		assert_eq!(Currencies::free_balance(SEUSD, &UssdTreasuryModule::account_id()), 0);
+		assert_eq!(UssdTreasuryModule::surplus_pool(), 0);
+		assert_eq!(UssdTreasuryModule::debit_pool(), 0);
+		assert_ok!(UssdTreasuryModule::on_system_surplus(1000));
+		assert_eq!(Currencies::free_balance(SEUSD, &UssdTreasuryModule::account_id()), 1000);
+		assert_eq!(UssdTreasuryModule::surplus_pool(), 1000);
+		UssdTreasuryModule::on_finalize(1);
+		assert_eq!(Currencies::free_balance(SEUSD, &UssdTreasuryModule::account_id()), 1000);
+		assert_eq!(UssdTreasuryModule::surplus_pool(), 1000);
+		assert_eq!(UssdTreasuryModule::debit_pool(), 0);
+		assert_ok!(UssdTreasuryModule::on_system_debit(300));
+		assert_eq!(UssdTreasuryModule::debit_pool(), 300);
+		UssdTreasuryModule::on_finalize(2);
+		assert_eq!(Currencies::free_balance(SEUSD, &UssdTreasuryModule::account_id()), 700);
+		assert_eq!(UssdTreasuryModule::surplus_pool(), 700);
+		assert_eq!(UssdTreasuryModule::debit_pool(), 0);
+		assert_ok!(UssdTreasuryModule::on_system_debit(800));
+		assert_eq!(UssdTreasuryModule::debit_pool(), 800);
+		UssdTreasuryModule::on_finalize(3);
+		assert_eq!(Currencies::free_balance(SEUSD, &UssdTreasuryModule::account_id()), 0);
+		assert_eq!(UssdTreasuryModule::surplus_pool(), 0);
+		assert_eq!(UssdTreasuryModule::debit_pool(), 100);
+	});
+}
+
+#[test]
+fn issue_debit_work() {
+	ExtBuilder::default().build().execute_with(|| {
+		assert_eq!(Currencies::free_balance(SEUSD, &ALICE), 1000);
+		assert_eq!(UssdTreasuryModule::debit_pool(), 0);
+
+		assert_ok!(UssdTreasuryModule::issue_debit(&ALICE, 1000, true));
+		assert_eq!(Currencies::free_balance(SEUSD, &ALICE), 2000);
+		assert_eq!(UssdTreasuryModule::debit_pool(), 0);
+
+		assert_ok!(UssdTreasuryModule::issue_debit(&ALICE, 1000, false));
+		assert_eq!(Currencies::free_balance(SEUSD, &ALICE), 3000);
+		assert_eq!(UssdTreasuryModule::debit_pool(), 1000);
+	});
+}
+
+#[test]
+fn burn_debit_work() {
+	ExtBuilder::default().build().execute_with(|| {
+		assert_eq!(Currencies::free_balance(SEUSD, &ALICE), 1000);
+		assert_eq!(UssdTreasuryModule::debit_pool(), 0);
+		assert_ok!(UssdTreasuryModule::burn_debit(&ALICE, 300));
+		assert_eq!(Currencies::free_balance(SEUSD, &ALICE), 700);
+		assert_eq!(UssdTreasuryModule::debit_pool(), 0);
+	});
+}
+
+#[test]
+fn deposit_surplus_work() {
+	ExtBuilder::default().build().execute_with(|| {
+		assert_eq!(Currencies::free_balance(SEUSD, &ALICE), 1000);
+		assert_eq!(Currencies::free_balance(SEUSD, &UssdTreasuryModule::account_id()), 0);
+		assert_eq!(UssdTreasuryModule::surplus_pool(), 0);
+		assert_ok!(UssdTreasuryModule::deposit_surplus(&ALICE, 300));
+		assert_eq!(Currencies::free_balance(SEUSD, &ALICE), 700);
+		assert_eq!(Currencies::free_balance(SEUSD, &UssdTreasuryModule::account_id()), 300);
+		assert_eq!(UssdTreasuryModule::surplus_pool(), 300);
+	});
+}
+
+#[test]
+fn withdraw_surplus_work() {
+	ExtBuilder::default().build().execute_with(|| {
+		assert_ok!(UssdTreasuryModule::deposit_surplus(&ALICE, 300));
+		assert_eq!(Currencies::free_balance(SEUSD, &ALICE), 700);
+		assert_eq!(Currencies::free_balance(SEUSD, &UssdTreasuryModule::account_id()), 300);
+		assert_eq!(UssdTreasuryModule::surplus_pool(), 300);
+
+		assert_ok!(UssdTreasuryModule::withdraw_surplus(&ALICE, 200));
+		assert_eq!(Currencies::free_balance(SEUSD, &ALICE), 900);
+		assert_eq!(Currencies::free_balance(SEUSD, &UssdTreasuryModule::account_id()), 100);
+		assert_eq!(UssdTreasuryModule::surplus_pool(), 100);
+	});
+}
+
+#[test]
+fn deposit_collateral_work() {
+	ExtBuilder::default().build().execute_with(|| {
+		assert_eq!(UssdTreasuryModule::total_collaterals(BTC), 0);
+		assert_eq!(Currencies::free_balance(BTC, &UssdTreasuryModule::account_id()), 0);
+		assert_eq!(Currencies::free_balance(BTC, &ALICE), 1000);
+		assert!(!UssdTreasuryModule::deposit_collateral(&ALICE, BTC, 10000).is_ok());
+		assert_ok!(UssdTreasuryModule::deposit_collateral(&ALICE, BTC, 500));
+		assert_eq!(UssdTreasuryModule::total_collaterals(BTC), 500);
+		assert_eq!(Currencies::free_balance(BTC, &UssdTreasuryModule::account_id()), 500);
+		assert_eq!(Currencies::free_balance(BTC, &ALICE), 500);
+	});
+}
+
+#[test]
+fn withdraw_collateral_work() {
+	ExtBuilder::default().build().execute_with(|| {
+		assert_ok!(UssdTreasuryModule::deposit_collateral(&ALICE, BTC, 500));
+		assert_eq!(UssdTreasuryModule::total_collaterals(BTC), 500);
+		assert_eq!(Currencies::free_balance(BTC, &UssdTreasuryModule::account_id()), 500);
+		assert_eq!(Currencies::free_balance(BTC, &BOB), 1000);
+		assert!(!UssdTreasuryModule::withdraw_collateral(&BOB, BTC, 501).is_ok());
+		assert_ok!(UssdTreasuryModule::withdraw_collateral(&BOB, BTC, 400));
+		assert_eq!(UssdTreasuryModule::total_collaterals(BTC), 100);
+		assert_eq!(Currencies::free_balance(BTC, &UssdTreasuryModule::account_id()), 100);
+		assert_eq!(Currencies::free_balance(BTC, &BOB), 1400);
+	});
+}
+
+#[test]
+fn get_total_collaterals_work() {
+	ExtBuilder::default().build().execute_with(|| {
+		assert_ok!(UssdTreasuryModule::deposit_collateral(&ALICE, BTC, 500));
+		assert_eq!(UssdTreasuryModule::get_total_collaterals(BTC), 500);
+	});
+}
+
+#[test]
+fn get_debit_proportion_work() {
+	ExtBuilder::default().build().execute_with(|| {
+		assert_eq!(
+			UssdTreasuryModule::get_debit_proportion(100),
+			Ratio::saturating_from_rational(100, Currencies::total_issuance(SEUSD))
+		);
+	});
+}
+
+#[test]
+fn swap_collateral_to_seusd_work() {
+	ExtBuilder::default().build().execute_with(|| {
+		assert_ok!(UssdTreasuryModule::deposit_collateral(&BOB, BTC, 200));
+		assert_eq!(UssdTreasuryModule::total_collaterals_not_in_auction(BTC), 200);
+		assert_eq!(UssdTreasuryModule::surplus_pool(), 0);
+		assert_ok!(SwapModule::add_liquidity(
+			RuntimeOrigin::signed(BOB),
+			SEUSD,
+			1000,
+			1000,
+			0,
+			false
+		));
+
+		assert_noop!(
+			UssdTreasuryModule::swap_collateral_to_seusd(BTC, SwapLimit::ExactTarget(201, 200), false),
+			Error::<Runtime>::CollateralNotEnough,
+		);
+		assert_noop!(
+			Error::<Runtime>::CollateralNotEnough,
+		);
+
+		assert_noop!(
+			UssdTreasuryModule::swap_collateral_to_seusd(BTC, SwapLimit::ExactTarget(200, 399), false),
+			SwapError::CannotSwap
+		);
+		assert_ok!(SwapModule::add_liquidity(
+			RuntimeOrigin::signed(ALICE),
+			BTC,
+			100,
+			1000,
+			0,
+			false
+		));
+
+		assert_eq!(
+			UssdTreasuryModule::swap_collateral_to_seusd(BTC, SwapLimit::ExactTarget(200, 399), false).unwrap(),
+			(198, 399)
+		);
+		assert_eq!(UssdTreasuryModule::surplus_pool(), 399);
+		assert_eq!(UssdTreasuryModule::total_collaterals_not_in_auction(BTC), 2);
+
+		assert_noop!(
+			SwapError::CannotSwap
+		);
+
+		assert_eq!(
+			(1000, 225)
+		);
+		assert_eq!(UssdTreasuryModule::surplus_pool(), 624);
+	});
+}
+
+#[test]
+fn create_collateral_auctions_work() {
+	ExtBuilder::default().build().execute_with(|| {
+		assert_ok!(Currencies::deposit(BTC, &UssdTreasuryModule::account_id(), 10000));
+		assert_eq!(UssdTreasuryModule::expected_collateral_auction_size(BTC), 0);
+		assert_noop!(
+			UssdTreasuryModule::create_collateral_auctions(BTC, 10001, 1000, ALICE, true),
+			Error::<Runtime>::CollateralNotEnough,
+		);
+
+// without collateral auction maximum size
+		assert_ok!(UssdTreasuryModule::create_collateral_auctions(
+			BTC, 1000, 1000, ALICE, true
+		));
+		assert_eq!(TOTAL_COLLATERAL_AUCTION.with(|v| *v.borrow_mut()), 1);
+		assert_eq!(TOTAL_COLLATERAL_IN_AUCTION.with(|v| *v.borrow_mut()), 1000);
+
+// set collateral auction maximum size
+		assert_ok!(UssdTreasuryModule::set_expected_collateral_auction_size(
+			RuntimeOrigin::signed(1),
+			BTC,
+			300
+		));
+
+// amount < collateral auction maximum size
+// auction + 1
+		assert_ok!(UssdTreasuryModule::create_collateral_auctions(
+			BTC, 200, 1000, ALICE, true
+		));
+		assert_eq!(TOTAL_COLLATERAL_AUCTION.with(|v| *v.borrow_mut()), 2);
+		assert_eq!(TOTAL_COLLATERAL_IN_AUCTION.with(|v| *v.borrow_mut()), 1200);
+
+// not exceed lots count cap
+// auction + 4
+		assert_ok!(UssdTreasuryModule::create_collateral_auctions(
+			BTC, 1000, 1000, ALICE, true
+		));
+		assert_eq!(TOTAL_COLLATERAL_AUCTION.with(|v| *v.borrow_mut()), 6);
+		assert_eq!(TOTAL_COLLATERAL_IN_AUCTION.with(|v| *v.borrow_mut()), 2200);
+
+// exceed lots count cap
+// auction + 5
+		assert_ok!(UssdTreasuryModule::create_collateral_auctions(
+			BTC, 2000, 1000, ALICE, true
+		));
+		assert_eq!(TOTAL_COLLATERAL_AUCTION.with(|v| *v.borrow_mut()), 11);
+		assert_eq!(TOTAL_COLLATERAL_IN_AUCTION.with(|v| *v.borrow_mut()), 4200);
+	});
+}
+
+#[test]
+fn remove_liquidity_for_lp_collateral_work() {
+	ExtBuilder::default().build().execute_with(|| {
+		assert_ok!(SwapModule::add_liquidity(
+			RuntimeOrigin::signed(BOB),
+			SEUSD,
+			1000,
+			100,
+			0,
+			false
+		));
+		assert_eq!(
+			200
+		);
+		assert_eq!(Currencies::free_balance(SEUSD, &UssdTreasuryModule::account_id()), 0);
+
+		assert_noop!(
+			Error::<Runtime>::NotDexShare
+		);
+
+		assert_eq!(
+			Ok((60, 6))
+		);
+		assert_eq!(
+			80
+		);
+		assert_eq!(Currencies::free_balance(SEUSD, &UssdTreasuryModule::account_id()), 60);
+	});
+}
+
+#[test]
+fn set_expected_collateral_auction_size_work() {
+	ExtBuilder::default().build().execute_with(|| {
+		System::set_block_number(1);
+		assert_eq!(UssdTreasuryModule::expected_collateral_auction_size(BTC), 0);
+		assert_noop!(
+			UssdTreasuryModule::set_expected_collateral_auction_size(RuntimeOrigin::signed(5), BTC, 200),
+			BadOrigin
+		);
+		assert_ok!(UssdTreasuryModule::set_expected_collateral_auction_size(
+			RuntimeOrigin::signed(1),
+			BTC,
+			200
+		));
+		System::assert_last_event(RuntimeEvent::UssdTreasuryModule(
+			crate::Event::ExpectedCollateralAuctionSizeUpdated {
+				collateral_type: BTC,
+				new_size: 200,
+			},
+		));
+	});
+}
+
+#[test]
+fn extract_surplus_to_treasury_work() {
+	ExtBuilder::default().build().execute_with(|| {
+		assert_ok!(UssdTreasuryModule::on_system_surplus(1000));
+		assert_eq!(UssdTreasuryModule::surplus_pool(), 1000);
+		assert_eq!(Currencies::free_balance(SEUSD, &UssdTreasuryModule::account_id()), 1000);
+		assert_eq!(Currencies::free_balance(SEUSD, &TreasuryAccount::get()), 0);
+
+		assert_noop!(
+			UssdTreasuryModule::extract_surplus_to_treasury(RuntimeOrigin::signed(5), 200),
+			BadOrigin
+		);
+		assert_ok!(UssdTreasuryModule::extract_surplus_to_treasury(
+			RuntimeOrigin::signed(1),
+			200
+		));
+		assert_eq!(UssdTreasuryModule::surplus_pool(), 800);
+		assert_eq!(Currencies::free_balance(SEUSD, &UssdTreasuryModule::account_id()), 800);
+		assert_eq!(Currencies::free_balance(SEUSD, &TreasuryAccount::get()), 200);
+	});
+}
+
+#[test]
+fn auction_collateral_work() {
+	ExtBuilder::default().build().execute_with(|| {
+		assert_ok!(Currencies::deposit(BTC, &UssdTreasuryModule::account_id(), 10000));
+		assert_eq!(UssdTreasuryModule::expected_collateral_auction_size(BTC), 0);
+		assert_eq!(UssdTreasuryModule::total_collaterals(BTC), 10000);
+		assert_eq!(UssdTreasuryModule::total_collaterals_not_in_auction(BTC), 10000);
+		assert_noop!(
+			UssdTreasuryModule::auction_collateral(RuntimeOrigin::signed(5), BTC, 10000, 1000, false),
+			BadOrigin,
+		);
+		assert_noop!(
+			UssdTreasuryModule::auction_collateral(RuntimeOrigin::signed(1), BTC, 10001, 1000, false),
+			Error::<Runtime>::CollateralNotEnough,
+		);
+
+		assert_ok!(UssdTreasuryModule::auction_collateral(
+			RuntimeOrigin::signed(1),
+			BTC,
+			1000,
+			1000,
+			false
+		));
+		assert_eq!(TOTAL_COLLATERAL_AUCTION.with(|v| *v.borrow_mut()), 1);
+		assert_eq!(TOTAL_COLLATERAL_IN_AUCTION.with(|v| *v.borrow_mut()), 1000);
+
+		assert_eq!(UssdTreasuryModule::total_collaterals(BTC), 10000);
+		assert_eq!(UssdTreasuryModule::total_collaterals_not_in_auction(BTC), 9000);
+		assert_noop!(
+			UssdTreasuryModule::auction_collateral(RuntimeOrigin::signed(1), BTC, 9001, 1000, false),
+			Error::<Runtime>::CollateralNotEnough,
+		);
+	});
+}
+
+#[test]
+fn exchange_collateral_to_seusd_work() {
+	ExtBuilder::default().build().execute_with(|| {
+		assert_ok!(SwapModule::add_liquidity(
+			RuntimeOrigin::signed(BOB),
+			BTC,
+			SEUSD,
+			200,
+			1000,
+			0,
+			false
+		));
+
+		assert_ok!(Currencies::deposit(BTC, &UssdTreasuryModule::account_id(), 1000));
+		assert_ok!(UssdTreasuryModule::auction_collateral(
+			RuntimeOrigin::signed(1),
+			BTC,
+			800,
+			1000,
+			false
+		));
+		assert_eq!(UssdTreasuryModule::total_collaterals(BTC), 1000);
+		assert_eq!(UssdTreasuryModule::total_collaterals_not_in_auction(BTC), 200);
+		assert_eq!(UssdTreasuryModule::surplus_pool(), 0);
+
+		assert_noop!(
+			UssdTreasuryModule::exchange_collateral_to_seusd(
+				RuntimeOrigin::signed(5),
+				BTC,
+				SwapLimit::ExactTarget(200, 200)
+			),
+			BadOrigin,
+		);
+		assert_noop!(
+			UssdTreasuryModule::exchange_collateral_to_seusd(
+				RuntimeOrigin::signed(1),
+				BTC,
+				SwapLimit::ExactTarget(201, 200)
+			),
+			Error::<Runtime>::CollateralNotEnough,
+		);
+		assert_noop!(
+			UssdTreasuryModule::exchange_collateral_to_seusd(
+				RuntimeOrigin::signed(1),
+				BTC,
+				SwapLimit::ExactSupply(201, 0)
+			),
+			Error::<Runtime>::CollateralNotEnough,
+		);
+		assert_noop!(
+			UssdTreasuryModule::exchange_collateral_to_seusd(
+				RuntimeOrigin::signed(1),
+				BTC,
+				SwapLimit::ExactTarget(200, 1000)
+			),
+			SwapError::CannotSwap
+		);
+
+		assert_ok!(UssdTreasuryModule::exchange_collateral_to_seusd(
+			RuntimeOrigin::signed(1),
+			BTC,
+			SwapLimit::ExactTarget(200, 399)
+		));
+		assert_eq!(UssdTreasuryModule::surplus_pool(), 399);
+		assert_eq!(UssdTreasuryModule::total_collaterals(BTC), 867);
+		assert_eq!(UssdTreasuryModule::total_collaterals_not_in_auction(BTC), 67);
+	});
+}
+
+#[test]
+fn set_debit_offset_buffer_work() {
+	ExtBuilder::default().build().execute_with(|| {
+		System::set_block_number(1);
+		assert_eq!(UssdTreasuryModule::debit_offset_buffer(), 0);
+		assert_noop!(
+			UssdTreasuryModule::set_debit_offset_buffer(RuntimeOrigin::signed(5), 200),
+			BadOrigin
+		);
+		assert_ok!(UssdTreasuryModule::set_debit_offset_buffer(
+			RuntimeOrigin::signed(1),
+			200
+		));
+		System::assert_last_event(RuntimeEvent::UssdTreasuryModule(
+			crate::Event::DebitOffsetBufferUpdated { amount: 200 },
+		));
+	});
+}
+
+#[test]
+fn offset_surplus_and_debit_limited_by_debit_offset_buffer() {
+	ExtBuilder::default().build().execute_with(|| {
+		assert_ok!(UssdTreasuryModule::on_system_surplus(1000));
+		assert_ok!(UssdTreasuryModule::on_system_debit(2000));
+		assert_eq!(UssdTreasuryModule::surplus_pool(), 1000);
+		assert_eq!(UssdTreasuryModule::debit_pool(), 2000);
+		assert_eq!(UssdTreasuryModule::debit_offset_buffer(), 0);
+
+// offset all debit pool when surplus is enough
+		UssdTreasuryModule::offset_surplus_and_debit();
+		assert_eq!(UssdTreasuryModule::surplus_pool(), 0);
+		assert_eq!(UssdTreasuryModule::debit_pool(), 1000);
+		assert_eq!(UssdTreasuryModule::debit_offset_buffer(), 0);
+
+		assert_ok!(UssdTreasuryModule::set_debit_offset_buffer(
+			RuntimeOrigin::signed(1),
+			100
+		));
+		assert_eq!(UssdTreasuryModule::debit_offset_buffer(), 100);
+		assert_ok!(UssdTreasuryModule::on_system_surplus(2000));
+		assert_eq!(UssdTreasuryModule::surplus_pool(), 2000);
+
+// keep the buffer for debit pool when surplus is enough
+		UssdTreasuryModule::offset_surplus_and_debit();
+		assert_eq!(UssdTreasuryModule::surplus_pool(), 1100);
+		assert_eq!(UssdTreasuryModule::debit_pool(), 100);
+		assert_eq!(UssdTreasuryModule::debit_offset_buffer(), 100);
+
+		assert_ok!(UssdTreasuryModule::set_debit_offset_buffer(
+			RuntimeOrigin::signed(1),
+			200
+		));
+		assert_eq!(UssdTreasuryModule::debit_offset_buffer(), 200);
+		assert_ok!(UssdTreasuryModule::on_system_debit(1400));
+		assert_eq!(UssdTreasuryModule::debit_pool(), 1500);
+
+		UssdTreasuryModule::offset_surplus_and_debit();
+		assert_eq!(UssdTreasuryModule::surplus_pool(), 0);
+		assert_eq!(UssdTreasuryModule::debit_pool(), 400);
+		assert_eq!(UssdTreasuryModule::debit_offset_buffer(), 200);
+	});
+}

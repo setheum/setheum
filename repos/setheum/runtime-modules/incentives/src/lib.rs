@@ -193,9 +193,9 @@ pub mod module {
 				for (pool_id, pool_info) in module_rewards::PoolInfos::<T>::iter() {
 					if !pool_info.total_shares.is_zero() {
 						match pool_id {
-// TODO:[src/lib.rs:0] - Update to support `EcdpSetrLiquidityRewards` and `EcdpUssdLiquidityRewards`
-// [src/lib.rs:0-1] - such that if has `EcdpPosition` and is an LP for a pool with ECDP Stablecoin, 
-// [src/lib.rs:0-1] - then make it `EcdpSetrLiquidityRewards` or `EcdpUssdLiquidityRewards` respectively.
+// TODO:[src/lib.rs:0] - Update to support `SetrLiquidityRewards` and `UssdLiquidityRewards`
+// [src/lib.rs:0-1] - such that if has `Position` and is an LP for a pool with Stablecoin, 
+// [src/lib.rs:0-1] - then make it `SetrLiquidityRewards` or `UssdLiquidityRewards` respectively.
 							_ => {
 								count += 1;
 								Self::accumulate_incentives(pool_id);
@@ -277,7 +277,7 @@ pub mod module {
 		) -> DispatchResult {
 			T::UpdateOrigin::ensure_origin(origin)?;
 			for (pool_id, update_list) in updates {
-				if let PoolId::EdfisLiquidityRewards(currency_id) = pool_id {
+				if let PoolId::LiquidityRewards(currency_id) = pool_id {
 					ensure!(currency_id.is_dex_share_currency_id(), Error::<T>::InvalidPoolId);
 				}
 
@@ -317,7 +317,7 @@ pub mod module {
 		) -> DispatchResult {
 			T::UpdateOrigin::ensure_origin(origin)?;
 			for (pool_id, deduction_rate) in updates {
-				if let PoolId::EdfisLiquidityRewards(currency_id) = pool_id {
+				if let PoolId::LiquidityRewards(currency_id) = pool_id {
 					ensure!(currency_id.is_dex_share_currency_id(), Error::<T>::InvalidPoolId);
 				}
 				ClaimRewardDeductionRates::<T>::mutate_exists(pool_id, |maybe_rate| -> DispatchResult {
@@ -506,7 +506,7 @@ impl<T: Config> Incentives<T::AccountId, CurrencyId, Balance> for Pallet<T> {
 		ensure!(lp_currency_id.is_dex_share_currency_id(), Error::<T>::InvalidCurrencyId);
 
 		T::Currency::transfer(lp_currency_id, who, &Self::account_id(), amount)?;
-		<module_rewards::Pallet<T>>::add_share(who, &PoolId::EdfisLiquidityRewards(lp_currency_id), amount.unique_saturated_into());
+		<module_rewards::Pallet<T>>::add_share(who, &PoolId::LiquidityRewards(lp_currency_id), amount.unique_saturated_into());
 
 		Self::deposit_event(Event::DepositDexShare {
 			who: who.clone(),
@@ -519,12 +519,12 @@ impl<T: Config> Incentives<T::AccountId, CurrencyId, Balance> for Pallet<T> {
 	fn do_withdraw_dex_share(who: &T::AccountId, lp_currency_id: CurrencyId, amount: Balance) -> DispatchResult {
 		ensure!(lp_currency_id.is_dex_share_currency_id(), Error::<T>::InvalidCurrencyId);
 		ensure!(
-			<module_rewards::Pallet<T>>::shares_and_withdrawn_rewards(&PoolId::EdfisLiquidityRewards(lp_currency_id), &who).0 >= amount,
+			<module_rewards::Pallet<T>>::shares_and_withdrawn_rewards(&PoolId::LiquidityRewards(lp_currency_id), &who).0 >= amount,
 			Error::<T>::NotEnough,
 		);
 
 		T::Currency::transfer(lp_currency_id, &Self::account_id(), who, amount)?;
-		<module_rewards::Pallet<T>>::remove_share(who, &PoolId::EdfisLiquidityRewards(lp_currency_id), amount.unique_saturated_into());
+		<module_rewards::Pallet<T>>::remove_share(who, &PoolId::LiquidityRewards(lp_currency_id), amount.unique_saturated_into());
 
 		Self::deposit_event(Event::WithdrawDexShare {
 			who: who.clone(),

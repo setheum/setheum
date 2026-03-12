@@ -49,19 +49,19 @@ fn authorize_should_work() {
 	ExtBuilder::default().build().execute_with(|| {
 		System::set_block_number(1);
 		assert_eq!(PalletBalances::reserved_balance(ALICE), 0);
-		assert_ok!(EcdpModule::authorize(RuntimeOrigin::signed(ALICE), BTC, BOB));
+		assert_ok!(Module::authorize(RuntimeOrigin::signed(ALICE), BTC, BOB));
 		assert_eq!(
 			PalletBalances::reserved_balance(ALICE),
 			<<Runtime as Config>::DepositPerAuthorization as sp_runtime::traits::Get<u128>>::get()
 		);
-		System::assert_last_event(RuntimeEvent::EcdpModule(crate::Event::Authorization {
+		System::assert_last_event(RuntimeEvent::Module(crate::Event::Authorization {
 			authorizer: ALICE,
 			authorizee: BOB,
 			collateral_type: BTC,
 		}));
-		assert_ok!(EcdpModule::check_authorization(&ALICE, &BOB, BTC));
+		assert_ok!(Module::check_authorization(&ALICE, &BOB, BTC));
 		assert_noop!(
-			EcdpModule::authorize(RuntimeOrigin::signed(ALICE), BTC, BOB),
+			Module::authorize(RuntimeOrigin::signed(ALICE), BTC, BOB),
 			Error::<Runtime>::AlreadyAuthorized
 		);
 	});
@@ -71,26 +71,26 @@ fn authorize_should_work() {
 fn unauthorize_should_work() {
 	ExtBuilder::default().build().execute_with(|| {
 		System::set_block_number(1);
-		assert_ok!(EcdpModule::authorize(RuntimeOrigin::signed(ALICE), BTC, BOB));
+		assert_ok!(Module::authorize(RuntimeOrigin::signed(ALICE), BTC, BOB));
 		assert_eq!(
 			PalletBalances::reserved_balance(ALICE),
 			<<Runtime as Config>::DepositPerAuthorization as sp_runtime::traits::Get<u128>>::get()
 		);
-		assert_ok!(EcdpModule::check_authorization(&ALICE, &BOB, BTC));
+		assert_ok!(Module::check_authorization(&ALICE, &BOB, BTC));
 
-		assert_ok!(EcdpModule::unauthorize(RuntimeOrigin::signed(ALICE), BTC, BOB));
+		assert_ok!(Module::unauthorize(RuntimeOrigin::signed(ALICE), BTC, BOB));
 		assert_eq!(PalletBalances::reserved_balance(ALICE), 0);
-		System::assert_last_event(RuntimeEvent::EcdpModule(crate::Event::UnAuthorization {
+		System::assert_last_event(RuntimeEvent::Module(crate::Event::UnAuthorization {
 			authorizer: ALICE,
 			authorizee: BOB,
 			collateral_type: BTC,
 		}));
 		assert_noop!(
-			EcdpModule::check_authorization(&ALICE, &BOB, BTC),
+			Module::check_authorization(&ALICE, &BOB, BTC),
 			Error::<Runtime>::NoPermission
 		);
 		assert_noop!(
-			EcdpModule::unauthorize(RuntimeOrigin::signed(ALICE), BTC, BOB),
+			Module::unauthorize(RuntimeOrigin::signed(ALICE), BTC, BOB),
 			Error::<Runtime>::AuthorizationNotExists
 		);
 	});
@@ -100,16 +100,16 @@ fn unauthorize_should_work() {
 fn unauthorize_all_should_work() {
 	ExtBuilder::default().build().execute_with(|| {
 		System::set_block_number(1);
-		assert_ok!(EcdpModule::authorize(RuntimeOrigin::signed(ALICE), BTC, BOB));
+		assert_ok!(Module::authorize(RuntimeOrigin::signed(ALICE), BTC, BOB));
 		assert_eq!(PalletBalances::reserved_balance(ALICE), 200);
-		assert_ok!(EcdpModule::unauthorize_all(RuntimeOrigin::signed(ALICE)));
+		assert_ok!(Module::unauthorize_all(RuntimeOrigin::signed(ALICE)));
 		assert_eq!(PalletBalances::reserved_balance(ALICE), 0);
-		System::assert_last_event(RuntimeEvent::EcdpModule(crate::Event::UnAuthorizationAll {
+		System::assert_last_event(RuntimeEvent::Module(crate::Event::UnAuthorizationAll {
 			authorizer: ALICE,
 		}));
 
 		assert_noop!(
-			EcdpModule::check_authorization(&ALICE, &BOB, BTC),
+			Module::check_authorization(&ALICE, &BOB, BTC),
 			Error::<Runtime>::NoPermission
 		);
 		assert_noop!(
@@ -121,7 +121,7 @@ fn unauthorize_all_should_work() {
 #[test]
 fn transfer_loan_from_should_work() {
 	ExtBuilder::default().build().execute_with(|| {
-		assert_ok!(EcdpUssdEngineModule::set_collateral_params(
+		assert_ok!(UssdEngineModule::set_collateral_params(
 			RuntimeOrigin::signed(ALICE),
 			BTC,
 			Change::NewValue(Some(Rate::saturating_from_rational(1, 100000))),
@@ -130,11 +130,11 @@ fn transfer_loan_from_should_work() {
 			Change::NewValue(Some(Ratio::saturating_from_rational(9, 5))),
 			Change::NewValue(10000),
 		));
-		assert_ok!(EcdpModule::adjust_loan(RuntimeOrigin::signed(ALICE), BTC, 100, 50));
-		assert_ok!(EcdpModule::authorize(RuntimeOrigin::signed(ALICE), BTC, BOB));
-		assert_ok!(EcdpModule::transfer_loan_from(RuntimeOrigin::signed(BOB), BTC, ALICE));
-		assert_eq!(EcdpLoansModule::positions(BTC, BOB).collateral, 100);
-		assert_eq!(EcdpLoansModule::positions(BTC, BOB).debit, 50);
+		assert_ok!(Module::adjust_loan(RuntimeOrigin::signed(ALICE), BTC, 100, 50));
+		assert_ok!(Module::authorize(RuntimeOrigin::signed(ALICE), BTC, BOB));
+		assert_ok!(Module::transfer_loan_from(RuntimeOrigin::signed(BOB), BTC, ALICE));
+		assert_eq!(LoansModule::positions(BTC, BOB).collateral, 100);
+		assert_eq!(LoansModule::positions(BTC, BOB).debit, 50);
 	});
 }
 
@@ -142,7 +142,7 @@ fn transfer_loan_from_should_work() {
 fn transfer_unauthorization_loans_should_not_work() {
 	ExtBuilder::default().build().execute_with(|| {
 		assert_noop!(
-			EcdpModule::transfer_loan_from(RuntimeOrigin::signed(ALICE), BTC, BOB),
+			Module::transfer_loan_from(RuntimeOrigin::signed(ALICE), BTC, BOB),
 			Error::<Runtime>::NoPermission,
 		);
 	});
@@ -151,7 +151,7 @@ fn transfer_unauthorization_loans_should_not_work() {
 #[test]
 fn adjust_loan_should_work() {
 	ExtBuilder::default().build().execute_with(|| {
-		assert_ok!(EcdpUssdEngineModule::set_collateral_params(
+		assert_ok!(UssdEngineModule::set_collateral_params(
 			RuntimeOrigin::signed(ALICE),
 			BTC,
 			Change::NewValue(Some(Rate::saturating_from_rational(1, 100000))),
@@ -160,16 +160,16 @@ fn adjust_loan_should_work() {
 			Change::NewValue(Some(Ratio::saturating_from_rational(9, 5))),
 			Change::NewValue(10000),
 		));
-		assert_ok!(EcdpModule::adjust_loan(RuntimeOrigin::signed(ALICE), BTC, 100, 50));
-		assert_eq!(EcdpLoansModule::positions(BTC, ALICE).collateral, 100);
-		assert_eq!(EcdpLoansModule::positions(BTC, ALICE).debit, 50);
+		assert_ok!(Module::adjust_loan(RuntimeOrigin::signed(ALICE), BTC, 100, 50));
+		assert_eq!(LoansModule::positions(BTC, ALICE).collateral, 100);
+		assert_eq!(LoansModule::positions(BTC, ALICE).debit, 50);
 	});
 }
 
 #[test]
 fn adjust_loan_by_debit_value_should_work() {
 	ExtBuilder::default().build().execute_with(|| {
-		assert_ok!(EcdpUssdEngineModule::set_collateral_params(
+		assert_ok!(UssdEngineModule::set_collateral_params(
 			RuntimeOrigin::signed(ALICE),
 			BTC,
 			Change::NewValue(Some(Rate::saturating_from_rational(1, 100000))),
@@ -179,23 +179,23 @@ fn adjust_loan_by_debit_value_should_work() {
 			Change::NewValue(10000),
 		));
 
-		assert_ok!(EcdpModule::adjust_loan_by_debit_value(
+		assert_ok!(Module::adjust_loan_by_debit_value(
 			RuntimeOrigin::signed(ALICE),
 			BTC,
 			100,
 			50
 		));
-		assert_eq!(EcdpLoansModule::positions(BTC, ALICE).collateral, 100);
-		assert_eq!(EcdpLoansModule::positions(BTC, ALICE).debit, 500);
+		assert_eq!(LoansModule::positions(BTC, ALICE).collateral, 100);
+		assert_eq!(LoansModule::positions(BTC, ALICE).debit, 500);
 
-		assert_ok!(EcdpModule::adjust_loan_by_debit_value(
+		assert_ok!(Module::adjust_loan_by_debit_value(
 			RuntimeOrigin::signed(ALICE),
 			BTC,
 			-10,
 			-5
 		));
-		assert_eq!(EcdpLoansModule::positions(BTC, ALICE).collateral, 90);
-		assert_eq!(EcdpLoansModule::positions(BTC, ALICE).debit, 450);
+		assert_eq!(LoansModule::positions(BTC, ALICE).collateral, 90);
+		assert_eq!(LoansModule::positions(BTC, ALICE).debit, 450);
 	});
 }
 
@@ -204,15 +204,15 @@ fn on_emergency_shutdown_should_work() {
 	ExtBuilder::default().build().execute_with(|| {
 		mock_shutdown();
 		assert_noop!(
-			EcdpModule::adjust_loan(RuntimeOrigin::signed(ALICE), BTC, 100, 50),
+			Module::adjust_loan(RuntimeOrigin::signed(ALICE), BTC, 100, 50),
 			Error::<Runtime>::AlreadyShutdown,
 		);
 		assert_noop!(
-			EcdpModule::transfer_loan_from(RuntimeOrigin::signed(ALICE), BTC, BOB),
+			Module::transfer_loan_from(RuntimeOrigin::signed(ALICE), BTC, BOB),
 			Error::<Runtime>::AlreadyShutdown,
 		);
 		assert_noop!(
-			EcdpModule::close_loan_has_debit_by_dex(RuntimeOrigin::signed(ALICE), BTC, 100),
+			Module::close_loan_has_debit_by_dex(RuntimeOrigin::signed(ALICE), BTC, 100),
 			Error::<Runtime>::AlreadyShutdown,
 		);
 	});
@@ -221,7 +221,7 @@ fn on_emergency_shutdown_should_work() {
 #[test]
 fn close_loan_has_debit_by_dex_work() {
 	ExtBuilder::default().build().execute_with(|| {
-		assert_ok!(EcdpUssdEngineModule::set_collateral_params(
+		assert_ok!(UssdEngineModule::set_collateral_params(
 			RuntimeOrigin::signed(ALICE),
 			BTC,
 			Change::NewValue(Some(Rate::saturating_from_rational(1, 100000))),
@@ -230,17 +230,17 @@ fn close_loan_has_debit_by_dex_work() {
 			Change::NewValue(Some(Ratio::saturating_from_rational(9, 5))),
 			Change::NewValue(10000),
 		));
-		assert_ok!(EcdpModule::adjust_loan(RuntimeOrigin::signed(ALICE), BTC, 100, 50));
-		assert_eq!(EcdpLoansModule::positions(BTC, ALICE).collateral, 100);
-		assert_eq!(EcdpLoansModule::positions(BTC, ALICE).debit, 50);
+		assert_ok!(Module::adjust_loan(RuntimeOrigin::signed(ALICE), BTC, 100, 50));
+		assert_eq!(LoansModule::positions(BTC, ALICE).collateral, 100);
+		assert_eq!(LoansModule::positions(BTC, ALICE).debit, 50);
 
-		assert_ok!(EcdpModule::close_loan_has_debit_by_dex(
+		assert_ok!(Module::close_loan_has_debit_by_dex(
 			RuntimeOrigin::signed(ALICE),
 			BTC,
 			100,
 		));
-		assert_eq!(EcdpLoansModule::positions(BTC, ALICE).collateral, 0);
-		assert_eq!(EcdpLoansModule::positions(BTC, ALICE).debit, 0);
+		assert_eq!(LoansModule::positions(BTC, ALICE).collateral, 0);
+		assert_eq!(LoansModule::positions(BTC, ALICE).debit, 0);
 	});
 }
 
@@ -248,7 +248,7 @@ fn close_loan_has_debit_by_dex_work() {
 fn transfer_debit_works() {
 	ExtBuilder::default().build().execute_with(|| {
 		System::set_block_number(1);
-		assert_ok!(EcdpUssdEngineModule::set_collateral_params(
+		assert_ok!(UssdEngineModule::set_collateral_params(
 			RuntimeOrigin::signed(ALICE),
 			BTC,
 			Change::NewValue(Some(Rate::saturating_from_rational(1, 100000))),
@@ -257,7 +257,7 @@ fn transfer_debit_works() {
 			Change::NewValue(Some(Ratio::saturating_from_rational(9, 5))),
 			Change::NewValue(10000),
 		));
-		assert_ok!(EcdpUssdEngineModule::set_collateral_params(
+		assert_ok!(UssdEngineModule::set_collateral_params(
 			RuntimeOrigin::signed(ALICE),
 			Change::NewValue(Some(Rate::saturating_from_rational(1, 100000))),
 			Change::NewValue(Some(Ratio::saturating_from_rational(3, 2))),
@@ -267,9 +267,9 @@ fn transfer_debit_works() {
 		));
 
 // set up two loans
-		assert_ok!(EcdpModule::adjust_loan(RuntimeOrigin::signed(ALICE), BTC, 100, 500));
-		assert_eq!(EcdpLoansModule::positions(BTC, ALICE).collateral, 100);
-		assert_eq!(EcdpLoansModule::positions(BTC, ALICE).debit, 500);
+		assert_ok!(Module::adjust_loan(RuntimeOrigin::signed(ALICE), BTC, 100, 500));
+		assert_eq!(LoansModule::positions(BTC, ALICE).collateral, 100);
+		assert_eq!(LoansModule::positions(BTC, ALICE).debit, 500);
 
 
 // Will not work for account with no open CDP
@@ -290,18 +290,18 @@ fn transfer_debit_works() {
 		);
 // Won't work for currency that is not collateral
 		assert_noop!(
-			EcdpModule::transfer_debit(RuntimeOrigin::signed(ALICE), BTC, SEU, 50),
+			Module::transfer_debit(RuntimeOrigin::signed(ALICE), BTC, SEU, 50),
 			module_cdp_engine::Error::<Runtime>::InvalidCollateralType
 		);
 
-		System::assert_last_event(RuntimeEvent::EcdpModule(crate::Event::<Runtime>::TransferDebit {
+		System::assert_last_event(RuntimeEvent::Module(crate::Event::<Runtime>::TransferDebit {
 			from_currency: BTC,
 			amount: 50,
 		}));
 
 
-		assert_eq!(EcdpLoansModule::positions(BTC, ALICE).debit, 450);
-		assert_eq!(EcdpLoansModule::positions(BTC, ALICE).collateral, 100);
+		assert_eq!(LoansModule::positions(BTC, ALICE).debit, 450);
+		assert_eq!(LoansModule::positions(BTC, ALICE).collateral, 100);
 	});
 }
 
@@ -309,7 +309,7 @@ fn transfer_debit_works() {
 fn transfer_debit_no_seusd() {
 	ExtBuilder::default().build().execute_with(|| {
 		System::set_block_number(1);
-		assert_ok!(EcdpUssdEngineModule::set_collateral_params(
+		assert_ok!(UssdEngineModule::set_collateral_params(
 			RuntimeOrigin::signed(ALICE),
 			BTC,
 			Change::NewValue(Some(Rate::saturating_from_rational(1, 100000))),
@@ -318,7 +318,7 @@ fn transfer_debit_no_seusd() {
 			Change::NewValue(Some(Ratio::saturating_from_rational(9, 5))),
 			Change::NewValue(10000),
 		));
-		assert_ok!(EcdpUssdEngineModule::set_collateral_params(
+		assert_ok!(UssdEngineModule::set_collateral_params(
 			RuntimeOrigin::signed(ALICE),
 			Change::NewValue(Some(Rate::saturating_from_rational(1, 100000))),
 			Change::NewValue(Some(Ratio::saturating_from_rational(3, 2))),
@@ -328,9 +328,9 @@ fn transfer_debit_no_seusd() {
 		));
 
 // set up two loans
-		assert_ok!(EcdpModule::adjust_loan(RuntimeOrigin::signed(ALICE), BTC, 100, 500));
-		assert_eq!(EcdpLoansModule::positions(BTC, ALICE).collateral, 100);
-		assert_eq!(EcdpLoansModule::positions(BTC, ALICE).debit, 500);
+		assert_ok!(Module::adjust_loan(RuntimeOrigin::signed(ALICE), BTC, 100, 500));
+		assert_eq!(LoansModule::positions(BTC, ALICE).collateral, 100);
+		assert_eq!(LoansModule::positions(BTC, ALICE).debit, 500);
 
 
 		assert_eq!(Currencies::free_balance(SEUSD, &ALICE), 100);

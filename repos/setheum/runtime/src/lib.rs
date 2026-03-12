@@ -801,7 +801,7 @@ parameter_types! {
 	];
 }
 
-// impl edfis_swap_legacy_module::Config for Runtime {
+// impl swap_legacy_module::Config for Runtime {
 // 	type Event = Event;
 // 	type Currency = Currencies;
 // 	type StableCurrencyIds = StableCurrencyIds;
@@ -810,7 +810,7 @@ parameter_types! {
 // 	type TradingPathLimit = TradingPathLimit;
 // 	type PalletId = DEXPalletId;
 // 	type CurrencyIdMapping = EvmCurrencyIdMapping<Runtime>;
-// 	type WeightInfo = weights::edfis_swap_legacy_module::WeightInfo<Runtime>;
+// 	type WeightInfo = weights::swap_legacy_module::WeightInfo<Runtime>;
 // 	type ListingOrigin = EnsureRootOrHalfFinancialCouncil;
 // }
 
@@ -1101,8 +1101,8 @@ impl InstanceFilter<Call> for ProxyType {
 			ProxyType::Swap => {
 				matches!(
 					c,
-					Call::Dex(edfis_swap_legacy_module::Call::swap_with_exact_supply(..))
-						| Call::Dex(edfis_swap_legacy_module::Call::swap_with_exact_target(..))
+					Call::Dex(swap_legacy_module::Call::swap_with_exact_supply(..))
+						| Call::Dex(swap_legacy_module::Call::swap_with_exact_target(..))
 				)
 			}
 			ProxyType::Loan => {
@@ -1472,7 +1472,7 @@ construct_runtime!(
 		Sudo: pallet_sudo::{Pallet, Call, Config<T>, Storage, Event<T>} = 3,
 		Scheduler: pallet_scheduler::{Pallet, Call, Storage, Event<T>} = 4,
 		Prices: module_prices::{Pallet, Storage, Call, Event<T>} = 5,
-// Dex: edfis_swap_legacy_module::{Pallet, Storage, Call, Event<T>, Config<T>} = 6,
+// Dex: swap_legacy_module::{Pallet, Storage, Call, Event<T>, Config<T>} = 6,
 
 		Multisig: pallet_multisig::{Pallet, Call, Storage, Event<T>} = 7,
 		Recovery: pallet_recovery::{Pallet, Call, Storage, Event<T>} = 8,
@@ -1949,7 +1949,7 @@ impl_runtime_apis! {
 
 			list_benchmark!(list, extra, module_nft, NftBench::<Runtime>);
 
-// module_list_benchmark!(list, extra, edfis_swap_legacy_module, benchmarking::dex);
+// module_list_benchmark!(list, extra, swap_legacy_module, benchmarking::dex);
 // module_list_benchmark!(list, extra, auction_manager, benchmarking::auction_manager);
 // module_list_benchmark!(list, extra, cdp_engine, benchmarking::cdp_engine);
 // module_list_benchmark!(list, extra, emergency_shutdown, benchmarking::emergency_shutdown);
@@ -2007,7 +2007,7 @@ impl_runtime_apis! {
 			let params = (&config, &whitelist);
 
 			add_benchmark!(params, batches, module_nft, NftBench::<Runtime>);
-// module_add_benchmark!(params, batches, edfis_swap_legacy_module, benchmarking::dex);
+// module_add_benchmark!(params, batches, swap_legacy_module, benchmarking::dex);
 // module_add_benchmark!(params, batches, auction_manager, benchmarking::auction_manager);
 // module_add_benchmark!(params, batches, cdp_engine, benchmarking::cdp_engine);
 // module_add_benchmark!(params, batches, emergency_shutdown, benchmarking::emergency_shutdown);

@@ -478,7 +478,7 @@ parameter_types! {
 	pub const DEXPalletId: PalletId = PalletId(*b"edf/swap");
 }
 
-impl edfis_swap_legacy_module::Config for Test {
+impl swap_legacy_module::Config for Test {
 	type Event = Event;
 	type Currency = Tokens;
 	type StableCurrencyIds = StableCurrencyIds;
@@ -517,7 +517,7 @@ pub type ScheduleCallPrecompile = crate::ScheduleCallPrecompile<
 	OriginCaller,
 	Test,
 >;
-pub type DexPrecompile = crate::DexPrecompile<AccountId, MockAddressMapping, EvmCurrencyIdMapping, EdfisSwapLegacyModule>;
+pub type DexPrecompile = crate::DexPrecompile<AccountId, MockAddressMapping, EvmCurrencyIdMapping, SwapLegacyModule>;
 
 parameter_types! {
 	pub NetworkContractSource: H160 = alice_evm_addr();
@@ -589,7 +589,7 @@ impl module_prices::Config for Test {
 	type SetUSDFixedPrice = SetUSDFixedPrice;
 	type SetterFixedPrice = SetterFixedPrice;
 	type LockOrigin = EnsureSignedBy<One, AccountId>;
-	type DEX = EdfisSwapLegacyModule;
+	type DEX = SwapLegacyModule;
 	type Currency = Currencies;
 	type CurrencyIdMapping = EvmCurrencyIdMapping;
 	type WeightInfo = ();
@@ -682,7 +682,7 @@ frame_support::construct_runtime!(
 		Proxy: pallet_proxy::{Pallet, Call, Storage, Event<T>},
 		Utility: pallet_utility::{Pallet, Call, Event},
 		Scheduler: pallet_scheduler::{Pallet, Call, Storage, Event<T>},
-		EdfisSwapLegacyModule: edfis_swap_legacy_module::{Pallet, Storage, Call, Event<T>, Config<T>},
+		SwapLegacyModule: swap_legacy_module::{Pallet, Storage, Call, Event<T>, Config<T>},
 		ModuleEVM: module_evm::{Pallet, Config<T>, Call, Storage, Event<T>},
 	}
 );

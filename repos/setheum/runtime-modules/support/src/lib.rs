@@ -67,9 +67,9 @@ pub struct AirdropList(pub Vec<AirdropEntry>);
 
 pub mod bounded;
 // pub mod ecdp;
-pub mod edfis_launchpad;
-pub mod edfis_swap;
-pub mod edfis_swap_legacy;
+pub mod launchpad;
+pub mod swap;
+pub mod swap_legacy;
 pub mod evm;
 pub mod incentives;
 pub mod migration;
@@ -77,9 +77,9 @@ pub mod mocks;
 
 pub use crate::bounded::*;
 // pub use crate::ecdp::*;
-pub use crate::edfis_launchpad::*;
-pub use crate::edfis_swap::*;
-// pub use crate::edfis_swap_legacy::*;
+pub use crate::launchpad::*;
+pub use crate::swap::*;
+// pub use crate::swap_legacy::*;
 pub use crate::evm::*;
 pub use crate::incentives::*;
 pub use crate::migration::*;

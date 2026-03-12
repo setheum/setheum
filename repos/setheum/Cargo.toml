@@ -8,10 +8,10 @@ members = [
 	"runtime-modules/asset-registry",
 	"runtime-modules/committee-management",
 	"runtime-modules/currencies",
-	"runtime-modules/ecdp-loans",
-	"runtime-modules/ecdp-seusd-engine",
-	"runtime-modules/ecdp-seusd-treasury",
-	"runtime-modules/edfis-swap-legacy",
+	"runtime-modules/loans",
+	"runtime-modules/seusd-engine",
+	"runtime-modules/seusd-treasury",
+	"runtime-modules/swap-legacy",
 	"runtime-modules/elections",
 	"runtime-modules/evm",
 	"runtime-modules/evm-bridge",
@@ -268,13 +268,13 @@ module-bridge-xcm = { path = "runtime-modules/bridge-xcm", default-features = fa
 module-support = { path = "runtime-modules/support", default-features = false }
 module-transaction-payment = { path = "runtime-modules/transaction-payment", default-features = false }
 module-idle-scheduler = { path = "runtime-modules/idle-scheduler", default-features = false }
-module-edfis_swap_legacy = { package = "module-edfis-swap-legacy", path = "runtime-modules/edfis-swap-legacy", default-features = false }
-module-ecdp-loans = { path = "runtime-modules/ecdp-loans", default-features = false }
-module-ecdp-seusd-engine = { path = "runtime-modules/ecdp-seusd-engine", default-features = false }
-module-ecdp-seusd-treasury = { path = "runtime-modules/ecdp-seusd-treasury", default-features = false }
+module-swap_legacy = { package = "module-swap-legacy", path = "runtime-modules/swap-legacy", default-features = false }
+module-loans = { path = "runtime-modules/loans", default-features = false }
+module-seusd-engine = { path = "runtime-modules/seusd-engine", default-features = false }
+module-seusd-treasury = { path = "runtime-modules/seusd-treasury", default-features = false }
 module-evm-accounts = { package = "module-unified-accounts", path = "runtime-modules/unified-accounts", default-features = false }
 module-evm-manager = { path = "runtime-modules/evm-manager", default-features = false }
-module-edfis-legacy = { package = "module-edfis-swap-legacy", path = "runtime-modules/edfis-swap-legacy", default-features = false }
+module-legacy = { package = "module-swap-legacy", path = "runtime-modules/swap-legacy", default-features = false }
 module-unified-accounts = { path = "runtime-modules/unified-accounts", default-features = false }
 rate-limiter = { package = "finality-rate-limiter", path = "finality/rate-limiter", default-features = false }
 network-clique = { path = "clique" }

@@ -61,7 +61,7 @@ pub trait WeightInfo {
 pub struct SetheumWeight<T>(PhantomData<T>);
 impl<T: frame_system::Config> WeightInfo for SetheumWeight<T> {
 // Storage: unknown [0x3a7472616e73616374696f6e5f6c6576656c3a] (r:1 w:1)
-// Storage: ECDP Authorization (r:1 w:1)
+// Storage: Authorization (r:1 w:1)
 // Storage: Balances Reserves (r:1 w:1)
 	fn authorize() -> Weight {
 		Weight::from_parts(45_674_000, 0)
@@ -69,7 +69,7 @@ impl<T: frame_system::Config> WeightInfo for SetheumWeight<T> {
 			.saturating_add(T::DbWeight::get().writes(3 as u64))
 	}
 // Storage: unknown [0x3a7472616e73616374696f6e5f6c6576656c3a] (r:1 w:1)
-// Storage: ECDP Authorization (r:1 w:1)
+// Storage: Authorization (r:1 w:1)
 // Storage: Balances Reserves (r:1 w:1)
 	fn unauthorize() -> Weight {
 		Weight::from_parts(91_834_000, 0)
@@ -78,7 +78,7 @@ impl<T: frame_system::Config> WeightInfo for SetheumWeight<T> {
 	}
 // Storage: unknown [0x3a7472616e73616374696f6e5f6c6576656c3a] (r:1 w:1)
 // Storage: Balances Reserves (r:1 w:0)
-// Storage: ECDP Authorization (r:0 w:1)
+// Storage: Authorization (r:0 w:1)
 	fn unauthorize_all(c: u32, ) -> Weight {
 		Weight::from_parts(51_744_000, 0)
 // Standard Error: 866_000
@@ -88,12 +88,12 @@ impl<T: frame_system::Config> WeightInfo for SetheumWeight<T> {
 			.saturating_add(T::DbWeight::get().writes((1 as u64).saturating_mul(c as u64)))
 	}
 // Storage: unknown [0x3a7472616e73616374696f6e5f6c6576656c3a] (r:1 w:1)
-// Storage: EcdpEmergencyShutdown IsShutdown (r:1 w:0)
+// Storage: EmergencyShutdown IsShutdown (r:1 w:0)
 // Storage: CdpEngine CollateralParams (r:1 w:0)
-// Storage: Loans EcdpPositions (r:1 w:1)
+// Storage: Loans Positions (r:1 w:1)
 // Storage: Rewards PoolInfos (r:1 w:1)
 // Storage: Rewards SharesAndWithdrawnRewards (r:1 w:1)
-// Storage: Loans TotalEcdpPositions (r:1 w:1)
+// Storage: Loans TotalPositions (r:1 w:1)
 // Storage: System Account (r:1 w:1)
 // Storage: CdpEngine DebitExchangeRate (r:1 w:0)
 // Storage: Tokens Accounts (r:1 w:1)
@@ -107,9 +107,9 @@ impl<T: frame_system::Config> WeightInfo for SetheumWeight<T> {
 			.saturating_add(T::DbWeight::get().writes(8 as u64))
 	}
 // Storage: unknown [0x3a7472616e73616374696f6e5f6c6576656c3a] (r:1 w:1)
-// Storage: EcdpEmergencyShutdown IsShutdown (r:1 w:0)
-// Storage: ECDP Authorization (r:1 w:0)
-// Storage: Loans EcdpPositions (r:2 w:2)
+// Storage: EmergencyShutdown IsShutdown (r:1 w:0)
+// Storage: Authorization (r:1 w:0)
+// Storage: Loans Positions (r:2 w:2)
 // Storage: CdpEngine DebitExchangeRate (r:1 w:0)
 // Storage: Prices LockedPrice (r:2 w:0)
 // Storage: Oracle Values (r:1 w:0)
@@ -118,15 +118,15 @@ impl<T: frame_system::Config> WeightInfo for SetheumWeight<T> {
 // Storage: Rewards SharesAndWithdrawnRewards (r:2 w:2)
 // Storage: Rewards PoolInfos (r:1 w:1)
 // Storage: System Account (r:1 w:1)
-// Storage: Loans TotalEcdpPositions (r:1 w:1)
+// Storage: Loans TotalPositions (r:1 w:1)
 	fn transfer_loan_from() -> Weight {
 		Weight::from_parts(120_478_000, 0)
 			.saturating_add(T::DbWeight::get().reads(17 as u64))
 			.saturating_add(T::DbWeight::get().writes(8 as u64))
 	}
 // Storage: unknown [0x3a7472616e73616374696f6e5f6c6576656c3a] (r:1 w:1)
-// Storage: EcdpEmergencyShutdown IsShutdown (r:1 w:0)
-// Storage: Loans EcdpPositions (r:1 w:1)
+// Storage: EmergencyShutdown IsShutdown (r:1 w:0)
+// Storage: Loans Positions (r:1 w:1)
 // Storage: Prices LockedPrice (r:2 w:0)
 // Storage: SetheumOracle Values (r:1 w:0)
 // Storage: AssetRegistry AssetMetadatas (r:2 w:0)
@@ -141,8 +141,8 @@ impl<T: frame_system::Config> WeightInfo for SetheumWeight<T> {
 // Storage: CdpTreasury DebitPool (r:1 w:1)
 // Storage: Rewards SharesAndWithdrawnRewards (r:1 w:1)
 // Storage: Rewards PoolInfos (r:1 w:1)
-// Storage: Loans TotalEcdpPositions (r:1 w:1)
-// Storage: EcdpAuctionsManager TotalCollateralInAuction (r:1 w:0)
+// Storage: Loans TotalPositions (r:1 w:1)
+// Storage: AuctionsManager TotalCollateralInAuction (r:1 w:0)
 // Storage: Dex TradingPairStatuses (r:3 w:0)
 // Storage: Dex LiquidityPool (r:2 w:2)
 // Storage: AggregatedDex AggregatedSwapPaths (r:1 w:0)
@@ -160,10 +160,10 @@ impl<T: frame_system::Config> WeightInfo for SetheumWeight<T> {
 // Storage: Dex LiquidityPool (r:1 w:1)
 // Storage: AggregatedDex AggregatedSwapPaths (r:1 w:0)
 // Storage: CdpEngine DebitExchangeRate (r:1 w:0)
-// Storage: Loans EcdpPositions (r:1 w:1)
+// Storage: Loans Positions (r:1 w:1)
 // Storage: Rewards PoolInfos (r:1 w:1)
 // Storage: Rewards SharesAndWithdrawnRewards (r:1 w:1)
-// Storage: Loans TotalEcdpPositions (r:1 w:1)
+// Storage: Loans TotalPositions (r:1 w:1)
 // Storage: Prices LockedPrice (r:2 w:0)
 // Storage: SetheumOracle Values (r:1 w:0)
 // Storage: AssetRegistry AssetMetadatas (r:2 w:0)
@@ -174,7 +174,7 @@ impl<T: frame_system::Config> WeightInfo for SetheumWeight<T> {
 	}
 // Storage: unknown [0x3a7472616e73616374696f6e5f6c6576656c3a] (r:1 w:1)
 // Storage: CdpEngine CollateralParams (r:1 w:0)
-// Storage: Loans EcdpPositions (r:1 w:1)
+// Storage: Loans Positions (r:1 w:1)
 // Storage: Dex TradingPairStatuses (r:1 w:0)
 // Storage: Dex LiquidityPool (r:1 w:1)
 // Storage: AggregatedDex AggregatedSwapPaths (r:1 w:0)
@@ -183,7 +183,7 @@ impl<T: frame_system::Config> WeightInfo for SetheumWeight<T> {
 // Storage: CdpEngine DebitExchangeRate (r:1 w:0)
 // Storage: Rewards SharesAndWithdrawnRewards (r:1 w:1)
 // Storage: Rewards PoolInfos (r:1 w:1)
-// Storage: Loans TotalEcdpPositions (r:1 w:1)
+// Storage: Loans TotalPositions (r:1 w:1)
 // Storage: Tokens TotalIssuance (r:1 w:1)
 	fn shrink_position_debit() -> Weight {
 		Weight::from_parts(230_779_000, 0)
@@ -194,8 +194,8 @@ impl<T: frame_system::Config> WeightInfo for SetheumWeight<T> {
 // Storage: Tokens Accounts (r:1 w:1)
 // Storage: Tokens TotalIssuance (r:2 w:1)
 // Storage: CdpEngine CollateralParams (r:2 w:0)
-// Storage: Loans EcdpPositions (r:2 w:2)
-// Storage: Loans TotalEcdpPositions (r:2 w:2)
+// Storage: Loans Positions (r:2 w:2)
+// Storage: Loans TotalPositions (r:2 w:2)
 // Storage: CdpEngine DebitExchangeRate (r:2 w:0)
 // Storage: Prices LockedPrice (r:3 w:0)
 // Storage: SetheumOracle Values (r:1 w:0)
@@ -208,7 +208,7 @@ impl<T: frame_system::Config> WeightInfo for SetheumWeight<T> {
 			.saturating_add(T::DbWeight::get().reads(21 as u64))
 			.saturating_add(T::DbWeight::get().writes(7 as u64))
 	}
-// Storage: Loans EcdpPositions (r:1 w:0)
+// Storage: Loans Positions (r:1 w:0)
 // Storage: Prices LockedPrice (r:2 w:0)
 // Storage: SetheumOracle Values (r:1 w:0)
 // Storage: AssetRegistry AssetMetadatas (r:2 w:0)

@@ -25,9 +25,9 @@
 use frame_support::{traits::Get, weights::Weight};
 use sp_std::marker::PhantomData;
 
-/// Weight functions for edfis_swap_legacy_module.
+/// Weight functions for swap_legacy_module.
 pub struct WeightInfo<T>(PhantomData<T>);
-impl<T: frame_system::Config> edfis_swap_legacy_module::WeightInfo for WeightInfo<T> {
+impl<T: frame_system::Config> swap_legacy_module::WeightInfo for WeightInfo<T> {
 	fn enable_trading_pair() -> Weight {
 		(25_878_000 as Weight)
 			.saturating_add(T::DbWeight::get().reads(1 as Weight))
