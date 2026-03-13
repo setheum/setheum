@@ -1,0 +1,50 @@
+[package]
+license = "Apache-2.0 OR MIT"
+name = "module-auctions"
+version = "0.9.81-dev"
+authors.workspace = true
+edition.workspace = true
+homepage.workspace = true
+repository.workspace = true
+
+[dependencies]
+log = { workspace = true , default-features = false }
+parity-scale-codec = { workspace = true }
+scale-info = { workspace = true }
+frame-support = { workspace = true }
+frame-system = { workspace = true }
+sp-io = { workspace = true }
+sp-runtime = { workspace = true }
+sp-std = { workspace = true }
+module-traits = { workspace = true , default-features = false }
+module-utilities = { workspace = true , default-features = false }
+module-support = { workspace = true , default-features = false }
+primitives = { workspace = true , default-features = false }
+
+[dev-dependencies]
+sp-core = { workspace = true, features = ["std"] }
+pallet-balances = { workspace = true, features = ["std"] }
+module-auction = { workspace = true, features = ["std"] , default-features = false }
+module-seusd-treasury = { workspace = true, features = ["std"] , default-features = false }
+module-legacy = { workspace = true, features = ["std"] , default-features = false }
+module-tokens = { workspace = true, features = ["std"] , default-features = false }
+
+[features]
+default = ["std"]
+std = [
+	"parity-scale-codec/std",
+	"frame-support/std",
+	"frame-system/std",
+	"module-traits/std",
+	"module-utilities/std",
+	"primitives/std",
+	"scale-info/std",
+	"sp-io/std",
+	"sp-runtime/std",
+	"sp-std/std",
+	"module-support/std",
+]
+try-runtime = [
+	"frame-support/try-runtime",
+	"frame-system/try-runtime",
+]

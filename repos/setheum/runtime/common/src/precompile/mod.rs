@@ -23,16 +23,16 @@
 mod mock;
 mod tests;
 
-use crate::is_setheum_precompile;
-use frame_support::log;
-use module_evm::{
-	precompiles::{
-		ECRecover, ECRecoverPublicKey, EvmPrecompiles, Identity, Precompile, PrecompileSet, Ripemd160, Sha256,
-		Sha3FIPS256, Sha3FIPS512,
-	},
-	runner::state::PrecompileOutput,
-	Context, ExitError,
+use fp_evm::{
+	Context, ExitError, ExitRevert, ExitSucceed, Precompile, PrecompileFailure, PrecompileOutput, PrecompileSet,
 };
+use pallet_evm::{IsPrecompileResult, PrecompileHandle};
+use pallet_evm_precompile_bn128::{Bn128Add, Bn128Mul, Bn128Pairing};
+use pallet_evm_precompile_ecrecover::ECRecover;
+use pallet_evm_precompile_identity::Identity;
+use pallet_evm_precompile_modexp::Modexp;
+use pallet_evm_precompile_ripemd160::Ripemd160;
+use pallet_evm_precompile_sha2::Sha256;
 use module_support::PrecompileCallerFilter as PrecompileCallerFilterT;
 use primitives::PRECOMPILE_ADDRESS_START;
 use sp_core::H160;
@@ -90,7 +90,8 @@ impl<
 		OraclePrecompile,
 		ScheduleCallPrecompile,
 		DexPrecompile,
-	> where
+	>
+where
 	MultiCurrencyPrecompile: Precompile,
 	NFTPrecompile: Precompile,
 	StateRentPrecompile: Precompile,
@@ -99,46 +100,48 @@ impl<
 	PrecompileCallerFilter: PrecompileCallerFilterT,
 	DexPrecompile: Precompile,
 {
-	#[allow(clippy::type_complexity)]
-	fn execute(
-		address: H160,
-		input: &[u8],
-		target_gas: Option<u64>,
-		context: &Context,
-	) -> Option<core::result::Result<PrecompileOutput, ExitError>> {
-		EvmPrecompiles::<ECRecover, Sha256, Ripemd160, Identity, ECRecoverPublicKey, Sha3FIPS256, Sha3FIPS512>::execute(
-			address, input, target_gas, context,
-		)
-		.or_else(|| {
-			if !is_setheum_precompile(address) {
-				return None;
-			}
+	fn execute(&self, handle: &mut impl PrecompileHandle) -> Option<core::result::Result<PrecompileOutput, PrecompileFailure>> {
+		let address = handle.code_address();
 
-			if !PrecompileCallerFilter::is_allowed(context.caller) {
-				log::debug!(target: "evm", "Precompile no permission");
-				return Some(Err(ExitError::Other("no permission".into())));
-			}
+		if address == H160::from_low_u64_be(1) {
+			Some(ECRecover::execute(handle))
+		} else if address == H160::from_low_u64_be(2) {
+			Some(Sha256::execute(handle))
+		} else if address == H160::from_low_u64_be(3) {
+			Some(Ripemd160::execute(handle))
+		} else if address == H160::from_low_u64_be(4) {
+			Some(Identity::execute(handle))
+		} else if address == H160::from_low_u64_be(5) {
+			Some(Modexp::execute(handle))
+		} else if address == H160::from_low_u64_be(6) {
+			Some(Bn128Add::execute(handle))
+		} else if address == H160::from_low_u64_be(7) {
+			Some(Bn128Mul::execute(handle))
+		} else if address == H160::from_low_u64_be(8) {
+			Some(Bn128Pairing::execute(handle))
+		} else if address == H160::from_low_u64_be(PRECOMPILE_ADDRESS_START) {
+			Some(MultiCurrencyPrecompile::execute(handle))
+		} else if address == H160::from_low_u64_be(PRECOMPILE_ADDRESS_START + 1) {
+			Some(NFTPrecompile::execute(handle))
+		} else if address == H160::from_low_u64_be(PRECOMPILE_ADDRESS_START + 2) {
+			Some(StateRentPrecompile::execute(handle))
+		} else if address == H160::from_low_u64_be(PRECOMPILE_ADDRESS_START + 3) {
+			Some(OraclePrecompile::execute(handle))
+		} else if address == H160::from_low_u64_be(PRECOMPILE_ADDRESS_START + 4) {
+			Some(ScheduleCallPrecompile::execute(handle))
+		} else if address == H160::from_low_u64_be(PRECOMPILE_ADDRESS_START + 5) {
+			Some(DexPrecompile::execute(handle))
+		} else {
+			None
+		}
+	}
 
-			log::debug!(target: "evm", "Precompile begin, address: {:?}, input: {:?}, target_gas: {:?}, context: {:?}", address, input, target_gas, context);
-
-			let result = if address == H160::from_low_u64_be(PRECOMPILE_ADDRESS_START) {
-				Some(MultiCurrencyPrecompile::execute(input, target_gas, context))
-			} else if address == H160::from_low_u64_be(PRECOMPILE_ADDRESS_START + 1) {
-				Some(NFTPrecompile::execute(input, target_gas, context))
-			} else if address == H160::from_low_u64_be(PRECOMPILE_ADDRESS_START + 2) {
-				Some(StateRentPrecompile::execute(input, target_gas, context))
-			} else if address == H160::from_low_u64_be(PRECOMPILE_ADDRESS_START + 3) {
-				Some(OraclePrecompile::execute(input, target_gas, context))
-			} else if address == H160::from_low_u64_be(PRECOMPILE_ADDRESS_START + 4) {
-				Some(ScheduleCallPrecompile::execute(input, target_gas, context))
-			} else if address == H160::from_low_u64_be(PRECOMPILE_ADDRESS_START + 5) {
-				Some(DexPrecompile::execute(input, target_gas, context))
-			} else {
-				None
-			};
-
-			log::debug!(target: "evm", "Precompile end, result: {:?}", result);
-			result
-		})
+	fn is_precompile(&self, address: H160, _gas: u64) -> IsPrecompileResult {
+		IsPrecompileResult::Answer {
+			is_precompile: (address >= H160::from_low_u64_be(1) && address <= H160::from_low_u64_be(9))
+				|| (address >= H160::from_low_u64_be(PRECOMPILE_ADDRESS_START)
+					&& address <= H160::from_low_u64_be(PRECOMPILE_ADDRESS_START + 5)),
+			extra_cost: 0,
+		}
 	}
 }

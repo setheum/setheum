@@ -219,6 +219,60 @@ impl TryFrom<CurrencyId> for EvmAddress {
 	}
 }
 
+fn decode_evm_address_for_dex_share(address: &[u8], left: bool) -> Option<DexShare> {
+	let (dex_share_type, dex_share_field) = if left {
+		(H160_POSITION_DEXSHARE_LEFT_TYPE, H160_POSITION_DEXSHARE_LEFT_FIELD)
+	} else {
+		(H160_POSITION_DEXSHARE_RIGHT_TYPE, H160_POSITION_DEXSHARE_RIGHT_FIELD)
+	};
+	match DexShareType::try_from(address[dex_share_type]).ok()? {
+		DexShareType::Token => address[dex_share_field][3].try_into().map(DexShare::Token).ok(),
+		DexShareType::Erc20 => {
+			let id = u32::from_be_bytes(address[dex_share_field].try_into().ok()?);
+			// NOTE: This Erc20 Id translation must be handled by the implementation of CurrencyIdMapping
+			// as it requires storage knowledge from asset-registry.
+			// However, for pure bit-encoding/decoding of system addresses, we still might need it.
+			// For now, we return None or handled in asset-registry if it's a dynamic mapping.
+			None 
+		}
+		DexShareType::ForeignAsset => {
+			let id = ForeignAssetId::from_be_bytes(address[dex_share_field][2..].try_into().ok()?);
+			Some(DexShare::ForeignAsset(id))
+		}
+	}
+}
+
+impl TryFrom<EvmAddress> for CurrencyId {
+	type Error = ();
+
+	fn try_from(addr: EvmAddress) -> Result<Self, Self::Error> {
+		if !is_system_contract(&addr) {
+			return Ok(CurrencyId::Erc20(addr));
+		}
+
+		let address = addr.as_bytes();
+		let currency_id = match CurrencyIdType::try_from(address[H160_POSITION_CURRENCY_ID_TYPE]).ok().ok_or(())? {
+			CurrencyIdType::Token => address[H160_POSITION_TOKEN].try_into().map(CurrencyId::Token).ok().ok_or(())?,
+			CurrencyIdType::DexShare => {
+				let left = decode_evm_address_for_dex_share(address, true).ok_or(())?;
+				let right = decode_evm_address_for_dex_share(address, false).ok_or(())?;
+				CurrencyId::DexShare(left, right)
+			}
+			CurrencyIdType::ForeignAsset => {
+				let id = ForeignAssetId::from_be_bytes(address[H160_POSITION_FOREIGN_ASSET].try_into().ok().ok_or(())?);
+				CurrencyId::ForeignAsset(id)
+			}
+		};
+
+		// Validation: encode it back and check equality
+		if EvmAddress::try_from(currency_id).map_err(|_| ())? == addr {
+			Ok(currency_id)
+		} else {
+			Err(())
+		}
+	}
+}
+
 pub fn decode_gas_price(gas_price: u64, gas_limit: u64, tx_fee_per_gas: u128) -> Option<(u128, u32)> {
 // ensure gas_price >= 100 Gwei
 	if u128::from(gas_price) < tx_fee_per_gas {

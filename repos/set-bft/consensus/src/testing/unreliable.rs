@@ -42,9 +42,9 @@ use crate::{
     units::Unit,
     Index, NodeCount, NodeIndex, Round, Signed, SpawnHandle,
 };
-use set_bft_mock::{BadSigning, DataProvider, Keychain, NetworkHook, Router, Spawner};
 use futures::StreamExt;
 use parking_lot::Mutex;
+use set_bft_mock::{BadSigning, DataProvider, Keychain, NetworkHook, Router, Spawner};
 use std::sync::Arc;
 
 struct CorruptPacket {

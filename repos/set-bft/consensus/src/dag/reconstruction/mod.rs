@@ -45,9 +45,9 @@ use std::collections::HashMap;
 mod dag;
 mod parents;
 
-use set_bft_types::{Data, MultiKeychain, NodeIndex, OrderedUnit, Round, Signed};
 use dag::Dag;
 use parents::Reconstruction as ParentReconstruction;
+use set_bft_types::{Data, MultiKeychain, NodeIndex, OrderedUnit, Round, Signed};
 
 /// A unit with its parents represented explicitly.
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -280,8 +280,8 @@ mod test {
         units::{random_full_parent_units_up_to, Unit, UnitCoord, UnitWithParents},
         NodeCount, NodeIndex,
     };
-    use set_bft_types::{NodeMap, Round};
     use rand::Rng;
+    use set_bft_types::{NodeMap, Round};
     use std::collections::HashMap;
 
     #[test]

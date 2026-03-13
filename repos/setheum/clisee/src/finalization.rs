@@ -20,32 +20,21 @@
 
 use std::str::FromStr;
 
-use setheum_client::{
-    pallets::setbft::{SetBFTRpc, SetBFTSudoApi},
-    AccountId, SetBFTKeyPair, Connection, TxStatus,
-};
 use primitives::{BlockHash, BlockNumber};
+use setheum_client::{
+	pallets::setbft::{SetBFTRpc, SetBFTSudoApi},
+	AccountId, Connection, SetBFTKeyPair, TxStatus,
+};
 
 use crate::RootConnection;
 
 /// Sets the emergency finalized, the provided string should be the seed phrase of the desired finalizer.
 pub async fn set_emergency_finalizer(connection: RootConnection, finalizer: AccountId) {
-    connection
-        .set_emergency_finalizer(finalizer, TxStatus::Finalized)
-        .await
-        .unwrap();
+	connection.set_emergency_finalizer(finalizer, TxStatus::Finalized).await.unwrap();
 }
 
 /// Finalizes the given block using the key pair from provided seed as emergency finalizer.
-pub async fn finalize(
-    connection: Connection,
-    number: BlockNumber,
-    hash: String,
-    key_pair: SetBFTKeyPair,
-) {
-    let hash = BlockHash::from_str(&hash).expect("Hash is properly hex encoded");
-    connection
-        .emergency_finalize(number, hash, key_pair)
-        .await
-        .unwrap();
+pub async fn finalize(connection: Connection, number: BlockNumber, hash: String, key_pair: SetBFTKeyPair) {
+	let hash = BlockHash::from_str(&hash).expect("Hash is properly hex encoded");
+	connection.emergency_finalize(number, hash, key_pair).await.unwrap();
 }

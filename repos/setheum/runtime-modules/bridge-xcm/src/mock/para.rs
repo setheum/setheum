@@ -16,20 +16,19 @@ use frame_support::{
 };
 use frame_system as system;
 use frame_system::EnsureRoot;
+use module_bridge_traits::AssetTypeIdentifier;
 use polkadot_parachain_primitives::primitives::Sibling;
 use sp_core::{crypto::AccountId32, H256};
 use sp_runtime::traits::{IdentityLookup, Zero};
-use module_bridge_traits::AssetTypeIdentifier;
 use xcm::latest::{
-	AssetId as XcmAssetId, InteriorLocation, Asset, Location, NetworkId,
-	Weight as XCMWeight, XcmContext,
+	Asset, AssetId as XcmAssetId, InteriorLocation, Location, NetworkId, Weight as XCMWeight, XcmContext,
 };
 use xcm::prelude::{Concrete, Fungible, GlobalConsensus, Parachain, XcmError, X1, X2};
 use xcm_builder::{
-	AccountId32Aliases, AllowTopLevelPaidExecutionFrom, AllowUnpaidExecutionFrom, CurrencyAdapter,
-	FixedWeightBounds, FungiblesAdapter, IsConcrete, NativeAsset, NoChecking, ParentIsPreset,
-	RelayChainAsNative, SiblingParachainAsNative, SiblingParachainConvertsVia,
-	SignedAccountId32AsNative, SovereignSignedViaLocation, TakeWeightCredit,
+	AccountId32Aliases, AllowTopLevelPaidExecutionFrom, AllowUnpaidExecutionFrom, CurrencyAdapter, FixedWeightBounds,
+	FungiblesAdapter, IsConcrete, NativeAsset, NoChecking, ParentIsPreset, RelayChainAsNative,
+	SiblingParachainAsNative, SiblingParachainConvertsVia, SignedAccountId32AsNative, SovereignSignedViaLocation,
+	TakeWeightCredit,
 };
 use xcm_executor::{
 	traits::{Error as ExecutionError, MatchesFungibles, WeightTrader, WithOriginFilter},
@@ -177,11 +176,7 @@ impl Config for XcmConfig {
 
 pub type XcmRouter = ParachainXcmRouter<ParachainInfo>;
 
-pub type Barrier = (
-	TakeWeightCredit,
-	AllowTopLevelPaidExecutionFrom<Everything>,
-	AllowUnpaidExecutionFrom<Everything>,
-);
+pub type Barrier = (TakeWeightCredit, AllowTopLevelPaidExecutionFrom<Everything>, AllowUnpaidExecutionFrom<Everything>);
 
 pub type LocationToAccountId = (
 	ParentIsPreset<AccountId>,
@@ -283,8 +278,7 @@ impl<T: Get<ParaId>> AssetTypeIdentifier for NativeAssetTypeIdentifier<T> {
 		// currently there are two multilocations are considered as native asset:
 		// 1. integrated parachain native asset(Location::here())
 		// 2. other parachain native asset(Location::new(1, X1(Parachain(T::get().into()))))
-		let native_locations =
-			[Location::here(), Location::new(1, X1(Parachain(T::get().into())))];
+		let native_locations = [Location::here(), Location::new(1, X1(Parachain(T::get().into())))];
 
 		match (&asset.id, &asset.fun) {
 			(Concrete(ref id), Fungible(_)) => native_locations.contains(id),
@@ -333,12 +327,7 @@ impl WeightTrader for AllTokensAreCreatedEqualToWeight {
 		Self(Location::parent())
 	}
 
-	fn buy_weight(
-		&mut self,
-		weight: Weight,
-		payment: XcmAssets,
-		_context: &XcmContext,
-	) -> Result<XcmAssets, XcmError> {
+	fn buy_weight(&mut self, weight: Weight, payment: XcmAssets, _context: &XcmContext) -> Result<XcmAssets, XcmError> {
 		let asset_id = payment.fungible.iter().next().expect("Payment must be something; qed").0;
 		let required = Asset { id: *asset_id, fun: Fungible(weight.ref_time() as u128) };
 
@@ -362,8 +351,7 @@ impl WeightTrader for AllTokensAreCreatedEqualToWeight {
 // Checks events against the latest. A contiguous set of events must be provided. They must
 // include the most recent event, but do not have to include every past event.
 pub fn assert_events(mut expected: Vec<RuntimeEvent>) {
-	let mut actual: Vec<RuntimeEvent> =
-		system::Pallet::<Runtime>::events().iter().map(|e| e.event.clone()).collect();
+	let mut actual: Vec<RuntimeEvent> = system::Pallet::<Runtime>::events().iter().map(|e| e.event.clone()).collect();
 
 	expected.reverse();
 

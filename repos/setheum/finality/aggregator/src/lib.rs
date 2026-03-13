@@ -33,11 +33,11 @@ pub type RmcNetworkData<H, S, SS> = RmcMessage<H, S, SS>;
 
 #[derive(Debug)]
 pub enum NetworkError {
-    SendFail,
+	SendFail,
 }
 
 #[async_trait::async_trait]
 pub trait ProtocolSink<D>: Send + Sync {
-    async fn next(&mut self) -> Option<D>;
-    fn send(&self, data: D, recipient: Recipient) -> Result<(), NetworkError>;
+	async fn next(&mut self) -> Option<D>;
+	fn send(&self, data: D, recipient: Recipient) -> Result<(), NetworkError>;
 }

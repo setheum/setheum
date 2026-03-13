@@ -20,7 +20,7 @@
 
 use crate::precompile::PrecompileOutput;
 use frame_support::log;
-use module_evm::{Context, ExitError, ExitSucceed, Precompile};
+use fp_evm::{Context, ExitError, ExitRevert, ExitSucceed, Precompile, PrecompileFailure, PrecompileHandle};
 use module_support::{AddressMapping as AddressMappingT, CurrencyIdMapping as CurrencyIdMappingT};
 use sp_runtime::RuntimeDebug;
 use sp_std::{fmt::Debug, marker::PhantomData, prelude::*, result};
@@ -64,16 +64,13 @@ where
 	CurrencyIdMapping: CurrencyIdMappingT,
 	MultiCurrency: MultiCurrencyT<AccountId, Balance = Balance, CurrencyId = CurrencyId>,
 {
-	fn execute(
-		input: &[u8],
-		_target_gas: Option<u64>,
-		context: &Context,
-	) -> result::Result<PrecompileOutput, ExitError> {
-		let input = Input::<Action, AccountId, AddressMapping, CurrencyIdMapping>::new(input);
+	fn execute(handle: &mut impl PrecompileHandle) -> result::Result<PrecompileOutput, PrecompileFailure> {
+		let input = Input::<Action, AccountId, AddressMapping, CurrencyIdMapping>::new(handle.input());
+		let context = handle.context();
 
 		let action = input.action()?;
-		let currency_id = CurrencyIdMapping::decode_evm_address(context.caller)
-			.ok_or_else(|| ExitError::Other("invalid currency id".into()))?;
+		let currency_id = CurrencyIdMapping::decode_evm_address(handle.code_address())
+			.ok_or_else(|| PrecompileFailure::Error { exit_status: ExitError::Other("invalid currency id".into()) })?;
 
 		log::debug!(target: "evm", "multicurrency: currency id: {:?}", currency_id);
 
@@ -89,7 +86,7 @@ where
 					output: Output::default().encode_bytes(&name),
 					logs: Default::default(),
 				})
-			}
+			},
 			Action::QuerySymbol => {
 				let symbol = CurrencyIdMapping::symbol(currency_id)
 					.ok_or_else(|| ExitError::Other("Get symbol failed".into()))?;
@@ -101,7 +98,7 @@ where
 					output: Output::default().encode_bytes(&symbol),
 					logs: Default::default(),
 				})
-			}
+			},
 			Action::QueryDecimals => {
 				let decimals = CurrencyIdMapping::decimals(currency_id)
 					.ok_or_else(|| ExitError::Other("Get decimals failed".into()))?;
@@ -113,7 +110,7 @@ where
 					output: Output::default().encode_u8(decimals),
 					logs: Default::default(),
 				})
-			}
+			},
 			Action::QueryTotalIssuance => {
 				let total_issuance = MultiCurrency::total_issuance(currency_id);
 				log::debug!(target: "evm", "multicurrency: total issuance: {:?}", total_issuance);
@@ -124,7 +121,7 @@ where
 					output: Output::default().encode_u128(total_issuance),
 					logs: Default::default(),
 				})
-			}
+			},
 			Action::QueryBalance => {
 				let who = input.account_id_at(1)?;
 				let balance = MultiCurrency::total_balance(currency_id, &who);
@@ -136,7 +133,7 @@ where
 					output: Output::default().encode_u128(balance),
 					logs: Default::default(),
 				})
-			}
+			},
 			Action::Transfer => {
 				let from = input.account_id_at(1)?;
 				let to = input.account_id_at(2)?;
@@ -145,7 +142,7 @@ where
 
 				MultiCurrency::transfer(currency_id, &from, &to, amount).map_err(|e| {
 					let err_msg: &str = e.into();
-					ExitError::Other(err_msg.into())
+					PrecompileFailure::Error { exit_status: ExitError::Other(err_msg.into()) }
 				})?;
 
 				Ok(PrecompileOutput {
@@ -154,7 +151,7 @@ where
 					output: vec![],
 					logs: Default::default(),
 				})
-			}
+			},
 		}
 	}
 }

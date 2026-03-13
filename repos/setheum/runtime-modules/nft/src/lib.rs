@@ -47,26 +47,26 @@ use frame_support::{
 		tokens::nonfungibles::{Inspect, Mutate, Transfer},
 		Currency,
 		ExistenceRequirement::{AllowDeath, KeepAlive},
-		NamedReservableCurrency,
-		Get,
+		Get, NamedReservableCurrency,
 	},
-	PalletId,
-	BoundedVec,
-	Parameter,
+	BoundedVec, PalletId, Parameter,
 };
 use frame_system::pallet_prelude::*;
 use module_traits::InspectExtended;
+use parity_scale_codec::{Decode, DecodeWithMemTracking, Encode, MaxEncodedLen};
 use primitives::{
 	nft::{Attributes, ClassProperty, NFTBalance, Properties, CID},
 	ReserveIdentifier,
 };
 use scale_info::TypeInfo;
-use parity_scale_codec::{Decode, DecodeWithMemTracking, Encode, MaxEncodedLen};
 
 use serde::{Deserialize, Serialize};
 use sp_runtime::{
-	traits::{AccountIdConversion, Hash, Saturating, StaticLookup, Zero, AtLeast32BitUnsigned, CheckedAdd, CheckedSub, MaybeSerializeDeserialize, Member, One},
-	DispatchResult, RuntimeDebug, ArithmeticError,
+	traits::{
+		AccountIdConversion, AtLeast32BitUnsigned, CheckedAdd, CheckedSub, Hash, MaybeSerializeDeserialize, Member,
+		One, Saturating, StaticLookup, Zero,
+	},
+	ArithmeticError, DispatchResult, RuntimeDebug,
 };
 use sp_std::vec::Vec;
 
@@ -102,7 +102,9 @@ pub struct TokenInfo<AccountId, Data, TokenMetadataOf> {
 	pub data: Data,
 }
 
-#[derive(Encode, Decode, DecodeWithMemTracking, Clone, RuntimeDebug, PartialEq, Eq, TypeInfo, Serialize, Deserialize)]
+#[derive(
+	Encode, Decode, DecodeWithMemTracking, Clone, RuntimeDebug, PartialEq, Eq, TypeInfo, Serialize, Deserialize,
+)]
 pub struct ClassData<Balance> {
 	/// Deposit reserved to create token class
 	pub deposit: Balance,
@@ -112,7 +114,9 @@ pub struct ClassData<Balance> {
 	pub attributes: Attributes,
 }
 
-#[derive(Encode, Decode, DecodeWithMemTracking, Clone, RuntimeDebug, PartialEq, Eq, TypeInfo, Serialize, Deserialize)]
+#[derive(
+	Encode, Decode, DecodeWithMemTracking, Clone, RuntimeDebug, PartialEq, Eq, TypeInfo, Serialize, Deserialize,
+)]
 pub struct TokenData<Balance> {
 	/// Deposit reserved to create token
 	pub deposit: Balance,
@@ -155,10 +159,7 @@ pub mod module {
 	pub const RESERVE_ID: ReserveIdentifier = ReserveIdentifier::Nft;
 
 	#[pallet::config]
-	pub trait Config:
-		frame_system::Config
-		+ pallet_proxy::Config
-	{
+	pub trait Config: frame_system::Config + pallet_proxy::Config {
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 
 		/// Currency type for reserve balance.
@@ -238,30 +239,13 @@ pub mod module {
 	#[pallet::generate_deposit(pub(crate) fn deposit_event)]
 	pub enum Event<T: Config> {
 		/// Created NFT class.
-		CreatedClass {
-			owner: T::AccountId,
-			class_id: ClassIdOf<T>,
-		},
+		CreatedClass { owner: T::AccountId, class_id: ClassIdOf<T> },
 		/// Minted NFT token.
-		MintedToken {
-			from: T::AccountId,
-			to: T::AccountId,
-			class_id: ClassIdOf<T>,
-			quantity: u32,
-		},
+		MintedToken { from: T::AccountId, to: T::AccountId, class_id: ClassIdOf<T>, quantity: u32 },
 		/// Transferred NFT token.
-		TransferredToken {
-			from: T::AccountId,
-			to: T::AccountId,
-			class_id: ClassIdOf<T>,
-			token_id: TokenIdOf<T>,
-		},
+		TransferredToken { from: T::AccountId, to: T::AccountId, class_id: ClassIdOf<T>, token_id: TokenIdOf<T> },
 		/// Burned NFT token.
-		BurnedToken {
-			owner: T::AccountId,
-			class_id: ClassIdOf<T>,
-			token_id: TokenIdOf<T>,
-		},
+		BurnedToken { owner: T::AccountId, class_id: ClassIdOf<T>, token_id: TokenIdOf<T> },
 		/// Burned NFT token with remark.
 		BurnedTokenWithRemark {
 			owner: T::AccountId,
@@ -270,10 +254,7 @@ pub mod module {
 			remark_hash: T::Hash,
 		},
 		/// Destroyed NFT class.
-		DestroyedClass {
-			owner: T::AccountId,
-			class_id: ClassIdOf<T>,
-		},
+		DestroyedClass { owner: T::AccountId, class_id: ClassIdOf<T> },
 	}
 
 	/// Next available class ID.
@@ -322,9 +303,7 @@ pub mod module {
 
 	impl<T: Config> Default for GenesisConfig<T> {
 		fn default() -> Self {
-			GenesisConfig {
-				tokens: Default::default(),
-			}
+			GenesisConfig { tokens: Default::default() }
 		}
 	}
 
@@ -332,8 +311,9 @@ pub mod module {
 	impl<T: Config> BuildGenesisConfig for GenesisConfig<T> {
 		fn build(&self) {
 			self.tokens.iter().for_each(|token_class| {
-				let class_id = Pallet::<T>::do_create_class(&token_class.0, token_class.1.to_vec(), token_class.2.clone())
-					.expect("Create class cannot fail while building genesis");
+				let class_id =
+					Pallet::<T>::do_create_class(&token_class.0, token_class.1.to_vec(), token_class.2.clone())
+						.expect("Create class cannot fail while building genesis");
 				for (account_id, token_metadata, token_data) in &token_class.3 {
 					Pallet::<T>::do_mint(account_id, class_id, token_metadata.to_vec(), token_data.clone())
 						.expect("Token mint cannot fail during genesis");
@@ -387,17 +367,10 @@ pub mod module {
 			// owner add proxy delegate to origin
 			<pallet_proxy::Pallet<T>>::add_proxy_delegate(&owner, who, Default::default(), Zero::zero())?;
 
-			let data = ClassData {
-				deposit,
-				properties,
-				attributes,
-			};
+			let data = ClassData { deposit, properties, attributes };
 			Self::do_create_class(&owner, metadata, data)?;
 
-			Self::deposit_event(Event::CreatedClass {
-				owner,
-				class_id: next_id,
-			});
+			Self::deposit_event(Event::CreatedClass { owner, class_id: next_id });
 			Ok(().into())
 		}
 
@@ -480,10 +453,7 @@ pub mod module {
 			let dest = T::Lookup::lookup(dest)?;
 			let class_info = Self::classes(class_id).ok_or(Error::<T>::ClassIdNotFound)?;
 			ensure!(who == class_info.owner, Error::<T>::NoPermission);
-			ensure!(
-				class_info.total_issuance == Zero::zero(),
-				Error::<T>::CannotDestroyClass
-			);
+			ensure!(class_info.total_issuance == Zero::zero(), Error::<T>::CannotDestroyClass);
 
 			let data = class_info.data;
 
@@ -523,10 +493,7 @@ pub mod module {
 				ensure!(who == class_info.owner, Error::<T>::NoPermission);
 
 				let data = &mut class_info.data;
-				ensure!(
-					data.properties.0.contains(ClassProperty::ClassPropertiesMutable),
-					Error::<T>::Immutable
-				);
+				ensure!(data.properties.0.contains(ClassProperty::ClassPropertiesMutable), Error::<T>::Immutable);
 
 				data.properties = properties;
 
@@ -553,12 +520,8 @@ impl<T: Config> Pallet<T> {
 			Ok(current_id)
 		})?;
 
-		let info = ClassInfo {
-			metadata: bounded_metadata,
-			total_issuance: Default::default(),
-			owner: owner.clone(),
-			data,
-		};
+		let info =
+			ClassInfo { metadata: bounded_metadata, total_issuance: Default::default(), owner: owner.clone(), data };
 		Classes::<T>::insert(class_id, info);
 
 		Ok(class_id)
@@ -579,18 +542,11 @@ impl<T: Config> Pallet<T> {
 
 			Classes::<T>::try_mutate(class_id, |class_info| -> DispatchResult {
 				let info = class_info.as_mut().ok_or(Error::<T>::ClassIdNotFound)?;
-				info.total_issuance = info
-					.total_issuance
-					.checked_add(&One::one())
-					.ok_or(ArithmeticError::Overflow)?;
+				info.total_issuance = info.total_issuance.checked_add(&One::one()).ok_or(ArithmeticError::Overflow)?;
 				Ok(())
 			})?;
 
-			let token_info = TokenInfo {
-				metadata: bounded_metadata,
-				owner: owner.clone(),
-				data,
-			};
+			let token_info = TokenInfo { metadata: bounded_metadata, owner: owner.clone(), data };
 			Tokens::<T>::insert(class_id, token_id, token_info);
 			TokensByOwner::<T>::insert((owner, class_id, token_id), ());
 
@@ -598,7 +554,11 @@ impl<T: Config> Pallet<T> {
 		})
 	}
 
-	pub fn do_transfer_logic(from: &T::AccountId, to: &T::AccountId, token: (T::ClassId, T::TokenId)) -> DispatchResult {
+	pub fn do_transfer_logic(
+		from: &T::AccountId,
+		to: &T::AccountId,
+		token: (T::ClassId, T::TokenId),
+	) -> DispatchResult {
 		Tokens::<T>::try_mutate(token.0, token.1, |token_info| -> DispatchResult {
 			let info = token_info.as_mut().ok_or(Error::<T>::TokenIdNotFound)?;
 			ensure!(info.owner == *from, Error::<T>::NoPermission);
@@ -623,10 +583,7 @@ impl<T: Config> Pallet<T> {
 
 			Classes::<T>::try_mutate(token.0, |class_info| -> DispatchResult {
 				let info = class_info.as_mut().ok_or(Error::<T>::ClassIdNotFound)?;
-				info.total_issuance = info
-					.total_issuance
-					.checked_sub(&One::one())
-					.ok_or(ArithmeticError::Overflow)?;
+				info.total_issuance = info.total_issuance.checked_sub(&One::one()).ok_or(ArithmeticError::Overflow)?;
 				Ok(())
 			})?;
 
@@ -655,13 +612,14 @@ impl<T: Config> Pallet<T> {
 	// Wrapper functions for high-level logic (renamed from old impl to avoid conflicts)
 
 	#[require_transactional]
-	pub fn transfer_token(from: &T::AccountId, to: &T::AccountId, token: (ClassIdOf<T>, TokenIdOf<T>)) -> DispatchResult {
+	pub fn transfer_token(
+		from: &T::AccountId,
+		to: &T::AccountId,
+		token: (ClassIdOf<T>, TokenIdOf<T>),
+	) -> DispatchResult {
 		let class_info = Self::classes(token.0).ok_or(Error::<T>::ClassIdNotFound)?;
 		let data = class_info.data;
-		ensure!(
-			data.properties.0.contains(ClassProperty::Transferable),
-			Error::<T>::NonTransferable
-		);
+		ensure!(data.properties.0.contains(ClassProperty::Transferable), Error::<T>::NonTransferable);
 
 		let token_info = Self::tokens(token.0, token.1).ok_or(Error::<T>::TokenIdNotFound)?;
 
@@ -708,47 +666,32 @@ impl<T: Config> Pallet<T> {
 		let class_info = Self::classes(class_id).ok_or(Error::<T>::ClassIdNotFound)?;
 		ensure!(who == &class_info.owner, Error::<T>::NoPermission);
 		let data = class_info.data;
-		ensure!(
-			data.properties.0.contains(ClassProperty::Mintable),
-			Error::<T>::NonMintable
-		);
+		ensure!(data.properties.0.contains(ClassProperty::Mintable), Error::<T>::NonMintable);
 
 		let deposit = T::CreateTokenDeposit::get();
 		let data_deposit = Self::data_deposit(&metadata, &attributes)?;
 		let total_deposit = deposit.saturating_add(data_deposit);
 
-		let token_data = TokenData {
-			deposit: total_deposit,
-			attributes,
-		};
+		let token_data = TokenData { deposit: total_deposit, attributes };
 
 		for _ in 0..quantity {
 			<T as module::Config>::Currency::reserve_named(&RESERVE_ID, to, total_deposit)?;
 			let token_id = Self::do_mint(to, class_id, metadata.clone(), token_data.clone())?;
-			Self::deposit_event(Event::MintedToken {
-				from: who.clone(),
-				to: to.clone(),
-				class_id,
-				quantity,
-			});
-			Self::deposit_event(Event::TransferredToken {
-				from: who.clone(),
-				to: to.clone(),
-				class_id,
-				token_id,
-			});
+			Self::deposit_event(Event::MintedToken { from: who.clone(), to: to.clone(), class_id, quantity });
+			Self::deposit_event(Event::TransferredToken { from: who.clone(), to: to.clone(), class_id, token_id });
 		}
 		Ok(())
 	}
 
 	#[require_transactional]
-	pub fn burn_token(who: T::AccountId, token: (ClassIdOf<T>, TokenIdOf<T>), remark: Option<Vec<u8>>) -> DispatchResult {
+	pub fn burn_token(
+		who: T::AccountId,
+		token: (ClassIdOf<T>, TokenIdOf<T>),
+		remark: Option<Vec<u8>>,
+	) -> DispatchResult {
 		let class_info = Self::classes(token.0).ok_or(Error::<T>::ClassIdNotFound)?;
 		let data = class_info.data;
-		ensure!(
-			data.properties.0.contains(ClassProperty::Burnable),
-			Error::<T>::NonBurnable
-		);
+		ensure!(data.properties.0.contains(ClassProperty::Burnable), Error::<T>::NonBurnable);
 
 		let token_info = Self::tokens(token.0, token.1).ok_or(Error::<T>::TokenIdNotFound)?;
 		ensure!(who == token_info.owner, Error::<T>::NoPermission);
@@ -766,11 +709,7 @@ impl<T: Config> Pallet<T> {
 				remark_hash: hash,
 			});
 		} else {
-			Self::deposit_event(Event::BurnedToken {
-				owner: who,
-				class_id: token.0,
-				token_id: token.1,
-			});
+			Self::deposit_event(Event::BurnedToken { owner: who, class_id: token.0, token_id: token.1 });
 		}
 		Ok(())
 	}
@@ -799,24 +738,18 @@ impl<T: Config> Inspect<T::AccountId> for Pallet<T> {
 	}
 
 	fn attribute(collection: &Self::CollectionId, item: &Self::ItemId, key: &[u8]) -> Option<Vec<u8>> {
-		Self::tokens(collection, item).and_then(|t| {
-			t.data.attributes.iter().find(|(k, _)| k.as_slice() == key).map(|(_, v)| v.clone())
-		})
+		Self::tokens(collection, item)
+			.and_then(|t| t.data.attributes.iter().find(|(k, _)| k.as_slice() == key).map(|(_, v)| v.clone()))
 	}
 
 	fn collection_attribute(collection: &Self::CollectionId, key: &[u8]) -> Option<Vec<u8>> {
-		Self::classes(collection).and_then(|c| {
-			c.data.attributes.iter().find(|(k, _)| k.as_slice() == key).map(|(_, v)| v.clone())
-		})
+		Self::classes(collection)
+			.and_then(|c| c.data.attributes.iter().find(|(k, _)| k.as_slice() == key).map(|(_, v)| v.clone()))
 	}
 }
 
 impl<T: Config> Transfer<T::AccountId> for Pallet<T> {
-	fn transfer(
-		collection: &Self::CollectionId,
-		item: &Self::ItemId,
-		destination: &T::AccountId,
-	) -> DispatchResult {
+	fn transfer(collection: &Self::CollectionId, item: &Self::ItemId, destination: &T::AccountId) -> DispatchResult {
 		let token_info = Self::tokens(collection, item).ok_or(Error::<T>::TokenIdNotFound)?;
 		let from = token_info.owner;
 		Self::transfer_token(&from, destination, (*collection, *item))

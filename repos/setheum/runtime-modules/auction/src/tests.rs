@@ -55,23 +55,12 @@ fn update_auction_should_work() {
 	ExtBuilder::default().build().execute_with(|| {
 		assert_ok!(AuctionModule::new_auction(10, Some(100)), 0);
 		assert_noop!(
-			AuctionModule::update_auction(
-				1,
-				AuctionInfo {
-					bid: Some((ALICE, 100)),
-					start: 10,
-					end: Some(100)
-				}
-			),
+			AuctionModule::update_auction(1, AuctionInfo { bid: Some((ALICE, 100)), start: 10, end: Some(100) }),
 			Error::<Runtime>::AuctionNotExist,
 		);
 		assert_ok!(AuctionModule::update_auction(
 			0,
-			AuctionInfo {
-				bid: Some((ALICE, 100)),
-				start: 10,
-				end: Some(100)
-			}
+			AuctionInfo { bid: Some((ALICE, 100)), start: 10, end: Some(100) }
 		));
 	});
 }
@@ -80,14 +69,7 @@ fn update_auction_should_work() {
 fn auction_info_should_work() {
 	ExtBuilder::default().build().execute_with(|| {
 		assert_ok!(AuctionModule::new_auction(10, Some(100)), 0);
-		assert_eq!(
-			AuctionModule::auction_info(0),
-			Some(AuctionInfo {
-				bid: None,
-				start: 10,
-				end: Some(100)
-			})
-		);
+		assert_eq!(AuctionModule::auction_info(0), Some(AuctionInfo { bid: None, start: 10, end: Some(100) }));
 	});
 }
 
@@ -96,14 +78,7 @@ fn bid_should_work() {
 	ExtBuilder::default().build().execute_with(|| {
 		System::set_block_number(1);
 		assert_ok!(AuctionModule::new_auction(0, Some(5)), 0);
-		assert_eq!(
-			AuctionModule::auction_info(0),
-			Some(AuctionInfo {
-				bid: None,
-				start: 0,
-				end: Some(5)
-			})
-		);
+		assert_eq!(AuctionModule::auction_info(0), Some(AuctionInfo { bid: None, start: 0, end: Some(5) }));
 		assert_ok!(AuctionModule::bid(RuntimeOrigin::signed(ALICE), 0, 20));
 		System::assert_last_event(RuntimeEvent::AuctionModule(crate::Event::Bid {
 			auction_id: 0,
@@ -112,11 +87,7 @@ fn bid_should_work() {
 		}));
 		assert_eq!(
 			AuctionModule::auction_info(0),
-			Some(AuctionInfo {
-				bid: Some((ALICE, 20)),
-				start: 0,
-				end: Some(11)
-			})
+			Some(AuctionInfo { bid: Some((ALICE, 20)), start: 0, end: Some(11) })
 		);
 	});
 }
@@ -126,19 +97,10 @@ fn bid_should_fail() {
 	ExtBuilder::default().build().execute_with(|| {
 		assert_ok!(AuctionModule::new_auction(10, Some(100)), 0);
 		assert_ok!(AuctionModule::new_auction(0, Some(100)), 1);
-		assert_noop!(
-			AuctionModule::bid(RuntimeOrigin::signed(ALICE), 0, 20),
-			Error::<Runtime>::AuctionNotStarted
-		);
+		assert_noop!(AuctionModule::bid(RuntimeOrigin::signed(ALICE), 0, 20), Error::<Runtime>::AuctionNotStarted);
 		assert_ok!(AuctionModule::bid(RuntimeOrigin::signed(ALICE), 1, 20));
-		assert_noop!(
-			AuctionModule::bid(RuntimeOrigin::signed(ALICE), 1, 30),
-			Error::<Runtime>::BidNotAccepted,
-		);
-		assert_noop!(
-			AuctionModule::bid(RuntimeOrigin::signed(ALICE), 1, 0),
-			Error::<Runtime>::InvalidBidPrice,
-		);
+		assert_noop!(AuctionModule::bid(RuntimeOrigin::signed(ALICE), 1, 30), Error::<Runtime>::BidNotAccepted,);
+		assert_noop!(AuctionModule::bid(RuntimeOrigin::signed(ALICE), 1, 0), Error::<Runtime>::InvalidBidPrice,);
 	});
 }
 
@@ -189,9 +151,6 @@ fn cleanup_auction_should_work() {
 fn cannot_add_new_auction_when_no_available_id() {
 	ExtBuilder::default().build().execute_with(|| {
 		<AuctionsIndex<Runtime>>::put(AuctionId::max_value());
-		assert_noop!(
-			AuctionModule::new_auction(0, None),
-			Error::<Runtime>::NoAvailableAuctionId
-		);
+		assert_noop!(AuctionModule::new_auction(0, None), Error::<Runtime>::NoAvailableAuctionId);
 	});
 }

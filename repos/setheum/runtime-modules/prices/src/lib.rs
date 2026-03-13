@@ -40,7 +40,7 @@
 
 use frame_support::pallet_prelude::*;
 use frame_system::pallet_prelude::*;
-use module_support::{SwapManager, Erc20InfoMapping, ExchangeRateProvider, LockablePrice, Price, PriceProvider, Rate};
+use module_support::{Erc20InfoMapping, ExchangeRateProvider, LockablePrice, Price, PriceProvider, Rate, SwapManager};
 use module_traits::{DataFeeder, DataProvider, GetByKey, MultiCurrency};
 use primitives::{Balance, CurrencyId, Lease};
 use sp_core::U256;
@@ -65,66 +65,63 @@ pub mod module {
 	pub trait Config: frame_system::Config {
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 
-/// The data source, such as Oracle.
+		/// The data source, such as Oracle.
 		type Source: DataProvider<CurrencyId, Price> + DataFeeder<CurrencyId, Price, Self::AccountId>;
 
-/// The fixed prices of SEUSD, it should be 1 USD in Setheum.
+		/// The fixed prices of SEUSD, it should be 1 USD in Setheum.
 		#[pallet::constant]
 		type SEUSDFixedPrice: Get<Price>;
 
-/// The SEUSD CURRENCY id, it should be SEUSD in Setheum.
+		/// The SEUSD CURRENCY id, it should be SEUSD in Setheum.
 		#[pallet::constant]
 		type GetSEUSDCurrencyId: Get<CurrencyId>;
 
-/// The SEU currency id, it should be SEU in Setheum.
+		/// The SEU currency id, it should be SEU in Setheum.
 		#[pallet::constant]
 		type GetSEECurrencyId: Get<CurrencyId>;
 
 		#[pallet::constant]
 
-/// The origin which may lock and unlock prices feed to system.
+		/// The origin which may lock and unlock prices feed to system.
 		type LockOrigin: EnsureOrigin<Self::RuntimeOrigin>;
 
-/// SwapManager provide liquidity info.
+		/// SwapManager provide liquidity info.
 		type SwapManager: SwapManager<Self::AccountId, Balance, CurrencyId>;
 
-/// Currency provide the total insurance of LPToken.
+		/// Currency provide the total insurance of LPToken.
 		type Currency: MultiCurrency<Self::AccountId, CurrencyId = CurrencyId, Balance = Balance>;
 
-/// Mapping between CurrencyId and ERC20 address so user can use Erc20.
+		/// Mapping between CurrencyId and ERC20 address so user can use Erc20.
 		type Erc20InfoMapping: Erc20InfoMapping;
 
-/// If a currency is pegged to another currency in price, price of this currency is
-/// equal to the price of another.
+		/// If a currency is pegged to another currency in price, price of this currency is
+		/// equal to the price of another.
 		type PricingPegged: GetByKey<CurrencyId, Option<CurrencyId>>;
 
-/// Weight information for the extrinsics in this module.
+		/// Weight information for the extrinsics in this module.
 		type WeightInfo: WeightInfo;
 	}
 
 	#[pallet::error]
 	pub enum Error<T> {
-/// Failed to access price
+		/// Failed to access price
 		AccessPriceFailed,
-/// There's no locked price
+		/// There's no locked price
 		NoLockedPrice,
 	}
 
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(crate) fn deposit_event)]
 	pub enum Event<T: Config> {
-/// Lock price.
-		LockPrice {
-			currency_id: CurrencyId,
-			locked_price: Price,
-		},
-/// Unlock price.
+		/// Lock price.
+		LockPrice { currency_id: CurrencyId, locked_price: Price },
+		/// Unlock price.
 		UnlockPrice { currency_id: CurrencyId },
 	}
 
-/// Mapping from currency id to it's locked price
-///
-/// map CurrencyId => Option<Price>
+	/// Mapping from currency id to it's locked price
+	///
+	/// map CurrencyId => Option<Price>
 	#[pallet::storage]
 	#[pallet::getter(fn locked_price)]
 	pub type LockedPrice<T: Config> = StorageMap<_, Twox64Concat, CurrencyId, Price, OptionQuery>;
@@ -137,11 +134,11 @@ pub mod module {
 
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
-/// Lock the price and feed it to system.
-///
-/// The dispatch origin of this call must be `LockOrigin`.
-///
-/// - `currency_id`: currency type.
+		/// Lock the price and feed it to system.
+		///
+		/// The dispatch origin of this call must be `LockOrigin`.
+		///
+		/// - `currency_id`: currency type.
 		#[pallet::call_index(0)]
 		#[pallet::weight((T::WeightInfo::lock_price(), DispatchClass::Operational))]
 		pub fn lock_price(origin: OriginFor<T>, currency_id: CurrencyId) -> DispatchResult {
@@ -150,11 +147,11 @@ pub mod module {
 			Ok(())
 		}
 
-/// Unlock the price and get the price from `PriceProvider` again
-///
-/// The dispatch origin of this call must be `LockOrigin`.
-///
-/// - `currency_id`: currency type.
+		/// Unlock the price and get the price from `PriceProvider` again
+		///
+		/// The dispatch origin of this call must be `LockOrigin`.
+		///
+		/// - `currency_id`: currency type.
 		#[pallet::call_index(1)]
 		#[pallet::weight((T::WeightInfo::unlock_price(), DispatchClass::Operational))]
 		pub fn unlock_price(origin: OriginFor<T>, currency_id: CurrencyId) -> DispatchResult {
@@ -166,12 +163,12 @@ pub mod module {
 }
 
 impl<T: Config> Pallet<T> {
-/// access the exchange rate of specific currency to USD,
-/// it always access the real-time price directly.
-///
-/// Note: this returns the price for 1 basic unit
+	/// access the exchange rate of specific currency to USD,
+	/// it always access the real-time price directly.
+	///
+	/// Note: this returns the price for 1 basic unit
 	fn access_price(currency_id: CurrencyId) -> Option<Price> {
-// if it's configured pegged to another currency id
+		// if it's configured pegged to another currency id
 		let currency_id = if let Some(pegged_currency_id) = T::PricingPegged::get(&currency_id) {
 			pegged_currency_id
 		} else {
@@ -179,13 +176,13 @@ impl<T: Config> Pallet<T> {
 		};
 
 		let maybe_price = if currency_id == T::GetSEUSDCurrencyId::get() {
-// if is SEUSD stablecoin, use fixed price
+			// if is SEUSD stablecoin, use fixed price
 			Some(T::SEUSDFixedPrice::get())
 		} else if let CurrencyId::DexShare(dex_share_0, dex_share_1) = currency_id {
 			let token_0: CurrencyId = dex_share_0.into();
 			let token_1: CurrencyId = dex_share_1.into();
 
-// directly return the fair price
+			// directly return the fair price
 			return {
 				if let (Some(price_0), Some(price_1)) = (Self::access_price(token_0), Self::access_price(token_1)) {
 					let (pool_0, pool_1) = T::SwapManager::get_liquidity_pool(token_0, token_1);
@@ -196,14 +193,14 @@ impl<T: Config> Pallet<T> {
 				}
 			};
 		} else {
-// get real-time price from oracle
+			// get real-time price from oracle
 			T::Source::get(&currency_id)
 		};
 
 		let maybe_adjustment_multiplier = 10u128.checked_pow(T::Erc20InfoMapping::decimals(currency_id)?.into());
 
 		if let (Some(price), Some(adjustment_multiplier)) = (maybe_price, maybe_adjustment_multiplier) {
-// return the price for 1 basic unit
+			// return the price for 1 basic unit
 			Price::checked_from_rational(price.into_inner(), adjustment_multiplier)
 		} else {
 			None
@@ -212,18 +209,15 @@ impl<T: Config> Pallet<T> {
 }
 
 impl<T: Config> LockablePrice<CurrencyId> for Pallet<T> {
-/// Record the real-time price from oracle as the locked price
+	/// Record the real-time price from oracle as the locked price
 	fn lock_price(currency_id: CurrencyId) -> DispatchResult {
 		let price = Self::access_price(currency_id).ok_or(Error::<T>::AccessPriceFailed)?;
 		LockedPrice::<T>::insert(currency_id, price);
-		Pallet::<T>::deposit_event(Event::LockPrice {
-			currency_id,
-			locked_price: price,
-		});
+		Pallet::<T>::deposit_event(Event::LockPrice { currency_id, locked_price: price });
 		Ok(())
 	}
 
-/// Unlock the locked price
+	/// Unlock the locked price
 	fn unlock_price(currency_id: CurrencyId) -> DispatchResult {
 		let _ = LockedPrice::<T>::take(currency_id).ok_or(Error::<T>::NoLockedPrice)?;
 		Pallet::<T>::deposit_event(Event::UnlockPrice { currency_id });
@@ -270,9 +264,7 @@ fn lp_token_fair_price(
 		.saturating_mul(U256::from(pool_b))
 		.integer_sqrt()
 		.saturating_mul(
-			U256::from(price_a.into_inner())
-				.saturating_mul(U256::from(price_b.into_inner()))
-				.integer_sqrt(),
+			U256::from(price_a.into_inner()).saturating_mul(U256::from(price_b.into_inner())).integer_sqrt(),
 		)
 		.checked_div(U256::from(total_shares))
 		.and_then(|n| n.checked_mul(U256::from(2)))

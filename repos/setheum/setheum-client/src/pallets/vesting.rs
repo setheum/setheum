@@ -45,9 +45,9 @@ use crate::{
 /// Read only pallet vesting API.
 #[async_trait::async_trait]
 pub trait VestingApi {
-/// Returns [`VestingInfo`] of the given account.
-/// * `who` - an account id
-/// * `at` - optional hash of a block to query state from
+    /// Returns [`VestingInfo`] of the given account.
+    /// * `who` - an account id
+    /// * `at` - optional hash of a block to query state from
     async fn get_vesting(
         &self,
         who: AccountId,
@@ -58,13 +58,13 @@ pub trait VestingApi {
 /// Pallet vesting api.
 #[async_trait::async_trait]
 pub trait VestingUserApi {
-/// API for [`vest`](https://paritytech.github.io/substrate/master/module_vesting/pallet/enum.Call.html#variant.vest) call.
+    /// API for [`vest`](https://paritytech.github.io/substrate/master/module_vesting/pallet/enum.Call.html#variant.vest) call.
     async fn vest(&self, status: TxStatus) -> anyhow::Result<TxInfo>;
 
-/// API for [`vest_other`](https://paritytech.github.io/substrate/master/module_vesting/pallet/enum.Call.html#variant.vest_other) call.
+    /// API for [`vest_other`](https://paritytech.github.io/substrate/master/module_vesting/pallet/enum.Call.html#variant.vest_other) call.
     async fn vest_other(&self, status: TxStatus, other: AccountId) -> anyhow::Result<TxInfo>;
 
-/// API for [`vested_transfer`](https://paritytech.github.io/substrate/master/module_vesting/pallet/enum.Call.html#variant.vested_transfer) call.
+    /// API for [`vested_transfer`](https://paritytech.github.io/substrate/master/module_vesting/pallet/enum.Call.html#variant.vested_transfer) call.
     async fn vested_transfer(
         &self,
         receiver: AccountId,
@@ -72,7 +72,7 @@ pub trait VestingUserApi {
         status: TxStatus,
     ) -> anyhow::Result<TxInfo>;
 
-/// API for [`merge_schedules`](https://paritytech.github.io/substrate/master/module_vesting/pallet/enum.Call.html#variant.merge_schedules) call.
+    /// API for [`merge_schedules`](https://paritytech.github.io/substrate/master/module_vesting/pallet/enum.Call.html#variant.merge_schedules) call.
     async fn merge_schedules(
         &self,
         idx1: u32,

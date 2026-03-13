@@ -42,23 +42,23 @@
 
 use frame_support::pallet_prelude::{DispatchClass, Pays, Weight};
 use primitives::{task::TaskResult, AccountId, Balance, CurrencyId, Fees, Multiplier, Nonce, ReserveIdentifier};
+#[cfg(feature = "std")]
+use serde::{Deserialize, Serialize};
 use sp_runtime::{
 	traits::CheckedDiv, transaction_validity::TransactionValidityError, DispatchError, DispatchResult, FixedU128,
 };
 use sp_std::{prelude::*, result::Result};
 use xcm::prelude::*;
-#[cfg(feature = "std")]
-use serde::{Deserialize, Serialize};
 
+use frame_support::pallet_prelude::DecodeWithMemTracking;
 use parity_scale_codec::{Decode, Encode};
 use scale_info::TypeInfo;
-use frame_support::pallet_prelude::DecodeWithMemTracking;
 
 #[derive(Clone, PartialEq, Eq, sp_runtime::RuntimeDebug, Encode, Decode, TypeInfo, DecodeWithMemTracking)]
 #[cfg_attr(feature = "std", derive(Deserialize))]
 pub struct AirdropEntry {
-    pub account: AccountId,
-    pub amount: Balance,
+	pub account: AccountId,
+	pub amount: Balance,
 }
 
 #[derive(Clone, PartialEq, Eq, sp_runtime::RuntimeDebug, Encode, Decode, TypeInfo, DecodeWithMemTracking)]
@@ -67,19 +67,19 @@ pub struct AirdropList(pub Vec<AirdropEntry>);
 
 pub mod bounded;
 // pub mod ecdp;
-pub mod edfis_launchpad;
-pub mod edfis_swap;
-pub mod edfis_swap_legacy;
 pub mod evm;
 pub mod incentives;
+pub mod launchpad;
 pub mod migration;
 pub mod mocks;
+pub mod swap;
+pub mod swap_legacy;
 
 pub use crate::bounded::*;
 // pub use crate::ecdp::*;
-pub use crate::edfis_launchpad::*;
-pub use crate::edfis_swap::*;
-// pub use crate::edfis_swap_legacy::*;
+pub use crate::launchpad::*;
+pub use crate::swap::*;
+// pub use crate::swap_legacy::*;
 pub use crate::evm::*;
 pub use crate::incentives::*;
 pub use crate::migration::*;
@@ -107,12 +107,9 @@ impl<T: frame_system::Config> frame_support::traits::StoredMap<T::AccountId, T::
 		let account = frame_system::Account::<T>::get(k);
 		let is_default = account.data == T::AccountData::default();
 
-// if System Account exists, act its Balances Account also exists.
-		let mut some_data = if is_default && !frame_system::Pallet::<T>::account_exists(k) {
-			None
-		} else {
-			Some(account.data)
-		};
+		// if System Account exists, act its Balances Account also exists.
+		let mut some_data =
+			if is_default && !frame_system::Pallet::<T>::account_exists(k) { None } else { Some(account.data) };
 
 		let result = f(&mut some_data)?;
 		if frame_system::Pallet::<T>::providers(k) > 0 || frame_system::Pallet::<T>::sufficients(k) > 0 {

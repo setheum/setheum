@@ -35,13 +35,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use set_bft_types::{
-    DataProvider as DataProviderT, FinalizationHandler as FinalizationHandlerT, NodeIndex,
-};
 use async_trait::async_trait;
 use codec::{Decode, Encode};
 use futures::{channel::mpsc::unbounded, future::pending};
 use log::{error, info};
+use set_bft_types::{
+    DataProvider as DataProviderT, FinalizationHandler as FinalizationHandlerT, NodeIndex,
+};
 
 type Receiver<T> = futures::channel::mpsc::UnboundedReceiver<T>;
 type Sender<T> = futures::channel::mpsc::UnboundedSender<T>;

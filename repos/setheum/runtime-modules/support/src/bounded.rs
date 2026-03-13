@@ -53,9 +53,9 @@ use serde::{de::Error as SerdeError, Deserialize, Deserializer, Serialize};
 /// The bounded type errors.
 #[derive(RuntimeDebug, PartialEq, Eq)]
 pub enum Error {
-/// The value is out of bound.
+	/// The value is out of bound.
 	OutOfBounds,
-/// The change diff exceeds the max absolute value.
+	/// The change diff exceeds the max absolute value.
 	ExceedMaxChangeAbs,
 }
 
@@ -110,7 +110,7 @@ where
 	Range: Get<(T, T)>,
 	MaxChangeAbs: Get<T>,
 {
-/// Try to create a new instance of `BoundedType`. Returns `Err` if out of bound.
+	/// Try to create a new instance of `BoundedType`. Returns `Err` if out of bound.
 	pub fn try_from(value: T) -> Result<Self, Error> {
 		let (min, max) = Range::get();
 		if value < min || value > max {
@@ -119,8 +119,8 @@ where
 		Ok(Self(value, PhantomData))
 	}
 
-/// Set the inner value. Returns `Err` if out of bound or the diff with current value exceeds
-/// the max absolute value.
+	/// Set the inner value. Returns `Err` if out of bound or the diff with current value exceeds
+	/// the max absolute value.
 	pub fn try_set(&mut self, value: T) -> Result<(), Error> {
 		let (min, max) = Range::get();
 		let max_change_abs = MaxChangeAbs::get();
@@ -130,13 +130,9 @@ where
 		}
 
 		let abs = if value > *old_value {
-			value
-				.checked_sub(old_value)
-				.expect("greater number subtracting smaller one can't underflow; qed")
+			value.checked_sub(old_value).expect("greater number subtracting smaller one can't underflow; qed")
 		} else {
-			old_value
-				.checked_sub(&value)
-				.expect("greater number subtracting smaller one can't underflow; qed")
+			old_value.checked_sub(&value).expect("greater number subtracting smaller one can't underflow; qed")
 		};
 		if abs > max_change_abs {
 			return Err(Error::ExceedMaxChangeAbs);
@@ -191,10 +187,7 @@ mod tests {
 
 	#[test]
 	fn fractional_rate_works() {
-		assert_err!(
-			FractionalRate::try_from(Rate::from_rational(11, 10)),
-			Error::OutOfBounds
-		);
+		assert_err!(FractionalRate::try_from(Rate::from_rational(11, 10)), Error::OutOfBounds);
 
 		let mut rate = FractionalRate::try_from(Rate::from_rational(8, 10)).unwrap();
 		assert_ok!(rate.try_set(Rate::from_rational(10, 10)));
@@ -217,10 +210,7 @@ mod tests {
 	fn decode_fails_if_out_of_bounds() {
 		let bad_rate = BoundedType::<Rate, Fractional, OneFifth>(Rate::from_rational(11, 10), PhantomData);
 		let bad_rate_encoded = bad_rate.encode();
-		assert_err!(
-			FractionalRate::decode(&mut &bad_rate_encoded[..]),
-			"BoundedType: value out of bounds"
-		);
+		assert_err!(FractionalRate::decode(&mut &bad_rate_encoded[..]), "BoundedType: value out of bounds");
 	}
 
 	#[test]

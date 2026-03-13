@@ -50,153 +50,146 @@ type Validators<T> = StorageValue<SetBFT, Vec<<T as frame_system::Config>::Accou
 
 #[test]
 fn test_update_authorities() {
-    new_test_ext(&[(1u64, 1u64), (2u64, 2u64)]).execute_with(|| {
-        initialize_session();
-        run_session(1);
+	new_test_ext(&[(1u64, 1u64), (2u64, 2u64)]).execute_with(|| {
+		initialize_session();
+		run_session(1);
 
-        NextFinalityCommittee::<Test>::put(vec![2, 3, 4]);
-        let authorities = [2, 3, 4].iter().zip(to_authorities(&[2, 3, 4])).collect();
+		NextFinalityCommittee::<Test>::put(vec![2, 3, 4]);
+		let authorities = [2, 3, 4].iter().zip(to_authorities(&[2, 3, 4])).collect();
 
-        SetBFT::update_authorities(authorities);
+		SetBFT::update_authorities(authorities);
 
-        assert_eq!(SetBFT::authorities(), to_authorities(&[1, 2]));
-        assert_eq!(SetBFT::next_authorities(), to_authorities(&[2, 3, 4]));
-    });
+		assert_eq!(SetBFT::authorities(), to_authorities(&[1, 2]));
+		assert_eq!(SetBFT::next_authorities(), to_authorities(&[2, 3, 4]));
+	});
 }
 
 #[test]
 fn test_initialize_authorities() {
-    new_test_ext(&[(1u64, 1u64), (2u64, 2u64)]).execute_with(|| {
-        assert_eq!(SetBFT::authorities(), to_authorities(&[1, 2]));
-        assert_eq!(SetBFT::next_authorities(), to_authorities(&[1, 2]));
-    });
+	new_test_ext(&[(1u64, 1u64), (2u64, 2u64)]).execute_with(|| {
+		assert_eq!(SetBFT::authorities(), to_authorities(&[1, 2]));
+		assert_eq!(SetBFT::next_authorities(), to_authorities(&[1, 2]));
+	});
 }
 
 #[test]
 fn fails_to_initialize_again_authorities() {
-    new_test_ext(&[(1u64, 1u64), (2u64, 2u64)]).execute_with(|| {
-        let authorities = to_authorities(&[1, 2, 3]);
-        SetBFT::initialize_authorities(&authorities, &authorities);
+	new_test_ext(&[(1u64, 1u64), (2u64, 2u64)]).execute_with(|| {
+		let authorities = to_authorities(&[1, 2, 3]);
+		SetBFT::initialize_authorities(&authorities, &authorities);
 
-// should not update storage
-        assert_eq!(SetBFT::authorities(), to_authorities(&[1, 2]));
-    });
+		// should not update storage
+		assert_eq!(SetBFT::authorities(), to_authorities(&[1, 2]));
+	});
 }
 
 #[test]
 fn test_current_authorities() {
-    new_test_ext(&[(1u64, 1u64), (2u64, 2u64)]).execute_with(|| {
-        initialize_session();
+	new_test_ext(&[(1u64, 1u64), (2u64, 2u64)]).execute_with(|| {
+		initialize_session();
 
-        run_session(1);
+		run_session(1);
 
-        NextFinalityCommittee::<Test>::put(vec![2, 3, 4]);
-        let authorities = [2, 3, 4].iter().zip(to_authorities(&[2, 3, 4])).collect();
-        SetBFT::update_authorities(authorities);
+		NextFinalityCommittee::<Test>::put(vec![2, 3, 4]);
+		let authorities = [2, 3, 4].iter().zip(to_authorities(&[2, 3, 4])).collect();
+		SetBFT::update_authorities(authorities);
 
-        assert_eq!(SetBFT::authorities(), to_authorities(&[1, 2]));
-        assert_eq!(SetBFT::next_authorities(), to_authorities(&[2, 3, 4]));
+		assert_eq!(SetBFT::authorities(), to_authorities(&[1, 2]));
+		assert_eq!(SetBFT::next_authorities(), to_authorities(&[2, 3, 4]));
 
-        run_session(2);
+		run_session(2);
 
-        NextFinalityCommittee::<Test>::put(vec![1, 2, 3]);
-        let authorities = [1, 2, 3].iter().zip(to_authorities(&[1, 2, 3])).collect();
-        SetBFT::update_authorities(authorities);
+		NextFinalityCommittee::<Test>::put(vec![1, 2, 3]);
+		let authorities = [1, 2, 3].iter().zip(to_authorities(&[1, 2, 3])).collect();
+		SetBFT::update_authorities(authorities);
 
-        assert_eq!(SetBFT::authorities(), to_authorities(&[2, 3, 4]));
-        assert_eq!(SetBFT::next_authorities(), to_authorities(&[1, 2, 3]));
-    })
+		assert_eq!(SetBFT::authorities(), to_authorities(&[2, 3, 4]));
+		assert_eq!(SetBFT::next_authorities(), to_authorities(&[1, 2, 3]));
+	})
 }
 
 #[test]
 fn test_session_rotation() {
-    new_test_ext(&[(1u64, 1u64), (2u64, 2u64)]).execute_with(|| {
-        initialize_session();
-        run_session(1);
+	new_test_ext(&[(1u64, 1u64), (2u64, 2u64)]).execute_with(|| {
+		initialize_session();
+		run_session(1);
 
-        NextFinalityCommittee::<Test>::put(vec![5, 6]);
-        let new_validators = new_session_validators(&[1, 2]);
-        let queued_validators = new_session_validators(&[5, 6]);
-        SetBFT::on_new_session(true, new_validators, queued_validators);
-        assert_eq!(SetBFT::authorities(), to_authorities(&[1, 2]));
-        assert_eq!(SetBFT::next_authorities(), to_authorities(&[5, 6]));
-    })
+		NextFinalityCommittee::<Test>::put(vec![5, 6]);
+		let new_validators = new_session_validators(&[1, 2]);
+		let queued_validators = new_session_validators(&[5, 6]);
+		SetBFT::on_new_session(true, new_validators, queued_validators);
+		assert_eq!(SetBFT::authorities(), to_authorities(&[1, 2]));
+		assert_eq!(SetBFT::next_authorities(), to_authorities(&[5, 6]));
+	})
 }
 
 #[test]
 fn test_session_rotation_with_larger_permuted_authorities() {
-    new_test_ext(&[(1u64, 1u64), (2u64, 2u64)]).execute_with(|| {
-        initialize_session();
-        run_session(1);
+	new_test_ext(&[(1u64, 1u64), (2u64, 2u64)]).execute_with(|| {
+		initialize_session();
+		run_session(1);
 
-        NextFinalityCommittee::<Test>::put(vec![5, 6]);
-        let new_validators = new_session_validators(&[1, 2]);
-        let queued_validators = new_session_validators(&[6, 4, 5]);
-        SetBFT::on_new_session(true, new_validators, queued_validators);
-        assert_eq!(SetBFT::authorities(), to_authorities(&[1, 2]));
-        assert_eq!(SetBFT::next_authorities(), to_authorities(&[5, 6]));
-    })
+		NextFinalityCommittee::<Test>::put(vec![5, 6]);
+		let new_validators = new_session_validators(&[1, 2]);
+		let queued_validators = new_session_validators(&[6, 4, 5]);
+		SetBFT::on_new_session(true, new_validators, queued_validators);
+		assert_eq!(SetBFT::authorities(), to_authorities(&[1, 2]));
+		assert_eq!(SetBFT::next_authorities(), to_authorities(&[5, 6]));
+	})
 }
 
 #[test]
 fn test_emergency_signer() {
-    new_test_ext(&[(1u64, 1u64), (2u64, 2u64)]).execute_with(|| {
-        initialize_session();
+	new_test_ext(&[(1u64, 1u64), (2u64, 2u64)]).execute_with(|| {
+		initialize_session();
 
-        run_session(1);
+		run_session(1);
 
-        SetBFT::set_next_emergency_finalizer(to_authority(&21));
+		SetBFT::set_next_emergency_finalizer(to_authority(&21));
 
-        assert_eq!(SetBFT::emergency_finalizer(), None);
-        assert_eq!(SetBFT::queued_emergency_finalizer(), None);
+		assert_eq!(SetBFT::emergency_finalizer(), None);
+		assert_eq!(SetBFT::queued_emergency_finalizer(), None);
 
-        run_session(2);
+		run_session(2);
 
-        SetBFT::set_next_emergency_finalizer(to_authority(&37));
+		SetBFT::set_next_emergency_finalizer(to_authority(&37));
 
-        assert_eq!(SetBFT::emergency_finalizer(), None);
-        assert_eq!(SetBFT::queued_emergency_finalizer(), Some(to_authority(&21)));
+		assert_eq!(SetBFT::emergency_finalizer(), None);
+		assert_eq!(SetBFT::queued_emergency_finalizer(), Some(to_authority(&21)));
 
-        run_session(3);
+		run_session(3);
 
-        assert_eq!(SetBFT::emergency_finalizer(), Some(to_authority(&21)));
-        assert_eq!(SetBFT::queued_emergency_finalizer(), Some(to_authority(&37)));
-    })
+		assert_eq!(SetBFT::emergency_finalizer(), Some(to_authority(&21)));
+		assert_eq!(SetBFT::queued_emergency_finalizer(), Some(to_authority(&37)));
+	})
 }
 
 #[test]
 fn test_finality_version_scheduling() {
-    new_test_ext(&[(1u64, 1u64), (2u64, 2u64)]).execute_with(|| {
-        initialize_session();
+	new_test_ext(&[(1u64, 1u64), (2u64, 2u64)]).execute_with(|| {
+		initialize_session();
 
-        run_session(1);
+		run_session(1);
 
-        let version_to_schedule = VersionChange {
-            version_incoming: 1,
-            session: 4,
-        };
+		let version_to_schedule = VersionChange { version_incoming: 1, session: 4 };
 
-        let scheduling_result =
-            SetBFT::do_schedule_finality_version_change(version_to_schedule.clone());
-        assert_eq!(scheduling_result, Ok(()));
+		let scheduling_result = SetBFT::do_schedule_finality_version_change(version_to_schedule.clone());
+		assert_eq!(scheduling_result, Ok(()));
 
-        let scheduled_version_change = SetBFT::finality_version_change();
-        assert_eq!(scheduled_version_change, Some(version_to_schedule.clone()));
+		let scheduled_version_change = SetBFT::finality_version_change();
+		assert_eq!(scheduled_version_change, Some(version_to_schedule.clone()));
 
-        run_session(4);
+		run_session(4);
 
-        let current_version = SetBFT::finality_version();
-        assert_eq!(current_version, version_to_schedule.version_incoming);
+		let current_version = SetBFT::finality_version();
+		assert_eq!(current_version, version_to_schedule.version_incoming);
 
-        let scheduled_version_change = SetBFT::finality_version_change();
-        assert_eq!(scheduled_version_change, None);
+		let scheduled_version_change = SetBFT::finality_version_change();
+		assert_eq!(scheduled_version_change, None);
 
-        let version_to_schedule = VersionChange {
-            version_incoming: 1,
-            session: 5,
-        };
+		let version_to_schedule = VersionChange { version_incoming: 1, session: 5 };
 
-        let scheduling_result = SetBFT::do_schedule_finality_version_change(version_to_schedule);
-        assert!(scheduling_result.is_err());
-    })
+		let scheduling_result = SetBFT::do_schedule_finality_version_change(version_to_schedule);
+		assert!(scheduling_result.is_err());
+	})
 }

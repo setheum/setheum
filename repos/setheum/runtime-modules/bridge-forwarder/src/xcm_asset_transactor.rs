@@ -17,8 +17,7 @@ impl<
 		FungiblesTransactor: TransactAsset,
 		AssetTypeChecker: AssetTypeIdentifier,
 		Forwarder: TransactorForwarder,
-	> TransactAsset
-	for XCMAssetTransactor<CurrencyTransactor, FungiblesTransactor, AssetTypeChecker, Forwarder>
+	> TransactAsset for XCMAssetTransactor<CurrencyTransactor, FungiblesTransactor, AssetTypeChecker, Forwarder>
 {
 	// deposit_asset implements the TransactAsset deposit_asset method and contains the logic to classify
 	// the asset recipient location:
@@ -45,28 +44,50 @@ impl<
 
 				if is_sygma_dest {
 					// 2. recipient is on non-substrate chain(evm, cosmos, etc.), will forward to sygma bridge pallet
-					let tmp_account = sp_io::hashing::blake2_256(&Location::new(0, [GeneralKey { length: 8, data: [1u8; 32] }]).encode());
+					let tmp_account = sp_io::hashing::blake2_256(
+						&Location::new(0, [GeneralKey { length: 8, data: [1u8; 32] }]).encode(),
+					);
 					if AssetTypeChecker::is_native_asset(what) {
-						CurrencyTransactor::deposit_asset(&what.clone(), &Junction::AccountId32 { network: None, id: tmp_account }.into(), context)?;
+						CurrencyTransactor::deposit_asset(
+							&what.clone(),
+							&Junction::AccountId32 { network: None, id: tmp_account }.into(),
+							context,
+						)?;
 					} else {
-						FungiblesTransactor::deposit_asset(&what.clone(), &Junction::AccountId32 { network: None, id: tmp_account }.into(), context)?
+						FungiblesTransactor::deposit_asset(
+							&what.clone(),
+							&Junction::AccountId32 { network: None, id: tmp_account }.into(),
+							context,
+						)?
 					}
 
-					Forwarder::other_world_transactor_forwarder(tmp_account, what.clone(), who.clone()).map_err(|e| XcmError::FailedToTransactAsset(e.into()))?;
+					Forwarder::other_world_transactor_forwarder(tmp_account, what.clone(), who.clone())
+						.map_err(|e| XcmError::FailedToTransactAsset(e.into()))?;
 				} else {
 					// 3. recipient is on remote parachain, will forward to xcm bridge pallet
 					// xcm message must have a sender(origin), so a tmp account derived from pallet would be necessary here
-					let tmp_account = sp_io::hashing::blake2_256(&Location::new(0, [GeneralKey { length: 8, data: [2u8; 32] }]).encode());
+					let tmp_account = sp_io::hashing::blake2_256(
+						&Location::new(0, [GeneralKey { length: 8, data: [2u8; 32] }]).encode(),
+					);
 
 					// check if the asset is native or foreign, and call the corresponding deposit_asset(), recipient will be the derived tmp account
 					// xcm message execution
 					if AssetTypeChecker::is_native_asset(what) {
-						CurrencyTransactor::deposit_asset(&what.clone(), &Junction::AccountId32 { network: None, id: tmp_account }.into(), context)?;
+						CurrencyTransactor::deposit_asset(
+							&what.clone(),
+							&Junction::AccountId32 { network: None, id: tmp_account }.into(),
+							context,
+						)?;
 					} else {
-						FungiblesTransactor::deposit_asset(&what.clone(), &Junction::AccountId32 { network: None, id: tmp_account }.into(), context)?
+						FungiblesTransactor::deposit_asset(
+							&what.clone(),
+							&Junction::AccountId32 { network: None, id: tmp_account }.into(),
+							context,
+						)?
 					}
 
-					Forwarder::xcm_transactor_forwarder(tmp_account, what.clone(), who.clone()).map_err(|e| XcmError::FailedToTransactAsset(e.into()))?;
+					Forwarder::xcm_transactor_forwarder(tmp_account, what.clone(), who.clone())
+						.map_err(|e| XcmError::FailedToTransactAsset(e.into()))?;
 				}
 			},
 		}

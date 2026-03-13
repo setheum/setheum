@@ -48,51 +48,53 @@ use sp_std::{
 #[cfg(feature = "xcm")]
 pub use asset_registry::{FixedConversionRateProvider, WeightToFeeConverter};
 pub use auction::{Auction, AuctionHandler, AuctionInfo, OnNewBidResult};
+pub use committee_management::{EraInfoProvider, ValidatorExtractor, ValidatorRewardsHandler};
 pub use currency::{
 	BalanceStatus, BasicCurrency, BasicCurrencyExtended, BasicLockableCurrency, BasicReservableCurrency,
 	LockIdentifier, MultiCurrency, MultiCurrencyExtended, MultiLockableCurrency, MultiReservableCurrency,
 	NamedBasicReservableCurrency, NamedMultiReservableCurrency,
 };
 pub use data_provider::{DataFeeder, DataProvider, DataProviderExtended};
+pub use elections::ValidatorProvider;
 pub use get_by_key::GetByKey;
 #[cfg(feature = "xcm")]
 pub use multi_asset::ConcreteFungibleAsset;
 pub use nft::InspectExtended;
+pub use operations::{
+	AccountInfoProvider, BalancesProvider, BondedStashProvider, ContractInfoProvider, NextKeysSessionProvider,
+};
 pub use price::{DefaultPriceProvider, PriceProvider};
 pub use rate_limit::{RateLimiter, RateLimiterError};
 pub use rewards::RewardHandler;
 use scale_info::TypeInfo;
 #[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};
+pub use setbft::{NextSessionAuthorityProvider, SessionNextSessionAuthorityProvider};
 #[cfg(feature = "xcm")]
 pub use xcm_transfer::{XcmTransfer, XtokensWeightInfo};
-pub use setbft::{NextSessionAuthorityProvider, SessionNextSessionAuthorityProvider};
-pub use elections::ValidatorProvider;
-pub use committee_management::{EraInfoProvider, ValidatorRewardsHandler, ValidatorExtractor};
-pub use operations::{AccountInfoProvider, BalancesProvider, NextKeysSessionProvider, BondedStashProvider, ContractInfoProvider};
 
 pub mod arithmetic;
 #[cfg(feature = "xcm")]
 pub mod asset_registry;
 pub mod auction;
+pub mod committee_management;
 pub mod currency;
 pub mod data_provider;
+pub mod elections;
 pub mod get_by_key;
 #[cfg(feature = "xcm")]
 pub mod location;
 #[cfg(feature = "xcm")]
 pub mod multi_asset;
 pub mod nft;
+pub mod operations;
 pub mod parameters;
 pub mod price;
 pub mod rate_limit;
 pub mod rewards;
+pub mod setbft;
 #[cfg(feature = "xcm")]
 pub mod xcm_transfer;
-pub mod setbft;
-pub mod elections;
-pub mod committee_management;
-pub mod operations;
 
 /// New data handler
 #[impl_trait_for_tuples::impl_for_tuples(30)]

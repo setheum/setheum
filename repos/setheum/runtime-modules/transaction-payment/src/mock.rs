@@ -46,10 +46,7 @@ use frame_support::{
 	PalletId,
 };
 use frame_system::EnsureSignedBy;
-use module_support::{
-	mocks::MockAddressMapping,
-	Price, SpecificJointsSwap,
-};
+use module_support::{mocks::MockAddressMapping, Price, SpecificJointsSwap};
 use module_traits::parameter_type_with_key;
 use primitives::{Amount, ReserveIdentifier, TokenSymbol, TradingPair};
 use smallvec::smallvec;
@@ -168,7 +165,7 @@ ord_parameter_types! {
 }
 
 parameter_types! {
-	pub const EdfisSwapPalletId: PalletId = PalletId(*b"set/edfis");
+	pub const SwapPalletId: PalletId = PalletId(*b"set/swap");
 	pub const GetExchangeFee: (u32, u32) = (0, 100);
 	pub EnabledTradingPairs: Vec<TradingPair> = vec![
 		TradingPair::from_currency_ids(SEUSD, SEU).unwrap(),
@@ -176,12 +173,12 @@ parameter_types! {
 	pub const TradingPathLimit: u32 = 4;
 }
 
-impl edfis_swap_legacy_module::Config for Runtime {
+impl swap_legacy_module::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type Currency = Currencies;
 	type GetExchangeFee = GetExchangeFee;
 	type TradingPathLimit = TradingPathLimit;
-	type PalletId = EdfisSwapPalletId;
+	type PalletId = SwapPalletId;
 	type Erc20InfoMapping = ();
 	type Incentives = ();
 	type WeightInfo = ();
@@ -274,7 +271,7 @@ impl Config for Runtime {
 	type WeightToFee = WeightToFee;
 	type LengthToFee = TransactionByteFee;
 	type FeeMultiplierUpdate = ();
-	type Swap = SpecificJointsSwap<EdfisSwapLegacyModule, AlternativeSwapPathJointList>;
+	type Swap = SpecificJointsSwap<SwapLegacyModule, AlternativeSwapPathJointList>;
 	type MaxSwapSlippageComparedToOracle = MaxSwapSlippageComparedToOracle;
 	type TradingPathLimit = TradingPathLimit;
 	type PriceSource = MockPriceSource;
@@ -314,7 +311,7 @@ construct_runtime!(
 		PalletBalances: pallet_balances,
 		Tokens: module_tokens,
 		Currencies: module_currencies,
-		EdfisSwapLegacyModule: edfis_swap_legacy_module,
+		SwapLegacyModule: swap_legacy_module,
 	}
 );
 
@@ -330,9 +327,7 @@ pub struct ExtBuilder {
 impl Default for ExtBuilder {
 	fn default() -> Self {
 		Self {
-			balances: vec![
-				(ALICE, SEUSD, 10000),
-			],
+			balances: vec![(ALICE, SEUSD, 10000)],
 			base_weight: Weight::zero(),
 			byte_fee: 2,
 			weight_to_fee: 1,
@@ -371,23 +366,17 @@ impl ExtBuilder {
 	}
 	pub fn build(self) -> sp_io::TestExternalities {
 		self.set_constants();
-		let mut t = frame_system::GenesisConfig::<Runtime>::default()
-			.build_storage()
+		let mut t = frame_system::GenesisConfig::<Runtime>::default().build_storage().unwrap();
+
+		pallet_balances::GenesisConfig::<Runtime> { balances: self.native_balances }
+			.assimilate_storage(&mut t)
 			.unwrap();
 
-		pallet_balances::GenesisConfig::<Runtime> {
-			balances: self.native_balances,
-		}
-		.assimilate_storage(&mut t)
-		.unwrap();
+		module_tokens::GenesisConfig::<Runtime> { balances: self.balances }
+			.assimilate_storage(&mut t)
+			.unwrap();
 
-		module_tokens::GenesisConfig::<Runtime> {
-			balances: self.balances,
-		}
-		.assimilate_storage(&mut t)
-		.unwrap();
-
-		edfis_swap_legacy_module::GenesisConfig::<Runtime> {
+		swap_legacy_module::GenesisConfig::<Runtime> {
 			initial_listing_trading_pairs: vec![],
 			initial_enabled_trading_pairs: EnabledTradingPairs::get(),
 			initial_added_liquidity_pools: vec![],

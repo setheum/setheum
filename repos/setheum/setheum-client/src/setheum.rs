@@ -12615,8 +12615,9 @@ pub mod api {
             #[doc = "calls. This is because on failure all storage changes including events are"]
             #[doc = "rolled back."]
             pub struct Called {
-                pub caller:
-                    runtime_types::pallet_contracts::Origin<runtime_types::setheum_runtime::Runtime>,
+                pub caller: runtime_types::pallet_contracts::Origin<
+                    runtime_types::setheum_runtime::Runtime,
+                >,
                 pub contract: ::subxt::utils::Static<::subxt::ext::sp_core::crypto::AccountId32>,
             }
             impl ::subxt::events::StaticEvent for Called {

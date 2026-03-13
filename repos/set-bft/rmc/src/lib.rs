@@ -35,12 +35,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+use codec::{Decode, Encode};
+use core::fmt::Debug;
 pub use set_bft_crypto::{
     Indexed, MultiKeychain, Multisigned, NodeCount, PartialMultisignature, PartiallyMultisigned,
     Signable, Signature, Signed, UncheckedSigned,
 };
-use codec::{Decode, Encode};
-use core::fmt::Debug;
 use std::hash::Hash;
 
 mod handler;

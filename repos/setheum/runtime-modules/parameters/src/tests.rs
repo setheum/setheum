@@ -47,10 +47,7 @@ use module_traits::parameters::RuntimeParameterStore;
 #[test]
 fn set_parameters() {
 	ExtBuilder::new().execute_with(|| {
-		assert_eq!(
-			<ModuleParameters as RuntimeParameterStore>::get::<pallet1::Parameters, _>(pallet1::Key1),
-			None
-		);
+		assert_eq!(<ModuleParameters as RuntimeParameterStore>::get::<pallet1::Parameters, _>(pallet1::Key1), None);
 
 		assert_noop!(
 			ModuleParameters::set_parameter(

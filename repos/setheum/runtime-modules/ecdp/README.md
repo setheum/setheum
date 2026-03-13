@@ -1,5 +1,5 @@
-# ECDP Manager Module
+# Manager Module
 
 ## Overview
 
-Provides USD-Pegged ECDP `Setheum USD (SEUSD)` Stablecoin on Ethical DeFi.
+Provides USD-Pegged `Setheum USD (SEUSD)` Stablecoin on Ethical DeFi.

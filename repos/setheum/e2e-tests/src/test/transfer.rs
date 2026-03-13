@@ -18,35 +18,33 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-use setheum_client::{
-    pallets::{balances::BalanceUserApi, system::SystemApi},
-    TxStatus,
-};
 use log::info;
+use setheum_client::{
+	pallets::{balances::BalanceUserApi, system::SystemApi},
+	TxStatus,
+};
 
 use crate::{config::setup_test, transfer::setup_for_transfer};
 
 #[tokio::test]
 pub async fn token_transfer() -> anyhow::Result<()> {
-    let config = setup_test();
-    let (connection, to) = setup_for_transfer(config).await;
+	let config = setup_test();
+	let (connection, to) = setup_for_transfer(config).await;
 
-    let balance_before = connection.get_free_balance(to.clone(), None).await;
-    info!("[+] Account {} balance before tx: {}", to, balance_before);
+	let balance_before = connection.get_free_balance(to.clone(), None).await;
+	info!("[+] Account {} balance before tx: {}", to, balance_before);
 
-    let transfer_value = 1000;
-    connection
-        .transfer_keep_alive(to.clone(), transfer_value, TxStatus::Finalized)
-        .await?;
+	let transfer_value = 1000;
+	connection.transfer_keep_alive(to.clone(), transfer_value, TxStatus::Finalized).await?;
 
-    let balance_after = connection.get_free_balance(to.clone(), None).await;
-    info!("[+] Account {} balance after tx: {}", to, balance_after);
+	let balance_after = connection.get_free_balance(to.clone(), None).await;
+	info!("[+] Account {} balance after tx: {}", to, balance_after);
 
-    assert_eq!(
-        balance_before + transfer_value,
-        balance_after,
-        "before = {balance_before}, after = {balance_after}, tx = {transfer_value}"
-    );
+	assert_eq!(
+		balance_before + transfer_value,
+		balance_after,
+		"before = {balance_before}, after = {balance_after}, tx = {transfer_value}"
+	);
 
-    Ok(())
+	Ok(())
 }

@@ -215,14 +215,8 @@ impl<
 		let amount: MultiCurrency::Balance = Match::matches_fungible(asset)
 			.ok_or_else(|| XcmError::from(Error::FailedToMatchFungible))?
 			.saturated_into();
-		MultiCurrency::transfer(
-			currency_id,
-			&from_account,
-			&to_account,
-			amount,
-			ExistenceRequirement::AllowDeath,
-		)
-		.map_err(|e| XcmError::FailedToTransactAsset(e.into()))?;
+		MultiCurrency::transfer(currency_id, &from_account, &to_account, amount, ExistenceRequirement::AllowDeath)
+			.map_err(|e| XcmError::FailedToTransactAsset(e.into()))?;
 
 		Ok(asset.clone().into())
 	}

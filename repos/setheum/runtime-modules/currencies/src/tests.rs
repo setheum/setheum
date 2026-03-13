@@ -57,7 +57,7 @@ use sp_runtime::{
 #[test]
 fn test_balances_provider() {
 	ExtBuilder::default().build().execute_with(|| {
-// inc_providers to initialize a account directly (it occurs create contract)
+		// inc_providers to initialize a account directly (it occurs create contract)
 		assert_eq!(System::account_exists(&DAVE), false);
 		assert_eq!((System::providers(&DAVE), System::consumers(&DAVE)), (0, 0));
 		assert_eq!(System::inc_providers(&DAVE), frame_system::IncRefStatus::Created);
@@ -72,7 +72,7 @@ fn test_balances_provider() {
 			(0, 0)
 		);
 
-// creat CHARLIE by creating
+		// creat CHARLIE by creating
 		let _ = <Balances as PalletCurrency<_>>::deposit_creating(&CHARLIE, 10000);
 		assert_eq!((System::providers(&CHARLIE), System::consumers(&CHARLIE)), (1, 0));
 		assert_eq!(
@@ -83,19 +83,14 @@ fn test_balances_provider() {
 			(10000, 0)
 		);
 
-// transfer to already existed DAVE but receive amount + free_balance < ED
+		// transfer to already existed DAVE but receive amount + free_balance < ED
 		assert_noop!(
 			<Balances as PalletCurrency<_>>::transfer(&CHARLIE, &DAVE, 1, ExistenceRequirement::AllowDeath),
 			TokenError::BelowMinimum
 		);
 
-// transfer to already existed DAVE but receive amount + free_balance >= ED
-		assert_ok!(<Balances as PalletCurrency<_>>::transfer(
-			&CHARLIE,
-			&DAVE,
-			100,
-			ExistenceRequirement::AllowDeath
-		));
+		// transfer to already existed DAVE but receive amount + free_balance >= ED
+		assert_ok!(<Balances as PalletCurrency<_>>::transfer(&CHARLIE, &DAVE, 100, ExistenceRequirement::AllowDeath));
 		assert_eq!((System::providers(&DAVE), System::consumers(&DAVE)), (2, 0));
 		assert_eq!(
 			(
@@ -105,7 +100,7 @@ fn test_balances_provider() {
 			(100, 0)
 		);
 
-// reserve and after reserved_amount below ED for CHARLIE
+		// reserve and after reserved_amount below ED for CHARLIE
 		assert_ok!(<Balances as PalletReservableCurrency<_>>::reserve(&CHARLIE, 1));
 		assert_eq!((System::providers(&CHARLIE), System::consumers(&CHARLIE)), (1, 1));
 		assert_eq!(
@@ -125,13 +120,13 @@ fn test_balances_provider() {
 			(9000, 900)
 		);
 
-// reserve and after free_balance below ED for CHARLIE
+		// reserve and after free_balance below ED for CHARLIE
 		assert_noop!(
 			<Balances as PalletReservableCurrency<_>>::reserve(&CHARLIE, 8999),
 			DispatchError::ConsumerRemaining
 		);
 
-// reserve and after reserved_amount below ED for DAVE
+		// reserve and after reserved_amount below ED for DAVE
 		assert_ok!(<Balances as PalletReservableCurrency<_>>::reserve(&DAVE, 1));
 		assert_eq!((System::providers(&DAVE), System::consumers(&DAVE)), (2, 1));
 		assert_eq!(
@@ -142,8 +137,8 @@ fn test_balances_provider() {
 			(99, 1)
 		);
 
-// reserve and after free_balance is below ED for DAVE, will dec provider
-// but not dust.
+		// reserve and after free_balance is below ED for DAVE, will dec provider
+		// but not dust.
 		assert_ok!(<Balances as PalletReservableCurrency<_>>::reserve(&DAVE, 98));
 		assert_eq!((System::providers(&DAVE), System::consumers(&DAVE)), (1, 1));
 		assert_eq!(
@@ -154,7 +149,7 @@ fn test_balances_provider() {
 			(1, 99)
 		);
 
-// reserve and after free_balance is zero for DAVE
+		// reserve and after free_balance is zero for DAVE
 		assert_ok!(<Balances as PalletReservableCurrency<_>>::reserve(&DAVE, 1));
 		assert_eq!((System::providers(&DAVE), System::consumers(&DAVE)), (1, 1));
 		assert_eq!(
@@ -165,14 +160,14 @@ fn test_balances_provider() {
 			(0, 100)
 		);
 
-// transfer to DAVE but receive amount + free_balance < ED
+		// transfer to DAVE but receive amount + free_balance < ED
 		assert_noop!(
 			<Balances as PalletCurrency<_>>::transfer(&CHARLIE, &DAVE, 1, ExistenceRequirement::AllowDeath),
 			TokenError::BelowMinimum
 		);
 
-// can use repatriate_reserved to transfer reserved balance to receiver's free， even if
-// free_balance + repatriate amount < ED, it will succeed!
+		// can use repatriate_reserved to transfer reserved balance to receiver's free， even if
+		// free_balance + repatriate amount < ED, it will succeed!
 		assert_eq!(
 			<Balances as PalletReservableCurrency<_>>::repatriate_reserved(&CHARLIE, &DAVE, 1, BalanceStatus::Free),
 			Ok(0)
@@ -204,7 +199,7 @@ fn test_balances_provider() {
 			(0, 0)
 		);
 
-// inc_provider to initialize EVE
+		// inc_provider to initialize EVE
 		assert_eq!(System::inc_providers(&EVE), frame_system::IncRefStatus::Created);
 		assert_eq!(System::account_exists(&EVE), true);
 		assert_eq!((System::providers(&EVE), System::consumers(&EVE)), (1, 0));
@@ -216,9 +211,9 @@ fn test_balances_provider() {
 			(0, 0)
 		);
 
-// repatriate_reserved try to transfer amount reserved balance to EVE's reserved balance
-// will succeed, even if reserved_balance + amount < ED. the benificiary will not be dust
-// for its non-zero reserved balance
+		// repatriate_reserved try to transfer amount reserved balance to EVE's reserved balance
+		// will succeed, even if reserved_balance + amount < ED. the benificiary will not be dust
+		// for its non-zero reserved balance
 		assert_eq!(
 			<Balances as PalletReservableCurrency<_>>::repatriate_reserved(&CHARLIE, &EVE, 1, BalanceStatus::Reserved),
 			Ok(0)
@@ -251,8 +246,8 @@ fn test_balances_provider() {
 			(0, 0)
 		);
 
-// repatriate_reserved try to transfer amount reserved balance to FERDIE's free balance
-// will succeed, but if free_balance + amount < ED. the benificiary will be act as dust.
+		// repatriate_reserved try to transfer amount reserved balance to FERDIE's free balance
+		// will succeed, but if free_balance + amount < ED. the benificiary will be act as dust.
 		assert_eq!(
 			<Balances as PalletReservableCurrency<_>>::repatriate_reserved(&CHARLIE, &FERDIE, 1, BalanceStatus::Free),
 			Ok(0)
@@ -278,419 +273,280 @@ fn test_balances_provider() {
 
 #[test]
 fn force_set_lock_and_force_remove_lock_should_work() {
-	ExtBuilder::default()
-		.one_hundred_for_alice_n_bob()
-		.build()
-		.execute_with(|| {
-			assert_noop!(
-				BadOrigin
-			);
+	ExtBuilder::default().one_hundred_for_alice_n_bob().build().execute_with(|| {
+		assert_noop!(BadOrigin);
 
-			assert_eq!(PalletBalances::locks(&alice()).len(), 0);
+		assert_eq!(PalletBalances::locks(&alice()).len(), 0);
 
-			assert_ok!(Currencies::force_set_lock(
-				RuntimeOrigin::root(),
-				alice(),
-				100,
-				ID_1,
-			));
-			assert_ok!(Currencies::force_set_lock(
-				RuntimeOrigin::root(),
-				alice(),
-				NATIVE_CURRENCY_ID,
-				1000,
-				ID_1,
-			));
+		assert_ok!(Currencies::force_set_lock(RuntimeOrigin::root(), alice(), 100, ID_1,));
+		assert_ok!(Currencies::force_set_lock(RuntimeOrigin::root(), alice(), NATIVE_CURRENCY_ID, 1000, ID_1,));
 
-			assert_eq!(
-				module_tokens::BalanceLock { id: ID_1, amount: 100 }
-			);
-			assert_eq!(
-				PalletBalances::locks(&alice())[0],
-				pallet_balances::BalanceLock {
-					id: ID_1,
-					amount: 1000,
-					reasons: WithdrawReasons::all().into(),
-				}
-			);
+		assert_eq!(module_tokens::BalanceLock { id: ID_1, amount: 100 });
+		assert_eq!(
+			PalletBalances::locks(&alice())[0],
+			pallet_balances::BalanceLock { id: ID_1, amount: 1000, reasons: WithdrawReasons::all().into() }
+		);
 
-			assert_ok!(Currencies::force_set_lock(
-				RuntimeOrigin::root(),
-				alice(),
-				10,
-				ID_1,
-			));
-			assert_ok!(Currencies::force_set_lock(
-				RuntimeOrigin::root(),
-				alice(),
-				NATIVE_CURRENCY_ID,
-				100,
-				ID_1,
-			));
-			assert_eq!(
-				module_tokens::BalanceLock { id: ID_1, amount: 10 }
-			);
-			assert_eq!(
-				PalletBalances::locks(&alice())[0],
-				pallet_balances::BalanceLock {
-					id: ID_1,
-					amount: 100,
-					reasons: WithdrawReasons::all().into(),
-				}
-			);
+		assert_ok!(Currencies::force_set_lock(RuntimeOrigin::root(), alice(), 10, ID_1,));
+		assert_ok!(Currencies::force_set_lock(RuntimeOrigin::root(), alice(), NATIVE_CURRENCY_ID, 100, ID_1,));
+		assert_eq!(module_tokens::BalanceLock { id: ID_1, amount: 10 });
+		assert_eq!(
+			PalletBalances::locks(&alice())[0],
+			pallet_balances::BalanceLock { id: ID_1, amount: 100, reasons: WithdrawReasons::all().into() }
+		);
 
-// do nothing
-			assert_eq!(
-				module_tokens::BalanceLock { id: ID_1, amount: 10 }
-			);
+		// do nothing
+		assert_eq!(module_tokens::BalanceLock { id: ID_1, amount: 10 });
 
-// remove lock
-			assert_noop!(
-				BadOrigin
-			);
+		// remove lock
+		assert_noop!(BadOrigin);
 
-			assert_ok!(Currencies::force_remove_lock(
-				RuntimeOrigin::root(),
-				alice(),
-				NATIVE_CURRENCY_ID,
-				ID_1,
-			));
-			assert_eq!(PalletBalances::locks(&alice()).len(), 0);
-		});
+		assert_ok!(Currencies::force_remove_lock(RuntimeOrigin::root(), alice(), NATIVE_CURRENCY_ID, ID_1,));
+		assert_eq!(PalletBalances::locks(&alice()).len(), 0);
+	});
 }
 
 #[test]
 fn multi_lockable_currency_should_work() {
-	ExtBuilder::default()
-		.one_hundred_for_alice_n_bob()
-		.build()
-		.execute_with(|| {
-			assert_ok!(Currencies::set_lock(ID_1, X_TOKEN_ID, &alice(), 50));
-			assert_eq!(Tokens::locks(&alice(), X_TOKEN_ID).len(), 1);
-			assert_ok!(Currencies::set_lock(ID_1, NATIVE_CURRENCY_ID, &alice(), 50));
-			assert_eq!(PalletBalances::locks(&alice()).len(), 1);
-		});
+	ExtBuilder::default().one_hundred_for_alice_n_bob().build().execute_with(|| {
+		assert_ok!(Currencies::set_lock(ID_1, X_TOKEN_ID, &alice(), 50));
+		assert_eq!(Tokens::locks(&alice(), X_TOKEN_ID).len(), 1);
+		assert_ok!(Currencies::set_lock(ID_1, NATIVE_CURRENCY_ID, &alice(), 50));
+		assert_eq!(PalletBalances::locks(&alice()).len(), 1);
+	});
 }
 
 #[test]
 fn multi_reservable_currency_should_work() {
-	ExtBuilder::default()
-		.one_hundred_for_alice_n_bob()
-		.build()
-		.execute_with(|| {
-			assert_eq!(Currencies::total_issuance(NATIVE_CURRENCY_ID), 200);
-			assert_eq!(Currencies::total_issuance(X_TOKEN_ID), 200);
-			assert_eq!(Currencies::free_balance(X_TOKEN_ID, &alice()), 100);
-			assert_eq!(NativeCurrency::free_balance(&alice()), 100);
+	ExtBuilder::default().one_hundred_for_alice_n_bob().build().execute_with(|| {
+		assert_eq!(Currencies::total_issuance(NATIVE_CURRENCY_ID), 200);
+		assert_eq!(Currencies::total_issuance(X_TOKEN_ID), 200);
+		assert_eq!(Currencies::free_balance(X_TOKEN_ID, &alice()), 100);
+		assert_eq!(NativeCurrency::free_balance(&alice()), 100);
 
-			assert_ok!(Currencies::reserve(X_TOKEN_ID, &alice(), 30));
-			assert_ok!(Currencies::reserve(NATIVE_CURRENCY_ID, &alice(), 40));
-			assert_eq!(Currencies::reserved_balance(X_TOKEN_ID, &alice()), 30);
-			assert_eq!(Currencies::reserved_balance(NATIVE_CURRENCY_ID, &alice()), 40);
-		});
+		assert_ok!(Currencies::reserve(X_TOKEN_ID, &alice(), 30));
+		assert_ok!(Currencies::reserve(NATIVE_CURRENCY_ID, &alice(), 40));
+		assert_eq!(Currencies::reserved_balance(X_TOKEN_ID, &alice()), 30);
+		assert_eq!(Currencies::reserved_balance(NATIVE_CURRENCY_ID, &alice()), 40);
+	});
 }
 
 #[test]
 fn native_currency_lockable_should_work() {
-	ExtBuilder::default()
-		.one_hundred_for_alice_n_bob()
-		.build()
-		.execute_with(|| {
-			assert_ok!(NativeCurrency::set_lock(ID_1, &alice(), 10));
-			assert_eq!(PalletBalances::locks(&alice()).len(), 1);
-			assert_ok!(NativeCurrency::remove_lock(ID_1, &alice()));
-			assert_eq!(PalletBalances::locks(&alice()).len(), 0);
-		});
+	ExtBuilder::default().one_hundred_for_alice_n_bob().build().execute_with(|| {
+		assert_ok!(NativeCurrency::set_lock(ID_1, &alice(), 10));
+		assert_eq!(PalletBalances::locks(&alice()).len(), 1);
+		assert_ok!(NativeCurrency::remove_lock(ID_1, &alice()));
+		assert_eq!(PalletBalances::locks(&alice()).len(), 0);
+	});
 }
 
 #[test]
 fn native_currency_reservable_should_work() {
-	ExtBuilder::default()
-		.one_hundred_for_alice_n_bob()
-		.build()
-		.execute_with(|| {
-			assert_ok!(NativeCurrency::reserve(&alice(), 50));
-			assert_eq!(NativeCurrency::reserved_balance(&alice()), 50);
-		});
+	ExtBuilder::default().one_hundred_for_alice_n_bob().build().execute_with(|| {
+		assert_ok!(NativeCurrency::reserve(&alice(), 50));
+		assert_eq!(NativeCurrency::reserved_balance(&alice()), 50);
+	});
 }
 
 #[test]
 fn basic_currency_adapting_pallet_balances_lockable() {
-	ExtBuilder::default()
-		.one_hundred_for_alice_n_bob()
-		.build()
-		.execute_with(|| {
-			assert_ok!(AdaptedBasicCurrency::set_lock(ID_1, &alice(), 10));
-			assert_eq!(PalletBalances::locks(&alice()).len(), 1);
-			assert_ok!(AdaptedBasicCurrency::remove_lock(ID_1, &alice()));
-			assert_eq!(PalletBalances::locks(&alice()).len(), 0);
-		});
+	ExtBuilder::default().one_hundred_for_alice_n_bob().build().execute_with(|| {
+		assert_ok!(AdaptedBasicCurrency::set_lock(ID_1, &alice(), 10));
+		assert_eq!(PalletBalances::locks(&alice()).len(), 1);
+		assert_ok!(AdaptedBasicCurrency::remove_lock(ID_1, &alice()));
+		assert_eq!(PalletBalances::locks(&alice()).len(), 0);
+	});
 }
 
 #[test]
 fn basic_currency_adapting_pallet_balances_reservable() {
-	ExtBuilder::default()
-		.one_hundred_for_alice_n_bob()
-		.build()
-		.execute_with(|| {
-			assert_ok!(AdaptedBasicCurrency::reserve(&alice(), 50));
-			assert_eq!(AdaptedBasicCurrency::reserved_balance(&alice()), 50);
-		});
+	ExtBuilder::default().one_hundred_for_alice_n_bob().build().execute_with(|| {
+		assert_ok!(AdaptedBasicCurrency::reserve(&alice(), 50));
+		assert_eq!(AdaptedBasicCurrency::reserved_balance(&alice()), 50);
+	});
 }
 
 #[test]
 fn multi_currency_should_work() {
-	ExtBuilder::default()
-		.one_hundred_for_alice_n_bob()
-		.build()
-		.execute_with(|| {
-			<EVM as EVMTrait<AccountId>>::set_origin(alice());
-			assert_ok!(Currencies::transfer(Some(alice()).into(), bob(), X_TOKEN_ID, 50));
-			assert_eq!(Currencies::free_balance(X_TOKEN_ID, &alice()), 50);
-			assert_eq!(Currencies::free_balance(X_TOKEN_ID, &bob()), 150);
-		});
+	ExtBuilder::default().one_hundred_for_alice_n_bob().build().execute_with(|| {
+		<EVM as EVMTrait<AccountId>>::set_origin(alice());
+		assert_ok!(Currencies::transfer(Some(alice()).into(), bob(), X_TOKEN_ID, 50));
+		assert_eq!(Currencies::free_balance(X_TOKEN_ID, &alice()), 50);
+		assert_eq!(Currencies::free_balance(X_TOKEN_ID, &bob()), 150);
+	});
 }
 
 #[test]
 fn multi_currency_extended_should_work() {
-	ExtBuilder::default()
-		.one_hundred_for_alice_n_bob()
-		.build()
-		.execute_with(|| {
-			assert_ok!(<Currencies as MultiCurrencyExtended<AccountId>>::update_balance(
-				X_TOKEN_ID,
-				&alice(),
-				50
-			));
-			assert_eq!(Currencies::free_balance(X_TOKEN_ID, &alice()), 150);
-		});
+	ExtBuilder::default().one_hundred_for_alice_n_bob().build().execute_with(|| {
+		assert_ok!(<Currencies as MultiCurrencyExtended<AccountId>>::update_balance(X_TOKEN_ID, &alice(), 50));
+		assert_eq!(Currencies::free_balance(X_TOKEN_ID, &alice()), 150);
+	});
 }
 
 #[test]
 fn native_currency_should_work() {
-	ExtBuilder::default()
-		.one_hundred_for_alice_n_bob()
-		.build()
-		.execute_with(|| {
-			assert_ok!(Currencies::transfer_native_currency(Some(alice()).into(), bob(), 50));
-			assert_eq!(NativeCurrency::free_balance(&alice()), 50);
-			assert_eq!(NativeCurrency::free_balance(&bob()), 150);
+	ExtBuilder::default().one_hundred_for_alice_n_bob().build().execute_with(|| {
+		assert_ok!(Currencies::transfer_native_currency(Some(alice()).into(), bob(), 50));
+		assert_eq!(NativeCurrency::free_balance(&alice()), 50);
+		assert_eq!(NativeCurrency::free_balance(&bob()), 150);
 
-			assert_ok!(NativeCurrency::transfer(&alice(), &bob(), 10));
-			assert_eq!(NativeCurrency::free_balance(&alice()), 40);
-			assert_eq!(NativeCurrency::free_balance(&bob()), 160);
+		assert_ok!(NativeCurrency::transfer(&alice(), &bob(), 10));
+		assert_eq!(NativeCurrency::free_balance(&alice()), 40);
+		assert_eq!(NativeCurrency::free_balance(&bob()), 160);
 
-			assert_eq!(Currencies::slash(NATIVE_CURRENCY_ID, &alice(), 10), 0);
-			assert_eq!(NativeCurrency::free_balance(&alice()), 30);
-			assert_eq!(NativeCurrency::total_issuance(), 190);
-		});
+		assert_eq!(Currencies::slash(NATIVE_CURRENCY_ID, &alice(), 10), 0);
+		assert_eq!(NativeCurrency::free_balance(&alice()), 30);
+		assert_eq!(NativeCurrency::total_issuance(), 190);
+	});
 }
 
 #[test]
 fn native_currency_extended_should_work() {
-	ExtBuilder::default()
-		.one_hundred_for_alice_n_bob()
-		.build()
-		.execute_with(|| {
-			assert_ok!(NativeCurrency::update_balance(&alice(), 10));
-			assert_eq!(NativeCurrency::free_balance(&alice()), 110);
+	ExtBuilder::default().one_hundred_for_alice_n_bob().build().execute_with(|| {
+		assert_ok!(NativeCurrency::update_balance(&alice(), 10));
+		assert_eq!(NativeCurrency::free_balance(&alice()), 110);
 
-			assert_ok!(<Currencies as MultiCurrencyExtended<AccountId>>::update_balance(
-				NATIVE_CURRENCY_ID,
-				&alice(),
-				10
-			));
-			assert_eq!(NativeCurrency::free_balance(&alice()), 120);
-		});
+		assert_ok!(<Currencies as MultiCurrencyExtended<AccountId>>::update_balance(NATIVE_CURRENCY_ID, &alice(), 10));
+		assert_eq!(NativeCurrency::free_balance(&alice()), 120);
+	});
 }
 
 #[test]
 fn basic_currency_adapting_pallet_balances_transfer() {
-	ExtBuilder::default()
-		.one_hundred_for_alice_n_bob()
-		.build()
-		.execute_with(|| {
-			assert_ok!(AdaptedBasicCurrency::transfer(&alice(), &bob(), 50));
-			assert_eq!(PalletBalances::total_balance(&alice()), 50);
-			assert_eq!(PalletBalances::total_balance(&bob()), 150);
+	ExtBuilder::default().one_hundred_for_alice_n_bob().build().execute_with(|| {
+		assert_ok!(AdaptedBasicCurrency::transfer(&alice(), &bob(), 50));
+		assert_eq!(PalletBalances::total_balance(&alice()), 50);
+		assert_eq!(PalletBalances::total_balance(&bob()), 150);
 
-// creation fee
-			assert_ok!(AdaptedBasicCurrency::transfer(&alice(), &eva(), 10));
-			assert_eq!(PalletBalances::total_balance(&alice()), 40);
-			assert_eq!(PalletBalances::total_balance(&eva()), 10);
-		});
+		// creation fee
+		assert_ok!(AdaptedBasicCurrency::transfer(&alice(), &eva(), 10));
+		assert_eq!(PalletBalances::total_balance(&alice()), 40);
+		assert_eq!(PalletBalances::total_balance(&eva()), 10);
+	});
 }
 
 #[test]
 fn basic_currency_adapting_pallet_balances_deposit() {
-	ExtBuilder::default()
-		.one_hundred_for_alice_n_bob()
-		.build()
-		.execute_with(|| {
-			assert_ok!(AdaptedBasicCurrency::deposit(&eva(), 50));
-			assert_eq!(PalletBalances::total_balance(&eva()), 50);
-			assert_eq!(PalletBalances::total_issuance(), 250);
-		});
+	ExtBuilder::default().one_hundred_for_alice_n_bob().build().execute_with(|| {
+		assert_ok!(AdaptedBasicCurrency::deposit(&eva(), 50));
+		assert_eq!(PalletBalances::total_balance(&eva()), 50);
+		assert_eq!(PalletBalances::total_issuance(), 250);
+	});
 }
 
 #[test]
 fn basic_currency_adapting_pallet_balances_deposit_throw_error_when_actual_deposit_is_not_expected() {
-	ExtBuilder::default()
-		.one_hundred_for_alice_n_bob()
-		.build()
-		.execute_with(|| {
-			assert_eq!(PalletBalances::total_balance(&eva()), 0);
-			assert_eq!(PalletBalances::total_issuance(), 200);
-			assert_noop!(
-				AdaptedBasicCurrency::deposit(&eva(), 1),
-				Error::<Runtime>::DepositFailed
-			);
-			assert_eq!(PalletBalances::total_balance(&eva()), 0);
-			assert_eq!(PalletBalances::total_issuance(), 200);
-			assert_ok!(AdaptedBasicCurrency::deposit(&eva(), 2));
-			assert_eq!(PalletBalances::total_balance(&eva()), 2);
-			assert_eq!(PalletBalances::total_issuance(), 202);
-		});
+	ExtBuilder::default().one_hundred_for_alice_n_bob().build().execute_with(|| {
+		assert_eq!(PalletBalances::total_balance(&eva()), 0);
+		assert_eq!(PalletBalances::total_issuance(), 200);
+		assert_noop!(AdaptedBasicCurrency::deposit(&eva(), 1), Error::<Runtime>::DepositFailed);
+		assert_eq!(PalletBalances::total_balance(&eva()), 0);
+		assert_eq!(PalletBalances::total_issuance(), 200);
+		assert_ok!(AdaptedBasicCurrency::deposit(&eva(), 2));
+		assert_eq!(PalletBalances::total_balance(&eva()), 2);
+		assert_eq!(PalletBalances::total_issuance(), 202);
+	});
 }
 
 #[test]
 fn basic_currency_adapting_pallet_balances_withdraw() {
-	ExtBuilder::default()
-		.one_hundred_for_alice_n_bob()
-		.build()
-		.execute_with(|| {
-			assert_ok!(AdaptedBasicCurrency::withdraw(&alice(), 100));
-			assert_eq!(PalletBalances::total_balance(&alice()), 0);
-			assert_eq!(PalletBalances::total_issuance(), 100);
-		});
+	ExtBuilder::default().one_hundred_for_alice_n_bob().build().execute_with(|| {
+		assert_ok!(AdaptedBasicCurrency::withdraw(&alice(), 100));
+		assert_eq!(PalletBalances::total_balance(&alice()), 0);
+		assert_eq!(PalletBalances::total_issuance(), 100);
+	});
 }
 
 #[test]
 fn basic_currency_adapting_pallet_balances_slash() {
-	ExtBuilder::default()
-		.one_hundred_for_alice_n_bob()
-		.build()
-		.execute_with(|| {
-			assert_eq!(AdaptedBasicCurrency::slash(&alice(), 101), 1);
-			assert_eq!(PalletBalances::total_balance(&alice()), 0);
-			assert_eq!(PalletBalances::total_issuance(), 100);
-		});
+	ExtBuilder::default().one_hundred_for_alice_n_bob().build().execute_with(|| {
+		assert_eq!(AdaptedBasicCurrency::slash(&alice(), 101), 1);
+		assert_eq!(PalletBalances::total_balance(&alice()), 0);
+		assert_eq!(PalletBalances::total_issuance(), 100);
+	});
 }
 
 #[test]
 fn basic_currency_adapting_pallet_balances_update_balance() {
-	ExtBuilder::default()
-		.one_hundred_for_alice_n_bob()
-		.build()
-		.execute_with(|| {
-			assert_ok!(AdaptedBasicCurrency::update_balance(&alice(), -10));
-			assert_eq!(PalletBalances::total_balance(&alice()), 90);
-			assert_eq!(PalletBalances::total_issuance(), 190);
-		});
+	ExtBuilder::default().one_hundred_for_alice_n_bob().build().execute_with(|| {
+		assert_ok!(AdaptedBasicCurrency::update_balance(&alice(), -10));
+		assert_eq!(PalletBalances::total_balance(&alice()), 90);
+		assert_eq!(PalletBalances::total_issuance(), 190);
+	});
 }
 
 #[test]
 fn update_balance_call_should_work() {
-	ExtBuilder::default()
-		.one_hundred_for_alice_n_bob()
-		.build()
-		.execute_with(|| {
-			assert_ok!(Currencies::update_balance(
-				RuntimeOrigin::root(),
-				alice(),
-				NATIVE_CURRENCY_ID,
-				-10
-			));
-			assert_eq!(NativeCurrency::free_balance(&alice()), 90);
-			assert_eq!(Currencies::free_balance(X_TOKEN_ID, &alice()), 100);
-			assert_ok!(Currencies::update_balance(
-				RuntimeOrigin::root(),
-				alice(),
-				X_TOKEN_ID,
-				10
-			));
-			assert_eq!(Currencies::free_balance(X_TOKEN_ID, &alice()), 110);
-		});
+	ExtBuilder::default().one_hundred_for_alice_n_bob().build().execute_with(|| {
+		assert_ok!(Currencies::update_balance(RuntimeOrigin::root(), alice(), NATIVE_CURRENCY_ID, -10));
+		assert_eq!(NativeCurrency::free_balance(&alice()), 90);
+		assert_eq!(Currencies::free_balance(X_TOKEN_ID, &alice()), 100);
+		assert_ok!(Currencies::update_balance(RuntimeOrigin::root(), alice(), X_TOKEN_ID, 10));
+		assert_eq!(Currencies::free_balance(X_TOKEN_ID, &alice()), 110);
+	});
 }
 
 #[test]
 fn update_balance_call_fails_if_not_root_origin() {
 	ExtBuilder::default().build().execute_with(|| {
-		assert_noop!(
-			Currencies::update_balance(Some(alice()).into(), alice(), X_TOKEN_ID, 100),
-			BadOrigin
-		);
+		assert_noop!(Currencies::update_balance(Some(alice()).into(), alice(), X_TOKEN_ID, 100), BadOrigin);
 	});
 }
 
 #[test]
 fn call_event_should_work() {
-	ExtBuilder::default()
-		.one_hundred_for_alice_n_bob()
-		.build()
-		.execute_with(|| {
-			assert_ok!(Currencies::transfer(Some(alice()).into(), bob(), X_TOKEN_ID, 50));
-			assert_eq!(Currencies::free_balance(X_TOKEN_ID, &alice()), 50);
-			assert_eq!(Currencies::free_balance(X_TOKEN_ID, &bob()), 150);
-			System::assert_has_event(RuntimeEvent::Tokens(module_tokens::Event::Transfer {
-				currency_id: X_TOKEN_ID,
-				from: alice(),
-				to: bob(),
-				amount: 50,
-			}));
-			System::assert_has_event(RuntimeEvent::Currencies(crate::Event::Transferred {
-				currency_id: X_TOKEN_ID,
-				from: alice(),
-				to: bob(),
-				amount: 50,
-			}));
+	ExtBuilder::default().one_hundred_for_alice_n_bob().build().execute_with(|| {
+		assert_ok!(Currencies::transfer(Some(alice()).into(), bob(), X_TOKEN_ID, 50));
+		assert_eq!(Currencies::free_balance(X_TOKEN_ID, &alice()), 50);
+		assert_eq!(Currencies::free_balance(X_TOKEN_ID, &bob()), 150);
+		System::assert_has_event(RuntimeEvent::Tokens(module_tokens::Event::Transfer {
+			currency_id: X_TOKEN_ID,
+			from: alice(),
+			to: bob(),
+			amount: 50,
+		}));
+		System::assert_has_event(RuntimeEvent::Currencies(crate::Event::Transferred {
+			currency_id: X_TOKEN_ID,
+			from: alice(),
+			to: bob(),
+			amount: 50,
+		}));
 
-			System::reset_events();
-			assert_ok!(<Currencies as MultiCurrency<AccountId>>::transfer(
-				X_TOKEN_ID,
-				&alice(),
-				&bob(),
-				10
-			));
-			assert_eq!(Currencies::free_balance(X_TOKEN_ID, &alice()), 40);
-			assert_eq!(Currencies::free_balance(X_TOKEN_ID, &bob()), 160);
-			System::assert_has_event(RuntimeEvent::Tokens(module_tokens::Event::Transfer {
-				currency_id: X_TOKEN_ID,
-				from: alice(),
-				to: bob(),
-				amount: 10,
-			}));
-			System::assert_has_event(RuntimeEvent::Currencies(crate::Event::Transferred {
-				currency_id: X_TOKEN_ID,
-				from: alice(),
-				to: bob(),
-				amount: 10,
-			}));
+		System::reset_events();
+		assert_ok!(<Currencies as MultiCurrency<AccountId>>::transfer(X_TOKEN_ID, &alice(), &bob(), 10));
+		assert_eq!(Currencies::free_balance(X_TOKEN_ID, &alice()), 40);
+		assert_eq!(Currencies::free_balance(X_TOKEN_ID, &bob()), 160);
+		System::assert_has_event(RuntimeEvent::Tokens(module_tokens::Event::Transfer {
+			currency_id: X_TOKEN_ID,
+			from: alice(),
+			to: bob(),
+			amount: 10,
+		}));
+		System::assert_has_event(RuntimeEvent::Currencies(crate::Event::Transferred {
+			currency_id: X_TOKEN_ID,
+			from: alice(),
+			to: bob(),
+			amount: 10,
+		}));
 
-			assert_ok!(<Currencies as MultiCurrency<AccountId>>::deposit(
-				X_TOKEN_ID,
-				&alice(),
-				100
-			));
-			assert_eq!(Currencies::free_balance(X_TOKEN_ID, &alice()), 140);
-			System::assert_last_event(RuntimeEvent::Tokens(module_tokens::Event::Deposited {
-				currency_id: X_TOKEN_ID,
-				who: alice(),
-				amount: 100,
-			}));
+		assert_ok!(<Currencies as MultiCurrency<AccountId>>::deposit(X_TOKEN_ID, &alice(), 100));
+		assert_eq!(Currencies::free_balance(X_TOKEN_ID, &alice()), 140);
+		System::assert_last_event(RuntimeEvent::Tokens(module_tokens::Event::Deposited {
+			currency_id: X_TOKEN_ID,
+			who: alice(),
+			amount: 100,
+		}));
 
-			assert_ok!(<Currencies as MultiCurrency<AccountId>>::withdraw(
-				X_TOKEN_ID,
-				&alice(),
-				20
-			));
-			assert_eq!(Currencies::free_balance(X_TOKEN_ID, &alice()), 120);
-			System::assert_last_event(RuntimeEvent::Tokens(module_tokens::Event::Withdrawn {
-				currency_id: X_TOKEN_ID,
-				who: alice(),
-				amount: 20,
-			}));
-		});
+		assert_ok!(<Currencies as MultiCurrency<AccountId>>::withdraw(X_TOKEN_ID, &alice(), 20));
+		assert_eq!(Currencies::free_balance(X_TOKEN_ID, &alice()), 120);
+		System::assert_last_event(RuntimeEvent::Tokens(module_tokens::Event::Withdrawn {
+			currency_id: X_TOKEN_ID,
+			who: alice(),
+			amount: 20,
+		}));
+	});
 }
 
 #[test]
@@ -700,10 +556,7 @@ fn erc20_total_issuance_should_work() {
 		.build()
 		.execute_with(|| {
 			deploy_contracts();
-			assert_eq!(
-				Currencies::total_issuance(CurrencyId::Erc20(erc20_address())),
-				ALICE_BALANCE
-			);
+			assert_eq!(Currencies::total_issuance(CurrencyId::Erc20(erc20_address())), ALICE_BALANCE);
 		});
 }
 
@@ -714,17 +567,11 @@ fn erc20_free_balance_should_work() {
 		.build()
 		.execute_with(|| {
 			deploy_contracts();
-// empty address
-			assert_eq!(
-				Currencies::free_balance(CurrencyId::Erc20(H160::default()), &alice()),
-				0
-			);
+			// empty address
+			assert_eq!(Currencies::free_balance(CurrencyId::Erc20(H160::default()), &alice()), 0);
 			assert_eq!(Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &bob()), 0);
 
-			assert_eq!(
-				Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				ALICE_BALANCE
-			);
+			assert_eq!(Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &alice()), ALICE_BALANCE);
 			assert_eq!(Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &bob()), 0);
 		});
 }
@@ -736,17 +583,11 @@ fn erc20_total_balance_should_work() {
 		.build()
 		.execute_with(|| {
 			deploy_contracts();
-// empty address
-			assert_eq!(
-				Currencies::total_balance(CurrencyId::Erc20(H160::default()), &alice()),
-				0
-			);
+			// empty address
+			assert_eq!(Currencies::total_balance(CurrencyId::Erc20(H160::default()), &alice()), 0);
 			assert_eq!(Currencies::total_balance(CurrencyId::Erc20(H160::default()), &bob()), 0);
 
-			assert_eq!(
-				Currencies::total_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				ALICE_BALANCE
-			);
+			assert_eq!(Currencies::total_balance(CurrencyId::Erc20(erc20_address()), &alice()), ALICE_BALANCE);
 			assert_eq!(Currencies::total_balance(CurrencyId::Erc20(erc20_address()), &bob()), 0);
 		});
 }
@@ -759,11 +600,7 @@ fn erc20_ensure_withdraw_should_work() {
 		.execute_with(|| {
 			deploy_contracts();
 			<EVM as EVMTrait<AccountId>>::set_origin(alice());
-			assert_ok!(Currencies::ensure_can_withdraw(
-				CurrencyId::Erc20(erc20_address()),
-				&alice(),
-				100
-			));
+			assert_ok!(Currencies::ensure_can_withdraw(CurrencyId::Erc20(erc20_address()), &alice(), 100));
 			assert_noop!(
 				Currencies::ensure_can_withdraw(CurrencyId::Erc20(erc20_address()), &bob(), 100),
 				Error::<Runtime>::BalanceTooLow,
@@ -774,11 +611,7 @@ fn erc20_ensure_withdraw_should_work() {
 				CurrencyId::Erc20(erc20_address()),
 				100
 			));
-			assert_ok!(Currencies::ensure_can_withdraw(
-				CurrencyId::Erc20(erc20_address()),
-				&bob(),
-				100
-			));
+			assert_ok!(Currencies::ensure_can_withdraw(CurrencyId::Erc20(erc20_address()), &bob(), 100));
 			assert_noop!(
 				Currencies::ensure_can_withdraw(CurrencyId::Erc20(erc20_address()), &bob(), 101),
 				Error::<Runtime>::BalanceTooLow,
@@ -806,23 +639,11 @@ fn erc20_transfer_should_work() {
 				100
 			));
 
-			assert_eq!(
-				Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &bob()),
-				100
-			);
-			assert_eq!(
-				Currencies::total_balance(CurrencyId::Erc20(erc20_address()), &bob()),
-				100
-			);
+			assert_eq!(Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &bob()), 100);
+			assert_eq!(Currencies::total_balance(CurrencyId::Erc20(erc20_address()), &bob()), 100);
 
-			assert_eq!(
-				Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				ALICE_BALANCE - 100
-			);
-			assert_eq!(
-				Currencies::total_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				ALICE_BALANCE - 100
-			);
+			assert_eq!(Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &alice()), ALICE_BALANCE - 100);
+			assert_eq!(Currencies::total_balance(CurrencyId::Erc20(erc20_address()), &alice()), ALICE_BALANCE - 100);
 
 			assert_ok!(Currencies::transfer(
 				RuntimeOrigin::signed(bob()),
@@ -832,48 +653,31 @@ fn erc20_transfer_should_work() {
 			));
 
 			assert_eq!(Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &bob()), 90);
-			assert_eq!(
-				Currencies::total_balance(CurrencyId::Erc20(erc20_address()), &bob()),
-				90
-			);
+			assert_eq!(Currencies::total_balance(CurrencyId::Erc20(erc20_address()), &bob()), 90);
 
-			assert_eq!(
-				Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				ALICE_BALANCE - 90
-			);
-			assert_eq!(
-				Currencies::total_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				ALICE_BALANCE - 90
-			);
+			assert_eq!(Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &alice()), ALICE_BALANCE - 90);
+			assert_eq!(Currencies::total_balance(CurrencyId::Erc20(erc20_address()), &alice()), ALICE_BALANCE - 90);
 		});
 }
 
 #[test]
 fn erc20_transfer_should_fail() {
 	ExtBuilder::default()
-		.balances(vec![
-			(alice(), NATIVE_CURRENCY_ID, 200000),
-			(bob(), NATIVE_CURRENCY_ID, 100000),
-		])
+		.balances(vec![(alice(), NATIVE_CURRENCY_ID, 200000), (bob(), NATIVE_CURRENCY_ID, 100000)])
 		.build()
 		.execute_with(|| {
 			deploy_contracts();
 
-// Real origin not found
+			// Real origin not found
 			assert_noop!(
-				Currencies::transfer(
-					RuntimeOrigin::signed(alice()),
-					bob(),
-					CurrencyId::Erc20(erc20_address()),
-					100
-				),
+				Currencies::transfer(RuntimeOrigin::signed(alice()), bob(), CurrencyId::Erc20(erc20_address()), 100),
 				Error::<Runtime>::RealOriginNotFound
 			);
 
 			<EVM as EVMTrait<AccountId>>::set_origin(alice());
 			<EVM as EVMTrait<AccountId>>::set_origin(bob());
 
-// empty address
+			// empty address
 			assert!(Currencies::transfer(
 				RuntimeOrigin::signed(alice()),
 				bob(),
@@ -882,14 +686,9 @@ fn erc20_transfer_should_fail() {
 			)
 			.is_err());
 
-// bob can't transfer. bob balance 0
-			assert!(Currencies::transfer(
-				RuntimeOrigin::signed(bob()),
-				alice(),
-				CurrencyId::Erc20(erc20_address()),
-				1
-			)
-			.is_err());
+			// bob can't transfer. bob balance 0
+			assert!(Currencies::transfer(RuntimeOrigin::signed(bob()), alice(), CurrencyId::Erc20(erc20_address()), 1)
+				.is_err());
 		});
 }
 
@@ -911,15 +710,9 @@ fn erc20_slash_reserve_should_work() {
 		.build()
 		.execute_with(|| {
 			deploy_contracts();
-			assert_eq!(
-				Currencies::slash_reserved(CurrencyId::Erc20(erc20_address()), &alice(), 1),
-				1
-			);
+			assert_eq!(Currencies::slash_reserved(CurrencyId::Erc20(erc20_address()), &alice(), 1), 1);
 			assert_ok!(Currencies::reserve(CurrencyId::Erc20(erc20_address()), &alice(), 100));
-			assert_eq!(
-				Currencies::slash_reserved(CurrencyId::Erc20(erc20_address()), &alice(), 10),
-				10
-			);
+			assert_eq!(Currencies::slash_reserved(CurrencyId::Erc20(erc20_address()), &alice(), 10), 10);
 		});
 }
 
@@ -931,25 +724,13 @@ fn erc20_reserve_should_work() {
 		.execute_with(|| {
 			deploy_contracts();
 
-			assert_eq!(
-				Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				0
-			);
-			assert_eq!(
-				Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				ALICE_BALANCE
-			);
+			assert_eq!(Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &alice()), 0);
+			assert_eq!(Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &alice()), ALICE_BALANCE);
 
 			assert_ok!(Currencies::reserve(CurrencyId::Erc20(erc20_address()), &alice(), 100));
 
-			assert_eq!(
-				Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				100
-			);
-			assert_eq!(
-				Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				ALICE_BALANCE - 100
-			);
+			assert_eq!(Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &alice()), 100);
+			assert_eq!(Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &alice()), ALICE_BALANCE - 100);
 		});
 }
 
@@ -960,55 +741,19 @@ fn erc20_unreserve_should_work() {
 		.build()
 		.execute_with(|| {
 			deploy_contracts();
-			assert_eq!(
-				Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				ALICE_BALANCE
-			);
-			assert_eq!(
-				Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				0
-			);
-			assert_eq!(
-				Currencies::unreserve(CurrencyId::Erc20(erc20_address()), &alice(), 0),
-				0
-			);
-			assert_eq!(
-				Currencies::unreserve(CurrencyId::Erc20(erc20_address()), &alice(), 50),
-				50
-			);
+			assert_eq!(Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &alice()), ALICE_BALANCE);
+			assert_eq!(Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &alice()), 0);
+			assert_eq!(Currencies::unreserve(CurrencyId::Erc20(erc20_address()), &alice(), 0), 0);
+			assert_eq!(Currencies::unreserve(CurrencyId::Erc20(erc20_address()), &alice(), 50), 50);
 			assert_ok!(Currencies::reserve(CurrencyId::Erc20(erc20_address()), &alice(), 30));
-			assert_eq!(
-				Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				ALICE_BALANCE - 30
-			);
-			assert_eq!(
-				Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				30
-			);
-			assert_eq!(
-				Currencies::unreserve(CurrencyId::Erc20(erc20_address()), &alice(), 15),
-				0
-			);
-			assert_eq!(
-				Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				ALICE_BALANCE - 15
-			);
-			assert_eq!(
-				Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				15
-			);
-			assert_eq!(
-				Currencies::unreserve(CurrencyId::Erc20(erc20_address()), &alice(), 30),
-				15
-			);
-			assert_eq!(
-				Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				ALICE_BALANCE
-			);
-			assert_eq!(
-				Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				0
-			);
+			assert_eq!(Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &alice()), ALICE_BALANCE - 30);
+			assert_eq!(Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &alice()), 30);
+			assert_eq!(Currencies::unreserve(CurrencyId::Erc20(erc20_address()), &alice(), 15), 0);
+			assert_eq!(Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &alice()), ALICE_BALANCE - 15);
+			assert_eq!(Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &alice()), 15);
+			assert_eq!(Currencies::unreserve(CurrencyId::Erc20(erc20_address()), &alice(), 30), 15);
+			assert_eq!(Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &alice()), ALICE_BALANCE);
+			assert_eq!(Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &alice()), 0);
 		});
 }
 
@@ -1020,7 +765,7 @@ fn erc20_should_not_slash() {
 		.execute_with(|| {
 			deploy_contracts();
 			assert!(!Currencies::can_slash(CurrencyId::Erc20(erc20_address()), &alice(), 1));
-// calling slash will return 0
+			// calling slash will return 0
 			assert_eq!(Currencies::slash(CurrencyId::Erc20(erc20_address()), &alice(), 1), 0);
 		});
 }
@@ -1050,10 +795,7 @@ fn erc20_should_not_be_lockable() {
 #[test]
 fn erc20_repatriate_reserved_should_work() {
 	ExtBuilder::default()
-		.balances(vec![
-			(alice(), NATIVE_CURRENCY_ID, 200000),
-			(bob(), NATIVE_CURRENCY_ID, 100000),
-		])
+		.balances(vec![(alice(), NATIVE_CURRENCY_ID, 200000), (bob(), NATIVE_CURRENCY_ID, 100000)])
 		.build()
 		.execute_with(|| {
 			deploy_contracts();
@@ -1070,10 +812,7 @@ fn erc20_repatriate_reserved_should_work() {
 				Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &alice()),
 				ALICE_BALANCE - bob_balance
 			);
-			assert_eq!(
-				Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				0
-			);
+			assert_eq!(Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &alice()), 0);
 			assert_eq!(
 				Currencies::repatriate_reserved(
 					CurrencyId::Erc20(erc20_address()),
@@ -1098,25 +837,13 @@ fn erc20_repatriate_reserved_should_work() {
 				Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &alice()),
 				ALICE_BALANCE - bob_balance
 			);
-			assert_eq!(
-				Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				0
-			);
+			assert_eq!(Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &alice()), 0);
 
-			assert_eq!(
-				Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &bob()),
-				bob_balance
-			);
-			assert_eq!(
-				Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &bob()),
-				0
-			);
+			assert_eq!(Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &bob()), bob_balance);
+			assert_eq!(Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &bob()), 0);
 			assert_ok!(Currencies::reserve(CurrencyId::Erc20(erc20_address()), &bob(), 50));
 			assert_eq!(Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &bob()), 50);
-			assert_eq!(
-				Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &bob()),
-				50
-			);
+			assert_eq!(Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &bob()), 50);
 			assert_eq!(
 				Currencies::repatriate_reserved(
 					CurrencyId::Erc20(erc20_address()),
@@ -1128,10 +855,7 @@ fn erc20_repatriate_reserved_should_work() {
 				Ok(10)
 			);
 			assert_eq!(Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &bob()), 50);
-			assert_eq!(
-				Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &bob()),
-				50
-			);
+			assert_eq!(Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &bob()), 50);
 
 			assert_eq!(
 				Currencies::repatriate_reserved(
@@ -1147,15 +871,9 @@ fn erc20_repatriate_reserved_should_work() {
 				Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &alice()),
 				ALICE_BALANCE - bob_balance
 			);
-			assert_eq!(
-				Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				30
-			);
+			assert_eq!(Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &alice()), 30);
 			assert_eq!(Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &bob()), 50);
-			assert_eq!(
-				Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &bob()),
-				20
-			);
+			assert_eq!(Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &bob()), 20);
 
 			assert_eq!(
 				Currencies::repatriate_reserved(
@@ -1171,15 +889,9 @@ fn erc20_repatriate_reserved_should_work() {
 				Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &alice()),
 				ALICE_BALANCE - bob_balance + 20
 			);
-			assert_eq!(
-				Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &alice()),
-				30
-			);
+			assert_eq!(Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &alice()), 30);
 			assert_eq!(Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &bob()), 50);
-			assert_eq!(
-				Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &bob()),
-				0
-			);
+			assert_eq!(Currencies::reserved_balance(CurrencyId::Erc20(erc20_address()), &bob()), 0);
 		});
 }
 
@@ -1202,10 +914,7 @@ fn erc20_invalid_operation() {
 #[test]
 fn erc20_withdraw_deposit_works() {
 	ExtBuilder::default()
-		.balances(vec![
-			(alice(), NATIVE_CURRENCY_ID, 200000),
-			(bob(), NATIVE_CURRENCY_ID, 100000),
-		])
+		.balances(vec![(alice(), NATIVE_CURRENCY_ID, 200000), (bob(), NATIVE_CURRENCY_ID, 100000)])
 		.build()
 		.execute_with(|| {
 			deploy_contracts();
@@ -1213,7 +922,7 @@ fn erc20_withdraw_deposit_works() {
 
 			let erc20_holding_account = MockAddressMapping::get_account_id(&Erc20HoldingAccount::get());
 
-// transfer to all-zero account failed.
+			// transfer to all-zero account failed.
 			assert_noop!(
 				Currencies::transfer(
 					RuntimeOrigin::signed(alice()),
@@ -1223,37 +932,25 @@ fn erc20_withdraw_deposit_works() {
 				),
 				module_evm_bridge::Error::<Runtime>::ExecutionRevert
 			);
-// transfer to non-all-zero account ok.
+			// transfer to non-all-zero account ok.
 			assert_ok!(Currencies::transfer(
 				RuntimeOrigin::signed(alice()),
 				erc20_holding_account.clone(),
 				CurrencyId::Erc20(erc20_address()),
 				100
 			));
-			assert_eq!(
-				100,
-				Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &erc20_holding_account)
-			);
+			assert_eq!(100, Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &erc20_holding_account));
 
-// withdraw: sender to erc20 holding account
+			// withdraw: sender to erc20 holding account
 			assert_ok!(Currencies::withdraw(CurrencyId::Erc20(erc20_address()), &alice(), 100));
-			assert_eq!(
-				200,
-				Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &erc20_holding_account)
-			);
+			assert_eq!(200, Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &erc20_holding_account));
 
-// deposit: erc20 holding account to receiver
+			// deposit: erc20 holding account to receiver
 			assert_ok!(Currencies::deposit(CurrencyId::Erc20(erc20_address()), &bob(), 100));
-			assert_eq!(
-				100,
-				Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &erc20_holding_account)
-			);
-			assert_eq!(
-				100,
-				Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &bob())
-			);
+			assert_eq!(100, Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &erc20_holding_account));
+			assert_eq!(100, Currencies::free_balance(CurrencyId::Erc20(erc20_address()), &bob()));
 
-// deposit failed, because erc20 holding account balance not enough
+			// deposit failed, because erc20 holding account balance not enough
 			assert_noop!(
 				Currencies::deposit(CurrencyId::Erc20(erc20_address()), &bob(), 101),
 				module_evm_bridge::Error::<Runtime>::ExecutionRevert
@@ -1264,23 +961,14 @@ fn erc20_withdraw_deposit_works() {
 #[test]
 fn fungible_inspect_trait_should_work() {
 	ExtBuilder::default()
-		.balances(vec![
-			(alice(), NATIVE_CURRENCY_ID, 200000),
-			(alice(), X_TOKEN_ID, 200000),
-		])
+		.balances(vec![(alice(), NATIVE_CURRENCY_ID, 200000), (alice(), X_TOKEN_ID, 200000)])
 		.build()
 		.execute_with(|| {
 			deploy_contracts();
 
-// Test for Inspect::total_issuance
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::total_issuance(NATIVE_CURRENCY_ID),
-				200000
-			);
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::total_issuance(X_TOKEN_ID),
-				200000
-			);
+			// Test for Inspect::total_issuance
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::total_issuance(NATIVE_CURRENCY_ID), 200000);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::total_issuance(X_TOKEN_ID), 200000);
 			assert_eq!(
 				<Currencies as fungibles::Inspect<_>>::total_issuance(CurrencyId::Erc20(erc20_address())),
 				ALICE_BALANCE
@@ -1288,44 +976,26 @@ fn fungible_inspect_trait_should_work() {
 			assert_eq!(<NativeCurrency as fungible::Inspect<_>>::total_issuance(), 200000);
 			assert_eq!(<AdaptedBasicCurrency as fungible::Inspect<_>>::total_issuance(), 200000);
 
-// Test for Inspect::minimum_balance
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::minimum_balance(NATIVE_CURRENCY_ID),
-				2
-			);
+			// Test for Inspect::minimum_balance
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::minimum_balance(NATIVE_CURRENCY_ID), 2);
 			assert_eq!(<Currencies as fungibles::Inspect<_>>::minimum_balance(X_TOKEN_ID), 0);
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::minimum_balance(CurrencyId::Erc20(erc20_address())),
-				0
-			);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::minimum_balance(CurrencyId::Erc20(erc20_address())), 0);
 			assert_eq!(<NativeCurrency as fungible::Inspect<_>>::minimum_balance(), 2);
 			assert_eq!(<AdaptedBasicCurrency as fungible::Inspect<_>>::minimum_balance(), 2);
 
-// Test for Inspect::balance and Inspect::total_balance
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(NATIVE_CURRENCY_ID, &alice()),
-				148690
-			);
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::total_balance(NATIVE_CURRENCY_ID, &alice()),
-				148690
-			);
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(X_TOKEN_ID, &alice()),
-				200000
-			);
+			// Test for Inspect::balance and Inspect::total_balance
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(NATIVE_CURRENCY_ID, &alice()), 148690);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::total_balance(NATIVE_CURRENCY_ID, &alice()), 148690);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(X_TOKEN_ID, &alice()), 200000);
 			assert_eq!(
 				<Currencies as fungibles::Inspect<_>>::balance(CurrencyId::Erc20(erc20_address()), &alice()),
 				ALICE_BALANCE
 			);
 			assert_eq!(<NativeCurrency as fungible::Inspect<_>>::balance(&alice()), 148690);
-			assert_eq!(
-				<AdaptedBasicCurrency as fungible::Inspect<_>>::balance(&alice()),
-				148690
-			);
+			assert_eq!(<AdaptedBasicCurrency as fungible::Inspect<_>>::balance(&alice()), 148690);
 
-// Test for Inspect::reducible_balance. No locks or reserves
-// With Keep alive
+			// Test for Inspect::reducible_balance. No locks or reserves
+			// With Keep alive
 			assert_eq!(
 				<Currencies as fungibles::Inspect<_>>::reducible_balance(
 					NATIVE_CURRENCY_ID,
@@ -1370,8 +1040,8 @@ fn fungible_inspect_trait_should_work() {
 				ALICE_BALANCE
 			);
 
-// Test for Inspect::reducible_balance. No locks or reserves
-// without Keep alive.
+			// Test for Inspect::reducible_balance. No locks or reserves
+			// without Keep alive.
 			assert_eq!(
 				<Currencies as fungibles::Inspect<_>>::reducible_balance(
 					NATIVE_CURRENCY_ID,
@@ -1416,11 +1086,11 @@ fn fungible_inspect_trait_should_work() {
 				148690
 			);
 
-// Set some locks
+			// Set some locks
 			assert_ok!(Currencies::set_lock(ID_1, NATIVE_CURRENCY_ID, &alice(), 1000));
 			assert_ok!(Currencies::set_lock(ID_1, X_TOKEN_ID, &alice(), 1000));
 
-// Test Inspect::reducible_balance with locks
+			// Test Inspect::reducible_balance with locks
 			assert_eq!(
 				<Currencies as fungibles::Inspect<_>>::reducible_balance(
 					NATIVE_CURRENCY_ID,
@@ -1509,7 +1179,7 @@ fn fungible_inspect_trait_should_work() {
 				147690
 			);
 
-// Test for Inspect::can_deposit
+			// Test for Inspect::can_deposit
 			assert_eq!(
 				<Currencies as fungibles::Inspect<_>>::can_deposit(
 					NATIVE_CURRENCY_ID,
@@ -1620,7 +1290,7 @@ fn fungible_inspect_trait_should_work() {
 				DepositConsequence::Success
 			);
 
-// Test Inspect::can_withdraw
+			// Test Inspect::can_withdraw
 			assert_eq!(
 				<Currencies as fungibles::Inspect<_>>::can_withdraw(NATIVE_CURRENCY_ID, &alice(), Bounded::max_value()),
 				WithdrawConsequence::Underflow
@@ -1704,16 +1374,10 @@ fn fungible_inspect_trait_should_work() {
 				WithdrawConsequence::Success
 			);
 
-// Test Inspect::asset_exists
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::asset_exists(NATIVE_CURRENCY_ID),
-				true
-			);
+			// Test Inspect::asset_exists
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::asset_exists(NATIVE_CURRENCY_ID), true);
 			assert_eq!(<Currencies as fungibles::Inspect<_>>::asset_exists(X_TOKEN_ID), true);
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::asset_exists(CurrencyId::Erc20(erc20_address())),
-				true
-			);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::asset_exists(CurrencyId::Erc20(erc20_address())), true);
 			assert_eq!(
 				<Currencies as fungibles::Inspect<_>>::asset_exists(CurrencyId::Erc20(erc20_address_not_exist())),
 				false
@@ -1724,97 +1388,50 @@ fn fungible_inspect_trait_should_work() {
 #[test]
 fn fungible_mutate_trait_should_work() {
 	ExtBuilder::default()
-		.balances(vec![
-			(alice(), NATIVE_CURRENCY_ID, 100000),
-			(alice(), X_TOKEN_ID, 200000),
-		])
+		.balances(vec![(alice(), NATIVE_CURRENCY_ID, 100000), (alice(), X_TOKEN_ID, 200000)])
 		.build()
 		.execute_with(|| {
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::total_issuance(NATIVE_CURRENCY_ID),
-				100000
-			);
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(NATIVE_CURRENCY_ID, &alice()),
-				100000
-			);
-			assert_ok!(<Currencies as fungibles::Mutate<_>>::mint_into(
-				NATIVE_CURRENCY_ID,
-				&alice(),
-				1000
-			));
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::total_issuance(NATIVE_CURRENCY_ID), 100000);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(NATIVE_CURRENCY_ID, &alice()), 100000);
+			assert_ok!(<Currencies as fungibles::Mutate<_>>::mint_into(NATIVE_CURRENCY_ID, &alice(), 1000));
 			System::assert_last_event(RuntimeEvent::Balances(pallet_balances::Event::Minted {
 				who: alice(),
 				amount: 1000,
 			}));
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::total_issuance(NATIVE_CURRENCY_ID),
-				101000
-			);
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(NATIVE_CURRENCY_ID, &alice()),
-				101000
-			);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::total_issuance(NATIVE_CURRENCY_ID), 101000);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(NATIVE_CURRENCY_ID, &alice()), 101000);
 
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::total_issuance(X_TOKEN_ID),
-				200000
-			);
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(X_TOKEN_ID, &alice()),
-				200000
-			);
-			assert_ok!(<Currencies as fungibles::Mutate<_>>::mint_into(
-				X_TOKEN_ID,
-				&alice(),
-				1000
-			));
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::total_issuance(X_TOKEN_ID), 200000);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(X_TOKEN_ID, &alice()), 200000);
+			assert_ok!(<Currencies as fungibles::Mutate<_>>::mint_into(X_TOKEN_ID, &alice(), 1000));
 			System::assert_last_event(RuntimeEvent::Tokens(module_tokens::Event::Deposited {
 				currency_id: X_TOKEN_ID,
 				who: alice(),
 				amount: 1000,
 			}));
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::total_issuance(X_TOKEN_ID),
-				201000
-			);
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(X_TOKEN_ID, &alice()),
-				201000
-			);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::total_issuance(X_TOKEN_ID), 201000);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(X_TOKEN_ID, &alice()), 201000);
 
 			assert_ok!(<Currencies as fungibles::Mutate<_>>::mint_into(
 				CurrencyId::Erc20(erc20_address()),
 				&alice(),
 				0
 			));
-// mint_into will deposit erc20 holding account to recipient.
-// but here erc20 holding account don't have enough balance.
+			// mint_into will deposit erc20 holding account to recipient.
+			// but here erc20 holding account don't have enough balance.
 			assert_noop!(
 				<Currencies as fungibles::Mutate<_>>::mint_into(CurrencyId::Erc20(erc20_address()), &alice(), 1),
 				Error::<Runtime>::DepositFailed
 			);
 
 			assert_eq!(<AdaptedBasicCurrency as fungible::Inspect<_>>::total_issuance(), 101000);
-			assert_eq!(
-				<AdaptedBasicCurrency as fungible::Inspect<_>>::balance(&alice()),
-				101000
-			);
+			assert_eq!(<AdaptedBasicCurrency as fungible::Inspect<_>>::balance(&alice()), 101000);
 			assert_ok!(<AdaptedBasicCurrency as fungible::Mutate<_>>::mint_into(&alice(), 1000));
 			assert_eq!(<AdaptedBasicCurrency as fungible::Inspect<_>>::total_issuance(), 102000);
-			assert_eq!(
-				<AdaptedBasicCurrency as fungible::Inspect<_>>::balance(&alice()),
-				102000
-			);
+			assert_eq!(<AdaptedBasicCurrency as fungible::Inspect<_>>::balance(&alice()), 102000);
 
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::total_issuance(NATIVE_CURRENCY_ID),
-				102000
-			);
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(NATIVE_CURRENCY_ID, &alice()),
-				102000
-			);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::total_issuance(NATIVE_CURRENCY_ID), 102000);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(NATIVE_CURRENCY_ID, &alice()), 102000);
 			assert_ok!(<Currencies as fungibles::Mutate<_>>::burn_from(
 				NATIVE_CURRENCY_ID,
 				&alice(),
@@ -1826,23 +1443,11 @@ fn fungible_mutate_trait_should_work() {
 				who: alice(),
 				amount: 1000,
 			}));
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::total_issuance(NATIVE_CURRENCY_ID),
-				101000
-			);
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(NATIVE_CURRENCY_ID, &alice()),
-				101000
-			);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::total_issuance(NATIVE_CURRENCY_ID), 101000);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(NATIVE_CURRENCY_ID, &alice()), 101000);
 
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::total_issuance(X_TOKEN_ID),
-				201000
-			);
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(X_TOKEN_ID, &alice()),
-				201000
-			);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::total_issuance(X_TOKEN_ID), 201000);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(X_TOKEN_ID, &alice()), 201000);
 			assert_ok!(<Currencies as fungibles::Mutate<_>>::burn_from(
 				X_TOKEN_ID,
 				&alice(),
@@ -1855,14 +1460,8 @@ fn fungible_mutate_trait_should_work() {
 				who: alice(),
 				amount: 1000,
 			}));
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::total_issuance(X_TOKEN_ID),
-				200000
-			);
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(X_TOKEN_ID, &alice()),
-				200000
-			);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::total_issuance(X_TOKEN_ID), 200000);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(X_TOKEN_ID, &alice()), 200000);
 
 			assert_ok!(<Currencies as fungibles::Mutate<_>>::burn_from(
 				CurrencyId::Erc20(erc20_address()),
@@ -1884,10 +1483,7 @@ fn fungible_mutate_trait_should_work() {
 			);
 
 			assert_eq!(<AdaptedBasicCurrency as fungible::Inspect<_>>::total_issuance(), 101000);
-			assert_eq!(
-				<AdaptedBasicCurrency as fungible::Inspect<_>>::balance(&alice()),
-				101000
-			);
+			assert_eq!(<AdaptedBasicCurrency as fungible::Inspect<_>>::balance(&alice()), 101000);
 			assert_ok!(<AdaptedBasicCurrency as fungible::Mutate<_>>::burn_from(
 				&alice(),
 				1000,
@@ -1895,12 +1491,9 @@ fn fungible_mutate_trait_should_work() {
 				Fortitude::Force,
 			));
 			assert_eq!(<AdaptedBasicCurrency as fungible::Inspect<_>>::total_issuance(), 100000);
-			assert_eq!(
-				<AdaptedBasicCurrency as fungible::Inspect<_>>::balance(&alice()),
-				100000
-			);
+			assert_eq!(<AdaptedBasicCurrency as fungible::Inspect<_>>::balance(&alice()), 100000);
 
-// Burn dust if remaining is less than ED.
+			// Burn dust if remaining is less than ED.
 			assert_eq!(
 				<Currencies as fungibles::Mutate<_>>::burn_from(
 					NATIVE_CURRENCY_ID,
@@ -1918,20 +1511,11 @@ fn fungible_mutate_trait_should_work() {
 #[test]
 fn fungible_mutate_trait_transfer_should_work() {
 	ExtBuilder::default()
-		.balances(vec![
-			(alice(), NATIVE_CURRENCY_ID, 500000),
-			(alice(), X_TOKEN_ID, 200000),
-		])
+		.balances(vec![(alice(), NATIVE_CURRENCY_ID, 500000), (alice(), X_TOKEN_ID, 200000)])
 		.build()
 		.execute_with(|| {
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(NATIVE_CURRENCY_ID, &alice()),
-				500000
-			);
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(NATIVE_CURRENCY_ID, &bob()),
-				0
-			);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(NATIVE_CURRENCY_ID, &alice()), 500000);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(NATIVE_CURRENCY_ID, &bob()), 0);
 
 			System::reset_events();
 			assert_ok!(<Currencies as fungibles::Mutate<_>>::transfer(
@@ -1964,19 +1548,10 @@ fn fungible_mutate_trait_transfer_should_work() {
 				TokenError::NotExpendable,
 			);
 
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(NATIVE_CURRENCY_ID, &alice()),
-				490000
-			);
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(NATIVE_CURRENCY_ID, &bob()),
-				10000
-			);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(NATIVE_CURRENCY_ID, &alice()), 490000);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(NATIVE_CURRENCY_ID, &bob()), 10000);
 
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(X_TOKEN_ID, &alice()),
-				200000
-			);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(X_TOKEN_ID, &alice()), 200000);
 			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(X_TOKEN_ID, &bob()), 0);
 			System::reset_events();
 			assert_ok!(<Currencies as fungibles::Mutate<_>>::transfer(
@@ -1998,19 +1573,10 @@ fn fungible_mutate_trait_transfer_should_work() {
 				to: bob(),
 				amount: 10000,
 			}));
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(X_TOKEN_ID, &alice()),
-				190000
-			);
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(X_TOKEN_ID, &bob()),
-				10000
-			);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(X_TOKEN_ID, &alice()), 190000);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(X_TOKEN_ID, &bob()), 10000);
 
-			assert_eq!(
-				<AdaptedBasicCurrency as fungible::Inspect<_>>::balance(&alice()),
-				490000
-			);
+			assert_eq!(<AdaptedBasicCurrency as fungible::Inspect<_>>::balance(&alice()), 490000);
 			assert_eq!(<AdaptedBasicCurrency as fungible::Inspect<_>>::balance(&bob()), 10000);
 			assert_ok!(<AdaptedBasicCurrency as fungible::Mutate<_>>::transfer(
 				&alice(),
@@ -2018,10 +1584,7 @@ fn fungible_mutate_trait_transfer_should_work() {
 				10000,
 				Preservation::Preserve,
 			));
-			assert_eq!(
-				<AdaptedBasicCurrency as fungible::Inspect<_>>::balance(&alice()),
-				480000
-			);
+			assert_eq!(<AdaptedBasicCurrency as fungible::Inspect<_>>::balance(&alice()), 480000);
 			assert_eq!(<AdaptedBasicCurrency as fungible::Inspect<_>>::balance(&bob()), 20000);
 
 			deploy_contracts();
@@ -2030,10 +1593,7 @@ fn fungible_mutate_trait_transfer_should_work() {
 				<Currencies as fungibles::Inspect<_>>::balance(CurrencyId::Erc20(erc20_address()), &alice()),
 				ALICE_BALANCE
 			);
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(CurrencyId::Erc20(erc20_address()), &bob()),
-				0
-			);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(CurrencyId::Erc20(erc20_address()), &bob()), 0);
 			assert_ok!(<Currencies as fungibles::Mutate<_>>::transfer(
 				CurrencyId::Erc20(erc20_address()),
 				&alice(),
@@ -2061,50 +1621,21 @@ fn fungible_mutate_trait_transfer_should_work() {
 #[test]
 fn fungible_unbalanced_trait_should_work() {
 	ExtBuilder::default()
-		.balances(vec![
-			(alice(), NATIVE_CURRENCY_ID, 100000),
-			(alice(), X_TOKEN_ID, 200000),
-		])
+		.balances(vec![(alice(), NATIVE_CURRENCY_ID, 100000), (alice(), X_TOKEN_ID, 200000)])
 		.build()
 		.execute_with(|| {
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::total_issuance(NATIVE_CURRENCY_ID),
-				100000
-			);
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(NATIVE_CURRENCY_ID, &alice()),
-				100000
-			);
-			assert_ok!(<Currencies as fungibles::Unbalanced<_>>::write_balance(
-				NATIVE_CURRENCY_ID,
-				&alice(),
-				80000
-			));
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::total_issuance(NATIVE_CURRENCY_ID), 100000);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(NATIVE_CURRENCY_ID, &alice()), 100000);
+			assert_ok!(<Currencies as fungibles::Unbalanced<_>>::write_balance(NATIVE_CURRENCY_ID, &alice(), 80000));
 
-// now, fungible::Unbalanced::write_balance as low-level function, does not use BalanceSet event
+			// now, fungible::Unbalanced::write_balance as low-level function, does not use BalanceSet event
 
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::total_issuance(NATIVE_CURRENCY_ID),
-				100000
-			);
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(NATIVE_CURRENCY_ID, &alice()),
-				80000
-			);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::total_issuance(NATIVE_CURRENCY_ID), 100000);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(NATIVE_CURRENCY_ID, &alice()), 80000);
 
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::total_issuance(X_TOKEN_ID),
-				200000
-			);
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(X_TOKEN_ID, &alice()),
-				200000
-			);
-			assert_ok!(<Currencies as fungibles::Unbalanced<_>>::write_balance(
-				X_TOKEN_ID,
-				&alice(),
-				80000
-			));
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::total_issuance(X_TOKEN_ID), 200000);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(X_TOKEN_ID, &alice()), 200000);
+			assert_ok!(<Currencies as fungibles::Unbalanced<_>>::write_balance(X_TOKEN_ID, &alice(), 80000));
 			System::assert_last_event(RuntimeEvent::Tokens(module_tokens::Event::BalanceSet {
 				currency_id: X_TOKEN_ID,
 				who: alice(),
@@ -2112,21 +1643,12 @@ fn fungible_unbalanced_trait_should_work() {
 				reserved: 0,
 			}));
 
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::total_issuance(X_TOKEN_ID),
-				200000
-			);
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(X_TOKEN_ID, &alice()),
-				80000
-			);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::total_issuance(X_TOKEN_ID), 200000);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(X_TOKEN_ID, &alice()), 80000);
 
 			assert_eq!(<AdaptedBasicCurrency as fungible::Inspect<_>>::total_issuance(), 100000);
 			assert_eq!(<AdaptedBasicCurrency as fungible::Inspect<_>>::balance(&alice()), 80000);
-			assert_ok!(<AdaptedBasicCurrency as fungible::Unbalanced<_>>::write_balance(
-				&alice(),
-				60000
-			));
+			assert_ok!(<AdaptedBasicCurrency as fungible::Unbalanced<_>>::write_balance(&alice(), 60000));
 			assert_eq!(<AdaptedBasicCurrency as fungible::Inspect<_>>::total_issuance(), 100000);
 			assert_eq!(<AdaptedBasicCurrency as fungible::Inspect<_>>::balance(&alice()), 60000);
 
@@ -2139,20 +1661,11 @@ fn fungible_unbalanced_trait_should_work() {
 				Error::<Runtime>::Erc20InvalidOperation
 			);
 
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::total_issuance(NATIVE_CURRENCY_ID),
-				100000
-			);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::total_issuance(NATIVE_CURRENCY_ID), 100000);
 			<Currencies as fungibles::Unbalanced<_>>::set_total_issuance(NATIVE_CURRENCY_ID, 60000);
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::total_issuance(NATIVE_CURRENCY_ID),
-				60000
-			);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::total_issuance(NATIVE_CURRENCY_ID), 60000);
 
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::total_issuance(X_TOKEN_ID),
-				200000
-			);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::total_issuance(X_TOKEN_ID), 200000);
 			<Currencies as fungibles::Unbalanced<_>>::set_total_issuance(X_TOKEN_ID, 80000);
 			assert_eq!(<Currencies as fungibles::Inspect<_>>::total_issuance(X_TOKEN_ID), 80000);
 			System::assert_last_event(RuntimeEvent::Tokens(module_tokens::Event::TotalIssuanceSet {
@@ -2164,15 +1677,9 @@ fn fungible_unbalanced_trait_should_work() {
 			<AdaptedBasicCurrency as fungible::Unbalanced<_>>::set_total_issuance(0);
 			assert_eq!(<AdaptedBasicCurrency as fungible::Inspect<_>>::total_issuance(), 0);
 
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::total_issuance(CurrencyId::Erc20(erc20_address())),
-				0
-			);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::total_issuance(CurrencyId::Erc20(erc20_address())), 0);
 			<Currencies as fungibles::Unbalanced<_>>::set_total_issuance(CurrencyId::Erc20(erc20_address()), 80000);
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::total_issuance(CurrencyId::Erc20(erc20_address())),
-				0
-			);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::total_issuance(CurrencyId::Erc20(erc20_address())), 0);
 		});
 }
 
@@ -2187,10 +1694,7 @@ fn fungible_inspect_hold_and_hold_trait_should_work() {
 		])
 		.build()
 		.execute_with(|| {
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(NATIVE_CURRENCY_ID, &alice()),
-				500000
-			);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(NATIVE_CURRENCY_ID, &alice()), 500000);
 			assert_eq!(
 				<Currencies as fungibles::InspectHold<_>>::balance_on_hold(NATIVE_CURRENCY_ID, &(), &alice()),
 				0
@@ -2205,47 +1709,22 @@ fn fungible_inspect_hold_and_hold_trait_should_work() {
 				false
 			);
 
-			assert_ok!(<Currencies as fungibles::MutateHold<_>>::hold(
-				NATIVE_CURRENCY_ID,
-				&(),
-				&alice(),
-				20000
-			));
+			assert_ok!(<Currencies as fungibles::MutateHold<_>>::hold(NATIVE_CURRENCY_ID, &(), &alice(), 20000));
 			assert_noop!(
 				<Currencies as fungibles::MutateHold<_>>::hold(NATIVE_CURRENCY_ID, &(), &alice(), 500000),
 				TokenError::FundsUnavailable,
 			);
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(NATIVE_CURRENCY_ID, &alice()),
-				480000
-			);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(NATIVE_CURRENCY_ID, &alice()), 480000);
 			assert_eq!(
 				<Currencies as fungibles::InspectHold<_>>::balance_on_hold(NATIVE_CURRENCY_ID, &(), &alice()),
 				20000
 			);
 
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(X_TOKEN_ID, &alice()),
-				200000
-			);
-			assert_eq!(
-				<Currencies as fungibles::InspectHold<_>>::balance_on_hold(X_TOKEN_ID, &(), &alice()),
-				0
-			);
-			assert_eq!(
-				<Currencies as fungibles::InspectHold<_>>::can_hold(X_TOKEN_ID, &(), &alice(), 200000),
-				true
-			);
-			assert_eq!(
-				<Currencies as fungibles::InspectHold<_>>::can_hold(X_TOKEN_ID, &(), &alice(), 200001),
-				false
-			);
-			assert_ok!(<Currencies as fungibles::MutateHold<_>>::hold(
-				X_TOKEN_ID,
-				&(),
-				&alice(),
-				20000
-			));
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(X_TOKEN_ID, &alice()), 200000);
+			assert_eq!(<Currencies as fungibles::InspectHold<_>>::balance_on_hold(X_TOKEN_ID, &(), &alice()), 0);
+			assert_eq!(<Currencies as fungibles::InspectHold<_>>::can_hold(X_TOKEN_ID, &(), &alice(), 200000), true);
+			assert_eq!(<Currencies as fungibles::InspectHold<_>>::can_hold(X_TOKEN_ID, &(), &alice(), 200001), false);
+			assert_ok!(<Currencies as fungibles::MutateHold<_>>::hold(X_TOKEN_ID, &(), &alice(), 20000));
 			System::assert_last_event(RuntimeEvent::Tokens(module_tokens::Event::Reserved {
 				currency_id: X_TOKEN_ID,
 				who: alice(),
@@ -2254,51 +1733,19 @@ fn fungible_inspect_hold_and_hold_trait_should_work() {
 
 			assert_noop!(
 				<Currencies as fungibles::MutateHold<_>>::hold(X_TOKEN_ID, &(), &alice(), 200000),
-				DispatchError::Module(ModuleError {
-					index: 2,
-					error: [0, 0, 0, 0],
-					message: Some("BalanceTooLow",),
-				},)
+				DispatchError::Module(ModuleError { index: 2, error: [0, 0, 0, 0], message: Some("BalanceTooLow",) },)
 			);
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(X_TOKEN_ID, &alice()),
-				180000
-			);
-			assert_eq!(
-				<Currencies as fungibles::InspectHold<_>>::balance_on_hold(X_TOKEN_ID, &(), &alice()),
-				20000
-			);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(X_TOKEN_ID, &alice()), 180000);
+			assert_eq!(<Currencies as fungibles::InspectHold<_>>::balance_on_hold(X_TOKEN_ID, &(), &alice()), 20000);
 
-			assert_eq!(
-				<AdaptedBasicCurrency as fungible::Inspect<_>>::balance(&alice()),
-				480000
-			);
-			assert_eq!(
-				<AdaptedBasicCurrency as fungible::InspectHold<_>>::balance_on_hold(&(), &alice()),
-				20000
-			);
-			assert_eq!(
-				<AdaptedBasicCurrency as fungible::InspectHold<_>>::can_hold(&(), &alice(), 20000),
-				true
-			);
-			assert_ok!(<AdaptedBasicCurrency as fungible::MutateHold<_>>::hold(
-				&(),
-				&alice(),
-				20000
-			));
-			assert_eq!(
-				<AdaptedBasicCurrency as fungible::Inspect<_>>::balance(&alice()),
-				460000
-			);
-			assert_eq!(
-				<AdaptedBasicCurrency as fungible::InspectHold<_>>::balance_on_hold(&(), &alice()),
-				40000
-			);
+			assert_eq!(<AdaptedBasicCurrency as fungible::Inspect<_>>::balance(&alice()), 480000);
+			assert_eq!(<AdaptedBasicCurrency as fungible::InspectHold<_>>::balance_on_hold(&(), &alice()), 20000);
+			assert_eq!(<AdaptedBasicCurrency as fungible::InspectHold<_>>::can_hold(&(), &alice(), 20000), true);
+			assert_ok!(<AdaptedBasicCurrency as fungible::MutateHold<_>>::hold(&(), &alice(), 20000));
+			assert_eq!(<AdaptedBasicCurrency as fungible::Inspect<_>>::balance(&alice()), 460000);
+			assert_eq!(<AdaptedBasicCurrency as fungible::InspectHold<_>>::balance_on_hold(&(), &alice()), 40000);
 
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(NATIVE_CURRENCY_ID, &alice()),
-				460000
-			);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(NATIVE_CURRENCY_ID, &alice()), 460000);
 			assert_eq!(
 				<Currencies as fungibles::InspectHold<_>>::balance_on_hold(NATIVE_CURRENCY_ID, &(), &alice()),
 				40000
@@ -2313,10 +1760,7 @@ fn fungible_inspect_hold_and_hold_trait_should_work() {
 				),
 				Ok(10000)
 			);
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(NATIVE_CURRENCY_ID, &alice()),
-				470000
-			);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(NATIVE_CURRENCY_ID, &alice()), 470000);
 			assert_eq!(
 				<Currencies as fungibles::InspectHold<_>>::balance_on_hold(NATIVE_CURRENCY_ID, &(), &alice()),
 				30000
@@ -2345,21 +1789,10 @@ fn fungible_inspect_hold_and_hold_trait_should_work() {
 				<Currencies as fungibles::InspectHold<_>>::balance_on_hold(NATIVE_CURRENCY_ID, &(), &alice()),
 				0
 			);
-			assert_ok!(<Currencies as fungibles::MutateHold<_>>::hold(
-				NATIVE_CURRENCY_ID,
-				&(),
-				&alice(),
-				30000
-			));
+			assert_ok!(<Currencies as fungibles::MutateHold<_>>::hold(NATIVE_CURRENCY_ID, &(), &alice(), 30000));
 
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(X_TOKEN_ID, &alice()),
-				180000
-			);
-			assert_eq!(
-				<Currencies as fungibles::InspectHold<_>>::balance_on_hold(X_TOKEN_ID, &(), &alice()),
-				20000
-			);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(X_TOKEN_ID, &alice()), 180000);
+			assert_eq!(<Currencies as fungibles::InspectHold<_>>::balance_on_hold(X_TOKEN_ID, &(), &alice()), 20000);
 			assert_eq!(
 				<Currencies as fungibles::MutateHold<_>>::release(
 					X_TOKEN_ID,
@@ -2376,21 +1809,11 @@ fn fungible_inspect_hold_and_hold_trait_should_work() {
 				amount: 10000,
 			}));
 
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(X_TOKEN_ID, &alice()),
-				190000
-			);
-			assert_eq!(
-				<Currencies as fungibles::InspectHold<_>>::balance_on_hold(X_TOKEN_ID, &(), &alice()),
-				10000
-			);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(X_TOKEN_ID, &alice()), 190000);
+			assert_eq!(<Currencies as fungibles::InspectHold<_>>::balance_on_hold(X_TOKEN_ID, &(), &alice()), 10000);
 			assert_noop!(
 				<Currencies as fungibles::MutateHold<_>>::release(X_TOKEN_ID, &(), &alice(), 100000, Precision::Exact,),
-				DispatchError::Module(ModuleError {
-					index: 2,
-					error: [0, 0, 0, 0],
-					message: Some("BalanceTooLow")
-				})
+				DispatchError::Module(ModuleError { index: 2, error: [0, 0, 0, 0], message: Some("BalanceTooLow") })
 			);
 			assert_eq!(
 				<Currencies as fungibles::MutateHold<_>>::release(
@@ -2402,50 +1825,24 @@ fn fungible_inspect_hold_and_hold_trait_should_work() {
 				),
 				Ok(10000)
 			);
-			assert_ok!(<Currencies as fungibles::MutateHold<_>>::hold(
-				X_TOKEN_ID,
-				&(),
-				&alice(),
-				10000
-			));
+			assert_ok!(<Currencies as fungibles::MutateHold<_>>::hold(X_TOKEN_ID, &(), &alice(), 10000));
 
-			assert_eq!(
-				<AdaptedBasicCurrency as fungible::Inspect<_>>::balance(&alice()),
-				470000
-			);
-			assert_eq!(
-				<AdaptedBasicCurrency as fungible::InspectHold<_>>::balance_on_hold(&(), &alice()),
-				30000
-			);
+			assert_eq!(<AdaptedBasicCurrency as fungible::Inspect<_>>::balance(&alice()), 470000);
+			assert_eq!(<AdaptedBasicCurrency as fungible::InspectHold<_>>::balance_on_hold(&(), &alice()), 30000);
 			assert_eq!(
 				<AdaptedBasicCurrency as fungible::MutateHold<_>>::release(&(), &alice(), 10000, Precision::BestEffort,),
 				Ok(10000)
 			);
-			assert_eq!(
-				<AdaptedBasicCurrency as fungible::Inspect<_>>::balance(&alice()),
-				480000
-			);
-			assert_eq!(
-				<AdaptedBasicCurrency as fungible::InspectHold<_>>::balance_on_hold(&(), &alice()),
-				20000
-			);
+			assert_eq!(<AdaptedBasicCurrency as fungible::Inspect<_>>::balance(&alice()), 480000);
+			assert_eq!(<AdaptedBasicCurrency as fungible::InspectHold<_>>::balance_on_hold(&(), &alice()), 20000);
 
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(NATIVE_CURRENCY_ID, &alice()),
-				480000
-			);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(NATIVE_CURRENCY_ID, &alice()), 480000);
 			assert_eq!(
 				<Currencies as fungibles::InspectHold<_>>::balance_on_hold(NATIVE_CURRENCY_ID, &(), &alice()),
 				20000
 			);
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(NATIVE_CURRENCY_ID, &bob()),
-				10000
-			);
-			assert_eq!(
-				<Currencies as fungibles::InspectHold<_>>::balance_on_hold(NATIVE_CURRENCY_ID, &(), &bob()),
-				0
-			);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(NATIVE_CURRENCY_ID, &bob()), 10000);
+			assert_eq!(<Currencies as fungibles::InspectHold<_>>::balance_on_hold(NATIVE_CURRENCY_ID, &(), &bob()), 0);
 			assert_eq!(
 				<Currencies as fungibles::MutateHold<_>>::transfer_on_hold(
 					NATIVE_CURRENCY_ID,
@@ -2472,39 +1869,21 @@ fn fungible_inspect_hold_and_hold_trait_should_work() {
 				),
 				TokenError::Frozen,
 			);
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(NATIVE_CURRENCY_ID, &alice()),
-				480000
-			);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(NATIVE_CURRENCY_ID, &alice()), 480000);
 			assert_eq!(
 				<Currencies as fungibles::InspectHold<_>>::balance_on_hold(NATIVE_CURRENCY_ID, &(), &alice()),
 				18000
 			);
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(NATIVE_CURRENCY_ID, &bob()),
-				10000
-			);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(NATIVE_CURRENCY_ID, &bob()), 10000);
 			assert_eq!(
 				<Currencies as fungibles::InspectHold<_>>::balance_on_hold(NATIVE_CURRENCY_ID, &(), &bob()),
 				2000
 			);
 
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(X_TOKEN_ID, &alice()),
-				190000
-			);
-			assert_eq!(
-				<Currencies as fungibles::InspectHold<_>>::balance_on_hold(X_TOKEN_ID, &(), &alice()),
-				10000
-			);
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(X_TOKEN_ID, &bob()),
-				10000
-			);
-			assert_eq!(
-				<Currencies as fungibles::InspectHold<_>>::balance_on_hold(X_TOKEN_ID, &(), &bob()),
-				0
-			);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(X_TOKEN_ID, &alice()), 190000);
+			assert_eq!(<Currencies as fungibles::InspectHold<_>>::balance_on_hold(X_TOKEN_ID, &(), &alice()), 10000);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(X_TOKEN_ID, &bob()), 10000);
+			assert_eq!(<Currencies as fungibles::InspectHold<_>>::balance_on_hold(X_TOKEN_ID, &(), &bob()), 0);
 			assert_eq!(
 				<Currencies as fungibles::MutateHold<_>>::transfer_on_hold(
 					X_TOKEN_ID,
@@ -2537,42 +1916,17 @@ fn fungible_inspect_hold_and_hold_trait_should_work() {
 					Restriction::OnHold,
 					Fortitude::Polite,
 				),
-				DispatchError::Module(ModuleError {
-					index: 2,
-					error: [0, 0, 0, 0],
-					message: Some("BalanceTooLow")
-				})
+				DispatchError::Module(ModuleError { index: 2, error: [0, 0, 0, 0], message: Some("BalanceTooLow") })
 			);
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(X_TOKEN_ID, &alice()),
-				190000
-			);
-			assert_eq!(
-				<Currencies as fungibles::InspectHold<_>>::balance_on_hold(X_TOKEN_ID, &(), &alice()),
-				8000
-			);
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(X_TOKEN_ID, &bob()),
-				10000
-			);
-			assert_eq!(
-				<Currencies as fungibles::InspectHold<_>>::balance_on_hold(X_TOKEN_ID, &(), &bob()),
-				2000
-			);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(X_TOKEN_ID, &alice()), 190000);
+			assert_eq!(<Currencies as fungibles::InspectHold<_>>::balance_on_hold(X_TOKEN_ID, &(), &alice()), 8000);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(X_TOKEN_ID, &bob()), 10000);
+			assert_eq!(<Currencies as fungibles::InspectHold<_>>::balance_on_hold(X_TOKEN_ID, &(), &bob()), 2000);
 
-			assert_eq!(
-				<AdaptedBasicCurrency as fungible::Inspect<_>>::balance(&alice()),
-				480000
-			);
-			assert_eq!(
-				<AdaptedBasicCurrency as fungible::InspectHold<_>>::balance_on_hold(&(), &alice()),
-				18000
-			);
+			assert_eq!(<AdaptedBasicCurrency as fungible::Inspect<_>>::balance(&alice()), 480000);
+			assert_eq!(<AdaptedBasicCurrency as fungible::InspectHold<_>>::balance_on_hold(&(), &alice()), 18000);
 			assert_eq!(<AdaptedBasicCurrency as fungible::Inspect<_>>::balance(&bob()), 10000);
-			assert_eq!(
-				<AdaptedBasicCurrency as fungible::InspectHold<_>>::balance_on_hold(&(), &bob()),
-				2000
-			);
+			assert_eq!(<AdaptedBasicCurrency as fungible::InspectHold<_>>::balance_on_hold(&(), &bob()), 2000);
 			assert_eq!(
 				<AdaptedBasicCurrency as fungible::MutateHold<_>>::transfer_on_hold(
 					&(),
@@ -2585,19 +1939,10 @@ fn fungible_inspect_hold_and_hold_trait_should_work() {
 				),
 				Ok(2000)
 			);
-			assert_eq!(
-				<AdaptedBasicCurrency as fungible::Inspect<_>>::balance(&alice()),
-				480000
-			);
-			assert_eq!(
-				<AdaptedBasicCurrency as fungible::InspectHold<_>>::balance_on_hold(&(), &alice()),
-				16000
-			);
+			assert_eq!(<AdaptedBasicCurrency as fungible::Inspect<_>>::balance(&alice()), 480000);
+			assert_eq!(<AdaptedBasicCurrency as fungible::InspectHold<_>>::balance_on_hold(&(), &alice()), 16000);
 			assert_eq!(<AdaptedBasicCurrency as fungible::Inspect<_>>::balance(&bob()), 10000);
-			assert_eq!(
-				<AdaptedBasicCurrency as fungible::InspectHold<_>>::balance_on_hold(&(), &bob()),
-				4000
-			);
+			assert_eq!(<AdaptedBasicCurrency as fungible::InspectHold<_>>::balance_on_hold(&(), &bob()), 4000);
 
 			deploy_contracts();
 			assert_eq!(
@@ -2714,10 +2059,7 @@ fn fungible_inspect_hold_and_hold_trait_should_work() {
 				),
 				8000
 			);
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(CurrencyId::Erc20(erc20_address()), &bob()),
-				0
-			);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(CurrencyId::Erc20(erc20_address()), &bob()), 0);
 			assert_eq!(
 				<Currencies as fungibles::InspectHold<_>>::balance_on_hold(
 					CurrencyId::Erc20(erc20_address()),
@@ -2767,10 +2109,7 @@ fn fungible_inspect_hold_and_hold_trait_should_work() {
 				),
 				6000
 			);
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(CurrencyId::Erc20(erc20_address()), &bob()),
-				0
-			);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(CurrencyId::Erc20(erc20_address()), &bob()), 0);
 			assert_eq!(
 				<Currencies as fungibles::InspectHold<_>>::balance_on_hold(
 					CurrencyId::Erc20(erc20_address()),
@@ -2805,10 +2144,7 @@ fn fungible_inspect_hold_and_hold_trait_should_work() {
 				),
 				0
 			);
-			assert_eq!(
-				<Currencies as fungibles::Inspect<_>>::balance(CurrencyId::Erc20(erc20_address()), &bob()),
-				0
-			);
+			assert_eq!(<Currencies as fungibles::Inspect<_>>::balance(CurrencyId::Erc20(erc20_address()), &bob()), 0);
 			assert_eq!(
 				<Currencies as fungibles::InspectHold<_>>::balance_on_hold(
 					CurrencyId::Erc20(erc20_address()),
@@ -2825,58 +2161,34 @@ fn sweep_dust_tokens_works() {
 	ExtBuilder::default().build().execute_with(|| {
 		module_tokens::Accounts::<Runtime>::insert(
 			bob(),
-			module_tokens::AccountData {
-				free: 1,
-				frozen: 0,
-				reserved: 0,
-			},
+			module_tokens::AccountData { free: 1, frozen: 0, reserved: 0 },
 		);
 		module_tokens::Accounts::<Runtime>::insert(
 			eva(),
-			module_tokens::AccountData {
-				free: 2,
-				frozen: 0,
-				reserved: 0,
-			},
+			module_tokens::AccountData { free: 2, frozen: 0, reserved: 0 },
 		);
 		module_tokens::Accounts::<Runtime>::insert(
 			alice(),
-			module_tokens::AccountData {
-				free: 0,
-				frozen: 1,
-				reserved: 0,
-			},
+			module_tokens::AccountData { free: 0, frozen: 1, reserved: 0 },
 		);
 		module_tokens::Accounts::<Runtime>::insert(
 			DustAccount::get(),
-			module_tokens::AccountData {
-				free: 100,
-				frozen: 0,
-				reserved: 0,
-			},
+			module_tokens::AccountData { free: 100, frozen: 0, reserved: 0 },
 		);
 
 		let accounts = vec![bob(), eva(), alice()];
 
-		assert_noop!(
-			DispatchError::BadOrigin
-		);
+		assert_noop!(DispatchError::BadOrigin);
 
-		assert_ok!(Currencies::sweep_dust(
-			RuntimeOrigin::signed(CouncilAccount::get()),
-			accounts
-		));
-		System::assert_last_event(RuntimeEvent::Currencies(crate::Event::DustSwept {
-			who: bob(),
-			amount: 1,
-		}));
+		assert_ok!(Currencies::sweep_dust(RuntimeOrigin::signed(CouncilAccount::get()), accounts));
+		System::assert_last_event(RuntimeEvent::Currencies(crate::Event::DustSwept { who: bob(), amount: 1 }));
 
-// bob's account is gone
+		// bob's account is gone
 
-// eva's account remains, not below ED
+		// eva's account remains, not below ED
 
-// Dust transferred to dust receiver
-// Total issuance remains the same
+		// Dust transferred to dust receiver
+		// Total issuance remains the same
 	});
 }
 
@@ -2886,85 +2198,77 @@ fn sweep_dust_native_currency_works() {
 	ExtBuilder::default().build().execute_with(|| {
 		assert_ok!(<Runtime as pallet_balances::Config>::AccountStore::insert(
 			&bob(),
-			pallet_balances::AccountData {
-				free: 1,
-				reserved: 0,
-				frozen: 0,
-				flags: Default::default(),
-			},
+			pallet_balances::AccountData { free: 1, reserved: 0, frozen: 0, flags: Default::default() },
 		));
 
-// TODO: seems the insert directly does not work now, it's probably because of the new machanism of
-// provider and consumer: https://github.com/paritytech/substrate/blob/569aae5341ea0c1d10426fa1ec13a36c0b64393b/frame/system/src/lib.rs#L1692
-// consider deposit_creating alive account, then decrease the ED to fix this test!
-		assert_eq!(
-			<Runtime as pallet_balances::Config>::AccountStore::get(&bob()),
-			Default::default()
-		);
+		// TODO: seems the insert directly does not work now, it's probably because of the new machanism of
+		// provider and consumer: https://github.com/paritytech/substrate/blob/569aae5341ea0c1d10426fa1ec13a36c0b64393b/frame/system/src/lib.rs#L1692
+		// consider deposit_creating alive account, then decrease the ED to fix this test!
+		assert_eq!(<Runtime as pallet_balances::Config>::AccountStore::get(&bob()), Default::default());
 
-// assert_ok!(<Runtime as pallet_balances::Config>::AccountStore::insert(
-// 	&eva(),
-// 	pallet_balances::AccountData {
-// 		free: 2,
-// 		reserved: 0,
-// 		frozen: 0,
-// 		flags: Default::default(),
-// 	},
-// ));
-// assert_ok!(<Runtime as pallet_balances::Config>::AccountStore::insert(
-// 	&alice(),
-// 	pallet_balances::AccountData {
-// 		free: 0,
-// 		reserved: 0,
-// 		frozen: 2,
-// 		flags: Default::default(),
-// 	},
-// ));
-// assert_ok!(<Runtime as pallet_balances::Config>::AccountStore::insert(
-// 	&DustAccount::get(),
-// 	pallet_balances::AccountData {
-// 		free: 100,
-// 		reserved: 0,
-// 		frozen: 0,
-// 		flags: Default::default(),
-// 	},
-// ));
-// pallet_balances::TotalIssuance::<Runtime>::put(104);
+		// assert_ok!(<Runtime as pallet_balances::Config>::AccountStore::insert(
+		// 	&eva(),
+		// 	pallet_balances::AccountData {
+		// 		free: 2,
+		// 		reserved: 0,
+		// 		frozen: 0,
+		// 		flags: Default::default(),
+		// 	},
+		// ));
+		// assert_ok!(<Runtime as pallet_balances::Config>::AccountStore::insert(
+		// 	&alice(),
+		// 	pallet_balances::AccountData {
+		// 		free: 0,
+		// 		reserved: 0,
+		// 		frozen: 2,
+		// 		flags: Default::default(),
+		// 	},
+		// ));
+		// assert_ok!(<Runtime as pallet_balances::Config>::AccountStore::insert(
+		// 	&DustAccount::get(),
+		// 	pallet_balances::AccountData {
+		// 		free: 100,
+		// 		reserved: 0,
+		// 		frozen: 0,
+		// 		flags: Default::default(),
+		// 	},
+		// ));
+		// pallet_balances::TotalIssuance::<Runtime>::put(104);
 
-// assert_eq!(Currencies::free_balance(NATIVE_CURRENCY_ID, &bob()), 1);
-// assert_eq!(Currencies::free_balance(NATIVE_CURRENCY_ID, &eva()), 2);
-// assert_eq!(Currencies::free_balance(NATIVE_CURRENCY_ID, &alice()), 0);
-// assert_eq!(Currencies::free_balance(NATIVE_CURRENCY_ID, &DustAccount::get()), 100);
+		// assert_eq!(Currencies::free_balance(NATIVE_CURRENCY_ID, &bob()), 1);
+		// assert_eq!(Currencies::free_balance(NATIVE_CURRENCY_ID, &eva()), 2);
+		// assert_eq!(Currencies::free_balance(NATIVE_CURRENCY_ID, &alice()), 0);
+		// assert_eq!(Currencies::free_balance(NATIVE_CURRENCY_ID, &DustAccount::get()), 100);
 
-// let accounts = vec![bob(), eva(), alice()];
+		// let accounts = vec![bob(), eva(), alice()];
 
-// assert_noop!(
-// 	Currencies::sweep_dust(RuntimeOrigin::signed(bob()), NATIVE_CURRENCY_ID,
-// accounts.clone()), 	DispatchError::BadOrigin
-// );
+		// assert_noop!(
+		// 	Currencies::sweep_dust(RuntimeOrigin::signed(bob()), NATIVE_CURRENCY_ID,
+		// accounts.clone()), 	DispatchError::BadOrigin
+		// );
 
-// assert_ok!(Currencies::sweep_dust(
-// 	RuntimeOrigin::signed(CouncilAccount::get()),
-// 	NATIVE_CURRENCY_ID,
-// 	accounts
-// ));
-// System::assert_last_event(RuntimeEvent::Currencies(crate::Event::DustSwept {
-// 	currency_id: NATIVE_CURRENCY_ID,
-// 	who: bob(),
-// 	amount: 1,
-// }));
+		// assert_ok!(Currencies::sweep_dust(
+		// 	RuntimeOrigin::signed(CouncilAccount::get()),
+		// 	NATIVE_CURRENCY_ID,
+		// 	accounts
+		// ));
+		// System::assert_last_event(RuntimeEvent::Currencies(crate::Event::DustSwept {
+		// 	currency_id: NATIVE_CURRENCY_ID,
+		// 	who: bob(),
+		// 	amount: 1,
+		// }));
 
-// // bob's account is gone
-// assert_eq!(System::account_exists(&bob()), false);
-// assert_eq!(Currencies::free_balance(NATIVE_CURRENCY_ID, &bob()), 0);
+		// // bob's account is gone
+		// assert_eq!(System::account_exists(&bob()), false);
+		// assert_eq!(Currencies::free_balance(NATIVE_CURRENCY_ID, &bob()), 0);
 
-// // eva's account remains, not below ED
-// assert_eq!(Currencies::free_balance(NATIVE_CURRENCY_ID, &eva()), 2);
+		// // eva's account remains, not below ED
+		// assert_eq!(Currencies::free_balance(NATIVE_CURRENCY_ID, &eva()), 2);
 
-// // Dust transferred to dust receiver
-// assert_eq!(Currencies::free_balance(NATIVE_CURRENCY_ID, &DustAccount::get()), 101);
-// // Total issuance remains the same
-// assert_eq!(Currencies::total_issuance(NATIVE_CURRENCY_ID), 104);
+		// // Dust transferred to dust receiver
+		// assert_eq!(Currencies::free_balance(NATIVE_CURRENCY_ID, &DustAccount::get()), 101);
+		// // Total issuance remains the same
+		// assert_eq!(Currencies::total_issuance(NATIVE_CURRENCY_ID), 104);
 	});
 }
 
@@ -2997,14 +2301,7 @@ fn transfer_erc20_will_charge_gas() {
 				+ Weight::from_parts(module_support::evm::limits::erc20::TRANSFER.gas, 0) // mock GasToWeight is 1:1
 		);
 
-		let dispatch_info = module::Call::<Runtime>::transfer {
-			dest: alice(),
-			amount: 1,
-		}
-		.get_dispatch_info();
-		assert_eq!(
-			dispatch_info.weight,
-			<Runtime as module::Config>::WeightInfo::transfer_non_native_currency()
-		);
+		let dispatch_info = module::Call::<Runtime>::transfer { dest: alice(), amount: 1 }.get_dispatch_info();
+		assert_eq!(dispatch_info.weight, <Runtime as module::Config>::WeightInfo::transfer_non_native_currency());
 	});
 }

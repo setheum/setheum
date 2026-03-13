@@ -113,10 +113,7 @@ fn evm_get_account_id() {
 			bytes[4..24].copy_from_slice(&evm_account[..]);
 			AccountId32::from(bytes)
 		};
-		assert_eq!(
-			EvmAddressMapping::<Runtime>::get_account_id(&evm_account),
-			evm_account_to_default
-		);
+		assert_eq!(EvmAddressMapping::<Runtime>::get_account_id(&evm_account), evm_account_to_default);
 
 		assert_ok!(EvmAccountsModule::claim_account(
 			RuntimeOrigin::signed(ALICE),
@@ -125,15 +122,9 @@ fn evm_get_account_id() {
 		));
 
 		assert_eq!(EvmAddressMapping::<Runtime>::get_account_id(&evm_account), ALICE);
-		assert_eq!(
-			EvmAddressMapping::<Runtime>::get_evm_address(&ALICE).unwrap(),
-			evm_account
-		);
+		assert_eq!(EvmAddressMapping::<Runtime>::get_evm_address(&ALICE).unwrap(), evm_account);
 
-		assert!(EvmAddressMapping::<Runtime>::is_linked(
-			&evm_account_to_default,
-			&evm_account
-		));
+		assert!(EvmAddressMapping::<Runtime>::is_linked(&evm_account_to_default, &evm_account));
 		assert!(EvmAddressMapping::<Runtime>::is_linked(&ALICE, &evm_account));
 	});
 }
@@ -169,15 +160,9 @@ fn account_to_evm() {
 		));
 
 		assert_eq!(EvmAddressMapping::<Runtime>::get_account_id(&alice_evm_account), ALICE);
-		assert_eq!(
-			EvmAddressMapping::<Runtime>::get_evm_address(&ALICE).unwrap(),
-			alice_evm_account
-		);
+		assert_eq!(EvmAddressMapping::<Runtime>::get_evm_address(&ALICE).unwrap(), alice_evm_account);
 
-		assert_eq!(
-			EvmAddressMapping::<Runtime>::get_or_create_evm_address(&ALICE),
-			alice_evm_account
-		);
+		assert_eq!(EvmAddressMapping::<Runtime>::get_or_create_evm_address(&ALICE), alice_evm_account);
 
 		assert!(EvmAddressMapping::<Runtime>::is_linked(&ALICE, &alice_evm_account));
 		assert!(EvmAddressMapping::<Runtime>::is_linked(&ALICE, &default_evm_account));
@@ -188,23 +173,14 @@ fn account_to_evm() {
 fn account_to_evm_with_create_default() {
 	ExtBuilder::default().build().execute_with(|| {
 		let default_evm_account = EvmAddress::from_str("f0bd9ffde7f9f4394d8cc1d86bf24d87e5d5a9a9").unwrap();
-		assert_eq!(
-			EvmAddressMapping::<Runtime>::get_or_create_evm_address(&ALICE),
-			default_evm_account
-		);
+		assert_eq!(EvmAddressMapping::<Runtime>::get_or_create_evm_address(&ALICE), default_evm_account);
 		System::assert_last_event(RuntimeEvent::EvmAccountsModule(crate::Event::ClaimAccount {
 			account_id: ALICE,
 			evm_address: default_evm_account,
 		}));
-		assert_eq!(
-			EvmAddressMapping::<Runtime>::get_evm_address(&ALICE),
-			Some(default_evm_account)
-		);
+		assert_eq!(EvmAddressMapping::<Runtime>::get_evm_address(&ALICE), Some(default_evm_account));
 
-		assert_eq!(
-			EvmAddressMapping::<Runtime>::get_account_id(&default_evm_account),
-			ALICE
-		);
+		assert_eq!(EvmAddressMapping::<Runtime>::get_account_id(&default_evm_account), ALICE);
 
 		assert!(EvmAddressMapping::<Runtime>::is_linked(&ALICE, &default_evm_account));
 

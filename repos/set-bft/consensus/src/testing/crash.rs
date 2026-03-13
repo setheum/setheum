@@ -39,9 +39,9 @@ use crate::{
     testing::{init_log, spawn_honest_member, HonestMember},
     NodeCount, SpawnHandle,
 };
-use set_bft_mock::{DataProvider, Router, Spawner, UnreliableHook};
 use futures::StreamExt;
 use serial_test::serial;
+use set_bft_mock::{DataProvider, Router, Spawner, UnreliableHook};
 
 async fn honest_members_agree_on_batches(
     n_members: NodeCount,

@@ -8,8 +8,8 @@ use super::*;
 use frame_benchmarking::v2::*;
 use frame_system::RawOrigin as SystemOrigin;
 
-use sp_std::vec;
 use module_bridge_traits::DomainID;
+use sp_std::vec;
 use xcm::latest::prelude::*;
 
 #[benchmarks]

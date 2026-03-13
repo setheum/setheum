@@ -87,40 +87,32 @@ pub mod module {
 impl<T: Config> UnknownAsset for Pallet<T> {
 	fn deposit(asset: &Asset, to: &Location) -> DispatchResult {
 		match asset {
-			Asset {
-				fun: Fungible(amount),
-				id: AssetId(location),
-			} => ConcreteFungibleBalances::<T>::try_mutate(to, location, |b| -> DispatchResult {
-				*b = b.checked_add(*amount).ok_or(Error::<T>::BalanceOverflow)?;
-				Ok(())
-			}),
+			Asset { fun: Fungible(amount), id: AssetId(location) } => {
+				ConcreteFungibleBalances::<T>::try_mutate(to, location, |b| -> DispatchResult {
+					*b = b.checked_add(*amount).ok_or(Error::<T>::BalanceOverflow)?;
+					Ok(())
+				})
+			},
 			_ => Err(Error::<T>::UnhandledAsset.into()),
 		}?;
 
-		Self::deposit_event(Event::Deposited {
-			asset: asset.clone(),
-			who: to.clone(),
-		});
+		Self::deposit_event(Event::Deposited { asset: asset.clone(), who: to.clone() });
 
 		Ok(())
 	}
 
 	fn withdraw(asset: &Asset, from: &Location) -> DispatchResult {
 		match asset {
-			Asset {
-				fun: Fungible(amount),
-				id: AssetId(location),
-			} => ConcreteFungibleBalances::<T>::try_mutate(from, location, |b| -> DispatchResult {
-				*b = b.checked_sub(*amount).ok_or(Error::<T>::BalanceTooLow)?;
-				Ok(())
-			}),
+			Asset { fun: Fungible(amount), id: AssetId(location) } => {
+				ConcreteFungibleBalances::<T>::try_mutate(from, location, |b| -> DispatchResult {
+					*b = b.checked_sub(*amount).ok_or(Error::<T>::BalanceTooLow)?;
+					Ok(())
+				})
+			},
 			_ => Err(Error::<T>::UnhandledAsset.into()),
 		}?;
 
-		Self::deposit_event(Event::Withdrawn {
-			asset: asset.clone(),
-			who: from.clone(),
-		});
+		Self::deposit_event(Event::Withdrawn { asset: asset.clone(), who: from.clone() });
 
 		Ok(())
 	}

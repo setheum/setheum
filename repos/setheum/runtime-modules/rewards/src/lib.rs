@@ -74,10 +74,7 @@ where
 	CurrencyId: Ord,
 {
 	fn default() -> Self {
-		Self {
-			total_shares: Default::default(),
-			rewards: BTreeMap::new(),
-		}
+		Self { total_shares: Default::default(), rewards: BTreeMap::new() }
 	}
 }
 
@@ -202,25 +199,22 @@ impl<T: Config> Pallet<T> {
 
 			let mut withdrawn_inflation = Vec::<(T::CurrencyId, T::Balance)>::new();
 
-			pool_info
-				.rewards
-				.iter_mut()
-				.for_each(|(reward_currency, (total_reward, total_withdrawn_reward))| {
-					let reward_inflation = if initial_total_shares.is_zero() {
-						Zero::zero()
-					} else {
-						U256::from(add_amount.to_owned().saturated_into::<u128>())
-							.saturating_mul(total_reward.to_owned().saturated_into::<u128>().into())
-							.checked_div(initial_total_shares.to_owned().saturated_into::<u128>().into())
-							.unwrap_or_default()
-							.saturated_into::<u128>()
-							.saturated_into()
-					};
-					*total_reward = total_reward.saturating_add(reward_inflation);
-					*total_withdrawn_reward = total_withdrawn_reward.saturating_add(reward_inflation);
+			pool_info.rewards.iter_mut().for_each(|(reward_currency, (total_reward, total_withdrawn_reward))| {
+				let reward_inflation = if initial_total_shares.is_zero() {
+					Zero::zero()
+				} else {
+					U256::from(add_amount.to_owned().saturated_into::<u128>())
+						.saturating_mul(total_reward.to_owned().saturated_into::<u128>().into())
+						.checked_div(initial_total_shares.to_owned().saturated_into::<u128>().into())
+						.unwrap_or_default()
+						.saturated_into::<u128>()
+						.saturated_into()
+				};
+				*total_reward = total_reward.saturating_add(reward_inflation);
+				*total_withdrawn_reward = total_withdrawn_reward.saturating_add(reward_inflation);
 
-					withdrawn_inflation.push((*reward_currency, reward_inflation));
-				});
+				withdrawn_inflation.push((*reward_currency, reward_inflation));
+			});
 
 			SharesAndWithdrawnRewards::<T>::try_mutate(pool, who, |(share, withdrawn_rewards)| {
 				*share = share.saturating_add(add_amount);
@@ -228,16 +222,14 @@ impl<T: Config> Pallet<T> {
 				ensure!(*share >= T::MinimalShares::get(pool), Error::<T>::ShareBelowMinimal);
 
 				// update withdrawn inflation for each reward currency
-				withdrawn_inflation
-					.into_iter()
-					.for_each(|(reward_currency, reward_inflation)| {
-						withdrawn_rewards
-							.entry(reward_currency)
-							.and_modify(|withdrawn_reward| {
-								*withdrawn_reward = withdrawn_reward.saturating_add(reward_inflation);
-							})
-							.or_insert(reward_inflation);
-					});
+				withdrawn_inflation.into_iter().for_each(|(reward_currency, reward_inflation)| {
+					withdrawn_rewards
+						.entry(reward_currency)
+						.and_modify(|withdrawn_reward| {
+							*withdrawn_reward = withdrawn_reward.saturating_add(reward_inflation);
+						})
+						.or_insert(reward_inflation);
+				});
 
 				Ok(())
 			})
@@ -274,30 +266,28 @@ impl<T: Config> Pallet<T> {
 						pool_info.total_shares = pool_info.total_shares.saturating_sub(remove_amount);
 
 						// update withdrawn rewards for each reward currency
-						withdrawn_rewards
-							.iter_mut()
-							.for_each(|(reward_currency, withdrawn_reward)| {
-								let withdrawn_reward_to_remove: T::Balance = removing_share
-									.saturating_mul(withdrawn_reward.to_owned().saturated_into::<u128>().into())
-									.checked_div(old_share.saturated_into::<u128>().into())
-									.unwrap_or_default()
-									.saturated_into::<u128>()
-									.saturated_into();
+						withdrawn_rewards.iter_mut().for_each(|(reward_currency, withdrawn_reward)| {
+							let withdrawn_reward_to_remove: T::Balance = removing_share
+								.saturating_mul(withdrawn_reward.to_owned().saturated_into::<u128>().into())
+								.checked_div(old_share.saturated_into::<u128>().into())
+								.unwrap_or_default()
+								.saturated_into::<u128>()
+								.saturated_into();
 
-								if let Some((total_reward, total_withdrawn_reward)) =
-									pool_info.rewards.get_mut(reward_currency)
-								{
-									*total_reward = total_reward.saturating_sub(withdrawn_reward_to_remove);
-									*total_withdrawn_reward =
-										total_withdrawn_reward.saturating_sub(withdrawn_reward_to_remove);
+							if let Some((total_reward, total_withdrawn_reward)) =
+								pool_info.rewards.get_mut(reward_currency)
+							{
+								*total_reward = total_reward.saturating_sub(withdrawn_reward_to_remove);
+								*total_withdrawn_reward =
+									total_withdrawn_reward.saturating_sub(withdrawn_reward_to_remove);
 
-									// remove if all reward is withdrawn
-									if total_reward.is_zero() {
-										pool_info.rewards.remove(reward_currency);
-									}
+								// remove if all reward is withdrawn
+								if total_reward.is_zero() {
+									pool_info.rewards.remove(reward_currency);
 								}
-								*withdrawn_reward = withdrawn_reward.saturating_sub(withdrawn_reward_to_remove);
-							});
+							}
+							*withdrawn_reward = withdrawn_reward.saturating_sub(withdrawn_reward_to_remove);
+						});
 
 						if !pool_info.total_shares.is_zero() {
 							*maybe_pool_info = Some(pool_info);
@@ -430,14 +420,8 @@ impl<T: Config> Pallet<T> {
 				*share = share.saturating_sub(move_share);
 				*increased_share = increased_share.saturating_add(move_share);
 
-				ensure!(
-					*share >= T::MinimalShares::get(pool) || share.is_zero(),
-					Error::<T>::ShareBelowMinimal
-				);
-				ensure!(
-					*increased_share >= T::MinimalShares::get(pool),
-					Error::<T>::ShareBelowMinimal
-				);
+				ensure!(*share >= T::MinimalShares::get(pool) || share.is_zero(), Error::<T>::ShareBelowMinimal);
+				ensure!(*increased_share >= T::MinimalShares::get(pool), Error::<T>::ShareBelowMinimal);
 
 				Ok(())
 			})

@@ -46,8 +46,8 @@ use crate::{
     },
     NodeCount, NodeIndex, NodeMap, Round, SessionId, Signed,
 };
-use set_bft_mock::{Data, Hash64, Hasher64, Keychain, Signature};
 use rand::prelude::IteratorRandom;
+use set_bft_mock::{Data, Hash64, Hasher64, Keychain, Signature};
 
 type ControlHash = GenericControlHash<Hasher64>;
 type Creator = GenericCreator<Hasher64>;

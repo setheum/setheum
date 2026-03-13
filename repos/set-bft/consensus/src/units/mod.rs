@@ -281,8 +281,8 @@ pub mod tests {
         units::{random_full_parent_units_up_to, FullUnit, Unit},
         Hasher, NodeCount,
     };
-    use set_bft_mock::{Data, Hasher64};
     use codec::{Decode, Encode};
+    use set_bft_mock::{Data, Hasher64};
 
     pub type TestFullUnit = FullUnit<Hasher64, Data>;
 

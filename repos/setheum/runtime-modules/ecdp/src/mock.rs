@@ -46,7 +46,7 @@ use frame_support::{
 use frame_system::{offchain::SendTransactionTypes, EnsureSignedBy};
 use module_cdp_engine::CollateralCurrencyIds;
 use module_support::{
-	EcdpAuctionsManager, ExchangeRate, FractionalRate, Price, PriceProvider, Rate, Ratio, SpecificJointsSwap,
+	AuctionsManager, ExchangeRate, FractionalRate, Price, PriceProvider, Rate, Ratio, SpecificJointsSwap,
 };
 use module_traits::parameter_type_with_key;
 use primitives::{
@@ -61,7 +61,7 @@ use sp_runtime::{
 };
 use sp_std::{cell::RefCell, str::FromStr};
 
-mod ecdp {
+mod core_module {
 	pub use super::super::*;
 }
 
@@ -134,15 +134,15 @@ impl module_currencies::Config for Runtime {
 }
 
 parameter_types! {
-	pub const EcdpLoansPalletId: PalletId = PalletId(*b"set/seusdloan");
+	pub const LoansPalletId: PalletId = PalletId(*b"set/seusdloan");
 }
 
-impl module_ecdp_loans::Config for Runtime {
+impl module_loans::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type Currency = Tokens;
-	type RiskManager = EcdpUssdEngineModule;
-	type EcdpUssdTreasury = EcdpUssdTreasuryModule;
-	type PalletId = EcdpLoansPalletId;
+	type RiskManager = UssdEngineModule;
+	type UssdTreasury = UssdTreasuryModule;
+	type PalletId = LoansPalletId;
 	type OnUpdateLoan = ();
 }
 
@@ -157,8 +157,8 @@ impl PriceProvider<CurrencyId> for MockPriceSource {
 	}
 }
 
-pub struct MockEcdpAuctionsManager;
-impl EcdpAuctionsManager<AccountId> for MockEcdpAuctionsManager {
+pub struct MockAuctionsManager;
+impl AuctionsManager<AccountId> for MockAuctionsManager {
 	type Balance = Balance;
 	type CurrencyId = CurrencyId;
 	type AuctionId = AuctionId;
@@ -193,8 +193,8 @@ pub fn mock_shutdown() {
 	IS_SHUTDOWN.with(|v| *v.borrow_mut() = true)
 }
 
-pub struct MockEcdpEmergencyShutdown;
-impl EcdpEmergencyShutdown for MockEcdpEmergencyShutdown {
+pub struct MockEmergencyShutdown;
+impl EmergencyShutdown for MockEmergencyShutdown {
 	fn is_shutdown() -> bool {
 		IS_SHUTDOWN.with(|v| *v.borrow_mut())
 	}
@@ -206,23 +206,23 @@ ord_parameter_types! {
 
 parameter_types! {
 	pub const GetSEUSDCurrencyId: CurrencyId = SEUSD;
-	pub const EcdpUssdTreasuryPalletId: PalletId = PalletId(*b"set/seusdtrsymod");
+	pub const UssdTreasuryPalletId: PalletId = PalletId(*b"set/seusdtrsymod");
 	pub TreasuryAccount: AccountId = PalletId(*b"set/seusdtrsyacc").into_account_truncating();
 	pub AlternativeSwapPathJointList: Vec<Vec<CurrencyId>> = vec![
 		vec![SEUSD],
 	];
 }
 
-impl module_ecdp_seusd_treasury::Config for Runtime {
+impl module_seusd_treasury::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type Currency = Currencies;
 	type GetSEUSDCurrencyId = GetSEUSDCurrencyId;
-	type EcdpAuctionsManagerHandler = MockEcdpAuctionsManager;
+	type AuctionsManagerHandler = MockAuctionsManager;
 	type UpdateOrigin = EnsureSignedBy<One, AccountId>;
-	type EdfisSwapHandler = ();
+	type SwapHandler = ();
 	type Swap = SpecificJointsSwap<(), AlternativeSwapPathJointList>;
 	type MaxAuctionsCount = ConstU32<10_000>;
-	type PalletId = EcdpUssdTreasuryPalletId;
+	type PalletId = UssdTreasuryPalletId;
 	type TreasuryAccount = TreasuryAccount;
 	type WeightInfo = ();
 }
@@ -294,11 +294,11 @@ parameter_types! {
 	pub DefaultLiquidationPenalty: FractionalRate = FractionalRate::try_from(Rate::saturating_from_rational(10, 100)).unwrap();
 	pub MaxSwapSlippageCompareToOracle: Ratio = Ratio::saturating_from_rational(50, 100);
 	pub MaxLiquidationContractSlippage: Ratio = Ratio::saturating_from_rational(80, 100);
-	pub const EcdpUssdEnginePalletId: PalletId = PalletId(*b"set/seusde");
+	pub const UssdEnginePalletId: PalletId = PalletId(*b"set/seusde");
 	pub const SettleErc20EvmOrigin: AccountId = AccountId32::new([255u8; 32]);
 }
 
-impl module_cdp_engine::Config for Runtime {
+impl module_seusd_engine::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type PriceSource = MockPriceSource;
 	type DefaultLiquidationRatio = DefaultLiquidationRatio;
@@ -307,23 +307,16 @@ impl module_cdp_engine::Config for Runtime {
 	type MinimumDebitValue = ConstU128<2>;
 	type MinimumCollateralAmount = MinimumCollateralAmount;
 	type GetSEUSDCurrencyId = GetSEUSDCurrencyId;
-	type EcdpUssdTreasury = EcdpUssdTreasuryModule;
+	type UssdTreasury = UssdTreasuryModule;
 	type UpdateOrigin = EnsureSignedBy<One, AccountId>;
 	type MaxSwapSlippageCompareToOracle = MaxSwapSlippageCompareToOracle;
 	type UnsignedPriority = ConstU64<1048576>; // 1 << 20
-	type EcdpEmergencyShutdown = MockEcdpEmergencyShutdown;
+	type EmergencyShutdown = MockEmergencyShutdown;
 	type UnixTime = Timestamp;
 	type Currency = Currencies;
-	type EdfisSwapHandler = ();
-	type LiquidationContractsUpdateOrigin = EnsureSignedBy<One, AccountId>;
-	type MaxLiquidationContractSlippage = MaxLiquidationContractSlippage;
-	type MaxLiquidationContracts = ConstU32<10>;
-	type LiquidationEvmBridge = ();
-	type PalletId = EcdpUssdEnginePalletId;
-	type EvmAddressMapping = module_evm_accounts::EvmAddressMapping<Runtime>;
 	type Swap = SpecificJointsSwap<(), AlternativeSwapPathJointList>;
-	type EVMBridge = module_evm_bridge::EVMBridge<Runtime>;
-	type SettleErc20EvmOrigin = SettleErc20EvmOrigin;
+	type PalletId = UssdEnginePalletId;
+	type EvmAddressMapping = module_evm_accounts::EvmAddressMapping<Runtime>;
 	type WeightInfo = ();
 }
 
@@ -340,17 +333,15 @@ impl Config for Runtime {
 construct_runtime!(
 	pub enum Runtime {
 		System: frame_system,
-		EcdpModule: ecdp,
+		CoreModule: core_module,
 		Tokens: module_tokens,
 		PalletBalances: pallet_balances,
 		Currencies: module_currencies,
-		EcdpLoansModule: module_ecdp_loans,
-		EcdpUssdTreasuryModule: module_ecdp_seusd_treasury,
-		EcdpUssdEngineModule: module_cdp_engine,
+		LoansModule: module_loans,
+		UssdTreasuryModule: module_seusd_treasury,
+		UssdEngineModule: module_seusd_engine,
 		Timestamp: pallet_timestamp,
 		EvmAccounts: module_evm_accounts,
-		EVM: module_evm,
-		EVMBridge: module_evm_bridge,
 	}
 );
 

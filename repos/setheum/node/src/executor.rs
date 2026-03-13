@@ -26,45 +26,45 @@ use sc_service::Configuration;
 
 #[cfg(not(any(feature = "runtime-benchmarks", feature = "setheum-native-runtime",)))]
 pub mod executor {
-    use sc_executor::WasmExecutor;
+	use sc_executor::WasmExecutor;
 
-    use super::Configuration;
+	use super::Configuration;
 
-    type ExtendHostFunctions = (sp_io::SubstrateHostFunctions,);
-    pub type Executor = WasmExecutor<ExtendHostFunctions>;
+	type ExtendHostFunctions = (sp_io::SubstrateHostFunctions,);
+	pub type Executor = WasmExecutor<ExtendHostFunctions>;
 
-    pub fn get_executor(config: &Configuration) -> Executor {
-        sc_service::new_wasm_executor(config)
-    }
+	pub fn get_executor(config: &Configuration) -> Executor {
+		sc_service::new_wasm_executor(config)
+	}
 }
 
 #[cfg(any(feature = "runtime-benchmarks", feature = "setheum-native-runtime",))]
 pub mod executor {
-    use sc_executor::NativeElseWasmExecutor;
+	use sc_executor::NativeElseWasmExecutor;
 
-    use super::Configuration;
+	use super::Configuration;
 
-    pub struct ExecutorDispatch;
+	pub struct ExecutorDispatch;
 
-    impl sc_executor::NativeExecutionDispatch for ExecutorDispatch {
-        #[cfg(feature = "runtime-benchmarks")]
-        type ExtendHostFunctions = (frame_benchmarking::benchmarking::HostFunctions,);
+	impl sc_executor::NativeExecutionDispatch for ExecutorDispatch {
+		#[cfg(feature = "runtime-benchmarks")]
+		type ExtendHostFunctions = (frame_benchmarking::benchmarking::HostFunctions,);
 
-        #[cfg(not(feature = "runtime-benchmarks"))]
-        type ExtendHostFunctions = ();
+		#[cfg(not(feature = "runtime-benchmarks"))]
+		type ExtendHostFunctions = ();
 
-        fn dispatch(method: &str, data: &[u8]) -> Option<Vec<u8>> {
-            setheum_runtime::api::dispatch(method, data)
-        }
+		fn dispatch(method: &str, data: &[u8]) -> Option<Vec<u8>> {
+			setheum_runtime::api::dispatch(method, data)
+		}
 
-        fn native_version() -> sc_executor::NativeVersion {
-            setheum_runtime::native_version()
-        }
-    }
+		fn native_version() -> sc_executor::NativeVersion {
+			setheum_runtime::native_version()
+		}
+	}
 
-    pub type Executor = NativeElseWasmExecutor<ExecutorDispatch>;
+	pub type Executor = NativeElseWasmExecutor<ExecutorDispatch>;
 
-    pub fn get_executor(config: &Configuration) -> Executor {
-        sc_service::new_native_or_wasm_executor(config)
-    }
+	pub fn get_executor(config: &Configuration) -> Executor {
+		sc_service::new_native_or_wasm_executor(config)
+	}
 }

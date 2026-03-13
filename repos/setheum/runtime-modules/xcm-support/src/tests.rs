@@ -55,10 +55,7 @@ type MatchesCurrencyId = IsNativeConcrete<TestCurrencyId, CurrencyIdConvert>;
 
 #[test]
 fn is_native_concrete_matches_native_currencies() {
-	assert_eq!(
-		MatchesCurrencyId::matches_fungible(&Asset::parent_asset(100)),
-		Some(100),
-	);
+	assert_eq!(MatchesCurrencyId::matches_fungible(&Asset::parent_asset(100)), Some(100),);
 
 	assert_eq!(
 		MatchesCurrencyId::matches_fungible(&Asset::sibling_parachain_asset(
@@ -81,30 +78,21 @@ fn is_native_concrete_matches_native_currencies() {
 
 #[test]
 fn is_native_concrete_does_not_matches_non_native_currencies() {
-	assert!(
-		<MatchesCurrencyId as MatchesFungible<u128>>::matches_fungible(&Asset::sibling_parachain_asset(
-			2,
-			b"TokenC".to_vec().try_into().unwrap(),
-			100
-		))
-		.is_none()
-	);
-	assert!(
-		<MatchesCurrencyId as MatchesFungible<u128>>::matches_fungible(&Asset::sibling_parachain_asset(
-			1,
-			b"TokenB".to_vec().try_into().unwrap(),
-			100
-		))
-		.is_none()
-	);
+	assert!(<MatchesCurrencyId as MatchesFungible<u128>>::matches_fungible(&Asset::sibling_parachain_asset(
+		2,
+		b"TokenC".to_vec().try_into().unwrap(),
+		100
+	))
+	.is_none());
+	assert!(<MatchesCurrencyId as MatchesFungible<u128>>::matches_fungible(&Asset::sibling_parachain_asset(
+		1,
+		b"TokenB".to_vec().try_into().unwrap(),
+		100
+	))
+	.is_none());
 	assert!(<MatchesCurrencyId as MatchesFungible<u128>>::matches_fungible(&Asset {
 		fun: Fungible(100),
-		id: AssetId(Location::new(
-			1,
-			[Junction::from(
-				sp_runtime::BoundedVec::try_from(b"TokenB".to_vec()).unwrap()
-			)]
-		)),
+		id: AssetId(Location::new(1, [Junction::from(sp_runtime::BoundedVec::try_from(b"TokenB".to_vec()).unwrap())])),
 	})
 	.is_none());
 }

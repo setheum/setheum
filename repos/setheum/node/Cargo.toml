@@ -79,9 +79,14 @@ sc-consensus-slots = { workspace = true }
 module-oracle-rpc = { path = "../runtime-modules/oracle/rpc" }
 
 module-nft = { path = "../runtime-modules/nft" }
-module-evm = { workspace = true }
-module-evm-rpc-runtime-api = { path = "../runtime-modules/evm/rpc/runtime_api" }
-evm-rpc = { path = "../runtime-modules/evm/rpc" }
+# Frontier
+fc-rpc = { git = "https://github.com/polkadot-evm/frontier", branch = "master" }
+fc-rpc-core = { git = "https://github.com/polkadot-evm/frontier", branch = "master" }
+fc-db = { git = "https://github.com/polkadot-evm/frontier", branch = "master" }
+fc-mapping-sync = { git = "https://github.com/polkadot-evm/frontier", branch = "master" }
+fp-rpc = { workspace = true }
+pallet-evm = { workspace = true }
+pallet-ethereum = { workspace = true }
 
 setheum-primitives = { path = "../primitives" }
 

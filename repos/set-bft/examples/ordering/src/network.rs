@@ -36,10 +36,10 @@
 // SOFTWARE.
 
 use crate::Data;
-use set_bft::{NodeIndex, Recipient};
-use set_bft_mock::{Hasher64, PartialMultisignature, Signature};
 use codec::{Decode, Encode};
 use log::error;
+use set_bft::{NodeIndex, Recipient};
+use set_bft_mock::{Hasher64, PartialMultisignature, Signature};
 use std::net::SocketAddr;
 use tokio::{
     io,

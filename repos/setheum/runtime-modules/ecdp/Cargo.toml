@@ -1,6 +1,6 @@
 [package]
 license = "Apache-2.0 OR MIT"
-name = "module-ecdp-core"
+name = "module-core"
 version = "0.9.81-dev"
 authors.workspace = true
 edition.workspace = true
@@ -15,8 +15,8 @@ sp-core = { workspace = true }
 frame-support = { workspace = true }
 frame-system = { workspace = true }
 sp-std = { workspace = true }
-module-ecdp-seusd-engine = { workspace = true , default-features = false }
-module-ecdp-loans = { workspace = true , default-features = false }
+module-seusd-engine = { workspace = true , default-features = false }
+module-loans = { workspace = true , default-features = false }
 module-support = { workspace = true , default-features = false }
 primitives = { workspace = true , default-features = false }
 
@@ -28,19 +28,18 @@ pallet-timestamp = { workspace = true, features = ["std"] }
 module-currencies = { workspace = true, features = ["std"] , default-features = false }
 module-traits = { workspace = true, features = ["std"] , default-features = false }
 module-tokens = { workspace = true, features = ["std"] , default-features = false }
-module-ecdp-seusd-treasury = { workspace = true, features = ["std"] , default-features = false }
+module-seusd-treasury = { workspace = true, features = ["std"] , default-features = false }
 module-evm-accounts = { workspace = true, features = ["std"] , default-features = false }
-module-evm = { workspace = true, features = ["std"] , default-features = false }
-module-evm-bridge = { workspace = true, features = ["std"] , default-features = false }
+# module-evm removed
 
 [features]
 default = ["std"]
 std = [
-	"module-ecdp-seusd-engine/std",
+	"module-seusd-engine/std",
 	"parity-scale-codec/std",
 	"frame-support/std",
 	"frame-system/std",
-	"module-ecdp-loans/std",
+	"module-loans/std",
 	"primitives/std",
 	"scale-info/std",
 	"sp-core/std",
@@ -49,8 +48,8 @@ std = [
 	"module-support/std",
 ]
 try-runtime = [
-	"module-ecdp-seusd-engine/try-runtime",
+	"module-seusd-engine/try-runtime",
 	"frame-support/try-runtime",
 	"frame-system/try-runtime",
-	"module-ecdp-loans/try-runtime",
+	"module-loans/try-runtime",
 ]

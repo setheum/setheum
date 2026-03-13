@@ -205,9 +205,9 @@ impl<H: Hasher> ControlHash<H> {
 #[cfg(test)]
 pub mod tests {
     use crate::units::{control_hash::Error, ControlHash, NodeCount, NodeIndex, UnitCoord};
+    use codec::{Decode, Encode};
     use set_bft_mock::Hasher64;
     use set_bft_types::{NodeMap, Round};
-    use codec::{Decode, Encode};
 
     #[test]
     fn given_control_hash_is_encoded_when_same_control_hash_is_decoded_then_results_are_the_same() {

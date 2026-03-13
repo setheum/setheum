@@ -44,9 +44,9 @@ use crate::{
     testing::{init_log, spawn_honest_member, HonestMember, NetworkData},
     NodeCount, NodeIndex, SpawnHandle,
 };
-use set_bft_mock::{DataProvider, NetworkHook, Router, Spawner};
 use futures::StreamExt;
 use log::info;
+use set_bft_mock::{DataProvider, NetworkHook, Router, Spawner};
 
 struct Latency {
     who: NodeIndex,

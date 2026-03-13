@@ -35,8 +35,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use set_bft_types::{Index, NodeIndex, SignatureSet};
 use codec::{Decode, Encode};
+use set_bft_types::{Index, NodeIndex, SignatureSet};
 use std::hash::Hash;
 
 #[derive(Clone, Eq, PartialEq, Hash, Debug, Default, Encode, Decode)]

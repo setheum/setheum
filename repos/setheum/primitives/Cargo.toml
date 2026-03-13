@@ -32,8 +32,7 @@ frame-support = { workspace = true, default-features = false }
 module-traits = { workspace = true , default-features = false }
 pallet-session = { workspace = true, default-features = false }
 
-module-evm-utility = { workspace = true , default-features = false }
-module-evm-utility-macro = { workspace = true , default-features = false }
+# module-evm-utility removed
 
 [dev-dependencies]
 serde_json = { workspace = true, features = ["std"] , default-features = false }
@@ -60,8 +59,8 @@ std = [
 	"module-traits/std",
 	"pallet-session/std",
 
-	"module-evm-utility/std",
+# module-evm-utility removed
 ]
-evm-tests = []
+# evm-tests removed
 short_session = []
 try-runtime = []

@@ -48,39 +48,41 @@ use crate::{
 };
 
 /// The Event that was emitted during execution of calls.
-pub type EventRecord =
-    runtime_types::frame_system::EventRecord<runtime_types::setheum_runtime::RuntimeEvent, BlockHash>;
+pub type EventRecord = runtime_types::frame_system::EventRecord<
+    runtime_types::setheum_runtime::RuntimeEvent,
+    BlockHash,
+>;
 
 /// Arguments to [`ContractRpc::call_and_get`].
 #[derive(Encode)]
 pub struct ContractCallArgs {
-/// Who is singing a tx.
+    /// Who is singing a tx.
     pub origin: AccountId,
-/// Address of the contract to call.
+    /// Address of the contract to call.
     pub dest: AccountId,
-/// The balance to transfer from the `origin` to `dest`.
+    /// The balance to transfer from the `origin` to `dest`.
     pub value: Balance,
-/// The gas limit enforced when executing the constructor.
+    /// The gas limit enforced when executing the constructor.
     pub gas_limit: Option<Weight>,
-/// The maximum amount of balance that can be charged from the caller to pay for the storage consumed.
+    /// The maximum amount of balance that can be charged from the caller to pay for the storage consumed.
     pub storage_deposit_limit: Option<Balance>,
-/// The input data to pass to the contract.
+    /// The input data to pass to the contract.
     pub input_data: Vec<u8>,
 }
 
 /// Pallet contracts read-only api.
 #[async_trait::async_trait]
 pub trait ContractsApi {
-/// Returns `contracts.code_info` storage for a given code hash.
-/// * `code_hash` - a code hash
-/// * `at` - optional hash of a block to query state from
+    /// Returns `contracts.code_info` storage for a given code hash.
+    /// * `code_hash` - a code hash
+    /// * `at` - optional hash of a block to query state from
     async fn get_code_info(&self, code_hash: CodeHash, at: Option<BlockHash>) -> Option<CodeInfo>;
 }
 
 /// Pallet contracts api.
 #[async_trait::async_trait]
 pub trait ContractsUserApi {
-/// API for [`upload_code`](https://paritytech.github.io/substrate/master/pallet_contracts/pallet/struct.Pallet.html#method.upload_code) call.
+    /// API for [`upload_code`](https://paritytech.github.io/substrate/master/pallet_contracts/pallet/struct.Pallet.html#method.upload_code) call.
     async fn upload_code(
         &self,
         code: Vec<u8>,
@@ -89,7 +91,7 @@ pub trait ContractsUserApi {
         status: TxStatus,
     ) -> anyhow::Result<TxInfo>;
 
-/// API for [`instantiate`](https://paritytech.github.io/substrate/master/pallet_contracts/pallet/struct.Pallet.html#method.instantiate) call.
+    /// API for [`instantiate`](https://paritytech.github.io/substrate/master/pallet_contracts/pallet/struct.Pallet.html#method.instantiate) call.
     #[allow(clippy::too_many_arguments)]
     async fn instantiate(
         &self,
@@ -102,7 +104,7 @@ pub trait ContractsUserApi {
         status: TxStatus,
     ) -> anyhow::Result<TxInfo>;
 
-/// API for [`instantiate_with_code`](https://paritytech.github.io/substrate/master/pallet_contracts/pallet/struct.Pallet.html#method.instantiate_with_code) call.
+    /// API for [`instantiate_with_code`](https://paritytech.github.io/substrate/master/pallet_contracts/pallet/struct.Pallet.html#method.instantiate_with_code) call.
     #[allow(clippy::too_many_arguments)]
     async fn instantiate_with_code(
         &self,
@@ -115,7 +117,7 @@ pub trait ContractsUserApi {
         status: TxStatus,
     ) -> anyhow::Result<TxInfo>;
 
-/// API for [`call`](https://paritytech.github.io/substrate/master/pallet_contracts/pallet/struct.Pallet.html#method.call) call.
+    /// API for [`call`](https://paritytech.github.io/substrate/master/pallet_contracts/pallet/struct.Pallet.html#method.call) call.
     async fn call(
         &self,
         destination: AccountId,
@@ -126,14 +128,14 @@ pub trait ContractsUserApi {
         status: TxStatus,
     ) -> anyhow::Result<TxInfo>;
 
-/// API for [`remove_code`](https://paritytech.github.io/substrate/master/pallet_contracts/pallet/struct.Pallet.html#method.remove_code) call.
+    /// API for [`remove_code`](https://paritytech.github.io/substrate/master/pallet_contracts/pallet/struct.Pallet.html#method.remove_code) call.
     async fn remove_code(&self, code_hash: BlockHash, status: TxStatus) -> anyhow::Result<TxInfo>;
 }
 
 /// RPC for runtime ContractsApi
 #[async_trait::async_trait]
 pub trait ContractRpc {
-/// API for [`call`](https://paritytech.github.io/substrate/master/pallet_contracts/trait.ContractsApi.html#method.call) call.
+    /// API for [`call`](https://paritytech.github.io/substrate/master/pallet_contracts/trait.ContractsApi.html#method.call) call.
     async fn call_and_get(
         &self,
         args: ContractCallArgs,

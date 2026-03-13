@@ -69,15 +69,9 @@ impl AuctionHandler<AccountId, Balance, BlockNumber, AuctionId> for Handler {
 		last_bid: Option<(AccountId, Balance)>,
 	) -> OnNewBidResult<BlockNumber> {
 		if last_bid.is_none() || last_bid.unwrap().0 != new_bid.0 {
-			OnNewBidResult {
-				accept_bid: true,
-				auction_end_change: Change::NewValue(Some(now + BID_EXTEND_BLOCK)),
-			}
+			OnNewBidResult { accept_bid: true, auction_end_change: Change::NewValue(Some(now + BID_EXTEND_BLOCK)) }
 		} else {
-			OnNewBidResult {
-				accept_bid: false,
-				auction_end_change: Change::NoChange,
-			}
+			OnNewBidResult { accept_bid: false, auction_end_change: Change::NoChange }
 		}
 	}
 
@@ -115,9 +109,7 @@ impl Default for ExtBuilder {
 
 impl ExtBuilder {
 	pub fn build(self) -> sp_io::TestExternalities {
-		let t = frame_system::GenesisConfig::<Runtime>::default()
-			.build_storage()
-			.unwrap();
+		let t = frame_system::GenesisConfig::<Runtime>::default().build_storage().unwrap();
 
 		t.into()
 	}

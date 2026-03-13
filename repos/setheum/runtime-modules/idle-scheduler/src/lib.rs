@@ -38,12 +38,12 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 #![allow(clippy::unused_unit)]
 #![allow(unused_must_use)]
-use setheum_primitives::{task::TaskResult, Nonce};
 use codec::{Decode, Encode, FullCodec};
 use frame_support::pallet_prelude::*;
 use frame_system::pallet_prelude::*;
 pub use module_support::{DispatchableTask, IdleScheduler};
 use scale_info::TypeInfo;
+use setheum_primitives::{task::TaskResult, Nonce};
 use sp_runtime::{
 	traits::{One, Zero},
 	ArithmeticError,
@@ -64,13 +64,13 @@ pub mod module {
 	pub trait Config: frame_system::Config {
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 
-/// Weight information for the extrinsics in this module.
+		/// Weight information for the extrinsics in this module.
 		type WeightInfo: WeightInfo;
 
-/// Dispatchable tasks
+		/// Dispatchable tasks
 		type Task: DispatchableTask + FullCodec + Debug + Clone + PartialEq + TypeInfo;
 
-/// The minimum weight that should remain before idle tasks are dispatched.
+		/// The minimum weight that should remain before idle tasks are dispatched.
 		#[pallet::constant]
 		type MinimumWeightRemainInBlock: Get<Weight>;
 	}
@@ -78,11 +78,11 @@ pub mod module {
 	#[pallet::event]
 	#[pallet::generate_deposit(pub fn deposit_event)]
 	pub enum Event<T: Config> {
-/// A task has been dispatched on_idle.
+		/// A task has been dispatched on_idle.
 		TaskDispatched { task_id: Nonce, result: DispatchResult },
 	}
 
-/// Some documentation
+	/// Some documentation
 	#[pallet::storage]
 	#[pallet::getter(fn tasks)]
 	pub type Tasks<T: Config> = StorageMap<_, Twox64Concat, Nonce, T::Task, OptionQuery>;
@@ -114,14 +114,14 @@ pub mod module {
 }
 
 impl<T: Config> Pallet<T> {
-/// Add the task to the queue to be dispatched later
+	/// Add the task to the queue to be dispatched later
 	fn do_schedule_task(task: T::Task) -> DispatchResult {
 		let id = Self::get_next_task_id()?;
 		Tasks::<T>::insert(id, task);
 		Ok(())
 	}
 
-/// Retrieves the next task ID from storage, and increment it by one.
+	/// Retrieves the next task ID from storage, and increment it by one.
 	fn get_next_task_id() -> Result<Nonce, DispatchError> {
 		NextTaskId::<T>::mutate(|current| -> Result<Nonce, DispatchError> {
 			let id = *current;
@@ -130,7 +130,7 @@ impl<T: Config> Pallet<T> {
 		})
 	}
 
-/// Keep dispatching tasks in Storage, until insufficient weight remains.
+	/// Keep dispatching tasks in Storage, until insufficient weight remains.
 	pub fn do_dispatch_tasks(total_weight: Weight) -> Weight {
 		let mut weight_remaining = total_weight;
 		if weight_remaining.all_lte(T::MinimumWeightRemainInBlock::get()) {
@@ -146,18 +146,15 @@ impl<T: Config> Pallet<T> {
 				completed_tasks.push((id, result));
 			}
 
-// If remaining weight falls below the minimmum, break from the loop.
+			// If remaining weight falls below the minimmum, break from the loop.
 			if weight_remaining.all_lte(T::MinimumWeightRemainInBlock::get()) {
 				break;
 			}
 		}
 
-// Deposit event and remove completed tasks.
+		// Deposit event and remove completed tasks.
 		for (id, result) in completed_tasks {
-			Self::deposit_event(Event::<T>::TaskDispatched {
-				task_id: id,
-				result: result.result,
-			});
+			Self::deposit_event(Event::<T>::TaskDispatched { task_id: id, result: result.result });
 			Tasks::<T>::remove(id);
 		}
 

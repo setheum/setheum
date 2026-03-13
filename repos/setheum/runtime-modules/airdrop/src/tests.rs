@@ -44,99 +44,61 @@ use sp_runtime::traits::BadOrigin;
 
 #[test]
 fn make_airdrop_works() {
-    ExtBuilder::default().build().execute_with(|| {
-        let airdrop_list = vec![
-            (ALICE, 10),
-            (BOB, 5),
-        ];
+	ExtBuilder::default().build().execute_with(|| {
+		let airdrop_list = vec![(ALICE, 10), (BOB, 5)];
 
-        System::assert_last_event(Event::AirDrop(
-            crate::Event::Airdrop {
-                airdrop_list: airdrop_list.clone()
-            },
-        ));
-        assert_ok!(Airdrop::make_airdrop(Origin::signed(ALICE), SEUSD, airdrop_list));
-        System::assert_last_event(Event::AirDrop(
-            crate::Event::Airdrop {
-                currency_id: SEUSD,
-                airdrop_list
-            },
-        ));
-    });
+		System::assert_last_event(Event::AirDrop(crate::Event::Airdrop { airdrop_list: airdrop_list.clone() }));
+		assert_ok!(Airdrop::make_airdrop(Origin::signed(ALICE), SEUSD, airdrop_list));
+		System::assert_last_event(Event::AirDrop(crate::Event::Airdrop { currency_id: SEUSD, airdrop_list }));
+	});
 }
 
 #[test]
 fn make_airdrop_with_json_works() {
-    ExtBuilder::default().build().execute_with(|| {
-        let valid_json = br#"
+	ExtBuilder::default().build().execute_with(|| {
+		let valid_json = br#"
         [
             {"account": "ALICE", "amount": 10},
             {"account": "BOB", "amount": 5}
         ]
-        "#.as_bytes().to_vec();
+        "#
+		.as_bytes()
+		.to_vec();
 
-        System::assert_last_event(Event::AirDrop(
-            crate::Event::Airdrop {
-                airdrop_list: vec![
-                    (ALICE, 10),
-                    (BOB, 5),
-                ]
-            },
-        ));
-        assert_ok!(Airdrop::make_airdrop_with_json(Origin::signed(ALICE), SEUSD, valid_json));
-        System::assert_last_event(Event::AirDrop(
-            crate::Event::Airdrop {
-                currency_id: SEUSD,
-                airdrop_list: vec![
-                    (ALICE, 10),
-                    (BOB, 5),
-                ]
-            },
-        ));
-    });
+		System::assert_last_event(Event::AirDrop(crate::Event::Airdrop { airdrop_list: vec![(ALICE, 10), (BOB, 5)] }));
+		assert_ok!(Airdrop::make_airdrop_with_json(Origin::signed(ALICE), SEUSD, valid_json));
+		System::assert_last_event(Event::AirDrop(crate::Event::Airdrop {
+			currency_id: SEUSD,
+			airdrop_list: vec![(ALICE, 10), (BOB, 5)],
+		}));
+	});
 }
 
 #[test]
 fn make_airdrop_does_not_work() {
-    ExtBuilder::default().build().execute_with(|| {
-        let airdrop_list = vec![
-            (ALICE, 10),
-            (BOB, 5),
-        ];
+	ExtBuilder::default().build().execute_with(|| {
+		let airdrop_list = vec![(ALICE, 10), (BOB, 5)];
 
-        System::assert_last_event(Event::AirDrop(
-            crate::Event::Airdrop {
-                airdrop_list: airdrop_list.clone()
-            },
-        ));
+		System::assert_last_event(Event::AirDrop(crate::Event::Airdrop { airdrop_list: airdrop_list.clone() }));
 
-        assert_noop!(
-            Error::<Runtime>::OverSizedAirdropList,
-        );
-    });
+		assert_noop!(Error::<Runtime>::OverSizedAirdropList,);
+	});
 }
 
 #[test]
 fn make_airdrop_with_json_does_not_work() {
-    ExtBuilder::default().build().execute_with(|| {
-        let oversized_json = br#"
+	ExtBuilder::default().build().execute_with(|| {
+		let oversized_json = br#"
         [
             {"account": "ALICE", "amount": 10},
             {"account": "BOB", "amount": 5}
         ]
-        "#.as_bytes().to_vec();
+        "#
+		.as_bytes()
+		.to_vec();
 
-        System::assert_last_event(Event::AirDrop(
-            crate::Event::Airdrop {
-                airdrop_list: vec![
-                    (ALICE, 10),
-                    (BOB, 5),
-                ]
-            },
-        ));
+		System::assert_last_event(Event::AirDrop(crate::Event::Airdrop { airdrop_list: vec![(ALICE, 10), (BOB, 5)] }));
 
-        assert_noop!(
-            Error::<Runtime>::OverSizedAirdropList
-        );
-    });
+		assert_noop!(Error::<Runtime>::OverSizedAirdropList);
+	});
 }

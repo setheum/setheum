@@ -42,9 +42,9 @@ use crate::{
     },
     Data, Hasher, MultiKeychain, Multisigned, NodeIndex, Receiver, Recipient, Sender, Terminator,
 };
-use set_bft_rmc::{DoublingDelayScheduler, Message as RmcMessage};
 use futures::{FutureExt, StreamExt};
 use log::{debug, error, trace, warn};
+use set_bft_rmc::{DoublingDelayScheduler, Message as RmcMessage};
 use std::time::Duration;
 
 const LOG_TARGET: &str = "SetBFT-alerter";

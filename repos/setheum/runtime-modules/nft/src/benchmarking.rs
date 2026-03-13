@@ -248,10 +248,9 @@ mod mock {
 		fn filter(&self, c: &RuntimeCall) -> bool {
 			match self {
 				ProxyType::Any => true,
-				ProxyType::JustTransfer => matches!(
-					c,
-					RuntimeCall::Balances(pallet_balances::Call::transfer_allow_death { .. })
-				),
+				ProxyType::JustTransfer => {
+					matches!(c, RuntimeCall::Balances(pallet_balances::Call::transfer_allow_death { .. }))
+				},
 				ProxyType::JustUtility => matches!(c, RuntimeCall::Utility(..)),
 			}
 		}
@@ -263,7 +262,7 @@ mod mock {
 	impl Contains<RuntimeCall> for BaseFilter {
 		fn contains(c: &RuntimeCall) -> bool {
 			match *c {
-// Remark is used as a no-op call in the benchmarking
+				// Remark is used as a no-op call in the benchmarking
 				RuntimeCall::System(SystemCall::remark { .. }) => true,
 				RuntimeCall::System(_) => false,
 				_ => true,
@@ -325,9 +324,7 @@ mod mock {
 	use frame_system::Call as SystemCall;
 
 	pub fn new_test_ext() -> sp_io::TestExternalities {
-		let t = frame_system::GenesisConfig::<Runtime>::default()
-			.build_storage()
-			.unwrap();
+		let t = frame_system::GenesisConfig::<Runtime>::default().build_storage().unwrap();
 
 		let mut ext = sp_io::TestExternalities::new(t);
 		ext.execute_with(|| System::set_block_number(1));

@@ -87,7 +87,7 @@ impl<T: Ord + Encode + Decode + MaxEncodedLen + Clone + Eq + PartialEq, S: Get<u
 			Ok(loc) => {
 				self.0.remove(loc);
 				true
-			}
+			},
 			Err(_) => false,
 		}
 	}
@@ -139,10 +139,7 @@ mod tests {
 	fn from() {
 		let v: BoundedVec<i32, Eight> = vec![4, 2, 3, 4, 3, 1].try_into().unwrap();
 		let set: OrderedSet<i32, Eight> = v.into();
-		assert_eq!(
-			set,
-			OrderedSet::<i32, Eight>::from(vec![1, 2, 3, 4].try_into().unwrap())
-		);
+		assert_eq!(set, OrderedSet::<i32, Eight>::from(vec![1, 2, 3, 4].try_into().unwrap()));
 	}
 
 	#[test]
@@ -168,10 +165,7 @@ mod tests {
 		let mut set: OrderedSet<i32, Eight> = OrderedSet::from(vec![1, 2, 3, 4].try_into().unwrap());
 
 		assert!(!set.remove(&5));
-		assert_eq!(
-			set,
-			OrderedSet::<i32, Eight>::from(vec![1, 2, 3, 4].try_into().unwrap())
-		);
+		assert_eq!(set, OrderedSet::<i32, Eight>::from(vec![1, 2, 3, 4].try_into().unwrap()));
 
 		assert!(set.remove(&1));
 		assert_eq!(set, OrderedSet::<i32, Eight>::from(vec![2, 3, 4].try_into().unwrap()));

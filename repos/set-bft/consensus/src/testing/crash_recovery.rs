@@ -40,7 +40,6 @@ use crate::{
     units::{UncheckedSignedUnit, Unit, UnitCoord},
     NodeCount, NodeIndex, SpawnHandle, TaskHandle,
 };
-use set_bft_mock::{Data, DataProvider, Hasher64, Router, Signature, Spawner};
 use codec::Decode;
 use futures::{
     channel::{mpsc, oneshot},
@@ -48,6 +47,7 @@ use futures::{
 };
 use parking_lot::Mutex;
 use serial_test::serial;
+use set_bft_mock::{Data, DataProvider, Hasher64, Router, Signature, Spawner};
 use std::{
     collections::{HashMap, HashSet},
     sync::Arc,

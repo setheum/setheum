@@ -22,7 +22,7 @@ sp-std = { workspace = true }
 module-traits = { workspace = true , default-features = false }
 primitives = { workspace = true , default-features = false }
 module-support = { workspace = true , default-features = false }
-module-evm-utility-macro = { workspace = true , default-features = false }
+# module-evm-utility-macro removed
 
 [dev-dependencies]
 pallet-balances = { workspace = true, features = ["std"] }

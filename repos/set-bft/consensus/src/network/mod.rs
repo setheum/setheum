@@ -89,9 +89,9 @@ mod tests {
         units::{ControlHash, FullUnit, PreUnit, UncheckedSignedUnit, UnitCoord},
         Hasher, NodeIndex, Round, Signed,
     };
+    use codec::{Decode, Encode};
     use set_bft_mock::{Data, Hasher64, Keychain, PartialMultisignature, Signature};
     use set_bft_types::NodeMap;
-    use codec::{Decode, Encode};
 
     fn test_unchecked_unit(
         creator: NodeIndex,

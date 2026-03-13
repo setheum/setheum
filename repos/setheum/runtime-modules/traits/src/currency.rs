@@ -341,14 +341,14 @@ pub trait NamedMultiReservableCurrency<AccountId>: MultiReservableCurrency<Accou
 			Ordering::Less => {
 				// we checked value > current but just to be defensive here.
 				Self::reserve_named(id, currency_id, who, value.defensive_saturating_sub(current))
-			}
+			},
 			Ordering::Equal => Ok(()),
 			Ordering::Greater => {
 				// we always have enough balance to unreserve here but just to be defensive
 				// here.
 				Self::unreserve_named(id, currency_id, who, current.defensive_saturating_sub(value));
 				Ok(())
-			}
+			},
 		}
 	}
 
@@ -628,14 +628,14 @@ pub trait NamedBasicReservableCurrency<AccountId, ReserveIdentifier>: BasicReser
 			Ordering::Less => {
 				// we checked value > current but just to be defensive here.
 				Self::reserve_named(id, who, value.defensive_saturating_sub(current))
-			}
+			},
 			Ordering::Equal => Ok(()),
 			Ordering::Greater => {
 				// we always have enough balance to unreserve here but just to be defensive
 				// here.
 				Self::unreserve_named(id, who, current.defensive_saturating_sub(value));
 				Ok(())
-			}
+			},
 		}
 	}
 

@@ -19,16 +19,15 @@ mod mock;
 pub mod pallet {
 	use frame_support::{dispatch::DispatchResult, pallet_prelude::*, traits::StorageVersion};
 	use frame_system::pallet_prelude::*;
-	use sp_std::boxed::Box;
 	use module_bridge_traits::{DomainID, FeeHandler};
-	use xcm::latest::{AssetId, Fungibility::Fungible, Asset};
+	use sp_std::boxed::Box;
+	use xcm::latest::{Asset, AssetId, Fungibility::Fungible};
 
 	const STORAGE_VERSION: StorageVersion = StorageVersion::new(0);
 
 	/// Mapping fungible asset id with domain id to fee rate and its lower bound, upperbound
 	#[pallet::storage]
-	pub type AssetFeeRate<T: Config> =
-		StorageMap<_, Twox64Concat, (DomainID, AssetId), (u32, u128, u128)>;
+	pub type AssetFeeRate<T: Config> = StorageMap<_, Twox64Concat, (DomainID, AssetId), (u32, u128, u128)>;
 
 	pub trait WeightInfo {
 		fn set_fee_rate() -> Weight;
@@ -107,10 +106,7 @@ pub mod pallet {
 			ensure!(fee_lower_bound < fee_upper_bound, Error::<T>::InvalidFeeBound);
 
 			// Update asset fee rate with fee bound
-			AssetFeeRate::<T>::insert(
-				(domain, &asset),
-				(fee_rate_basis_point, fee_lower_bound, fee_upper_bound),
-			);
+			AssetFeeRate::<T>::insert((domain, &asset), (fee_rate_basis_point, fee_lower_bound, fee_upper_bound));
 
 			// Emit FeeRateSet event
 			Self::deposit_event(Event::FeeRateSet {
@@ -130,8 +126,7 @@ pub mod pallet {
 				(Fungible(amount), _) => {
 					let (fee_rate_basis_point, fee_lower_bound, fee_upper_bound) =
 						AssetFeeRate::<T>::get((domain, asset.id))?;
-					let fee_amount =
-						amount.saturating_mul(fee_rate_basis_point as u128).saturating_div(10000);
+					let fee_amount = amount.saturating_mul(fee_rate_basis_point as u128).saturating_div(10000);
 
 					if fee_amount > fee_upper_bound {
 						return Some(fee_upper_bound);
@@ -150,13 +145,12 @@ pub mod pallet {
 		use crate as percentage_fee_handler;
 		use crate::{AssetFeeRate, Event as PercentageFeeHandlerEvent};
 		use frame_support::{assert_noop, assert_ok};
+		use module_bridge_traits::DomainID;
 		use percentage_fee_handler::mock::{
-			assert_events, new_test_ext, AccessSegregator, PercentageFeeHandler,
-			PercentageFeeHandlerPalletIndex, RuntimeEvent as Event, RuntimeOrigin as Origin, Test,
-			ALICE,
+			assert_events, new_test_ext, AccessSegregator, PercentageFeeHandler, PercentageFeeHandlerPalletIndex,
+			RuntimeEvent as Event, RuntimeOrigin as Origin, Test, ALICE,
 		};
 		use sp_std::boxed::Box;
-		use module_bridge_traits::DomainID;
 		use xcm::latest::prelude::*;
 
 		#[test]
@@ -215,14 +209,8 @@ pub mod pallet {
 					100u128
 				));
 
-				assert_eq!(
-					AssetFeeRate::<Test>::get((dest_domain_id, asset_id_a)).unwrap(),
-					(50, 0, 100)
-				);
-				assert_eq!(
-					AssetFeeRate::<Test>::get((another_dest_domain_id, asset_id_b)).unwrap(),
-					(200, 0, 100)
-				);
+				assert_eq!(AssetFeeRate::<Test>::get((dest_domain_id, asset_id_a)).unwrap(), (50, 0, 100));
+				assert_eq!(AssetFeeRate::<Test>::get((another_dest_domain_id, asset_id_b)).unwrap(), (200, 0, 100));
 
 				// permission test: unauthorized account should not be able to set fee
 				let unauthorized_account = Origin::from(Some(ALICE));
@@ -306,10 +294,7 @@ pub mod pallet {
 					0u128,
 					100u128
 				),);
-				assert_eq!(
-					AssetFeeRate::<Test>::get((dest_domain_id, asset_id)).unwrap(),
-					(200u32, 0u128, 100u128)
-				);
+				assert_eq!(AssetFeeRate::<Test>::get((dest_domain_id, asset_id)).unwrap(), (200u32, 0u128, 100u128));
 			})
 		}
 	}

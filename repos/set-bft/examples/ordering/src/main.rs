@@ -39,13 +39,13 @@ use std::io::Write;
 mod dataio;
 mod network;
 
-use set_bft::{default_delay_config, run_session, NodeIndex, Terminator};
-use set_bft_mock::{Keychain, Spawner};
 use clap::Parser;
 use dataio::{Data, DataProvider, FinalizationHandler};
 use futures::{channel::oneshot, io, StreamExt};
 use log::{debug, error, info};
 use network::Network;
+use set_bft::{default_delay_config, run_session, NodeIndex, Terminator};
+use set_bft_mock::{Keychain, Spawner};
 use std::{path::Path, sync::Arc, time::Duration};
 use time::{macros::format_description, OffsetDateTime};
 use tokio::fs::{self, File};

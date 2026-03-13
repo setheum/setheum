@@ -20,7 +20,7 @@
 
 #![cfg(test)]
 
-use crate::{AllPrecompiles, Ratio, BlockWeights, SystemContractsFilter, Weight};
+use crate::{AllPrecompiles, BlockWeights, Ratio, SystemContractsFilter, Weight};
 use codec::{Decode, Encode, MaxEncodedLen};
 use frame_support::{
 	assert_ok, ord_parameter_types, parameter_types,
@@ -29,15 +29,13 @@ use frame_support::{
 	PalletId, RuntimeDebug,
 };
 use frame_system::{EnsureRoot, EnsureSignedBy};
-use module_support::{
-	mocks::MockAddressMapping, AddressMapping as AddressMappingT, SerpTreasury,
-};
+use module_support::{mocks::MockAddressMapping, AddressMapping as AddressMappingT, SerpTreasury};
 use module_traits::parameter_type_with_key;
 pub use primitives::{
 	evm::EvmAddress, Amount, BlockNumber, CurrencyId, DexShare, Header, Nonce, ReserveIdentifier, TokenSymbol,
 	TradingPair,
 };
-use sp_core::{bytes::from_hex, Bytes, crypto::AccountId32, H160, H256};
+use sp_core::{bytes::from_hex, crypto::AccountId32, Bytes, H160, H256};
 use sp_runtime::{
 	traits::{BlakeTwo256, Convert, IdentityLookup, One as OneT},
 	DispatchResult, FixedPointNumber, FixedU128, Perbill,
@@ -160,11 +158,7 @@ impl SerpTreasury<AccountId> for MockSerpTreasury {
 	type Balance = Balance;
 	type CurrencyId = CurrencyId;
 
-	fn calculate_supply_change(
-		_numerator: Balance,
-		_denominator: Balance,
-		_supply: Balance
-	) -> Self::Balance{
+	fn calculate_supply_change(_numerator: Balance, _denominator: Balance, _supply: Balance) -> Self::Balance {
 		unimplemented!()
 	}
 
@@ -172,137 +166,90 @@ impl SerpTreasury<AccountId> for MockSerpTreasury {
 		unimplemented!()
 	}
 
-/// Deliver System StableCurrency Inflation
+	/// Deliver System StableCurrency Inflation
 	fn issue_stablecurrency_inflation() -> DispatchResult {
 		unimplemented!()
 	}
 
-/// SerpUp ratio for BuyBack Swaps to burn Dinar
-	fn get_buyback_serpup(
-		_amount: Balance,
-		_currency_id: CurrencyId,
-	) -> DispatchResult {
+	/// SerpUp ratio for BuyBack Swaps to burn Dinar
+	fn get_buyback_serpup(_amount: Balance, _currency_id: CurrencyId) -> DispatchResult {
 		unimplemented!()
 	}
 
-/// Add CashDrop to the pool
-	fn add_cashdrop_to_pool(
-		_currency_id: Self::CurrencyId,
-		_amount: Self::Balance
-	) -> DispatchResult {
+	/// Add CashDrop to the pool
+	fn add_cashdrop_to_pool(_currency_id: Self::CurrencyId, _amount: Self::Balance) -> DispatchResult {
 		unimplemented!()
 	}
 
-/// Issue CashDrop from the pool to the claimant account
+	/// Issue CashDrop from the pool to the claimant account
 	fn issue_cashdrop_from_pool(
 		_claimant_id: &AccountId,
 		_currency_id: Self::CurrencyId,
-		_amount: Self::Balance
+		_amount: Self::Balance,
 	) -> DispatchResult {
 		unimplemented!()
 	}
 
-/// SerpUp ratio for SetPay Cashdrops
-	fn get_cashdrop_serpup(
-		_amount: Balance,
-		_currency_id: CurrencyId
-	) -> DispatchResult {
+	/// SerpUp ratio for SetPay Cashdrops
+	fn get_cashdrop_serpup(_amount: Balance, _currency_id: CurrencyId) -> DispatchResult {
 		unimplemented!()
 	}
 
-/// SerpUp ratio for BuyBack Swaps to burn Dinar
-	fn get_buyback_serplus(
-		_amount: Balance,
-		_currency_id: CurrencyId,
-	) -> DispatchResult {
+	/// SerpUp ratio for BuyBack Swaps to burn Dinar
+	fn get_buyback_serplus(_amount: Balance, _currency_id: CurrencyId) -> DispatchResult {
 		unimplemented!()
 	}
 
-	fn get_cashdrop_serplus(
-		_amount: Balance, 
-		_currency_id: CurrencyId
-	) -> DispatchResult {
+	fn get_cashdrop_serplus(_amount: Balance, _currency_id: CurrencyId) -> DispatchResult {
 		unimplemented!()
 	}
 
-/// issue serpup surplus(stable currencies) to their destinations according to the serpup_ratio.
-	fn on_serplus(
-		_currency_id: CurrencyId,
-		_amount: Balance,
-	) -> DispatchResult {
+	/// issue serpup surplus(stable currencies) to their destinations according to the serpup_ratio.
+	fn on_serplus(_currency_id: CurrencyId, _amount: Balance) -> DispatchResult {
 		unimplemented!()
 	}
 
-/// issue serpup surplus(stable currencies) to their destinations according to the serpup_ratio.
-	fn on_serpup(
-		_currency_id: CurrencyId,
-		_amount: Balance,
-	) -> DispatchResult {
+	/// issue serpup surplus(stable currencies) to their destinations according to the serpup_ratio.
+	fn on_serpup(_currency_id: CurrencyId, _amount: Balance) -> DispatchResult {
 		unimplemented!()
 	}
 
-/// buy back and burn surplus(stable currencies) with swap by DEX.
-	fn on_serpdown(
-		_currency_id: CurrencyId,
-		_amount: Balance,
-	) -> DispatchResult {
+	/// buy back and burn surplus(stable currencies) with swap by DEX.
+	fn on_serpdown(_currency_id: CurrencyId, _amount: Balance) -> DispatchResult {
 		unimplemented!()
 	}
 
-/// get the minimum supply of a setcurrency - by key
-	fn get_minimum_supply(
-		_currency_id: CurrencyId
-	) -> Balance {
+	/// get the minimum supply of a setcurrency - by key
+	fn get_minimum_supply(_currency_id: CurrencyId) -> Balance {
 		unimplemented!()
 	}
 
-/// issue standard to `who`
-	fn issue_standard(
-		_currency_id: CurrencyId,
-		_who: &AccountId,
-		_standard: Balance
-	) -> DispatchResult {
+	/// issue standard to `who`
+	fn issue_standard(_currency_id: CurrencyId, _who: &AccountId, _standard: Balance) -> DispatchResult {
 		unimplemented!()
 	}
 
-/// burn standard(stable currency) of `who`
-	fn burn_standard(
-		_currency_id: CurrencyId,
-		_who: &AccountId,
-		_standard: Balance
-	) -> DispatchResult {
+	/// burn standard(stable currency) of `who`
+	fn burn_standard(_currency_id: CurrencyId, _who: &AccountId, _standard: Balance) -> DispatchResult {
 		unimplemented!()
 	}
 
-/// issue setter of amount setter to `who`
-	fn issue_setter(
-		_who: &AccountId,
-		_setter: Balance
-	) -> DispatchResult {
+	/// issue setter of amount setter to `who`
+	fn issue_setter(_who: &AccountId, _setter: Balance) -> DispatchResult {
 		unimplemented!()
 	}
 
-/// burn setter of `who`
-	fn burn_setter(
-		_who: &AccountId,
-		_setter: Balance
-	) -> DispatchResult {
+	/// burn setter of `who`
+	fn burn_setter(_who: &AccountId, _setter: Balance) -> DispatchResult {
 		unimplemented!()
 	}
 
-	fn deposit_setter(
-		_from: &AccountId,
-		_amount: Balance
-	) -> DispatchResult {
+	fn deposit_setter(_from: &AccountId, _amount: Balance) -> DispatchResult {
 		unimplemented!()
 	}
 
-/// claim cashdrop of `currency_id` relative to `transfer_amount` for `who`
-	fn claim_cashdrop(
-		_currency_id: CurrencyId,
-		_who: &AccountId,
-		_transfer_amount: Balance
-	) -> DispatchResult {
+	/// claim cashdrop of `currency_id` relative to `transfer_amount` for `who`
+	fn claim_cashdrop(_currency_id: CurrencyId, _who: &AccountId, _transfer_amount: Balance) -> DispatchResult {
 		unimplemented!()
 	}
 }
@@ -337,9 +284,24 @@ impl module_evm_bridge::Config for Test {
 	type EVM = ModuleEVM;
 }
 
-impl module_evm_manager::Config for Test {
-	type Currency = Balances;
-	type EVMBridge = EVMBridge;
+
+pub struct MockCurrencyIdMapping;
+impl module_support::CurrencyIdMapping for MockCurrencyIdMapping {
+	fn name(_currency_id: CurrencyId) -> Option<Vec<u8>> {
+		None
+	}
+	fn symbol(_currency_id: CurrencyId) -> Option<Vec<u8>> {
+		None
+	}
+	fn decimals(_currency_id: CurrencyId) -> Option<u8> {
+		None
+	}
+	fn encode_evm_address(currency_id: CurrencyId) -> Option<EvmAddress> {
+		EvmAddress::try_from(currency_id).ok()
+	}
+	fn decode_evm_address(addr: EvmAddress) -> Option<CurrencyId> {
+		CurrencyId::try_from(addr).ok()
+	}
 }
 
 parameter_types! {
@@ -478,7 +440,7 @@ parameter_types! {
 	pub const DEXPalletId: PalletId = PalletId(*b"edf/swap");
 }
 
-impl edfis_swap_legacy_module::Config for Test {
+impl swap_legacy_module::Config for Test {
 	type Event = Event;
 	type Currency = Tokens;
 	type StableCurrencyIds = StableCurrencyIds;
@@ -493,7 +455,7 @@ impl edfis_swap_legacy_module::Config for Test {
 
 pub type AdaptedBasicCurrency = module_currencies::BasicCurrencyAdapter<Test, Balances, Amount, BlockNumber>;
 
-pub type EvmCurrencyIdMapping = module_evm_manager::EvmCurrencyIdMapping<Test>;
+pub type EvmCurrencyIdMapping = MockCurrencyIdMapping;
 pub type MultiCurrencyPrecompile =
 	crate::MultiCurrencyPrecompile<AccountId, MockAddressMapping, EvmCurrencyIdMapping, Currencies>;
 
@@ -517,7 +479,7 @@ pub type ScheduleCallPrecompile = crate::ScheduleCallPrecompile<
 	OriginCaller,
 	Test,
 >;
-pub type DexPrecompile = crate::DexPrecompile<AccountId, MockAddressMapping, EvmCurrencyIdMapping, EdfisSwapLegacyModule>;
+pub type DexPrecompile = crate::DexPrecompile<AccountId, MockAddressMapping, EvmCurrencyIdMapping, SwapLegacyModule>;
 
 parameter_types! {
 	pub NetworkContractSource: H160 = alice_evm_addr();
@@ -589,7 +551,7 @@ impl module_prices::Config for Test {
 	type SetUSDFixedPrice = SetUSDFixedPrice;
 	type SetterFixedPrice = SetterFixedPrice;
 	type LockOrigin = EnsureSignedBy<One, AccountId>;
-	type DEX = EdfisSwapLegacyModule;
+	type DEX = SwapLegacyModule;
 	type Currency = Currencies;
 	type CurrencyIdMapping = EvmCurrencyIdMapping;
 	type WeightInfo = ();
@@ -623,8 +585,7 @@ pub fn setusd_evm_address() -> EvmAddress {
 	EvmAddress::try_from(SEUSD).unwrap()
 }
 
-pub fn serp_evm_address() -> EvmAddress {
-}
+pub fn serp_evm_address() -> EvmAddress {}
 
 pub fn lp_setm_setusd_evm_address() -> EvmAddress {
 	EvmAddress::try_from(LP_SETM_SEUSD).unwrap()
@@ -646,16 +607,12 @@ pub fn evm_genesis() -> BTreeMap<H160, module_evm::GenesisAccount<Balance, Nonce
 			storage: Default::default(),
 			code: Bytes::from_str(&code_string).unwrap().0,
 		};
-		let addr = H160::from_slice(
-			from_hex(address.as_str())
-				.expect("predeploy-contracts must specify address")
-				.as_slice(),
-		);
+		let addr =
+			H160::from_slice(from_hex(address.as_str()).expect("predeploy-contracts must specify address").as_slice());
 		accounts.insert(addr, account);
 	}
 	accounts
 }
-
 
 pub const INITIAL_BALANCE: Balance = 1_000_000_000_000;
 
@@ -675,14 +632,13 @@ frame_support::construct_runtime!(
 		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
 		Currencies: module_currencies::{Pallet, Call, Event<T>},
 		EVMBridge: module_evm_bridge::{Pallet},
-		EVMManager: module_evm_manager::{Pallet, Storage},
 		NFTModule: module_nft::{Pallet, Call, Event<T>},
 		TransactionPayment: module_transaction_payment::{Pallet, Call, Storage},
 		Prices: module_prices::{Pallet, Storage, Call, Event<T>},
 		Proxy: pallet_proxy::{Pallet, Call, Storage, Event<T>},
 		Utility: pallet_utility::{Pallet, Call, Event},
 		Scheduler: pallet_scheduler::{Pallet, Call, Storage, Event<T>},
-		EdfisSwapLegacyModule: edfis_swap_legacy_module::{Pallet, Storage, Call, Event<T>, Config<T>},
+		SwapLegacyModule: swap_legacy_module::{Pallet, Storage, Call, Event<T>, Config<T>},
 		ModuleEVM: module_evm::{Pallet, Config<T>, Call, Storage, Event<T>},
 	}
 );
@@ -715,26 +671,17 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
 		},
 	);
 
-	pallet_balances::GenesisConfig::<Test>::default()
+	pallet_balances::GenesisConfig::<Test>::default().assimilate_storage(&mut storage).unwrap();
+	module_evm::GenesisConfig::<Test> { accounts, treasury: Default::default() }
 		.assimilate_storage(&mut storage)
 		.unwrap();
-	module_evm::GenesisConfig::<Test> {
-		accounts,
-		treasury: Default::default(),
-	}
-	.assimilate_storage(&mut storage)
-	.unwrap();
 
 	let mut ext = sp_io::TestExternalities::new(storage);
 	ext.execute_with(|| {
 		System::set_block_number(1);
 		Timestamp::set_timestamp(1);
 
-		assert_ok!(Currencies::update_balance(
-			Origin::root(),
-			ALICE,
-			1_000_000_000_000
-		));
+		assert_ok!(Currencies::update_balance(Origin::root(), ALICE, 1_000_000_000_000));
 		assert_ok!(Currencies::update_balance(Origin::root(), ALICE, SEUSD, 1_000_000_000));
 
 		assert_ok!(Currencies::update_balance(

@@ -291,14 +291,7 @@ pub fn deploy_contracts() {
 	let json: serde_json::Value =
 		serde_json::from_str(include_str!("../../../ts-tests/build/Erc20DemoContract2.json")).unwrap();
 	let code = hex::decode(json.get("bytecode").unwrap().as_str().unwrap()).unwrap();
-	assert_ok!(EVM::create(
-		RuntimeOrigin::signed(alice()),
-		code,
-		0,
-		2_100_000,
-		10_000,
-		vec![]
-	));
+	assert_ok!(EVM::create(RuntimeOrigin::signed(alice()), code, 0, 2_100_000, 10_000, vec![]));
 
 	System::assert_last_event(RuntimeEvent::EVM(module_evm::Event::Created {
 		from: alice_evm_addr(),
@@ -320,10 +313,7 @@ pub fn deploy_contracts() {
 		used_storage: 5131,
 	}));
 
-	assert_ok!(EVM::publish_free(
-		RuntimeOrigin::signed(CouncilAccount::get()),
-		erc20_address()
-	));
+	assert_ok!(EVM::publish_free(RuntimeOrigin::signed(CouncilAccount::get()), erc20_address()));
 }
 
 pub struct ExtBuilder {
@@ -352,9 +342,7 @@ impl ExtBuilder {
 	}
 
 	pub fn build(self) -> sp_io::TestExternalities {
-		let mut t = frame_system::GenesisConfig::<Runtime>::default()
-			.build_storage()
-			.unwrap();
+		let mut t = frame_system::GenesisConfig::<Runtime>::default().build_storage().unwrap();
 
 		pallet_balances::GenesisConfig::<Runtime> {
 			balances: self
@@ -378,9 +366,7 @@ impl ExtBuilder {
 		.assimilate_storage(&mut t)
 		.unwrap();
 
-		module_evm::GenesisConfig::<Runtime>::default()
-			.assimilate_storage(&mut t)
-			.unwrap();
+		module_evm::GenesisConfig::<Runtime>::default().assimilate_storage(&mut t).unwrap();
 
 		let mut ext = sp_io::TestExternalities::new(t);
 		ext.execute_with(|| System::set_block_number(1));

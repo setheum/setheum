@@ -20,7 +20,7 @@ use polkadot_parachain_primitives::primitives::Sibling;
 use sp_runtime::testing::H256;
 use sp_runtime::traits::{BlakeTwo256, IdentityLookup};
 use sp_runtime::{AccountId32, BuildStorage};
-use xcm::latest::{BodyId, Junction, Asset, Location, NetworkId};
+use xcm::latest::{Asset, BodyId, Junction, Location, NetworkId};
 
 use xcm::prelude::{Concrete, Fungible, GeneralKey, Parachain, X1, X3};
 
@@ -154,12 +154,7 @@ impl module_bridge_forwarder::Config for Runtime {
 
 pub struct BridgeImplRuntime<T>(PhantomData<T>);
 impl<T> Bridge for BridgeImplRuntime<T> {
-	fn transfer(
-		_sender: [u8; 32],
-		_asset: Asset,
-		_dest: Location,
-		_max_weight: Option<Weight>,
-	) -> DispatchResult {
+	fn transfer(_sender: [u8; 32], _asset: Asset, _dest: Location, _max_weight: Option<Weight>) -> DispatchResult {
 		Ok(())
 	}
 }
@@ -186,8 +181,7 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
 
 #[allow(dead_code)]
 pub fn assert_events(mut expected: Vec<RuntimeEvent>) {
-	let mut actual: Vec<RuntimeEvent> =
-		system::Pallet::<Runtime>::events().iter().map(|e| e.event.clone()).collect();
+	let mut actual: Vec<RuntimeEvent> = system::Pallet::<Runtime>::events().iter().map(|e| e.event.clone()).collect();
 
 	expected.reverse();
 
@@ -273,8 +267,7 @@ impl<T: Get<ParaId>> AssetTypeIdentifier for NativeAssetTypeIdentifier<T> {
 		// currently there are two multilocations are considered as native asset:
 		// 1. integrated parachain native asset(Location::here())
 		// 2. other parachain native asset(Location::new(1, X1(Parachain(T::get().into()))))
-		let native_locations =
-			[Location::here(), Location::new(1, X1(Parachain(T::get().into())))];
+		let native_locations = [Location::here(), Location::new(1, X1(Parachain(T::get().into())))];
 
 		match (&asset.id, &asset.fun) {
 			(Concrete(ref id), Fungible(_)) => native_locations.contains(id),
@@ -299,19 +292,11 @@ pub fn slice_to_generalkey(key: &[u8]) -> Junction {
 pub struct ForwarderImplRuntime;
 
 impl TransactorForwarder for ForwarderImplRuntime {
-	fn xcm_transactor_forwarder(
-		_sender: [u8; 32],
-		_what: Asset,
-		_dest: Location,
-	) -> DispatchResult {
+	fn xcm_transactor_forwarder(_sender: [u8; 32], _what: Asset, _dest: Location) -> DispatchResult {
 		Ok(())
 	}
 
-	fn other_world_transactor_forwarder(
-		_sender: [u8; 32],
-		_what: Asset,
-		_dest: Location,
-	) -> DispatchResult {
+	fn other_world_transactor_forwarder(_sender: [u8; 32], _what: Asset, _dest: Location) -> DispatchResult {
 		Ok(())
 	}
 }

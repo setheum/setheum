@@ -21,7 +21,7 @@ hex-literal = { workspace = true, optional = true , default-features = false }
 serde = { workspace = true, optional = true, features = ['derive'] , default-features = false }
 serde_json = { workspace = true, default-features = false }
 hex = { workspace = true, optional = true , default-features = false }
-evm = { version = "0.30.1", optional = true, default-features = false }
+# evm removed
 log = { workspace = true , default-features = false }
 
 # Substrate dependencies
@@ -66,6 +66,11 @@ sp-transaction-pool = { workspace = true, default-features = false }
 sp-version = { workspace = true, default-features = false }
 libsecp256k1 = { workspace = true, optional = true , default-features = false }
 
+# Frontier dependencies
+pallet-evm = { workspace = true }
+pallet-ethereum = { workspace = true }
+fp-evm = { workspace = true }
+
 # NPoS
 pallet-session = { workspace = true, features = ["historical"], default-features = false }
 pallet-staking = { workspace = true, default-features = false }
@@ -96,11 +101,11 @@ module-transaction-payment = { workspace = true , default-features = false }
 module-airdrop = { path = "../runtime-modules/airdrop", default-features = false }
 
 module-currencies = { workspace = true , default-features = false }
-module-evm = { workspace = true , default-features = false }
-module-unified-accounts = { workspace = true , default-features = false }
-module-evm-bridge = { workspace = true , default-features = false }
-module-evm-rpc-runtime-api = { path = "../runtime-modules/evm/rpc/runtime_api",  default-features = false }
-module-evm-manager = { workspace = true , default-features = false }
+module-unified_accounts = { workspace = true , default-features = false }
+# module-evm removed
+# module-evm-bridge removed
+# module-evm-rpc-runtime-api removed
+# module-evm-manager removed
 
 module-nft = { path = "../runtime-modules/nft", default-features = false }
 module-prices = { path = "../runtime-modules/prices", default-features = false }
@@ -183,11 +188,7 @@ std = [
 
 	"module-airdrop/std",
 	"module-currencies/std",
-	"module-evm/std",
 	"module-unified-accounts/std",
-	"module-evm-bridge/std",
-	"module-evm-manager/std",
-	"module-evm-rpc-runtime-api/std",
 	"module-nft/std",
 	"module-prices/std",
 	"module-support/std",
@@ -197,10 +198,11 @@ std = [
 	"primitives/std",
 	"runtime-common/std",
 
+	"pallet-evm/std",
+	"pallet-ethereum/std",
+	"fp-evm/std",
 ]
 with-ethereum-compatibility = [
-	"evm",
-	"module-evm/with-ethereum-compatibility",
 	"runtime-common/with-ethereum-compatibility",
 ]
 runtime-benchmarks = [

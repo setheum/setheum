@@ -39,16 +39,20 @@
 #![allow(clippy::unused_unit)]
 #![allow(clippy::type_complexity)]
 
-use frame_support::{pallet_prelude::*, transactional, PalletId, traits::{Get, ExistenceRequirement}};
-use frame_system::pallet_prelude::*;
+use frame_support::storage::TransactionOutcome;
+use frame_support::{
+	pallet_prelude::*,
+	traits::{ExistenceRequirement, Get},
+	transactional, PalletId,
+};
 use frame_system::pallet_prelude::BlockNumberFor;
+use frame_system::pallet_prelude::*;
+use module_support::AirdropList;
 use module_traits::{MultiCurrency, MultiCurrencyExtended};
 use primitives::{AccountId, Balance, CurrencyId};
-use module_support::AirdropList;
-use sp_std::vec::Vec;
-use sp_std::collections::btree_set::BTreeSet;
 use sp_runtime::traits::AccountIdConversion;
-use frame_support::storage::TransactionOutcome;
+use sp_std::collections::btree_set::BTreeSet;
+use sp_std::vec::Vec;
 
 mod mock;
 mod tests;
@@ -65,42 +69,36 @@ pub mod module {
 	pub trait Config: frame_system::Config {
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 
-/// The Currency for managing assets.
+		/// The Currency for managing assets.
 		type MultiCurrency: MultiCurrencyExtended<Self::AccountId, CurrencyId = CurrencyId, Balance = Balance>;
 
-/// The maximum size of an airdrop list
+		/// The maximum size of an airdrop list
 		type MaxAirdropListSize: Get<usize>;
 
 		#[pallet::constant]
-/// The Airdrop module pallet id, keeps airdrop funds.
+		/// The Airdrop module pallet id, keeps airdrop funds.
 		type PalletId: Get<PalletId>;
 	}
 
 	#[pallet::error]
 	pub enum Error<T> {
-// Duplicate Airdrop Account
+		// Duplicate Airdrop Account
 		DuplicateAccounts,
-// The airdrop list is over the max size limit `MaxAirdropListSize`
+		// The airdrop list is over the max size limit `MaxAirdropListSize`
 		OverSizedAirdropList,
-// Error parsing the JSON data
+		// Error parsing the JSON data
 		InvalidJson,
-// Invalid Account ID
+		// Invalid Account ID
 		InvalidAccountId,
 	}
 
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(crate) fn deposit_event)]
 	pub enum Event<T: Config> {
-/// Drop Airdrop
-		Airdrop {
-			currency_id: CurrencyId,
-			airdrop_list: Vec<(T::AccountId, Balance)>
-		},
-/// Drop Airdrop with JSON Data
-		AirdropWithJson {
-			currency_id: CurrencyId,
-			airdrop_list: AirdropList
-		},
+		/// Drop Airdrop
+		Airdrop { currency_id: CurrencyId, airdrop_list: Vec<(T::AccountId, Balance)> },
+		/// Drop Airdrop with JSON Data
+		AirdropWithJson { currency_id: CurrencyId, airdrop_list: AirdropList },
 	}
 
 	#[pallet::pallet]
@@ -111,12 +109,12 @@ pub mod module {
 
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
-/// Make Airdrop to beneficiaries.
-///
-/// Any account can call this function.
-///
-/// - `currency_id`: `CurrencyId` airdrop currency type.
-/// - `airdrop_list`: airdrop accounts and respective amounts in Vec<(T::AccountId, Balance)> format.
+		/// Make Airdrop to beneficiaries.
+		///
+		/// Any account can call this function.
+		///
+		/// - `currency_id`: `CurrencyId` airdrop currency type.
+		/// - `airdrop_list`: airdrop accounts and respective amounts in Vec<(T::AccountId, Balance)> format.
 		#[pallet::weight((Weight::from_parts(100_000_000, 0), DispatchClass::Operational))]
 		#[transactional]
 		pub fn make_airdrop(
@@ -126,86 +124,94 @@ pub mod module {
 		) -> DispatchResult {
 			let who = ensure_signed(origin)?;
 
-			ensure!(
-				airdrop_list.len() <= T::MaxAirdropListSize::get(),
-				Error::<T>::OverSizedAirdropList,
-			);
+			ensure!(airdrop_list.len() <= T::MaxAirdropListSize::get(), Error::<T>::OverSizedAirdropList,);
 
 			Self::do_make_airdrop(who, currency_id, airdrop_list)?;
 			Ok(())
 		}
 
-/// Make Airdrop with JSON data.
-///
-/// Any account can call this function.
-///
-/// - `currency_id`: `CurrencyId` airdrop currency type.
-/// - `airdrop_list_json`: airdrop accounts and respective amounts in json format as a byte vector.
-        #[pallet::weight((Weight::from_parts(100_000_000, 0), DispatchClass::Operational))]
-        #[transactional]
-        #[cfg(feature = "std")]
-        pub fn make_airdrop_with_json(
-            origin: OriginFor<T>,
-            currency_id: CurrencyId,
-            airdrop_list_json: Vec<u8>,
-        ) -> DispatchResult {
-            let who = ensure_signed(origin)?;
+		/// Make Airdrop with JSON data.
+		///
+		/// Any account can call this function.
+		///
+		/// - `currency_id`: `CurrencyId` airdrop currency type.
+		/// - `airdrop_list_json`: airdrop accounts and respective amounts in json format as a byte vector.
+		#[pallet::weight((Weight::from_parts(100_000_000, 0), DispatchClass::Operational))]
+		#[transactional]
+		#[cfg(feature = "std")]
+		pub fn make_airdrop_with_json(
+			origin: OriginFor<T>,
+			currency_id: CurrencyId,
+			airdrop_list_json: Vec<u8>,
+		) -> DispatchResult {
+			let who = ensure_signed(origin)?;
 
-            let airdrop_entries = Self::parse_airdrop_json(airdrop_list_json)?;
+			let airdrop_entries = Self::parse_airdrop_json(airdrop_list_json)?;
 
-            ensure!(
-                airdrop_entries.len() <= T::MaxAirdropListSize::get(),
-                Error::<T>::OverSizedAirdropList,
-            );
+			ensure!(airdrop_entries.len() <= T::MaxAirdropListSize::get(), Error::<T>::OverSizedAirdropList,);
 
-            Self::do_make_airdrop(who, currency_id, airdrop_entries)?;
-            Ok(())
-        }
+			Self::do_make_airdrop(who, currency_id, airdrop_entries)?;
+			Ok(())
+		}
 
-        #[pallet::weight((Weight::from_parts(100_000_000, 0), DispatchClass::Operational))]
-        #[transactional]
-        #[cfg(not(feature = "std"))]
-        pub fn make_airdrop_with_json(
-            _origin: OriginFor<T>,
-            _currency_id: CurrencyId,
-            _airdrop_list_json: Vec<u8>,
-        ) -> DispatchResult {
-            Err(Error::<T>::InvalidJson.into())
-        }
-    }
+		#[pallet::weight((Weight::from_parts(100_000_000, 0), DispatchClass::Operational))]
+		#[transactional]
+		#[cfg(not(feature = "std"))]
+		pub fn make_airdrop_with_json(
+			_origin: OriginFor<T>,
+			_currency_id: CurrencyId,
+			_airdrop_list_json: Vec<u8>,
+		) -> DispatchResult {
+			Err(Error::<T>::InvalidJson.into())
+		}
+	}
 }
 
 impl<T: Config> Pallet<T> {
-/// Get account of Airdrop module.
+	/// Get account of Airdrop module.
 	pub fn account_id() -> T::AccountId {
 		T::PalletId::get().into_account_truncating()
 	}
 
-	fn do_make_airdrop(who: T::AccountId, currency_id: CurrencyId, airdrop_list: Vec<(T::AccountId, Balance)>) -> DispatchResult {
-        frame_support::storage::with_transaction(|| {
-            let mut processed_accounts = sp_std::collections::btree_set::BTreeSet::new();
-            for (beneficiary, amount) in airdrop_list.iter() {
-                if !processed_accounts.insert(beneficiary) {
-                    return TransactionOutcome::Rollback(Err(Error::<T>::DuplicateAccounts.into()));
-                }
-                let transfer_result = T::MultiCurrency::transfer(currency_id, &who, beneficiary, *amount, ExistenceRequirement::AllowDeath);
-                if transfer_result.is_err() {
-                    return TransactionOutcome::Rollback(Err(transfer_result.err().unwrap()));
-                }
-            }
-            TransactionOutcome::Commit(Ok(()))
-        })
-    }
-	
+	fn do_make_airdrop(
+		who: T::AccountId,
+		currency_id: CurrencyId,
+		airdrop_list: Vec<(T::AccountId, Balance)>,
+	) -> DispatchResult {
+		frame_support::storage::with_transaction(|| {
+			let mut processed_accounts = sp_std::collections::btree_set::BTreeSet::new();
+			for (beneficiary, amount) in airdrop_list.iter() {
+				if !processed_accounts.insert(beneficiary) {
+					return TransactionOutcome::Rollback(Err(Error::<T>::DuplicateAccounts.into()));
+				}
+				let transfer_result = T::MultiCurrency::transfer(
+					currency_id,
+					&who,
+					beneficiary,
+					*amount,
+					ExistenceRequirement::AllowDeath,
+				);
+				if transfer_result.is_err() {
+					return TransactionOutcome::Rollback(Err(transfer_result.err().unwrap()));
+				}
+			}
+			TransactionOutcome::Commit(Ok(()))
+		})
+	}
+
 	#[cfg(feature = "std")]
 	fn parse_airdrop_json(airdrop_list_json: Vec<u8>) -> Result<Vec<(T::AccountId, Balance)>, Error<T>> {
-		let airdrop_list: AirdropList = serde_json::from_slice(&airdrop_list_json)
-			.map_err(|_| Error::<T>::InvalidJson)?;
-	
-		airdrop_list.0.into_iter().map(|entry| {
-			let account_id = T::AccountId::decode(&mut &entry.account.encode()[..])
-				.map_err(|_| Error::<T>::InvalidAccountId)?;
-			Ok((account_id, entry.amount))
-		}).collect()
+		let airdrop_list: AirdropList =
+			serde_json::from_slice(&airdrop_list_json).map_err(|_| Error::<T>::InvalidJson)?;
+
+		airdrop_list
+			.0
+			.into_iter()
+			.map(|entry| {
+				let account_id =
+					T::AccountId::decode(&mut &entry.account.encode()[..]).map_err(|_| Error::<T>::InvalidAccountId)?;
+				Ok((account_id, entry.amount))
+			})
+			.collect()
 	}
 }

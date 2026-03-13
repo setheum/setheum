@@ -38,15 +38,15 @@
 use codec::Decode;
 use subxt::{ext::sp_core::Bytes, rpc_params};
 
-use crate::{setheum_runtime::SessionKeys, connections::AsConnection};
+use crate::{connections::AsConnection, setheum_runtime::SessionKeys};
 
 /// Implements RPC calls for  [`author`](https://paritytech.github.io/substrate/master/sc_rpc/author/struct.Author.html) pallet
 #[async_trait::async_trait]
 pub trait AuthorRpc {
-/// API for [`rotate_keys`](https://paritytech.github.io/substrate/master/sc_rpc/author/struct.Author.html#method.rotate_keys) call
+    /// API for [`rotate_keys`](https://paritytech.github.io/substrate/master/sc_rpc/author/struct.Author.html#method.rotate_keys) call
     async fn author_rotate_keys(&self) -> anyhow::Result<SessionKeys>;
-/// Returns the number of extrinsics pending in RPC node's transaction pool.
-/// See [`pending_extrinsics`](https://paritytech.github.io/substrate/master/sc_rpc/author/struct.Author.html#method.pending_extrinsics).
+    /// Returns the number of extrinsics pending in RPC node's transaction pool.
+    /// See [`pending_extrinsics`](https://paritytech.github.io/substrate/master/sc_rpc/author/struct.Author.html#method.pending_extrinsics).
     async fn pending_extrinsics_len(&self) -> anyhow::Result<u64>;
 }
 
