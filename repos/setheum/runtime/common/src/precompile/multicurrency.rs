@@ -20,7 +20,7 @@
 
 use crate::precompile::PrecompileOutput;
 use frame_support::log;
-use module_evm::{Context, ExitError, ExitSucceed, Precompile};
+use fp_evm::{Context, ExitError, ExitRevert, ExitSucceed, Precompile, PrecompileFailure, PrecompileHandle};
 use module_support::{AddressMapping as AddressMappingT, CurrencyIdMapping as CurrencyIdMappingT};
 use sp_runtime::RuntimeDebug;
 use sp_std::{fmt::Debug, marker::PhantomData, prelude::*, result};
@@ -64,16 +64,13 @@ where
 	CurrencyIdMapping: CurrencyIdMappingT,
 	MultiCurrency: MultiCurrencyT<AccountId, Balance = Balance, CurrencyId = CurrencyId>,
 {
-	fn execute(
-		input: &[u8],
-		_target_gas: Option<u64>,
-		context: &Context,
-	) -> result::Result<PrecompileOutput, ExitError> {
-		let input = Input::<Action, AccountId, AddressMapping, CurrencyIdMapping>::new(input);
+	fn execute(handle: &mut impl PrecompileHandle) -> result::Result<PrecompileOutput, PrecompileFailure> {
+		let input = Input::<Action, AccountId, AddressMapping, CurrencyIdMapping>::new(handle.input());
+		let context = handle.context();
 
 		let action = input.action()?;
-		let currency_id = CurrencyIdMapping::decode_evm_address(context.caller)
-			.ok_or_else(|| ExitError::Other("invalid currency id".into()))?;
+		let currency_id = CurrencyIdMapping::decode_evm_address(handle.code_address())
+			.ok_or_else(|| PrecompileFailure::Error { exit_status: ExitError::Other("invalid currency id".into()) })?;
 
 		log::debug!(target: "evm", "multicurrency: currency id: {:?}", currency_id);
 
@@ -145,7 +142,7 @@ where
 
 				MultiCurrency::transfer(currency_id, &from, &to, amount).map_err(|e| {
 					let err_msg: &str = e.into();
-					ExitError::Other(err_msg.into())
+					PrecompileFailure::Error { exit_status: ExitError::Other(err_msg.into()) }
 				})?;
 
 				Ok(PrecompileOutput {

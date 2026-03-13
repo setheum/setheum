@@ -21,7 +21,7 @@
 use super::input::{Input, InputT, Output};
 use crate::precompile::PrecompileOutput;
 use frame_support::log;
-use module_evm::{Context, ExitError, ExitSucceed, Precompile};
+use fp_evm::{Context, ExitError, ExitSucceed, Precompile, PrecompileFailure, PrecompileHandle};
 use module_support::{
 	AddressMapping as AddressMappingT, CurrencyIdMapping as CurrencyIdMappingT, SwapLimit, SwapManager,
 };
@@ -65,12 +65,8 @@ where
 	CurrencyIdMapping: CurrencyIdMappingT,
 	Dex: SwapManager<AccountId, CurrencyId, Balance>,
 {
-	fn execute(
-		input: &[u8],
-		_target_gas: Option<u64>,
-		_context: &Context,
-	) -> result::Result<PrecompileOutput, ExitError> {
-		let input = Input::<Action, AccountId, AddressMapping, CurrencyIdMapping>::new(input);
+	fn execute(handle: &mut impl PrecompileHandle) -> result::Result<PrecompileOutput, PrecompileFailure> {
+		let input = Input::<Action, AccountId, AddressMapping, CurrencyIdMapping>::new(handle.input());
 
 		let action = input.action()?;
 
@@ -103,7 +99,7 @@ where
 				);
 
 				let value = Dex::get_liquidity_token_address(currency_id_a, currency_id_b)
-					.ok_or_else(|| ExitError::Other("Dex get_liquidity_token_address failed".into()))?;
+					.ok_or_else(|| PrecompileFailure::Error { exit_status: ExitError::Other("Dex get_liquidity_token_address failed".into()) })?;
 
 				Ok(PrecompileOutput {
 					exit_status: ExitSucceed::Returned,
@@ -128,7 +124,7 @@ where
 
 				let value = Dex::get_swap_amount(&path, SwapLimit::ExactSupply(supply_amount, Balance::MIN))
 					.map(|(_, target)| target)
-					.ok_or_else(|| ExitError::Other("Dex get_swap_target_amount failed".into()))?;
+					.ok_or_else(|| PrecompileFailure::Error { exit_status: ExitError::Other("Dex get_swap_target_amount failed".into()) })?;
 
 				Ok(PrecompileOutput {
 					exit_status: ExitSucceed::Returned,
@@ -153,7 +149,7 @@ where
 
 				let value = Dex::get_swap_amount(&path, SwapLimit::ExactTarget(Balance::MAX, target_amount))
 					.map(|(supply, _)| supply)
-					.ok_or_else(|| ExitError::Other("Dex get_swap_supply_amount failed".into()))?;
+					.ok_or_else(|| PrecompileFailure::Error { exit_status: ExitError::Other("Dex get_swap_supply_amount failed".into()) })?;
 
 				Ok(PrecompileOutput {
 					exit_status: ExitSucceed::Returned,
@@ -182,7 +178,7 @@ where
 					Dex::swap_with_specific_path(&who, &path, SwapLimit::ExactSupply(supply_amount, min_target_amount))
 						.map_err(|e| {
 							let err_msg: &str = e.into();
-							ExitError::Other(err_msg.into())
+							PrecompileFailure::Error { exit_status: ExitError::Other(err_msg.into()) }
 						})?;
 
 				Ok(PrecompileOutput {
@@ -212,7 +208,7 @@ where
 					Dex::swap_with_specific_path(&who, &path, SwapLimit::ExactTarget(max_supply_amount, target_amount))
 						.map_err(|e| {
 							let err_msg: &str = e.into();
-							ExitError::Other(err_msg.into())
+							PrecompileFailure::Error { exit_status: ExitError::Other(err_msg.into()) }
 						})?;
 
 				Ok(PrecompileOutput {
@@ -239,7 +235,7 @@ where
 				Dex::add_liquidity(&who, currency_id_a, currency_id_b, max_amount_a, max_amount_b, min_share_increment)
 					.map_err(|e| {
 						let err_msg: &str = e.into();
-						ExitError::Other(err_msg.into())
+						PrecompileFailure::Error { exit_status: ExitError::Other(err_msg.into()) }
 					})?;
 
 				Ok(PrecompileOutput {
@@ -273,7 +269,7 @@ where
 				)
 				.map_err(|e| {
 					let err_msg: &str = e.into();
-					ExitError::Other(err_msg.into())
+					PrecompileFailure::Error { exit_status: ExitError::Other(err_msg.into()) }
 				})?;
 
 				Ok(PrecompileOutput {

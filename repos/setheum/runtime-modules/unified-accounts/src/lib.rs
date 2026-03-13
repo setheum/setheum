@@ -44,7 +44,6 @@ use frame_support::{
 	traits::{Currency, IsType, OnKilledAccount},
 };
 use frame_system::{ensure_signed, pallet_prelude::*};
-use module_evm_utility_macro::keccak256;
 use module_support::{AddressMapping, UnifiedAccountsManager};
 use module_traits::currency::TransferAll;
 use parity_scale_codec::Encode;
@@ -235,17 +234,17 @@ impl<T: Config> Pallet<T> {
 	}
 
 	fn evm_account_payload_hash(who: &T::AccountId) -> [u8; 32] {
-		let tx_type_hash = keccak256!("Transaction(bytes substrateAddress)");
+		let tx_type_hash = keccak_256(b"Transaction(bytes substrateAddress)");
 		let mut tx_msg = tx_type_hash.to_vec();
 		tx_msg.extend_from_slice(&keccak_256(&who.encode()));
 		keccak_256(tx_msg.as_slice())
 	}
 
 	fn evm_account_domain_separator() -> [u8; 32] {
-		let domain_hash = keccak256!("EIP712Domain(string name,string version,uint256 chainId,bytes32 salt)");
+		let domain_hash = keccak_256(b"EIP712Domain(string name,string version,uint256 chainId,bytes32 salt)");
 		let mut domain_seperator_msg = domain_hash.to_vec();
-		domain_seperator_msg.extend_from_slice(keccak256!("Setheum EVM claim")); // name
-		domain_seperator_msg.extend_from_slice(keccak256!("1")); // version
+		domain_seperator_msg.extend_from_slice(&keccak_256(b"Setheum EVM claim")); // name
+		domain_seperator_msg.extend_from_slice(&keccak_256(b"1")); // version
 		domain_seperator_msg.extend_from_slice(&to_bytes(T::ChainId::get())); // chain id
 		domain_seperator_msg
 			.extend_from_slice(frame_system::Pallet::<T>::block_hash(BlockNumberFor::<T>::zero()).as_ref()); // genesis block hash

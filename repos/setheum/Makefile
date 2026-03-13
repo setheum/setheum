@@ -82,7 +82,7 @@ check-benchmarks:
 
 .PHONY: test-benchmarking
 test-benchmarking:
-	cargo test --features bench --package module-evm
+# module-evm test removed
 	cargo test --features runtime-benchmarks --features with-ethereum-compatibility --features --all benchmarking
 
 .PHONY: bench

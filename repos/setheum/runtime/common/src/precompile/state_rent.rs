@@ -20,7 +20,7 @@
 
 use crate::precompile::PrecompileOutput;
 use frame_support::log;
-use module_evm::{Context, ExitError, ExitSucceed, Precompile};
+use fp_evm::{Context, ExitError, ExitSucceed, Precompile, PrecompileFailure, PrecompileHandle};
 use num_enum::{IntoPrimitive, TryFromPrimitive};
 use sp_runtime::RuntimeDebug;
 use sp_std::{borrow::Cow, fmt::Debug, marker::PhantomData, prelude::*, result};
@@ -65,12 +65,8 @@ where
 	CurrencyIdMapping: CurrencyIdMappingT,
 	EVM: EVMStateRentTrait<AccountId, Balance>,
 {
-	fn execute(
-		input: &[u8],
-		_target_gas: Option<u64>,
-		_context: &Context,
-	) -> result::Result<PrecompileOutput, ExitError> {
-		let input = Input::<Action, AccountId, AddressMapping, CurrencyIdMapping>::new(input);
+	fn execute(handle: &mut impl PrecompileHandle) -> result::Result<PrecompileOutput, PrecompileFailure> {
+		let input = Input::<Action, AccountId, AddressMapping, CurrencyIdMapping>::new(handle.input());
 
 		let action = input.action()?;
 
@@ -97,7 +93,7 @@ where
 				let contract = input.evm_address_at(1)?;
 
 				let maintainer =
-					EVM::query_maintainer(contract).map_err(|e| ExitError::Other(Cow::Borrowed(e.into())))?;
+					EVM::query_maintainer(contract).map_err(|e| PrecompileFailure::Error { exit_status: ExitError::Other(Cow::Borrowed(e.into())) })?;
 
 				Ok(PrecompileOutput {
 					exit_status: ExitSucceed::Returned,
@@ -136,7 +132,7 @@ where
 				);
 
 				EVM::transfer_maintainer(from, contract, new_maintainer)
-					.map_err(|e| ExitError::Other(Cow::Borrowed(e.into())))?;
+					.map_err(|e| PrecompileFailure::Error { exit_status: ExitError::Other(Cow::Borrowed(e.into())) })?;
 
 				Ok(PrecompileOutput {
 					exit_status: ExitSucceed::Returned,

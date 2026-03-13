@@ -113,7 +113,7 @@ ord_parameter_types! {
 
 parameter_types! {
 	pub const GetExchangeFee: (u32, u32) = (1, 100);
-	pub const SwapPalletId: PalletId = PalletId(*b"set/edfis");
+	pub const SwapPalletId: PalletId = PalletId(*b"set/swap");
 	pub AlternativeSwapPathJointList: Vec<Vec<CurrencyId>> = vec![
 	];
 }

@@ -61,7 +61,7 @@ use sp_runtime::{
 };
 use sp_std::{cell::RefCell, str::FromStr};
 
-mod ecdp {
+mod core_module {
 	pub use super::super::*;
 }
 
@@ -298,7 +298,7 @@ parameter_types! {
 	pub const SettleErc20EvmOrigin: AccountId = AccountId32::new([255u8; 32]);
 }
 
-impl module_cdp_engine::Config for Runtime {
+impl module_seusd_engine::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type PriceSource = MockPriceSource;
 	type DefaultLiquidationRatio = DefaultLiquidationRatio;
@@ -314,16 +314,9 @@ impl module_cdp_engine::Config for Runtime {
 	type EmergencyShutdown = MockEmergencyShutdown;
 	type UnixTime = Timestamp;
 	type Currency = Currencies;
-	type SwapHandler = ();
-	type LiquidationContractsUpdateOrigin = EnsureSignedBy<One, AccountId>;
-	type MaxLiquidationContractSlippage = MaxLiquidationContractSlippage;
-	type MaxLiquidationContracts = ConstU32<10>;
-	type LiquidationEvmBridge = ();
+	type Swap = SpecificJointsSwap<(), AlternativeSwapPathJointList>;
 	type PalletId = UssdEnginePalletId;
 	type EvmAddressMapping = module_evm_accounts::EvmAddressMapping<Runtime>;
-	type Swap = SpecificJointsSwap<(), AlternativeSwapPathJointList>;
-	type EVMBridge = module_evm_bridge::EVMBridge<Runtime>;
-	type SettleErc20EvmOrigin = SettleErc20EvmOrigin;
 	type WeightInfo = ();
 }
 
@@ -340,17 +333,15 @@ impl Config for Runtime {
 construct_runtime!(
 	pub enum Runtime {
 		System: frame_system,
-		Module: ecdp,
+		CoreModule: core_module,
 		Tokens: module_tokens,
 		PalletBalances: pallet_balances,
 		Currencies: module_currencies,
 		LoansModule: module_loans,
 		UssdTreasuryModule: module_seusd_treasury,
-		UssdEngineModule: module_cdp_engine,
+		UssdEngineModule: module_seusd_engine,
 		Timestamp: pallet_timestamp,
 		EvmAccounts: module_evm_accounts,
-		EVM: module_evm,
-		EVMBridge: module_evm_bridge,
 	}
 );
 

@@ -24,7 +24,18 @@ pallet-membership = { workspace = true }
 module-oracle = { workspace = true , default-features = false }
 module-traits = { workspace = true , default-features = false }
 
-module-evm = { workspace = true , default-features = false }
+module-traits = { workspace = true , default-features = false }
+
+# Frontier
+pallet-evm = { workspace = true }
+fp-evm = { workspace = true }
+pallet-evm-precompile-simple = { workspace = true }
+pallet-evm-precompile-sha2 = { workspace = true }
+pallet-evm-precompile-ripemd160 = { workspace = true }
+pallet-evm-precompile-identity = { workspace = true }
+pallet-evm-precompile-bn128 = { workspace = true }
+pallet-evm-precompile-modexp = { workspace = true }
+pallet-evm-precompile-ecrecover = { workspace = true }
 
 module-support = { workspace = true , default-features = false }
 module-transaction-payment = { workspace = true , default-features = false }
@@ -44,8 +55,7 @@ module-tokens = { workspace = true , default-features = false }
 # module-nft = { path = "../../runtime-modules/module-nft" , default-features = false }
 
 module-currencies = { workspace = true , default-features = false }
-module-evm-bridge = { workspace = true , default-features = false }
-module-evm-manager = { workspace = true , default-features = false }
+# module-evm-bridge and manager removed
 module-nft = { path = "../../runtime-modules/nft", default-features = false }
 # module-dex = { path = "../../runtime-modules/defi/setswap/dex" , default-features = false }
 module-prices = { path = "../../runtime-modules/prices", default-features = false }
@@ -68,10 +78,18 @@ std = [
 	"sp-std/std",
 	"module-oracle/std",
 	"module-traits/std",
-	"module-evm/std",
+	"pallet-evm/std",
+	"fp-evm/std",
+	"pallet-evm-precompile-simple/std",
+	"pallet-evm-precompile-sha2/std",
+	"pallet-evm-precompile-ripemd160/std",
+	"pallet-evm-precompile-identity/std",
+	"pallet-evm-precompile-bn128/std",
+	"pallet-evm-precompile-modexp/std",
+	"pallet-evm-precompile-ecrecover/std",
 	"module-support/std",
 	"primitives/std",
 ]
 with-ethereum-compatibility = [
-	"module-evm/with-ethereum-compatibility",
+# module-evm removed
 ]

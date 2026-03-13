@@ -51,180 +51,7 @@ use sp_std::{
 	prelude::*,
 };
 
-/// Return true if the call of EVM precompile contract is allowed.
-pub trait PrecompileCallerFilter {
-	fn is_allowed(caller: H160) -> bool;
-}
-
-/// Return true if the EVM precompile is paused.
-pub trait PrecompilePauseFilter {
-	fn is_paused(address: H160) -> bool;
-}
-
-/// An abstraction of EVM for EVMBridge
-pub trait EVM<AccountId> {
-	type Balance: AtLeast32BitUnsigned + Copy + MaybeSerializeDeserialize + Default;
-
-	fn execute(
-		context: InvokeContext,
-		input: Vec<u8>,
-		value: Self::Balance,
-		gas_limit: u64,
-		storage_limit: u32,
-		mode: ExecutionMode,
-	) -> Result<CallInfo, sp_runtime::DispatchError>;
-
-	/// Get the real origin account and charge storage rent from the origin.
-	fn get_origin() -> Option<AccountId>;
-	/// Set the EVM origin
-	fn set_origin(origin: AccountId);
-	/// Kill the EVM origin
-	fn kill_origin();
-	/// Push new EVM origin in xcm
-	fn push_xcm_origin(origin: AccountId);
-	/// Pop EVM origin in xcm
-	fn pop_xcm_origin();
-	/// Kill the EVM origin in xcm
-	fn kill_xcm_origin();
-	/// Get the real origin account or xcm origin and charge storage rent from the origin.
-	fn get_real_or_xcm_origin() -> Option<AccountId>;
-}
-
-#[derive(Encode, Decode, Eq, PartialEq, Copy, Clone, RuntimeDebug)]
-pub enum ExecutionMode {
-	Execute,
-	/// Discard any state changes
-	View,
-	/// Also discard any state changes and use estimate gas mode for evm config
-	EstimateGas,
-}
-
-#[derive(Encode, Decode, Eq, PartialEq, Copy, Clone, RuntimeDebug)]
-pub struct InvokeContext {
-	pub contract: EvmAddress,
-	/// similar to msg.sender
-	pub sender: EvmAddress,
-	/// similar to tx.origin
-	pub origin: EvmAddress,
-}
-
-/// An abstraction of EVMBridge
-pub trait EVMBridge<AccountId, Balance> {
-	/// Execute ERC20.name() to read token name from ERC20 contract
-	fn name(context: InvokeContext) -> Result<Vec<u8>, DispatchError>;
-	/// Execute ERC20.symbol() to read token symbol from ERC20 contract
-	fn symbol(context: InvokeContext) -> Result<Vec<u8>, DispatchError>;
-	/// Execute ERC20.decimals() to read token decimals from ERC20 contract
-	fn decimals(context: InvokeContext) -> Result<u8, DispatchError>;
-	/// Execute ERC20.totalSupply() to read total supply from ERC20 contract
-	fn total_supply(context: InvokeContext) -> Result<Balance, DispatchError>;
-	/// Execute ERC20.balanceOf(address) to read balance of address from ERC20
-	/// contract
-	fn balance_of(context: InvokeContext, address: EvmAddress) -> Result<Balance, DispatchError>;
-	/// Execute ERC20.transfer(address, uint256) to transfer value to `to`
-	fn transfer(context: InvokeContext, to: EvmAddress, value: Balance) -> DispatchResult;
-	/// Get the real origin account and charge storage rent from the origin.
-	fn get_origin() -> Option<AccountId>;
-	/// Set the EVM origin
-	fn set_origin(origin: AccountId);
-	/// Kill the EVM origin
-	fn kill_origin();
-	/// Push new EVM origin in xcm
-	fn push_xcm_origin(origin: AccountId);
-	/// Pop EVM origin in xcm
-	fn pop_xcm_origin();
-	/// Kill the EVM origin in xcm
-	fn kill_xcm_origin();
-	/// Get the real origin account or xcm origin and charge storage rent from the origin.
-	fn get_real_or_xcm_origin() -> Option<AccountId>;
-}
-
-#[cfg(feature = "std")]
-impl<AccountId, Balance: Default> EVMBridge<AccountId, Balance> for () {
-	fn name(_context: InvokeContext) -> Result<Vec<u8>, DispatchError> {
-		Err(DispatchError::Other("unimplemented evm bridge"))
-	}
-	fn symbol(_context: InvokeContext) -> Result<Vec<u8>, DispatchError> {
-		Err(DispatchError::Other("unimplemented evm bridge"))
-	}
-	fn decimals(_context: InvokeContext) -> Result<u8, DispatchError> {
-		Err(DispatchError::Other("unimplemented evm bridge"))
-	}
-	fn total_supply(_context: InvokeContext) -> Result<Balance, DispatchError> {
-		Err(DispatchError::Other("unimplemented evm bridge"))
-	}
-	fn balance_of(_context: InvokeContext, _address: EvmAddress) -> Result<Balance, DispatchError> {
-		Err(DispatchError::Other("unimplemented evm bridge"))
-	}
-	fn transfer(_context: InvokeContext, _to: EvmAddress, _value: Balance) -> DispatchResult {
-		Err(DispatchError::Other("unimplemented evm bridge"))
-	}
-	fn get_origin() -> Option<AccountId> {
-		None
-	}
-	fn set_origin(_origin: AccountId) {}
-	fn kill_origin() {}
-	fn push_xcm_origin(_origin: AccountId) {}
-	fn pop_xcm_origin() {}
-	fn kill_xcm_origin() {}
-	fn get_real_or_xcm_origin() -> Option<AccountId> {
-		None
-	}
-}
-
-/// EVM bridge for collateral liquidation.
-pub trait LiquidationEvmBridge {
-	/// Execute liquidation. Sufficient repayment is expected to be transferred to `repay_dest`,
-	/// if not received or below `min_repayment`, the liquidation would be seen as failed.
-	fn liquidate(
-		context: InvokeContext,
-		collateral: EvmAddress,
-		repay_dest: EvmAddress,
-		amount: Balance,
-		min_repayment: Balance,
-	) -> DispatchResult;
-	/// Called on sufficient repayment received and collateral transferred to liquidation contract.
-	fn on_collateral_transfer(context: InvokeContext, collateral: EvmAddress, amount: Balance);
-	/// Called on insufficient repayment received and repayment refunded to liquidation contract.
-	fn on_repayment_refund(context: InvokeContext, collateral: EvmAddress, repayment: Balance);
-}
-impl LiquidationEvmBridge for () {
-	fn liquidate(
-		_context: InvokeContext,
-		_collateral: EvmAddress,
-		_repay_dest: EvmAddress,
-		_amount: Balance,
-		_min_repayment: Balance,
-	) -> DispatchResult {
-		Err(DispatchError::Other("unimplemented evm bridge"))
-	}
-	fn on_collateral_transfer(_context: InvokeContext, _collateral: EvmAddress, _amount: Balance) {}
-	fn on_repayment_refund(_context: InvokeContext, _collateral: EvmAddress, _repayment: Balance) {}
-}
-
-/// An abstraction of EVMManager
-pub trait EVMManager<AccountId, Balance> {
-	/// Query the constants `NewContractExtraBytes` value from evm module.
-	fn query_new_contract_extra_bytes() -> u32;
-	/// Query the constants `StorageDepositPerByte` value from evm module.
-	fn query_storage_deposit_per_byte() -> Balance;
-	/// Query the maintainer address from the ERC20 contract.
-	fn query_maintainer(contract: H160) -> Result<H160, DispatchError>;
-	/// Query the constants `DeveloperDeposit` value from evm module.
-	fn query_developer_deposit() -> Balance;
-	/// Query the constants `PublicationFee` value from evm module.
-	fn query_publication_fee() -> Balance;
-	/// Transfer the maintainer of the contract address.
-	fn transfer_maintainer(from: AccountId, contract: H160, new_maintainer: H160) -> DispatchResult;
-	/// Publish contract
-	fn publish_contract_precompile(who: AccountId, contract: H160) -> DispatchResult;
-	/// Query the developer status of an account
-	fn query_developer_status(who: AccountId) -> bool;
-	/// Enable developer mode
-	fn enable_account_contract_development(who: AccountId) -> DispatchResult;
-	/// Disable developer mode
-	fn disable_account_contract_development(who: AccountId) -> DispatchResult;
-}
+// AddressMapping and UnifiedAccountsManager are kept for unified-accounts
 
 /// An abstraction of UnifiedAccountsManager
 pub trait UnifiedAccountsManager<AccountId> {
@@ -257,92 +84,20 @@ pub trait AddressMapping<AccountId> {
 	fn is_linked(account_id: &AccountId, evm: &EvmAddress) -> bool;
 }
 
-/// A mapping between AssetId and AssetMetadata.
-pub trait AssetIdMapping<ForeignAssetId, MultiLocation, AssetMetadata> {
-	/// Returns the AssetMetadata associated with a given `AssetIds`.
-	fn get_asset_metadata(asset_ids: AssetIds) -> Option<AssetMetadata>;
-	/// Returns the MultiLocation associated with a given ForeignAssetId.
-	fn get_multi_location(foreign_asset_id: ForeignAssetId) -> Option<MultiLocation>;
-	/// Returns the CurrencyId associated with a given MultiLocation.
-	fn get_currency_id(multi_location: MultiLocation) -> Option<CurrencyId>;
-}
-
-/// A mapping between u32 and Erc20 address.
-/// provide a way to encode/decode for CurrencyId;
-pub trait Erc20InfoMapping {
-	/// Returns the name associated with a given CurrencyId.
-	/// If CurrencyId is CurrencyId::DexShare and contain DexShare::Erc20,
-	/// the EvmAddress must have been mapped.
+/// A mapping between `CurrencyId` and `EvmAddress`.
+pub trait CurrencyIdMapping {
+	/// Returns the name of the given `currency_id`.
 	fn name(currency_id: CurrencyId) -> Option<Vec<u8>>;
-	/// Returns the symbol associated with a given CurrencyId.
-	/// If CurrencyId is CurrencyId::DexShare and contain DexShare::Erc20,
-	/// the EvmAddress must have been mapped.
+	/// Returns the symbol of the given `currency_id`.
 	fn symbol(currency_id: CurrencyId) -> Option<Vec<u8>>;
-	/// Returns the decimals associated with a given CurrencyId.
-	/// If CurrencyId is CurrencyId::DexShare and contain DexShare::Erc20,
-	/// the EvmAddress must have been mapped.
+	/// Returns the decimals of the given `currency_id`.
 	fn decimals(currency_id: CurrencyId) -> Option<u8>;
-	/// Encode the CurrencyId to EvmAddress.
-	/// If is CurrencyId::DexShare and contain DexShare::Erc20,
-	/// will use the u32 to get the DexShare::Erc20 from the mapping.
-	fn encode_evm_address(v: CurrencyId) -> Option<EvmAddress>;
-	/// Decode the CurrencyId from EvmAddress.
-	/// If is CurrencyId::DexShare and contain DexShare::Erc20,
-	/// will use the u32 to get the DexShare::Erc20 from the mapping.
-	fn decode_evm_address(v: EvmAddress) -> Option<CurrencyId>;
+	/// Returns the `EvmAddress` associated with a given `CurrencyId`.
+	fn encode_evm_address(currency_id: CurrencyId) -> Option<EvmAddress>;
+	/// Returns the `CurrencyId` associated with a given `EvmAddress`.
+	fn decode_evm_address(address: EvmAddress) -> Option<CurrencyId>;
 }
 
-#[cfg(feature = "std")]
-impl Erc20InfoMapping for () {
-	fn name(_currency_id: CurrencyId) -> Option<Vec<u8>> {
-		None
-	}
+// Erc20InfoMapping removed
 
-	fn symbol(_currency_id: CurrencyId) -> Option<Vec<u8>> {
-		None
-	}
-
-	fn decimals(_currency_id: CurrencyId) -> Option<u8> {
-		None
-	}
-
-	fn encode_evm_address(_v: CurrencyId) -> Option<EvmAddress> {
-		None
-	}
-
-	fn decode_evm_address(_v: EvmAddress) -> Option<CurrencyId> {
-		None
-	}
-}
-
-pub mod limits {
-	pub struct Limit {
-		pub gas: u64,
-		pub storage: u32,
-	}
-
-	impl Limit {
-		pub const fn new(gas: u64, storage: u32) -> Self {
-			Self { gas, storage }
-		}
-	}
-
-	pub mod erc20 {
-		use super::*;
-
-		pub const NAME: Limit = Limit::new(100_000, 0);
-		pub const SYMBOL: Limit = Limit::new(100_000, 0);
-		pub const DECIMALS: Limit = Limit::new(100_000, 0);
-		pub const TOTAL_SUPPLY: Limit = Limit::new(100_000, 0);
-		pub const BALANCE_OF: Limit = Limit::new(100_000, 0);
-		pub const TRANSFER: Limit = Limit::new(200_000, 960);
-	}
-
-	pub mod liquidation {
-		use super::*;
-
-		pub const LIQUIDATE: Limit = Limit::new(200_000, 1_000);
-		pub const ON_COLLATERAL_TRANSFER: Limit = Limit::new(200_000, 1_000);
-		pub const ON_REPAYMENT_REFUND: Limit = Limit::new(200_000, 1_000);
-	}
-}
+// Limits removed

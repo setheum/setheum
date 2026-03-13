@@ -20,7 +20,7 @@
 
 use crate::precompile::PrecompileOutput;
 use frame_support::{log, sp_runtime::FixedPointNumber};
-use module_evm::{Context, ExitError, ExitSucceed, Precompile};
+use fp_evm::{ExitError, ExitSucceed, Precompile, PrecompileFailure, PrecompileHandle};
 use num_enum::{IntoPrimitive, TryFromPrimitive};
 use primitives::CurrencyId;
 use sp_runtime::RuntimeDebug;
@@ -57,12 +57,8 @@ where
 	CurrencyIdMapping: CurrencyIdMappingT,
 	PriceProvider: PriceProviderT<CurrencyId>,
 {
-	fn execute(
-		input: &[u8],
-		_target_gas: Option<u64>,
-		_context: &Context,
-	) -> result::Result<PrecompileOutput, ExitError> {
-		let input = Input::<Action, AccountId, AddressMapping, CurrencyIdMapping>::new(input);
+	fn execute(handle: &mut impl PrecompileHandle) -> result::Result<PrecompileOutput, PrecompileFailure> {
+		let input = Input::<Action, AccountId, AddressMapping, CurrencyIdMapping>::new(handle.input());
 
 		let action = input.action()?;
 

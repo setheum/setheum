@@ -29,7 +29,7 @@ use frame_support::{
 		Currency, IsType, OriginTrait,
 	},
 };
-use module_evm::{Context, ExitError, ExitSucceed, Precompile};
+use fp_evm::{Context, ExitError, ExitRevert, ExitSucceed, Precompile, PrecompileFailure, PrecompileHandle};
 use module_support::{AddressMapping as AddressMappingT, CurrencyIdMapping as CurrencyIdMappingT, TransactionPayment};
 use primitives::{Balance, BlockNumber};
 use sp_core::H160;
@@ -96,9 +96,9 @@ pub enum Action {
 }
 
 type PalletBalanceOf<T> =
-	<<T as module_evm::Config>::Currency as Currency<<T as frame_system::Config>::AccountId>>::Balance;
+	<<T as pallet_evm::Config>::Currency as Currency<<T as frame_system::Config>::AccountId>>::Balance;
 type NegativeImbalanceOf<T> =
-	<<T as module_evm::Config>::Currency as Currency<<T as frame_system::Config>::AccountId>>::NegativeImbalance;
+	<<T as pallet_evm::Config>::Currency as Currency<<T as frame_system::Config>::AccountId>>::NegativeImbalance;
 
 impl<
 		AccountId,
@@ -132,15 +132,11 @@ where
 	Origin: IsType<<Runtime as frame_system::Config>::Origin>
 		+ OriginTrait<AccountId = AccountId, PalletsOrigin = PalletsOrigin>,
 	PalletsOrigin: Into<<Runtime as frame_system::Config>::Origin> + From<frame_system::RawOrigin<AccountId>> + Clone,
-	Runtime: module_evm::Config + frame_system::Config<AccountId = AccountId>,
+	Runtime: pallet_evm::Config + frame_system::Config<AccountId = AccountId>,
 	PalletBalanceOf<Runtime>: IsType<Balance>,
 {
-	fn execute(
-		input: &[u8],
-		_target_gas: Option<u64>,
-		_context: &Context,
-	) -> result::Result<PrecompileOutput, ExitError> {
-		let input = Input::<Action, AccountId, AddressMapping, CurrencyIdMapping>::new(input);
+	fn execute(handle: &mut impl PrecompileHandle) -> result::Result<PrecompileOutput, PrecompileFailure> {
+		let input = Input::<Action, AccountId, AddressMapping, CurrencyIdMapping>::new(handle.input());
 
 		let action = input.action()?;
 
@@ -178,10 +174,10 @@ where
 					// Manually charge weight fee in scheduled_call
 					use sp_runtime::traits::Convert;
 					let from_account = AddressMapping::get_account_id(&from);
-					let weight = <Runtime as module_evm::Config>::GasToWeight::convert(gas_limit);
+					let weight = FixedGasWeightMapping::gas_to_weight(gas_limit, pallet_evm::GasWeightMappingReason::Call);
 					_fee = ChargeTransactionPayment::reserve_fee(&from_account, weight).map_err(|e| {
 						let err_msg: &str = e.into();
-						ExitError::Other(err_msg.into())
+						PrecompileFailure::Error { exit_status: ExitError::Other(err_msg.into()) }
 					})?;
 				}
 

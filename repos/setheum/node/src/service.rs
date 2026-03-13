@@ -45,6 +45,8 @@ use sp_api::ProvideRuntimeApi;
 use sp_arithmetic::traits::BaseArithmetic;
 use sp_consensus::DisableProofRecording;
 use sp_consensus_aura::{sr25519::AuthorityPair as AuraPair, Slot};
+use fc_mapping_sync::SyncStrategy;
+use futures::StreamExt;
 
 use crate::{
 	executor::executor,
@@ -68,6 +70,8 @@ pub struct ServiceComponents {
 	pub keystore_container: KeystoreContainer,
 	pub justification_channel_provider: ChannelProvider<Justification>,
 	pub telemetry: Option<Telemetry>,
+	pub frontier_backend: Arc<fc_db::Backend<Block, FullBackend>>,
+	pub filter_pool: fc_rpc::FilterPool,
 }
 struct LimitNonfinalized(u32);
 
@@ -134,6 +138,11 @@ pub fn new_partial(config: &Configuration) -> Result<ServiceComponents, ServiceE
 
 	let client: Arc<TFullClient<_, _, _>> = Arc::new(client);
 
+	let frontier_backend = Arc::new(fc_db::Backend::<Block, FullBackend>::new(
+		config.database.clone(),
+	)?);
+	let filter_pool: fc_rpc::FilterPool = Arc::new(std::sync::Mutex::new(std::collections::BTreeMap::new()));
+
 	let select_chain_provider = FavouriteSelectChainProvider::default();
 
 	let transaction_pool = sc_transaction_pool::BasicPool::new_full(
@@ -191,6 +200,8 @@ pub fn new_partial(config: &Configuration) -> Result<ServiceComponents, ServiceE
 		transaction_pool,
 		justification_channel_provider,
 		telemetry,
+		frontier_backend,
+		filter_pool,
 	})
 }
 
@@ -314,12 +325,14 @@ pub fn new_authority(config: Configuration, setheum_config: SetheumCli) -> Resul
 		.map_err(|e| ServiceError::Other(format!("failed to set up chain status: {e}")))?;
 	let validator_address_cache = get_validator_address_cache(&setheum_config);
 	let rpc_builder = {
-		let client = service_components.client.clone();
-		let pool = service_components.transaction_pool.clone();
 		let sync_oracle = sync_oracle.clone();
 		let validator_address_cache = validator_address_cache.clone();
 		let import_justification_tx = service_components.justification_channel_provider.get_sender();
 		let chain_status = chain_status.clone();
+		let frontier_backend = service_components.frontier_backend.clone();
+		let filter_pool = service_components.filter_pool.clone();
+		let fee_history_cache = Arc::new(std::sync::Mutex::new(std::collections::BTreeMap::new()));
+
 		Box::new(move |deny_unsafe, _| {
 			let deps = RpcFullDeps {
 				client: client.clone(),
@@ -329,6 +342,12 @@ pub fn new_authority(config: Configuration, setheum_config: SetheumCli) -> Resul
 				justification_translator: JustificationTranslator::new(chain_status.clone()),
 				sync_oracle: sync_oracle.clone(),
 				validator_address_cache: validator_address_cache.clone(),
+				frontier_backend: frontier_backend.clone(),
+				filter_pool: Some(filter_pool.clone()),
+				graph: pool.pool().clone(),
+				max_past_logs: 10000,
+				fee_history_limit: 100,
+				fee_history_cache: fee_history_cache.clone(),
 			};
 
 			Ok(create_full_rpc(deps)?)
@@ -343,18 +362,36 @@ pub fn new_authority(config: Configuration, setheum_config: SetheumCli) -> Resul
 
 	sc_service::spawn_tasks(sc_service::SpawnTasksParams {
 		network,
-		sync_service,
+		sync_service: sync_service.clone(),
 		client: service_components.client.clone(),
 		keystore: service_components.keystore_container.local_keystore(),
 		task_manager: &mut service_components.task_manager,
 		transaction_pool: service_components.transaction_pool.clone(),
 		rpc_builder,
-		backend: service_components.backend,
+		backend: service_components.backend.clone(),
 		system_rpc_tx,
 		tx_handler_controller,
 		config,
 		telemetry: service_components.telemetry.as_mut(),
 	})?;
+
+	service_components.task_manager.spawn_essential_handle().spawn(
+		"frontier-mapping-sync-worker",
+		Some("frontier"),
+		fc_mapping_sync::MappingSyncWorker::new(
+			service_components.client.import_notification_stream(),
+			service_components.client.finality_notification_stream(),
+			service_components.client.clone(),
+			service_components.backend.clone(),
+			service_components.frontier_backend.clone(),
+			3, // overstep_limit
+			0, // overstep_step
+			SyncStrategy::Normal,
+			sync_service,
+			sync_oracle.clone(),
+		)
+		.for_each(|()| futures::future::ready(())),
+	);
 
 	service_components.task_manager.spawn_essential_handle().spawn_blocking("aura", None, aura);
 

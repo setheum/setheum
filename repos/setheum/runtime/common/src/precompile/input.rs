@@ -29,7 +29,7 @@ use sp_std::{
 };
 
 use ethabi::Token;
-use module_evm::ExitError;
+use fp_evm::{ExitError, PrecompileFailure};
 use module_support::{AddressMapping as AddressMappingT, CurrencyIdMapping as CurrencyIdMappingT};
 use primitives::{Amount, Balance, CurrencyId};
 use sp_core::{H160, U256};
@@ -83,7 +83,7 @@ where
 	AddressMapping: AddressMappingT<AccountId>,
 	CurrencyIdMapping: CurrencyIdMappingT,
 {
-	type Error = ExitError;
+	type Error = PrecompileFailure;
 	type Action = Action;
 	type AccountId = AccountId;
 
@@ -99,16 +99,25 @@ where
 			(start, end)
 		};
 
-		ensure!(end <= self.content.len(), ExitError::Other("invalid input".into()));
+		ensure!(
+			end <= self.content.len(),
+			PrecompileFailure::Error { exit_status: ExitError::Other("invalid input".into()) }
+		);
 
 		Ok(&self.content[start..end])
 	}
 
 	fn action(&self) -> Result<Self::Action, Self::Error> {
 		let param = self.nth_param(ACTION_INDEX, None)?;
-		let action = u32::from_be_bytes(param.try_into().map_err(|_| ExitError::Other("invalid action".into()))?);
+		let action = u32::from_be_bytes(
+			param
+				.try_into()
+				.map_err(|_| PrecompileFailure::Error { exit_status: ExitError::Other("invalid action".into()) })?,
+		);
 
-		action.try_into().map_err(|_| ExitError::Other("invalid action".into()))
+		action
+			.try_into()
+			.map_err(|_| PrecompileFailure::Error { exit_status: ExitError::Other("invalid action".into()) })
 	}
 
 	fn account_id_at(&self, index: usize) -> Result<Self::AccountId, Self::Error> {
@@ -132,7 +141,9 @@ where
 	fn currency_id_at(&self, index: usize) -> Result<CurrencyId, Self::Error> {
 		let address = self.evm_address_at(index)?;
 
-		CurrencyIdMapping::decode_evm_address(address).ok_or_else(|| ExitError::Other("invalid currency id".into()))
+		CurrencyIdMapping::decode_evm_address(address).ok_or_else(|| PrecompileFailure::Error {
+			exit_status: ExitError::Other("invalid currency id".into()),
+		})
 	}
 
 	fn balance_at(&self, index: usize) -> Result<Balance, Self::Error> {

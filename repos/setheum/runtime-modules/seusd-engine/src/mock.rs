@@ -229,7 +229,7 @@ impl module_seusd_treasury::Config for Runtime {
 }
 
 parameter_types! {
-	pub const SwapPalletId: PalletId = PalletId(*b"set/edfis");
+	pub const SwapPalletId: PalletId = PalletId(*b"set/swap");
 	pub const GetExchangeFee: (u32, u32) = (0, 100);
 	pub EnabledTradingPairs: Vec<TradingPair> = vec![
 		TradingPair::from_currency_ids(SEUSD, BTC).unwrap(),

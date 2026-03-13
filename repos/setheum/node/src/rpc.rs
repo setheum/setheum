@@ -27,7 +27,8 @@
 
 use std::{collections::HashMap, sync::Arc};
 
-pub use evm_rpc::{EVMApi, EVMApiServer, EVMRuntimeRPCApi};
+pub use fc_rpc::{Eth, EthApiServer, Net, NetApiServer, Web3, Web3ApiServer};
+pub use fp_rpc::EthereumRuntimeRPCApi;
 use finality_setbft::{
 	BlockId, Justification, JustificationTranslator, SetheumJustification, ValidatorAddressCache,
 	ValidatorAddressingInfo,
@@ -58,7 +59,7 @@ use sp_runtime::{
 };
 
 /// Full client dependencies.
-pub struct FullDeps<C, P, SO> {
+pub struct FullDeps<C, P, BE, SO> {
 	/// The client instance to use.
 	pub client: Arc<C>,
 	/// Transaction pool instance.
@@ -69,6 +70,18 @@ pub struct FullDeps<C, P, SO> {
 	pub justification_translator: JustificationTranslator,
 	pub sync_oracle: SO,
 	pub validator_address_cache: Option<ValidatorAddressCache>,
+	/// Frontier backend.
+	pub frontier_backend: Arc<fc_db::Backend<Block, BE>>,
+	/// Eth filter pool.
+	pub filter_pool: Option<fc_rpc::FilterPool>,
+	/// Graph pool.
+	pub graph: Arc<P::Analyzer>,
+	/// Maximum number of logs in a filter.
+	pub max_past_logs: u32,
+	/// Fee history limit.
+	pub fee_history_limit: u32,
+	/// Fee history cache.
+	pub fee_history_cache: fc_rpc::FeeHistoryCache,
 }
 
 /// Instantiate all full RPC extensions.
@@ -87,7 +100,7 @@ where
 	C::Api: substrate_frame_rpc_system::AccountNonceApi<Block, AccountId, Nonce>
 		+ pallet_transaction_payment_rpc::TransactionPaymentRuntimeApi<Block, Balance>
 		+ module_oracle_rpc::OracleRuntimeApi<Block, DataProviderId, CurrencyId, TimeStampedPrice>
-		+ EVMRuntimeRPCApi<Block, Balance>
+		+ EthereumRuntimeRPCApi<Block>
 		+ BlockBuilder<Block>,
 	P: TransactionPool + 'static,
 	SO: SyncOracle + Send + Sync + 'static,
@@ -105,6 +118,12 @@ where
 		justification_translator,
 		sync_oracle,
 		validator_address_cache,
+		frontier_backend,
+		filter_pool,
+		graph,
+		max_past_logs,
+		fee_history_limit,
+		fee_history_cache,
 	} = deps;
 
 	module.merge(System::new(client.clone(), pool, deny_unsafe).into_rpc())?;
@@ -112,7 +131,25 @@ where
 	module.merge(TransactionPayment::new(client.clone()).into_rpc())?;
 
 	module.merge(Oracle::new(client.clone()).into_rpc())?;
-	module.merge(EVMApi::new(client.clone(), deny_unsafe).into_rpc())?;
+
+	module.merge(
+		Eth::new(
+			client.clone(),
+			pool.clone(),
+			graph,
+			None, // Sync service - optional
+			filter_pool,
+			frontier_backend,
+			max_past_logs,
+			fee_history_limit,
+			fee_history_cache,
+			Default::default(), // Forced gas price
+		)
+		.into_rpc(),
+	)?;
+
+	module.merge(Net::new(client.clone(), pool.clone(), true).into_rpc())?;
+	module.merge(Web3::new(client.clone()).into_rpc())?;
 
 	module.merge(
 		SetheumNode::new(

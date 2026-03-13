@@ -282,7 +282,7 @@ fn transfer_debit_works() {
 		);
 // Below minimum collateral threshold for the BTC CDP
 		assert_noop!(
-			module_cdp_engine::Error::<Runtime>::BelowRequiredCollateralRatio
+			module_seusd_engine::Error::<Runtime>::BelowRequiredCollateralRatio
 		);
 // Too large of a transfer
 		assert_noop!(
@@ -291,7 +291,7 @@ fn transfer_debit_works() {
 // Won't work for currency that is not collateral
 		assert_noop!(
 			Module::transfer_debit(RuntimeOrigin::signed(ALICE), BTC, SEU, 50),
-			module_cdp_engine::Error::<Runtime>::InvalidCollateralType
+			module_seusd_engine::Error::<Runtime>::InvalidCollateralType
 		);
 
 		System::assert_last_event(RuntimeEvent::Module(crate::Event::<Runtime>::TransferDebit {

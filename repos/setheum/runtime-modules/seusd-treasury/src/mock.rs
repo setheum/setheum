@@ -128,7 +128,7 @@ parameter_types! {
 	pub EnabledTradingPairs: Vec<TradingPair> = vec![
 		TradingPair::from_currency_ids(SEUSD, BTC).unwrap(),
 	];
-	pub const SwapPalletId: PalletId = PalletId(*b"set/edfis");
+	pub const SwapPalletId: PalletId = PalletId(*b"set/swap");
 }
 
 impl module_swap_legacy::Config for Runtime {

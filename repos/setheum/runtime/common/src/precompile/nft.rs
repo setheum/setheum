@@ -20,7 +20,7 @@
 
 use crate::precompile::PrecompileOutput;
 use frame_support::log;
-use module_evm::{Context, ExitError, ExitSucceed, Precompile};
+use fp_evm::{ExitError, ExitSucceed, Precompile, PrecompileFailure, PrecompileHandle};
 use module_support::{AddressMapping as AddressMappingT, CurrencyIdMapping as CurrencyIdMappingT};
 use sp_core::H160;
 use sp_runtime::RuntimeDebug;
@@ -61,12 +61,8 @@ where
 	CurrencyIdMapping: CurrencyIdMappingT,
 	NFT: NFTT<AccountId, Balance = NFTBalance, ClassId = u32, TokenId = u64>,
 {
-	fn execute(
-		input: &[u8],
-		_target_gas: Option<u64>,
-		_context: &Context,
-	) -> result::Result<PrecompileOutput, ExitError> {
-		let input = Input::<Action, AccountId, AddressMapping, CurrencyIdMapping>::new(input);
+	fn execute(handle: &mut impl PrecompileHandle) -> result::Result<PrecompileOutput, PrecompileFailure> {
+		let input = Input::<Action, AccountId, AddressMapping, CurrencyIdMapping>::new(handle.input());
 
 		let action = input.action()?;
 
@@ -113,8 +109,9 @@ where
 
 				log::debug!(target: "evm", "nft: transfer from: {:?}, to: {:?}, class_id: {:?}, token_id: {:?}", from, to, class_id, token_id);
 
-				NFT::transfer(&from, &to, (class_id, token_id))
-					.map_err(|e| ExitError::Other(Cow::Borrowed(e.into())))?;
+				NFT::transfer(&from, &to, (class_id, token_id)).map_err(|e| {
+					PrecompileFailure::Error { exit_status: ExitError::Other(Cow::Borrowed(e.into())) }
+				})?;
 
 				Ok(PrecompileOutput {
 					exit_status: ExitSucceed::Returned,

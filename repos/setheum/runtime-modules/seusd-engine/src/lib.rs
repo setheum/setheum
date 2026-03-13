@@ -198,29 +198,14 @@ pub mod module {
 /// Swap
 		type Swap: Swap<Self::AccountId, Balance, CurrencyId>;
 
-/// The origin for liquidation contracts registering and deregistering.
-		type LiquidationContractsUpdateOrigin: EnsureOrigin<Self::RuntimeOrigin>;
-
-/// When settle collateral with smart contracts, the acceptable max slippage for the price
-/// from oracle.
-		#[pallet::constant]
-		type MaxLiquidationContractSlippage: Get<Ratio>;
-
-		#[pallet::constant]
-		type MaxLiquidationContracts: Get<u32>;
-
-		type LiquidationEvmBridge: LiquidationEvmBridge;
 
 		#[pallet::constant]
 		type PalletId: Get<PalletId>;
 
 		type EvmAddressMapping: AddressMapping<Self::AccountId>;
 
-/// Evm Bridge for getting info of contracts from the EVM.
-		type EVMBridge: EVMBridge<Self::AccountId, Balance>;
-
-/// Evm Origin account when settle ERC20 type 
-		type SettleErc20EvmOrigin: Get<Self::AccountId>;
+		/// Weight information for the extrinsics in this module.
+		type WeightInfo: WeightInfo;
 
 /// Weight information for the extrinsics in this module.
 		type WeightInfo: WeightInfo;
@@ -262,10 +247,6 @@ pub mod module {
 		ConvertDebitBalanceFailed,
 /// Collateral liquidation failed.
 		LiquidationFailed,
-/// Exceeds `T::MaxLiquidationContracts`.
-		TooManyLiquidationContracts,
-/// Collateral ERC20 contract not found.
-		CollateralContractNotFound,
 /// Invalid rate
 		InvalidRate,
 	}
@@ -314,10 +295,6 @@ pub mod module {
 			collateral_type: CurrencyId,
 			new_total_debit_value: Balance,
 		},
-/// A new liquidation contract is registered.
-		LiquidationContractRegistered { address: EvmAddress },
-/// A new liquidation contract is deregistered.
-		LiquidationContractDeregistered { address: EvmAddress },
 	}
 
 /// Mapping from collateral type to its exchange rate of debit units and
@@ -335,10 +312,6 @@ pub mod module {
 	#[pallet::getter(fn collateral_params)]
 	pub type CollateralParams<T: Config> = StorageMap<_, Twox64Concat, CurrencyId, RiskManagementParams, OptionQuery>;
 
-	#[pallet::storage]
-	#[pallet::getter(fn liquidation_contracts)]
-	pub type LiquidationContracts<T: Config> =
-		StorageValue<_, BoundedVec<EvmAddress, T::MaxLiquidationContracts>, ValueQuery>;
 
 	#[pallet::genesis_config]
 	#[derive(frame_support::DefaultNoBound)]
@@ -513,25 +486,6 @@ pub mod module {
 			Ok(())
 		}
 
-		#[pallet::call_index(3)]
-		#[pallet::weight(<T as Config>::WeightInfo::register_liquidation_contract())]
-		pub fn register_liquidation_contract(origin: OriginFor<T>, address: EvmAddress) -> DispatchResult {
-			T::LiquidationContractsUpdateOrigin::ensure_origin(origin)?;
-			LiquidationContracts::<T>::try_append(address).map_err(|()| Error::<T>::TooManyLiquidationContracts)?;
-			Self::deposit_event(Event::LiquidationContractRegistered { address });
-			Ok(())
-		}
-
-		#[pallet::call_index(4)]
-		#[pallet::weight(<T as Config>::WeightInfo::deregister_liquidation_contract())]
-		pub fn deregister_liquidation_contract(origin: OriginFor<T>, address: EvmAddress) -> DispatchResult {
-			T::LiquidationContractsUpdateOrigin::ensure_origin(origin)?;
-			LiquidationContracts::<T>::mutate(|contracts| {
-				contracts.retain(|c| c != &address);
-			});
-			Self::deposit_event(Event::LiquidationContractDeregistered { address });
-			Ok(())
-		}
 	}
 
 	#[pallet::validate_unsigned]
@@ -1224,8 +1178,6 @@ impl<T: Config> Pallet<T> {
 	}
 }
 
-type LiquidateByPriority<T> = (LiquidateViaDex<T>, LiquidateViaContracts<T>, LiquidateViaAuction<T>);
-
 pub struct LiquidateViaDex<T>(PhantomData<T>);
 impl<T: Config> LiquidateCollateral<T::AccountId> for LiquidateViaDex<T> {
 	fn liquidate(
@@ -1271,134 +1223,7 @@ impl<T: Config> LiquidateCollateral<T::AccountId> for LiquidateViaDex<T> {
 	}
 }
 
-pub struct LiquidateViaContracts<T>(PhantomData<T>);
-impl<T: Config> LiquidateCollateral<T::AccountId> for LiquidateViaContracts<T> {
-	fn liquidate(
-		who: &T::AccountId,
-		currency_id: CurrencyId,
-		amount: Balance,
-		target_stable_amount: Balance,
-	) -> DispatchResult {
-		let liquidation_contracts = Pallet::<T>::liquidation_contracts();
-		let liquidation_contracts_len = liquidation_contracts.len();
-		if liquidation_contracts_len.is_zero() {
-			return Err(Error::<T>::LiquidationFailed.into());
-		}
-
-		let max_supply_limit = Ratio::one()
-			.saturating_sub(T::MaxLiquidationContractSlippage::get())
-			.reciprocal()
-			.unwrap_or_else(Ratio::max_value)
-			.saturating_mul_int(
-				T::PriceSource::get_relative_price(T::GetSEUSDCurrencyId::get(), currency_id)
-					.expect("the oracle price should be available because liquidation are triggered by it.")
-					.saturating_mul_int(target_stable_amount),
-			);
-		let collateral_supply = amount.min(max_supply_limit);
-
-		let collateral = currency_id
-			.erc20_address()
-			.ok_or(Error::<T>::CollateralContractNotFound)?;
-		let repay_dest = Pallet::<T>::evm_address();
-		let repay_dest_account_id = Pallet::<T>::account_id();
-
-		let stable_coin = T::GetSEUSDCurrencyId::get();
-
-		let contracts_by_priority = {
-			let now: usize = frame_system::Pallet::<T>::block_number()
-				.try_into()
-				.map_err(|_| ArithmeticError::Overflow)?;
-// can't fail as ensured `liquidation_contracts_len` non-zero
-			let start_at = now % liquidation_contracts_len;
-			let mut all: Vec<EvmAddress> = liquidation_contracts.into();
-			let mut right = all.split_off(start_at);
-			right.append(&mut all);
-			right
-		};
-
-// try liquidation on each contract
-		for contract in contracts_by_priority.into_iter() {
-			let repay_dest_balance = CurrencyOf::<T>::free_balance(stable_coin, &repay_dest_account_id);
-			if T::LiquidationEvmBridge::liquidate(
-				InvokeContext {
-					contract,
-					sender: repay_dest,
-					origin: contract,
-				},
-				collateral,
-				repay_dest,
-				collateral_supply,
-				target_stable_amount,
-			)
-			.is_ok()
-			{
-				let repayment = CurrencyOf::<T>::free_balance(stable_coin, &repay_dest_account_id)
-					.saturating_sub(repay_dest_balance);
-				let contract_account_id = T::EvmAddressMapping::get_account_id(&contract);
-				if repayment >= target_stable_amount {
-// sufficient repayment, transfer collateral to contract and notify
-					if let Err(e) = <T as Config>::UssdTreasury::withdraw_collateral(
-						&contract_account_id,
-						currency_id,
-						collateral_supply,
-					) {
-						log::error!(
-							target: "seusd-engine",
-							"LiquidateViaContracts: transfer collateral to contract failed. \
-							Collateral: {:?}, amount: {:?} contract: {:?}, error: {:?}. \
-							This is unexpected, need extra action.",
-							currency_id, collateral_supply, contract, e,
-						);
-					} else {
-// notify liquidation success
-						T::LiquidationEvmBridge::on_collateral_transfer(
-							InvokeContext {
-								contract,
-								sender: repay_dest,
-								origin: contract,
-							},
-							collateral,
-							target_stable_amount,
-						);
-					}
-// refund the remaining collateral to owner
-					let refund_collateral_amount = amount
-						.checked_sub(collateral_supply)
-						.expect("Ensured collateral supply <= amount; qed");
-					if !refund_collateral_amount.is_zero() {
-						if let Err(e) =
-							<T as Config>::UssdTreasury::withdraw_collateral(who, currency_id, refund_collateral_amount)
-						{
-							log::error!(
-								target: "seusd-engine",
-								"LiquidateViaContracts: refund the remaining collateral to owner failed. \
-								Collateral: {:?}, amount: {:?} error: {:?}. \
-								This is unexpected, need extra action.",
-								currency_id, refund_collateral_amount, e,
-							);
-						}
-					}
-					return Ok(());
-				} else if repayment > 0 {
-// insufficient repayment, refund
-					CurrencyOf::<T>::transfer(stable_coin, &repay_dest_account_id, &contract_account_id, repayment)?;
-// notify liquidation failed
-					T::LiquidationEvmBridge::on_repayment_refund(
-						InvokeContext {
-							contract,
-							sender: Pallet::<T>::evm_address(),
-							origin: contract,
-						},
-						collateral,
-						repayment,
-					);
-				}
-			}
-		}
-
-		Err(Error::<T>::LiquidationFailed.into())
-	}
-}
+type LiquidateByPriority<T> = (LiquidateViaDex<T>, LiquidateViaAuction<T>);
 
 pub struct LiquidateViaAuction<T>(PhantomData<T>);
 impl<T: Config> LiquidateCollateral<T::AccountId> for LiquidateViaAuction<T> {

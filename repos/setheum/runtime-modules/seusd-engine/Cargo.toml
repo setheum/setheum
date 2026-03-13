@@ -33,8 +33,7 @@ module-swap_legacy = { workspace = true, features = ["std"] , default-features =
 module-seusd-treasury = { workspace = true, features = ["std"] , default-features = false }
 module-evm-accounts = { workspace = true, features = ["std"] , default-features = false }
 module-tokens = { workspace = true, features = ["std"] , default-features = false }
-module-evm = { workspace = true, features = ["std"] , default-features = false }
-module-evm-bridge = { workspace = true, features = ["std"] , default-features = false }
+# module-evm removed
 
 [features]
 default = ["std"]

@@ -63,7 +63,7 @@ pub mod module {
 	pub const RESERVE_ID: ReserveIdentifier = ReserveIdentifier::;
 
 	#[pallet::config]
-	pub trait Config: frame_system::Config + module_cdp_engine::Config {
+	pub trait Config: frame_system::Config + module_seusd_engine::Config {
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 
 /// Currency for authorization reserved.
@@ -286,7 +286,7 @@ pub mod module {
 			min_increase_collateral: Balance,
 		) -> DispatchResult {
 			let who = ensure_signed(origin)?;
-			<module_cdp_engine::Pallet<T>>::expand_position_collateral(
+			<module_seusd_engine::Pallet<T>>::expand_position_collateral(
 				&who,
 				currency_id,
 				increase_debit_value,
@@ -309,7 +309,7 @@ pub mod module {
 			min_decrease_debit_value: Balance,
 		) -> DispatchResult {
 			let who = ensure_signed(origin)?;
-			<module_cdp_engine::Pallet<T>>::shrink_position_debit(
+			<module_seusd_engine::Pallet<T>>::shrink_position_debit(
 				&who,
 				currency_id,
 				decrease_collateral,
@@ -340,7 +340,7 @@ pub mod module {
 			if !debit_value_adjustment.is_zero() {
 				ensure!(!T::EmergencyShutdown::is_shutdown(), Error::<T>::AlreadyShutdown);
 			}
-			<module_cdp_engine::Pallet<T>>::adjust_position_by_debit_value(
+			<module_seusd_engine::Pallet<T>>::adjust_position_by_debit_value(
 				&who,
 				currency_id,
 				collateral_adjustment,
@@ -366,12 +366,12 @@ pub mod module {
 			let debit_amount: Amount = debit_transfer.try_into().map_err(|_| ArithmeticError::Overflow)?;
 			let negative_debit = debit_amount.checked_neg().ok_or(ArithmeticError::Overflow)?;
 // Adds SEUSD to user account momentarily to adjust loan
-			<T as module_cdp_engine::Config>::UssdTreasury::issue_debit(&who, debit_transfer, true)?;
+			<T as module_seusd_engine::Config>::UssdTreasury::issue_debit(&who, debit_transfer, true)?;
 
-			<module_cdp_engine::Pallet<T>>::adjust_position(&who, from_currency, Zero::zero(), negative_debit)?;
-			<module_cdp_engine::Pallet<T>>::adjust_position(&who, to_currency, Zero::zero(), debit_amount)?;
+			<module_seusd_engine::Pallet<T>>::adjust_position(&who, from_currency, Zero::zero(), negative_debit)?;
+			<module_seusd_engine::Pallet<T>>::adjust_position(&who, to_currency, Zero::zero(), debit_amount)?;
 // Removes debit issued for debit transfer
-			<T as module_cdp_engine::Config>::UssdTreasury::burn_debit(&who, debit_transfer)?;
+			<T as module_seusd_engine::Config>::UssdTreasury::burn_debit(&who, debit_transfer)?;
 
 			Self::deposit_event(Event::TransferDebit {
 				from_currency,
@@ -403,7 +403,7 @@ impl<T: Config> Pallet<T> {
 		if !debit_adjustment.is_zero() {
 			ensure!(!T::EmergencyShutdown::is_shutdown(), Error::<T>::AlreadyShutdown);
 		}
-		<module_cdp_engine::Pallet<T>>::adjust_position(who, currency_id, collateral_adjustment, debit_adjustment)?;
+		<module_seusd_engine::Pallet<T>>::adjust_position(who, currency_id, collateral_adjustment, debit_adjustment)?;
 		Ok(())
 	}
 
@@ -413,7 +413,7 @@ impl<T: Config> Pallet<T> {
 		max_collateral_amount: Balance,
 	) -> DispatchResult {
 		ensure!(!T::EmergencyShutdown::is_shutdown(), Error::<T>::AlreadyShutdown);
-		<module_cdp_engine::Pallet<T>>::close_cdp_has_debit_by_dex(who, currency_id, max_collateral_amount)?;
+		<module_seusd_engine::Pallet<T>>::close_cdp_has_debit_by_dex(who, currency_id, max_collateral_amount)?;
 		Ok(())
 	}
 }
@@ -437,7 +437,7 @@ impl<T: Config> UssdManager<T::AccountId, CurrencyId, Amount, Balance> for Palle
 	}
 
 	fn get_collateral_parameters(currency_id: CurrencyId) -> Vec<U256> {
-		let params = <module_cdp_engine::Pallet<T>>::collateral_params(currency_id).unwrap_or_default();
+		let params = <module_seusd_engine::Pallet<T>>::collateral_params(currency_id).unwrap_or_default();
 
 		vec![
 			U256::from(params.maximum_total_debit_value),
@@ -452,11 +452,11 @@ impl<T: Config> UssdManager<T::AccountId, CurrencyId, Amount, Balance> for Palle
 		let stable_currency_id = T::GetSEUSDCurrencyId::get();
 
 		T::PriceSource::get_relative_price(currency_id, stable_currency_id).map(|price| {
-			<module_cdp_engine::Pallet<T>>::calculate_collateral_ratio(currency_id, collateral, debit, price)
+			<module_seusd_engine::Pallet<T>>::calculate_collateral_ratio(currency_id, collateral, debit, price)
 		})
 	}
 
 	fn get_debit_exchange_rate(currency_id: CurrencyId) -> ExchangeRate {
-		<module_cdp_engine::Pallet<T>>::get_debit_exchange_rate(currency_id)
+		<module_seusd_engine::Pallet<T>>::get_debit_exchange_rate(currency_id)
 	}
 }

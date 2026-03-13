@@ -41,7 +41,7 @@
 //! This crate provides a Rust application interface for submitting transactions to `setheum` chain.
 //! Most of the [pallets](https://docs.substrate.io/reference/frame-pallets/) are common to any
 //! [Substrate](https://github.com/paritytech/substrate) chain, but there are some unique to `setheum`,
-//! e.g. [`modules::edfis::Api`]
+//! e.g. [`modules::swap::Api`]
 
 use std::str::FromStr;
 

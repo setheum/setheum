@@ -84,12 +84,16 @@ use module_traits::{
 	create_median_value_data_provider, parameter_type_with_key, DataFeeder, DataProviderExtended,
 // MultiCurrency,
 };
-use module_evm::Runner;
-use module_evm::{CallInfo, CreateInfo};
-use module_unified_accounts::EvmAddressMapping;
-pub use module_evm_manager::EvmCurrencyIdMapping;
 use module_currencies::BasicCurrencyAdapter;
 use module_transaction_payment::{Multiplier, TargetedFeeAdjustment};
+
+// Frontier
+pub use pallet_ethereum::{Call as EthereumCall, Transaction as EthereumTransaction};
+pub use pallet_evm::{
+	Account as EvmAccount, AddressMapping, EnsureAddressTruncated, FeeCalculator, GasWeightMapping, HashedAddressMapping,
+	Runner as EvmRunner,
+};
+pub use fp_evm::GenesisAccount;
 
 // re-exports
 
@@ -637,7 +641,7 @@ impl module_prices::Config for Runtime {
 	type LockOrigin = EnsureRootOrTwoThirdsFinancialCouncil;
 	type DEX = Dex;
 	type Currency = Currencies;
-	type CurrencyIdMapping = EvmCurrencyIdMapping<Runtime>;
+	type CurrencyIdMapping = module_asset_registry::EvmCurrencyIdMapping<Runtime>;
 	type WeightInfo = weights::module_prices::WeightInfo<Runtime>;
 }
 
@@ -932,10 +936,7 @@ impl module_unified_accounts::Config for Runtime {
 	type WeightInfo = weights::module_unified_accounts::WeightInfo<Runtime>;
 }
 
-impl module_evm_manager::Config for Runtime {
-	type Currency = Balances;
-	type EVMBridge = EVMBridge;
-}
+
 
 #[cfg(feature = "with-ethereum-compatibility")]
 static ISTANBUL_CONFIG: evm::Config = evm::Config::istanbul();
@@ -955,7 +956,7 @@ parameter_types! {
 pub type MultiCurrencyPrecompile = runtime_common::MultiCurrencyPrecompile<
 	AccountId,
 	EvmAddressMapping<Runtime>,
-	EvmCurrencyIdMapping<Runtime>,
+	module_asset_registry::EvmCurrencyIdMapping<Runtime>,
 	Currencies,
 >;
 
@@ -966,13 +967,13 @@ pub type StateRentPrecompile =
 pub type OraclePrecompile = runtime_common::OraclePrecompile<
 	AccountId,
 	EvmAddressMapping<Runtime>,
-	EvmCurrencyIdMapping<Runtime>,
+	module_asset_registry::EvmCurrencyIdMapping<Runtime>,
 	module_prices::RealTimePriceProvider<Runtime>,
 >;
 pub type ScheduleCallPrecompile = runtime_common::ScheduleCallPrecompile<
 	AccountId,
 	EvmAddressMapping<Runtime>,
-	EvmCurrencyIdMapping<Runtime>,
+	module_asset_registry::EvmCurrencyIdMapping<Runtime>,
 	Scheduler,
 	module_transaction_payment::ChargeTransactionPayment<Runtime>,
 	Call,
@@ -980,42 +981,62 @@ pub type ScheduleCallPrecompile = runtime_common::ScheduleCallPrecompile<
 	OriginCaller,
 	Runtime,
 >;
-// pub type DexPrecompile =
-// 	runtime_common::DexPrecompile<AccountId, EvmAddressMapping<Runtime>, EvmCurrencyIdMapping<Runtime>, Dex>;
+pub type DexPrecompile =
+	runtime_common::DexPrecompile<AccountId, EvmAddressMapping<Runtime>, EvmCurrencyIdMapping<Runtime>, Dex>;
 
-impl module_evm::Config for Runtime {
-	type AddressMapping = EvmAddressMapping<Runtime>;
-	type Currency = Balances;
-	type TransferAll = Currencies;
-	type NewContractExtraBytes = NewContractExtraBytes;
-	type StorageDepositPerByte = StorageDepositPerByte;
-	type Event = Event;
-	type Precompiles = runtime_common::AllPrecompiles<
-		SystemContractsFilter,
-		MultiCurrencyPrecompile,
-		NFTPrecompile,
-		StateRentPrecompile,
-		OraclePrecompile,
-		ScheduleCallPrecompile,
-// DexPrecompile,
-	>;
-	type ChainId = ChainId;
-	type GasToWeight = GasToWeight;
-	type ChargeTransactionPayment = module_transaction_payment::ChargeTransactionPayment<Runtime>;
-	type NetworkContractOrigin = EnsureRootOrTwoThirdsTechnicalCommittee;
-	type NetworkContractSource = NetworkContractSource;
-	type DeveloperDeposit = DeveloperDeposit;
-	type DeploymentFee = DeploymentFee;
-	type TreasuryAccount = TreasuryAccount;
-	type FreeDeploymentOrigin = EnsureRootOrHalfShuraCouncil;
-	type Runner = module_evm::runner::stack::Runner<Self>;
-	type FindAuthor = pallet_session::FindAccountFromAuthorIndex<Self, Babe>;
-	type WeightInfo = weights::module_evm::WeightInfo<Runtime>;
+pub type AllPrecompiles = runtime_common::AllPrecompiles<
+	SystemContractsFilter,
+	MultiCurrencyPrecompile,
+	NFTPrecompile,
+	StateRentPrecompile,
+	OraclePrecompile,
+	ScheduleCallPrecompile,
+	DexPrecompile,
+>;
 
-	#[cfg(feature = "with-ethereum-compatibility")]
-	fn config() -> &'static evm::Config {
-		&ISTANBUL_CONFIG
+pub struct PrecompilesValue;
+impl sp_core::Get<AllPrecompiles> for PrecompilesValue {
+	fn get() -> AllPrecompiles {
+		AllPrecompiles(Default::default())
 	}
+}
+
+parameter_types! {
+	pub const ChainId: u64 = CHAIN_ID_SETHEUM_MAINNET;
+	pub BlockGasLimit: U256 = U256::from(u32::MAX);
+	pub WeightPerGas: Weight = Weight::from_parts(20_000, 0); // Need to calibrate
+}
+
+pub struct FixedGasWeightMapping;
+impl GasWeightMapping for FixedGasWeightMapping {
+	fn gas_to_weight(gas: u64, _reason: pallet_evm::GasWeightMappingReason) -> Weight {
+		Weight::from_parts(gas.saturating_mul(20_000), 0)
+	}
+	fn weight_to_gas(weight: Weight) -> u64 {
+		weight.ref_time().saturating_div(20_000)
+	}
+}
+
+impl pallet_evm::Config for Runtime {
+	type FeeCalculator = ();
+	type GasWeightMapping = FixedGasWeightMapping;
+	type AddressMapping = module_unified_accounts::EvmAddressMapping<Runtime>;
+	type Currency = Balances;
+	type Event = Event;
+	type Runner = pallet_evm::runner::stack::Runner<Self>;
+	type PrecompilesType = AllPrecompiles;
+	type PrecompilesValue = PrecompilesValue;
+	type ChainId = ChainId;
+	type BlockGasLimit = BlockGasLimit;
+	type OnChargeTransaction = ();
+	type BlockHashMapping = pallet_evm::SubstrateBlockHashMapping<Self>;
+	type FindAuthor = pallet_session::FindAccountFromAuthorIndex<Self, Aura>;
+	type WeightInfo = pallet_evm::weights::SubstrateWeight<Self>;
+}
+
+impl pallet_ethereum::Config for Runtime {
+	type Event = Event;
+	type StateRoot = pallet_ethereum::IntermediateStateRoot<Self>;
 }
 
 parameter_types! {
@@ -1535,10 +1556,9 @@ construct_runtime!(
 		Identity: pallet_identity::{Pallet, Call, Storage, Event<T>} = 42,
 
 // Smart contracts
-		EVM: module_evm::{Pallet, Config<T>, Call, Storage, Event<T>} = 43,
+		EVM: pallet_evm::{Pallet, Config, Storage, Event<T>} = 43,
 		EvmAccounts: module_unified_accounts::{Pallet, Call, Storage, Event<T>} = 44,
-		EVMBridge: module_evm_bridge::{Pallet} = 45,
-		EvmManager: module_evm_manager::{Pallet, Storage} = 46,
+		Ethereum: pallet_ethereum::{Pallet, Storage, Event, Config, Call} = 49,
 
 // Consensus - Aura + SetBFT (replacing Babe + Grandpa)
 		Authorship: pallet_authorship::{Pallet, Call, Storage, Inherent} = 47,
@@ -1568,50 +1588,7 @@ impl frame_support::traits::OnRuntimeUpgrade for OnRuntimeUpgrade {
 	}
 }
 
-#[derive(Clone, Encode, Decode, PartialEq, Eq, RuntimeDebug)]
-pub struct ConvertEthereumTx;
-
-impl Convert<(Call, SignedExtra), Result<EthereumTransactionMessage, InvalidTransaction>> for ConvertEthereumTx {
-	fn convert((call, extra): (Call, SignedExtra)) -> Result<EthereumTransactionMessage, InvalidTransaction> {
-		match call {
-			Call::EVM(module_evm::Call::eth_call(action, input, value, gas_limit, storage_limit, valid_until)) => {
-				if System::block_number() > valid_until {
-					return Err(InvalidTransaction::Stale);
-				}
-
-				let era: frame_system::CheckEra<Runtime> = extra.3;
-				if era != frame_system::CheckEra::from(sp_runtime::generic::Era::Immortal) {
-// require immortal
-					return Err(InvalidTransaction::BadProof);
-				}
-
-				let nonce: frame_system::CheckNonce<Runtime> = extra.4;
-// TODO: this is a hack access private nonce field
-// remove this after https://github.com/paritytech/substrate/pull/9810
-				let nonce = nonce
-					.using_encoded(|mut encoded| Compact::<Nonce>::decode(&mut encoded))
-					.map_err(|_| InvalidTransaction::BadProof)?;
-
-				let tip: module_transaction_payment::ChargeTransactionPayment<Runtime> = extra.6;
-				let tip = tip.0;
-
-				Ok(EthereumTransactionMessage {
-					nonce: nonce.into(),
-					tip,
-					gas_limit,
-					storage_limit,
-					action,
-					value,
-					input,
-					chain_id: ChainId::get(),
-					genesis: System::block_hash(0),
-					valid_until,
-				})
-			}
-			_ => Err(InvalidTransaction::BadProof),
-		}
-	}
-}
+// ConvertEthereumTx removed. Frontier uses pallet-ethereum and fp-self-contained.
 
 /// The address format for describing accounts.
 pub type Address = sp_runtime::MultiAddress<AccountId, AccountIndex>;
@@ -1632,7 +1609,6 @@ pub type SignedExtra = (
 	frame_system::CheckNonce<Runtime>,
 	frame_system::CheckWeight<Runtime>,
 	module_transaction_payment::ChargeTransactionPayment<Runtime>,
-	module_evm::SetEvmOrigin<Runtime>,
 );
 /// Unchecked extrinsic type as expected by this runtime.
 pub type UncheckedExtrinsic = generic::UncheckedExtrinsic<Address, Call, Signature, SignedExtra>;
@@ -1844,91 +1820,141 @@ impl_runtime_apis! {
 		}
 	}
 
-	impl module_evm_rpc_runtime_api::EVMRuntimeRPCApi<Block, Balance> for Runtime {
+	impl fp_rpc::EthereumRuntimeRPCApi<Block> for Runtime {
+		fn chain_id() -> u64 {
+			ChainId::get()
+		}
+
+		fn account_basic(address: H160) -> fp_evm::Account {
+			let (account, _) = EVM::account_basic(&address);
+			account
+		}
+
+		fn gas_price() -> U256 {
+			let (gas_price, _) = <Runtime as pallet_evm::Config>::FeeCalculator::min_gas_price();
+			gas_price
+		}
+
+		fn account_code_at(address: H160) -> Vec<u8> {
+			EVM::account_codes(address)
+		}
+
+		fn author() -> H160 {
+			<pallet_evm::Pallet<Runtime>>::find_author()
+		}
+
+		fn storage_at(address: H160, index: U256) -> H256 {
+			let mut tmp = [0u8; 32];
+			index.to_big_endian(&mut tmp);
+			EVM::account_storages(address, H256::from_slice(&tmp))
+		}
+
 		fn call(
 			from: H160,
 			to: H160,
 			data: Vec<u8>,
-			value: Balance,
+			value: U256,
 			gas_limit: u64,
-			storage_limit: u32,
+			max_fee_per_gas: Option<U256>,
+			max_priority_fee_per_gas: Option<U256>,
+			nonce: Option<U256>,
 			estimate: bool,
-		) -> Result<CallInfo, sp_runtime::DispatchError> {
+			access_list: Option<Vec<(H160, Vec<H256>)>>,
+		) -> Result<pallet_evm::CallInfo, sp_runtime::DispatchError> {
 			let config = if estimate {
-				let mut config = <Runtime as module_evm::Config>::config().clone();
+				let mut config = <Runtime as pallet_evm::Config>::config().clone();
 				config.estimate = true;
 				Some(config)
 			} else {
 				None
 			};
 
-			module_evm::runner::stack::Runner::<Runtime>::call(
-				from,
+			let is_transactional = false;
+			let validate = true;
+			let evm_config = config.as_ref().unwrap_or(<Runtime as pallet_evm::Config>::config());
+			<Runtime as pallet_evm::Config>::Runner::call(
 				from,
 				to,
 				data,
 				value,
 				gas_limit,
-				storage_limit,
-				config.as_ref().unwrap_or(<Runtime as module_evm::Config>::config()),
-			)
+				max_fee_per_gas,
+				max_priority_fee_per_gas,
+				nonce,
+				access_list.unwrap_or_default(),
+				is_transactional,
+				validate,
+				None,
+				None,
+				evm_config,
+			).map_err(|err| err.error.into())
 		}
 
 		fn create(
 			from: H160,
 			data: Vec<u8>,
-			value: Balance,
+			value: U256,
 			gas_limit: u64,
-			storage_limit: u32,
+			max_fee_per_gas: Option<U256>,
+			max_priority_fee_per_gas: Option<U256>,
+			nonce: Option<U256>,
 			estimate: bool,
-		) -> Result<CreateInfo, sp_runtime::DispatchError> {
+			access_list: Option<Vec<(H160, Vec<H256>)>>,
+		) -> Result<pallet_evm::CreateInfo, sp_runtime::DispatchError> {
 			let config = if estimate {
-				let mut config = <Runtime as module_evm::Config>::config().clone();
+				let mut config = <Runtime as pallet_evm::Config>::config().clone();
 				config.estimate = true;
 				Some(config)
 			} else {
 				None
 			};
 
-			module_evm::runner::stack::Runner::<Runtime>::create(
+			let is_transactional = false;
+			let validate = true;
+			let evm_config = config.as_ref().unwrap_or(<Runtime as pallet_evm::Config>::config());
+			<Runtime as pallet_evm::Config>::Runner::create(
 				from,
 				data,
 				value,
 				gas_limit,
-				storage_limit,
-				config.as_ref().unwrap_or(<Runtime as module_evm::Config>::config()),
-			)
+				max_fee_per_gas,
+				max_priority_fee_per_gas,
+				nonce,
+				access_list.unwrap_or_default(),
+				is_transactional,
+				validate,
+				None,
+				None,
+				evm_config,
+			).map_err(|err| err.error.into())
 		}
 
-		fn get_estimate_resources_request(extrinsic: Vec<u8>) -> Result<EstimateResourcesRequest, sp_runtime::DispatchError> {
-			let utx = UncheckedExtrinsic::decode(&mut &*extrinsic)
-				.map_err(|_| sp_runtime::DispatchError::Other("Invalid parameter extrinsic, decode failed"))?;
+		fn current_transaction_statuses() -> Option<Vec<fp_rpc::TransactionStatus>> {
+			pallet_ethereum::CurrentTransactionStatuses::<Runtime>::get()
+		}
 
-			let request = match utx.function {
-				Call::EVM(module_evm::Call::call(to, data, value, gas_limit, storage_limit)) => {
-					Some(EstimateResourcesRequest {
-						from: None,
-						to: Some(to),
-						gas_limit: Some(gas_limit),
-						storage_limit: Some(storage_limit),
-						value: Some(value),
-						data: Some(data),
-					})
-				}
-				Call::EVM(module_evm::Call::create(data, value, gas_limit, storage_limit)) => {
-					Some(EstimateResourcesRequest {
-						from: None,
-						to: None,
-						gas_limit: Some(gas_limit),
-						storage_limit: Some(storage_limit),
-						value: Some(value),
-						data: Some(data),
-					})
-				}
-				_ => None,
-			};
+		fn current_block() -> Option<pallet_ethereum::Block> {
+			pallet_ethereum::CurrentBlock::<Runtime>::get()
+		}
 
-			request.ok_or(sp_runtime::DispatchError::Other("Invalid parameter extrinsic, not evm Call"))
+		fn current_receipts() -> Option<Vec<pallet_ethereum::Receipt>> {
+			pallet_ethereum::CurrentReceipts::<Runtime>::get()
+		}
+
+		fn elasticity() -> Option<Permill> {
+			None
+		}
+
+		fn gas_limit_multiplier_at_20_percent_excess() -> U256 {
+			U256::zero()
+		}
+	}
+
+	impl fp_rpc::ConvertTransactionRuntimeApi<Block> for Runtime {
+		fn convert_transaction(transaction: pallet_ethereum::Transaction) -> UncheckedExtrinsic {
+			UncheckedExtrinsic::new_unsigned(
+				pallet_ethereum::Call::<Runtime>::transact { transaction }.into(),
+			)
 		}
 	}
 

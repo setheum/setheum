@@ -284,9 +284,24 @@ impl module_evm_bridge::Config for Test {
 	type EVM = ModuleEVM;
 }
 
-impl module_evm_manager::Config for Test {
-	type Currency = Balances;
-	type EVMBridge = EVMBridge;
+
+pub struct MockCurrencyIdMapping;
+impl module_support::CurrencyIdMapping for MockCurrencyIdMapping {
+	fn name(_currency_id: CurrencyId) -> Option<Vec<u8>> {
+		None
+	}
+	fn symbol(_currency_id: CurrencyId) -> Option<Vec<u8>> {
+		None
+	}
+	fn decimals(_currency_id: CurrencyId) -> Option<u8> {
+		None
+	}
+	fn encode_evm_address(currency_id: CurrencyId) -> Option<EvmAddress> {
+		EvmAddress::try_from(currency_id).ok()
+	}
+	fn decode_evm_address(addr: EvmAddress) -> Option<CurrencyId> {
+		CurrencyId::try_from(addr).ok()
+	}
 }
 
 parameter_types! {
@@ -440,7 +455,7 @@ impl swap_legacy_module::Config for Test {
 
 pub type AdaptedBasicCurrency = module_currencies::BasicCurrencyAdapter<Test, Balances, Amount, BlockNumber>;
 
-pub type EvmCurrencyIdMapping = module_evm_manager::EvmCurrencyIdMapping<Test>;
+pub type EvmCurrencyIdMapping = MockCurrencyIdMapping;
 pub type MultiCurrencyPrecompile =
 	crate::MultiCurrencyPrecompile<AccountId, MockAddressMapping, EvmCurrencyIdMapping, Currencies>;
 
@@ -617,7 +632,6 @@ frame_support::construct_runtime!(
 		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
 		Currencies: module_currencies::{Pallet, Call, Event<T>},
 		EVMBridge: module_evm_bridge::{Pallet},
-		EVMManager: module_evm_manager::{Pallet, Storage},
 		NFTModule: module_nft::{Pallet, Call, Event<T>},
 		TransactionPayment: module_transaction_payment::{Pallet, Call, Storage},
 		Prices: module_prices::{Pallet, Storage, Call, Event<T>},

@@ -418,7 +418,7 @@ fn pre_post_dispatch_and_refund_with_fee_path_call_use_dex() {}
 fn pre_post_dispatch_and_refund_with_fee_call_use_dex(with_fee_call: <Runtime as Config>::RuntimeCall) {
 	builder_with_dex_and_fee_pool(true).execute_with(|| {
 		// without tip
-		let dex_acc: AccountId = PalletId(*b"set/edfis").into_account_truncating();
+		let dex_acc: AccountId = PalletId(*b"set/swap").into_account_truncating();
 		let dex_see = Currencies::free_balance(SEU, &dex_acc);
 
 		let fee: Balance = 50 * 2 + 100; // len * byte + weight
@@ -588,7 +588,7 @@ fn charges_fee_when_validate_with_fee_path_call_use_swap() {}
 fn charges_fee_when_validate_with_fee_call_use_swap(with_fee_call: <Runtime as Config>::RuntimeCall) {
 	// Enable dex with Alice, and initialize tx charge fee pool
 	builder_with_dex_and_fee_pool(true).execute_with(|| {
-		let dex_acc: AccountId = PalletId(*b"set/edfis").into_account_truncating();
+		let dex_acc: AccountId = PalletId(*b"set/swap").into_account_truncating();
 		let dex_see = Currencies::free_balance(SEU, &dex_acc);
 
 		// first tx consider existential deposit.
