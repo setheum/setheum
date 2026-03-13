@@ -55,4 +55,4 @@ These tasks are just for this file specifically.
 - [x] [[TODO.md:0] - Add TODO.md File](TODO.md): Add a TODO.md file to organise TODOs in the repo.
 - [x] [[TODO.md:1] - Add a `task_title`](/TODO.md/#tasks): Adda `task_title`.
 
-- [x] [[src/lib.rs:0] - Update to support `EcdpSetrLiquidityRewards` and `EcdpUssdLiquidityRewards`](/modules/edfis-liquidity-rewards/src/lib.rs): Update to support `EcdpSetrLiquidityRewards` and `EcdpUssdLiquidityRewards` such that if has `EcdpPosition` and is an LP for a pool with ECDP Stablecoin, then make it `EcdpSetrLiquidityRewards` or `EcdpUssdLiquidityRewards` respectively.
+- [x] [[src/lib.rs:0] - Update to support `SetrLiquidityRewards` and `UssdLiquidityRewards`](/modules/liquidity-rewards/src/lib.rs): Update to support `SetrLiquidityRewards` and `UssdLiquidityRewards` such that if has `Position` and is an LP for a pool with Stablecoin, then make it `SetrLiquidityRewards` or `UssdLiquidityRewards` respectively.

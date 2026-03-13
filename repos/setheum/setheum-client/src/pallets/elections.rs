@@ -52,35 +52,35 @@ use crate::{
 /// Pallet elections read-only api.
 #[async_trait::async_trait]
 pub trait ElectionsApi {
-/// Returns `elections.committee_size` storage of the elections pallet.
-/// * `at` - optional hash of a block to query state from
+    /// Returns `elections.committee_size` storage of the elections pallet.
+    /// * `at` - optional hash of a block to query state from
     async fn get_committee_seats(&self, at: Option<BlockHash>) -> CommitteeSeats;
 
-/// Returns `elections.next_era_committee_seats` storage of the elections pallet.
-/// * `at` - optional hash of a block to query state from
+    /// Returns `elections.next_era_committee_seats` storage of the elections pallet.
+    /// * `at` - optional hash of a block to query state from
     async fn get_next_era_committee_seats(&self, at: Option<BlockHash>) -> CommitteeSeats;
 
-/// Returns `elections.current_era_validators` storage of the elections pallet.
-/// * `at` - optional hash of a block to query state from
+    /// Returns `elections.current_era_validators` storage of the elections pallet.
+    /// * `at` - optional hash of a block to query state from
     async fn get_current_era_validators(&self, at: Option<BlockHash>) -> EraValidators<AccountId>;
 
-/// Returns `elections.next_era_reserved_validators` storage of the elections pallet.
-/// * `at` - optional hash of a block to query state from
+    /// Returns `elections.next_era_reserved_validators` storage of the elections pallet.
+    /// * `at` - optional hash of a block to query state from
     async fn get_next_era_reserved_validators(&self, at: Option<BlockHash>) -> Vec<AccountId>;
 
-/// Returns `elections.next_era_non_reserved_validators` storage of the elections pallet.
-/// * `at` - optional hash of a block to query state from
+    /// Returns `elections.next_era_non_reserved_validators` storage of the elections pallet.
+    /// * `at` - optional hash of a block to query state from
     async fn get_next_era_non_reserved_validators(&self, at: Option<BlockHash>) -> Vec<AccountId>;
 }
 
 /// any object that implements pallet elections api that requires sudo
 #[async_trait::async_trait]
 pub trait ElectionsSudoApi {
-/// Issues `elections.change_validators` that sets the committee for the next era.
-/// * `new_reserved_validators` - reserved validators to be in place in the next era; optional
-/// * `new_non_reserved_validators` - non reserved validators to be in place in the next era; optional
-/// * `committee_size` - committee size to be in place in the next era; optional
-/// * `status` - a [`TxStatus`] for a tx to wait for
+    /// Issues `elections.change_validators` that sets the committee for the next era.
+    /// * `new_reserved_validators` - reserved validators to be in place in the next era; optional
+    /// * `new_non_reserved_validators` - non reserved validators to be in place in the next era; optional
+    /// * `committee_size` - committee size to be in place in the next era; optional
+    /// * `status` - a [`TxStatus`] for a tx to wait for
     async fn change_validators(
         &self,
         new_reserved_validators: Option<Vec<AccountId>>,
@@ -89,9 +89,9 @@ pub trait ElectionsSudoApi {
         status: TxStatus,
     ) -> anyhow::Result<TxInfo>;
 
-/// Set openness of the elections.
-/// * `mode` - new elections openness mode
-/// * `status` - a [`TxStatus`] for a tx to wait for
+    /// Set openness of the elections.
+    /// * `mode` - new elections openness mode
+    /// * `status` - a [`TxStatus`] for a tx to wait for
     async fn set_election_openness(
         &self,
         mode: ElectionOpenness,

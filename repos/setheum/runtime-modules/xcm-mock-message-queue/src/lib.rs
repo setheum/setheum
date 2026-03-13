@@ -119,12 +119,11 @@ pub mod module {
 						Outcome::Complete { used } => (Ok(used), Event::Success(Some(hash))),
 						// As far as the caller is concerned, this was dispatched without error, so
 						// we just report the weight used.
-						Outcome::Incomplete {
-							used,
-							error: InstructionError { error, .. },
-						} => (Ok(used), Event::Fail(Some(hash), error)),
+						Outcome::Incomplete { used, error: InstructionError { error, .. } } => {
+							(Ok(used), Event::Fail(Some(hash), error))
+						},
 					}
-				}
+				},
 				Err(()) => (Err(XcmError::UnhandledXcmVersion), Event::BadVersion(Some(hash))),
 			};
 			Self::deposit_event(event);
@@ -163,7 +162,7 @@ pub mod module {
 				match maybe_versioned {
 					Err(_) => {
 						Self::deposit_event(Event::InvalidFormat(id));
-					}
+					},
 					Ok(versioned) => match Xcm::try_from(versioned) {
 						Err(()) => Self::deposit_event(Event::UnsupportedVersion(id)),
 						Ok(x) => {
@@ -171,7 +170,7 @@ pub mod module {
 								T::XcmExecutor::prepare_and_execute(Parent, x.clone(), &mut id, limit, Weight::zero());
 							<ReceivedDmp<T>>::append(x);
 							Self::deposit_event(Event::ExecutedDownward(id, outcome));
-						}
+						},
 					},
 				}
 			}

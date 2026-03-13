@@ -41,11 +41,11 @@ use crate::{
     units::{SignedUnit as GenericSignedUnit, Unit as GenericUnit},
     NodeCount, Receiver, Round, Sender, Terminator,
 };
-use set_bft_mock::{Data, DataProvider, Hasher64, Keychain};
 use futures::{
     channel::{mpsc, oneshot},
     FutureExt, StreamExt,
 };
+use set_bft_mock::{Data, DataProvider, Hasher64, Keychain};
 
 type SignedUnit = GenericSignedUnit<Hasher64, Data, Keychain>;
 

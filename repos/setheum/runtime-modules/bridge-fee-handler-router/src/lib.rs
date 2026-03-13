@@ -19,9 +19,9 @@ mod mock;
 pub mod pallet {
 	use frame_support::{pallet_prelude::*, traits::StorageVersion};
 	use frame_system::pallet_prelude::*;
-	use sp_std::boxed::Box;
 	use module_bridge_traits::{DomainID, FeeHandler};
-	use xcm::latest::{AssetId, Asset};
+	use sp_std::boxed::Box;
+	use xcm::latest::{Asset, AssetId};
 
 	#[derive(PartialEq, Eq, Clone, Encode, Decode, TypeInfo, RuntimeDebug, MaxEncodedLen)]
 	pub enum FeeHandlerType {
@@ -77,8 +77,7 @@ pub mod pallet {
 	/// Return the Fee handler type based on domainID and assetID
 	#[pallet::storage]
 	#[pallet::getter(fn handler_type)]
-	pub type HandlerType<T: Config> =
-		StorageMap<_, Twox64Concat, (DomainID, AssetId), FeeHandlerType>;
+	pub type HandlerType<T: Config> = StorageMap<_, Twox64Concat, (DomainID, AssetId), FeeHandlerType>;
 
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
@@ -136,13 +135,13 @@ pub mod pallet {
 		use super::*;
 		use crate as fee_router;
 		use fee_router::mock::{
-			assert_events, new_test_ext, AccessSegregator, EthereumDomainID, FeeHandlerRouter,
-			FeeHandlerRouterPalletIndex, MoonbeamDomainID, PhaLocation, RuntimeEvent,
-			RuntimeOrigin as Origin, BridgeBasicFeeHandler, Test, ALICE,
+			assert_events, new_test_ext, AccessSegregator, BridgeBasicFeeHandler, EthereumDomainID, FeeHandlerRouter,
+			FeeHandlerRouterPalletIndex, MoonbeamDomainID, PhaLocation, RuntimeEvent, RuntimeOrigin as Origin, Test,
+			ALICE,
 		};
 		use frame_support::{assert_noop, assert_ok};
-		use sp_std::boxed::Box;
 		use module_bridge_traits::FeeHandler;
+		use sp_std::boxed::Box;
 		use xcm::latest::prelude::*;
 
 		#[test]
@@ -223,19 +222,12 @@ pub mod pallet {
 				));
 
 				assert_eq!(
-					FeeHandlerRouter::get_fee(
-						EthereumDomainID::get(),
-						(PhaLocation::get(), 10000u128).into()
-					)
-					.unwrap(),
+					FeeHandlerRouter::get_fee(EthereumDomainID::get(), (PhaLocation::get(), 10000u128).into()).unwrap(),
 					10000
 				);
 				// We don't support dynamic fee handler, return None
 				assert_eq!(
-					FeeHandlerRouter::get_fee(
-						MoonbeamDomainID::get(),
-						(PhaLocation::get(), 10000u128).into()
-					),
+					FeeHandlerRouter::get_fee(MoonbeamDomainID::get(), (PhaLocation::get(), 10000u128).into()),
 					None
 				);
 				assert_events(vec![

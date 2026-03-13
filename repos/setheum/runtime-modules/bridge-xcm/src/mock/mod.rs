@@ -79,11 +79,7 @@ pub fn para_ext(para_id: u32) -> TestExternalities {
 
 	// set Alice, Bob and ASSET_OWNER with ENDOWED_BALANCE amount of native asset on every parachain
 	pallet_balances::GenesisConfig::<Runtime> {
-		balances: vec![
-			(ALICE, ENDOWED_BALANCE),
-			(BOB, ENDOWED_BALANCE),
-			(ASSET_OWNER, ENDOWED_BALANCE),
-		],
+		balances: vec![(ALICE, ENDOWED_BALANCE), (BOB, ENDOWED_BALANCE), (ASSET_OWNER, ENDOWED_BALANCE)],
 	}
 	.assimilate_storage(&mut t)
 	.unwrap();

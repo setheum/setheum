@@ -36,14 +36,14 @@
 // SOFTWARE.
 
 use crate::{Block, Data};
-use set_bft::{NodeIndex, Recipient, Terminator};
-use set_bft_mock::{Hasher64, PartialMultisignature, Signature};
 use codec::{Decode, Encode};
 use futures::{
     channel::mpsc::{self, UnboundedReceiver, UnboundedSender},
     FutureExt, StreamExt,
 };
 use log::{debug, error, warn};
+use set_bft::{NodeIndex, Recipient, Terminator};
+use set_bft_mock::{Hasher64, PartialMultisignature, Signature};
 use std::{
     collections::{HashMap, HashSet},
     error::Error,

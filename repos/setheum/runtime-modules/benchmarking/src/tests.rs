@@ -106,10 +106,7 @@ construct_runtime!(
 // This function basically just builds a genesis storage key/value store
 // according to our desired mockup.
 fn new_test_ext() -> sp_io::TestExternalities {
-	frame_system::GenesisConfig::<Test>::default()
-		.build_storage()
-		.unwrap()
-		.into()
+	frame_system::GenesisConfig::<Test>::default().build_storage().unwrap().into()
 }
 
 runtime_benchmarks! {

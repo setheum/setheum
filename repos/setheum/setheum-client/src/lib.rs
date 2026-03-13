@@ -41,8 +41,7 @@
 //! This crate provides a Rust application interface for submitting transactions to `setheum` chain.
 //! Most of the [pallets](https://docs.substrate.io/reference/frame-pallets/) are common to any
 //! [Substrate](https://github.com/paritytech/substrate) chain, but there are some unique to `setheum`,
-//! e.g. [`modules::edfis::EdfisApi`]
-
+//! e.g. [`modules::swap::Api`]
 
 use std::str::FromStr;
 
@@ -82,8 +81,8 @@ pub mod utility;
 pub mod waiting;
 
 pub use ::primitives::*;
-pub use setheum::api;
 pub use runtime_types::*;
+pub use setheum::api;
 
 /// An alias for a pallet setbft keys.
 pub type SetBFTKeyPair = ed25519::Pair;
@@ -141,19 +140,19 @@ impl FromStr for KeyPair {
 }
 
 impl KeyPair {
-/// Constructs a new KeyPair from RawKeyPair
+    /// Constructs a new KeyPair from RawKeyPair
     pub fn new(keypair: RawKeyPair) -> Self {
         KeyPair {
             inner: PairSigner::new(keypair),
         }
     }
 
-/// Returns a reference to the inner RawKeyPair
+    /// Returns a reference to the inner RawKeyPair
     pub fn signer(&self) -> &RawKeyPair {
         self.inner.signer()
     }
 
-/// Returns corresponding AccountId
+    /// Returns corresponding AccountId
     pub fn account_id(&self) -> &AccountId {
         self.inner.account_id()
     }
@@ -162,11 +161,11 @@ impl KeyPair {
 /// When submitting a transaction, wait for given status before proceeding.
 #[derive(Copy, Clone)]
 pub enum TxStatus {
-/// A tx must be included in some block.
+    /// A tx must be included in some block.
     InBlock,
-/// A tx must be included in some finalized block.
+    /// A tx must be included in some finalized block.
     Finalized,
-/// A tx must be successfully submitted.
+    /// A tx must be successfully submitted.
     Submitted,
 }
 

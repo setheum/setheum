@@ -61,7 +61,6 @@ pub const SEUSD: CurrencyId = CurrencyId::Token(TokenSymbol::SEUSD);
 pub const LP_SEUSD_SEE: CurrencyId =
 	CurrencyId::DexShare(DexShare::Token(TokenSymbol::SEUSD), DexShare::Token(TokenSymbol::SEU));
 
-
 mod prices {
 	pub use super::super::*;
 }
@@ -248,9 +247,7 @@ impl Default for ExtBuilder {
 
 impl ExtBuilder {
 	pub fn build(self) -> sp_io::TestExternalities {
-		let t = frame_system::GenesisConfig::<Runtime>::default()
-			.build_storage()
-			.unwrap();
+		let t = frame_system::GenesisConfig::<Runtime>::default().build_storage().unwrap();
 
 		t.into()
 	}

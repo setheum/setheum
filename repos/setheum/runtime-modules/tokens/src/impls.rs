@@ -298,7 +298,7 @@ where
 		match res {
 			WithdrawConsequence::ReducedToZero(b) => {
 				WithdrawConsequence::ReducedToZero(C::convert_balance_saturated(b, GetCurrencyId::get()))
-			}
+			},
 			BalanceLow => BalanceLow,
 			WouldDie => WouldDie,
 			UnknownAsset => UnknownAsset,
@@ -323,11 +323,7 @@ where
 	AccountId: Eq,
 {
 	fn mint_into(dest: &AccountId, amount: Self::Balance) -> Result<Self::Balance, DispatchError> {
-		T::mint_into(
-			GetCurrencyId::get(),
-			dest,
-			C::convert_balance_back(amount, GetCurrencyId::get())?,
-		)
+		T::mint_into(GetCurrencyId::get(), dest, C::convert_balance_back(amount, GetCurrencyId::get())?)
 	}
 
 	fn burn_from(

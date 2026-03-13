@@ -38,31 +38,31 @@
 use subxt::utils::Static;
 
 use crate::{
-    api, api::runtime_types::setheum_runtime::SessionKeys, connections::TxInfo, AccountId, BlockHash,
-    ConnectionApi, SessionIndex, SignedConnectionApi, TxStatus,
+    api, api::runtime_types::setheum_runtime::SessionKeys, connections::TxInfo, AccountId,
+    BlockHash, ConnectionApi, SessionIndex, SignedConnectionApi, TxStatus,
 };
 
 /// Pallet session read-only api.
 #[async_trait::async_trait]
 pub trait SessionApi {
-/// API for [`next_keys`](https://paritytech.github.io/substrate/master/pallet_session/pallet/type.NextKeys.html) call.
+    /// API for [`next_keys`](https://paritytech.github.io/substrate/master/pallet_session/pallet/type.NextKeys.html) call.
     async fn get_next_session_keys(
         &self,
         account: AccountId,
         at: Option<BlockHash>,
     ) -> Option<SessionKeys>;
 
-/// API for [`current_index`](https://paritytech.github.io/substrate/master/pallet_session/pallet/struct.Pallet.html#method.current_index) call.
+    /// API for [`current_index`](https://paritytech.github.io/substrate/master/pallet_session/pallet/struct.Pallet.html#method.current_index) call.
     async fn get_session(&self, at: Option<BlockHash>) -> SessionIndex;
 
-/// API for [`validators`](https://paritytech.github.io/substrate/master/pallet_session/pallet/struct.Pallet.html#method.validators) call.
+    /// API for [`validators`](https://paritytech.github.io/substrate/master/pallet_session/pallet/struct.Pallet.html#method.validators) call.
     async fn get_validators(&self, at: Option<BlockHash>) -> Vec<AccountId>;
 }
 
 /// any object that implements pallet session api
 #[async_trait::async_trait]
 pub trait SessionUserApi {
-/// API for [`set_keys`](https://paritytech.github.io/substrate/master/pallet_session/pallet/struct.Pallet.html#method.set_keys) call.
+    /// API for [`set_keys`](https://paritytech.github.io/substrate/master/pallet_session/pallet/struct.Pallet.html#method.set_keys) call.
     async fn set_keys(&self, new_keys: SessionKeys, status: TxStatus) -> anyhow::Result<TxInfo>;
 }
 

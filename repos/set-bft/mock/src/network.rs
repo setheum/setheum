@@ -35,7 +35,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use set_bft_types::{Network as NetworkT, NodeCount, NodeIndex, Recipient};
 use futures::{
     channel::{
         mpsc::{unbounded, UnboundedReceiver, UnboundedSender},
@@ -44,6 +43,7 @@ use futures::{
     Future, StreamExt,
 };
 use log::debug;
+use set_bft_types::{Network as NetworkT, NodeCount, NodeIndex, Recipient};
 use std::{
     cell::RefCell,
     collections::HashMap,

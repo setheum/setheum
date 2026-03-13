@@ -90,11 +90,11 @@ impl EnsureOriginWithArg<RuntimeOrigin, RuntimeParametersKey> for EnsureOriginIm
 			RuntimeParametersKey::Pallet1(_) => {
 				ensure_root(origin.clone()).map_err(|_| origin)?;
 				return Ok(());
-			}
+			},
 			RuntimeParametersKey::Pallet2(_) => {
 				ensure_signed(origin.clone()).map_err(|_| origin)?;
 				return Ok(());
-			}
+			},
 		}
 	}
 
@@ -123,9 +123,7 @@ pub struct ExtBuilder;
 
 impl ExtBuilder {
 	pub fn new() -> sp_io::TestExternalities {
-		let t = frame_system::GenesisConfig::<Runtime>::default()
-			.build_storage()
-			.unwrap();
+		let t = frame_system::GenesisConfig::<Runtime>::default().build_storage().unwrap();
 
 		let mut ext = sp_io::TestExternalities::new(t);
 		ext.execute_with(|| System::set_block_number(1));

@@ -35,9 +35,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use set_bft_types::{SpawnHandle, TaskHandle};
 use codec::{Decode, Encode};
 use futures::{channel::oneshot, Future};
+use set_bft_types::{SpawnHandle, TaskHandle};
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug, Default, Decode, Encode)]
 pub struct Spawner;

@@ -44,12 +44,12 @@ use subxt::{
 };
 
 use crate::{
-    setheum_runtime::RuntimeCall::CommitteeManagement,
     api,
     module_committee_management::pallet::Call::{
         ban_from_committee, set_ban_config, set_lenient_threshold,
     },
     primitives::{BanConfig, BanInfo, BanReason},
+    setheum_runtime::RuntimeCall::CommitteeManagement,
     AccountId, AsConnection, BlockHash, ConnectionApi, EraIndex, RootConnection, SessionCount,
     SessionIndex, SudoCall, TxInfo, TxStatus,
 };
@@ -57,71 +57,71 @@ use crate::{
 /// Pallet CommitteeManagement read-only api.
 #[async_trait::async_trait]
 pub trait CommitteeManagementApi {
-/// Returns `committee-management.ban_config` storage of the committee-management pallet.
-/// * `at` - optional hash of a block to query state from
+    /// Returns `committee-management.ban_config` storage of the committee-management pallet.
+    /// * `at` - optional hash of a block to query state from
     async fn get_ban_config(&self, at: Option<BlockHash>) -> BanConfig;
 
-/// Returns `committee-management.session_validator_block_count` of a given validator.
-/// * `validator` - a validator stash account id
-/// * `at` - optional hash of a block to query state from
+    /// Returns `committee-management.session_validator_block_count` of a given validator.
+    /// * `validator` - a validator stash account id
+    /// * `at` - optional hash of a block to query state from
     async fn get_validator_block_count(
         &self,
         validator: AccountId,
         at: Option<BlockHash>,
     ) -> Option<u32>;
 
-/// Returns `committee-management.underperformed_validator_session_count` storage of a given validator.
-/// * `validator` - a validator stash account id
-/// * `at` - optional hash of a block to query state from
+    /// Returns `committee-management.underperformed_validator_session_count` storage of a given validator.
+    /// * `validator` - a validator stash account id
+    /// * `at` - optional hash of a block to query state from
     async fn get_underperformed_validator_session_count(
         &self,
         validator: AccountId,
         at: Option<BlockHash>,
     ) -> Option<SessionCount>;
 
-/// Returns `committee-management.banned.reason` storage of a given validator.
-/// * `validator` - a validator stash account id
-/// * `at` - optional hash of a block to query state from
+    /// Returns `committee-management.banned.reason` storage of a given validator.
+    /// * `validator` - a validator stash account id
+    /// * `at` - optional hash of a block to query state from
     async fn get_ban_reason_for_validator(
         &self,
         validator: AccountId,
         at: Option<BlockHash>,
     ) -> Option<BanReason>;
 
-/// Returns `committee-management.banned` storage of a given validator.
-/// * `validator` - a validator stash account id
-/// * `at` - optional hash of a block to query state from
+    /// Returns `committee-management.banned` storage of a given validator.
+    /// * `validator` - a validator stash account id
+    /// * `at` - optional hash of a block to query state from
     async fn get_ban_info_for_validator(
         &self,
         validator: AccountId,
         at: Option<BlockHash>,
     ) -> Option<BanInfo>;
 
-/// Returns `committee-management.session_period` const of the committee-management pallet.
+    /// Returns `committee-management.session_period` const of the committee-management pallet.
     async fn get_session_period(&self) -> anyhow::Result<u32>;
 
-/// Returns committee for a given session. If session belongs to era `E` which spawns across sessions
-/// n...m then block `at` should be in one of the session from `n-1...m-1` otherwise it will return an error.
-/// This can compute committee for future sessions in the current era.
+    /// Returns committee for a given session. If session belongs to era `E` which spawns across sessions
+    /// n...m then block `at` should be in one of the session from `n-1...m-1` otherwise it will return an error.
+    /// This can compute committee for future sessions in the current era.
     async fn get_session_committee(
         &self,
         session: SessionIndex,
         at: Option<BlockHash>,
     ) -> anyhow::Result<Result<SessionCommittee<AccountId>, SessionValidatorError>>;
 
-/// Returns `committee-management.lenient_threshold` for the current era.
+    /// Returns `committee-management.lenient_threshold` for the current era.
     async fn get_lenient_threshold_percentage(&self, at: Option<BlockHash>) -> Option<Perquintill>;
 }
 
 /// any object that implements pallet committee-management api that requires sudo
 #[async_trait::async_trait]
 pub trait CommitteeManagementSudoApi {
-/// Issues `committee-management.set_ban_config`. It has an immediate effect.
-/// * `minimal_expected_performance` - performance ratio threshold in a session
-/// * `underperformed_session_count_threshold` - how many bad uptime sessions force validator to be removed from the committee
-/// * `clean_session_counter_delay` - underperformed session counter is cleared every subsequent `clean_session_counter_delay` sessions
-/// * `ban_period` - how many eras a validator is banned for
-/// * `status` - a [`TxStatus`] for a tx to wait for
+    /// Issues `committee-management.set_ban_config`. It has an immediate effect.
+    /// * `minimal_expected_performance` - performance ratio threshold in a session
+    /// * `underperformed_session_count_threshold` - how many bad uptime sessions force validator to be removed from the committee
+    /// * `clean_session_counter_delay` - underperformed session counter is cleared every subsequent `clean_session_counter_delay` sessions
+    /// * `ban_period` - how many eras a validator is banned for
+    /// * `status` - a [`TxStatus`] for a tx to wait for
     async fn set_ban_config(
         &self,
         minimal_expected_performance: Option<u8>,
@@ -131,10 +131,10 @@ pub trait CommitteeManagementSudoApi {
         status: TxStatus,
     ) -> anyhow::Result<TxInfo>;
 
-/// Schedule a non-reserved node to be banned out from the committee at the end of the era.
-/// * `account` - account to be banned,
-/// * `ben_reason` - reaons for ban, expressed as raw bytes
-/// * `status` - a [`TxStatus`] for a tx to wait for
+    /// Schedule a non-reserved node to be banned out from the committee at the end of the era.
+    /// * `account` - account to be banned,
+    /// * `ben_reason` - reaons for ban, expressed as raw bytes
+    /// * `status` - a [`TxStatus`] for a tx to wait for
     async fn ban_from_committee(
         &self,
         account: AccountId,
@@ -142,7 +142,7 @@ pub trait CommitteeManagementSudoApi {
         status: TxStatus,
     ) -> anyhow::Result<TxInfo>;
 
-/// Set lenient threshold. Effective from the next era.
+    /// Set lenient threshold. Effective from the next era.
     async fn set_lenient_threshold(
         &self,
         threshold_percent: u8,

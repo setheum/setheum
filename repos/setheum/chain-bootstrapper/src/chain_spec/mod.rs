@@ -40,15 +40,15 @@ use sc_cli::Error;
 use sp_application_crypto::Ss58Codec;
 
 fn parse_chaintype(s: &str) -> Result<ChainType, Error> {
-    Ok(match s {
-        CHAINTYPE_DEV => ChainType::Development,
-        CHAINTYPE_LOCAL => ChainType::Local,
-        CHAINTYPE_LIVE => ChainType::Live,
-        s => panic!("Wrong chain type {s} Possible values: dev local live"),
-    })
+	Ok(match s {
+		CHAINTYPE_DEV => ChainType::Development,
+		CHAINTYPE_LOCAL => ChainType::Local,
+		CHAINTYPE_LIVE => ChainType::Live,
+		s => panic!("Wrong chain type {s} Possible values: dev local live"),
+	})
 }
 
 /// Generate AccountId based on string command line argument.
 fn parse_account_id(s: &str) -> Result<AccountId, Error> {
-    Ok(AccountId::from_string(s).expect("Passed string is not a hex encoding of a public key"))
+	Ok(AccountId::from_string(s).expect("Passed string is not a hex encoding of a public key"))
 }

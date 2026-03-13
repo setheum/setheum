@@ -35,7 +35,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-pub mod setbft;
 /// Pallet author API
 pub mod author;
 /// Pallet balances API
@@ -58,6 +57,7 @@ pub mod proxy;
 
 /// Pallet session API
 pub mod session;
+pub mod setbft;
 /// Pallet staking API
 pub mod staking;
 /// Pallet system API

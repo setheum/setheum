@@ -45,7 +45,7 @@ use frame_support::{
 	traits::{Currency, EnsureOrigin},
 };
 use frame_system::pallet_prelude::*;
-use module_support::{AssetIdMapping, BuyWeightRate, EVMBridge, Erc20InfoMapping, InvokeContext, Ratio};
+use module_support::{AssetIdMapping, BuyWeightRate, EVMBridge, CurrencyIdMapping, InvokeContext, Ratio};
 use module_traits::asset_registry::AssetProcessor;
 use primitives::{
 	currency::{
@@ -539,9 +539,9 @@ where
 	}
 }
 
-pub struct EvmErc20InfoMapping<T>(sp_std::marker::PhantomData<T>);
+pub struct EvmCurrencyIdMapping<T>(sp_std::marker::PhantomData<T>);
 
-impl<T: Config> EvmErc20InfoMapping<T> {
+impl<T: Config> EvmCurrencyIdMapping<T> {
 	fn name_for_dex_share(symbol: DexShare) -> Option<Vec<u8>> {
 		match symbol {
 			DexShare::Token(symbol) => CurrencyId::Token(symbol).name().map(|v| v.as_bytes().to_vec()),
@@ -592,7 +592,7 @@ impl<T: Config> EvmErc20InfoMapping<T> {
 	}
 }
 
-impl<T: Config> Erc20InfoMapping for EvmErc20InfoMapping<T> {
+impl<T: Config> CurrencyIdMapping for EvmCurrencyIdMapping<T> {
 // Returns the name associated with a given CurrencyId.
 // If CurrencyId is CurrencyId::DexShare and contain DexShare::Erc20,
 // the EvmAddress must have been mapped.
@@ -600,8 +600,8 @@ impl<T: Config> Erc20InfoMapping for EvmErc20InfoMapping<T> {
 		let name = match currency_id {
 			CurrencyId::Token(_) => AssetMetadatas::<T>::get(AssetIds::NativeAssetId(currency_id)).map(|v| v.name),
 			CurrencyId::DexShare(symbol_0, symbol_1) => {
-				let name_0 = EvmErc20InfoMapping::<T>::name_for_dex_share(symbol_0)?;
-				let name_1 = EvmErc20InfoMapping::<T>::name_for_dex_share(symbol_1)?;
+				let name_0 = EvmCurrencyIdMapping::<T>::name_for_dex_share(symbol_0)?;
+				let name_1 = EvmCurrencyIdMapping::<T>::name_for_dex_share(symbol_1)?;
 
 				let mut vec = Vec::new();
 				vec.extend_from_slice(&b"LP "[..]);
@@ -631,8 +631,8 @@ impl<T: Config> Erc20InfoMapping for EvmErc20InfoMapping<T> {
 		let symbol = match currency_id {
 			CurrencyId::Token(_) => AssetMetadatas::<T>::get(AssetIds::NativeAssetId(currency_id)).map(|v| v.symbol),
 			CurrencyId::DexShare(symbol_0, symbol_1) => {
-				let token_symbol_0 = EvmErc20InfoMapping::<T>::symbol_for_dex_share(symbol_0)?;
-				let token_symbol_1 = EvmErc20InfoMapping::<T>::symbol_for_dex_share(symbol_1)?;
+				let token_symbol_0 = EvmCurrencyIdMapping::<T>::symbol_for_dex_share(symbol_0)?;
+				let token_symbol_1 = EvmCurrencyIdMapping::<T>::symbol_for_dex_share(symbol_1)?;
 
 				let mut vec = Vec::new();
 				vec.extend_from_slice(&b"LP_"[..]);
@@ -664,7 +664,7 @@ impl<T: Config> Erc20InfoMapping for EvmErc20InfoMapping<T> {
 			CurrencyId::DexShare(symbol_0, _) => {
 // initial dex share amount is calculated based on currency_id_0,
 // use the decimals of currency_id_0 as the decimals of lp token.
-				EvmErc20InfoMapping::<T>::decimal_for_dex_share(symbol_0)
+				EvmCurrencyIdMapping::<T>::decimal_for_dex_share(symbol_0)
 			}
 			CurrencyId::Erc20(address) => AssetMetadatas::<T>::get(AssetIds::Erc20(address)).map(|v| v.decimals),
 			CurrencyId::ForeignAsset(foreign_asset_id) => {
@@ -716,8 +716,8 @@ impl<T: Config> Erc20InfoMapping for EvmErc20InfoMapping<T> {
 		let currency_id = match CurrencyIdType::try_from(address[H160_POSITION_CURRENCY_ID_TYPE]).ok()? {
 			CurrencyIdType::Token => address[H160_POSITION_TOKEN].try_into().map(CurrencyId::Token).ok(),
 			CurrencyIdType::DexShare => {
-				let left = EvmErc20InfoMapping::<T>::decode_evm_address_for_dex_share(address, true)?;
-				let right = EvmErc20InfoMapping::<T>::decode_evm_address_for_dex_share(address, false)?;
+				let left = EvmCurrencyIdMapping::<T>::decode_evm_address_for_dex_share(address, true)?;
+				let right = EvmCurrencyIdMapping::<T>::decode_evm_address_for_dex_share(address, false)?;
 				Some(CurrencyId::DexShare(left, right))
 			}
 			CurrencyIdType::ForeignAsset => {

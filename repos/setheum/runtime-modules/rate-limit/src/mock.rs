@@ -60,9 +60,8 @@ pub const ALICE: AccountId = AccountId32::new([0u8; 32]);
 pub const BOB: AccountId = AccountId32::new([1u8; 32]);
 pub const CHARLIE: AccountId = AccountId32::new([2u8; 32]);
 pub const DAVE: AccountId = AccountId32::new([3u8; 32]);
-pub const TREASURY_ACCOUNT: AccountId = AccountId32::new([
-	1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2,
-]);
+pub const TREASURY_ACCOUNT: AccountId =
+	AccountId32::new([1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2]);
 
 use crate as rate_limit;
 
@@ -107,9 +106,7 @@ impl Default for ExtBuilder {
 
 impl ExtBuilder {
 	pub fn build(self) -> sp_io::TestExternalities {
-		let t = frame_system::GenesisConfig::<Runtime>::default()
-			.build_storage()
-			.unwrap();
+		let t = frame_system::GenesisConfig::<Runtime>::default().build_storage().unwrap();
 
 		let mut ext = sp_io::TestExternalities::new(t);
 		ext.execute_with(|| System::set_block_number(1));

@@ -60,10 +60,7 @@ mod benchmarks {
 
 		let sub_call = frame_system::Call::remark { remark: vec![] }.into();
 
-		let call: Call<T> = Call::dispatch_as {
-			as_origin: as_origin,
-			call: Box::new(sub_call),
-		};
+		let call: Call<T> = Call::dispatch_as { as_origin, call: Box::new(sub_call) };
 
 		let encoded_call = call.encode();
 		let bounded_call = Box::new(Bounded::Inline(encoded_call.try_into().unwrap()));
@@ -80,10 +77,7 @@ mod benchmarks {
 
 		let sub_call = frame_system::Call::remark { remark: vec![] }.into();
 
-		let call: Call<T> = Call::dispatch_as {
-			as_origin: as_origin,
-			call: Box::new(sub_call),
-		};
+		let call: Call<T> = Call::dispatch_as { as_origin, call: Box::new(sub_call) };
 
 		let encoded_call = call.encode();
 		let bounded_call = Box::new(Bounded::Inline(encoded_call.try_into().unwrap()));
@@ -99,10 +93,7 @@ mod benchmarks {
 
 		let sub_call = frame_system::Call::remark { remark: vec![] }.into();
 
-		let call: Call<T> = Call::dispatch_as {
-			as_origin: as_origin,
-			call: Box::new(sub_call),
-		};
+		let call: Call<T> = Call::dispatch_as { as_origin, call: Box::new(sub_call) };
 
 		let encoded_call = call.encode();
 		let bounded_call = Box::new(Bounded::Inline(encoded_call.try_into().unwrap()));
@@ -129,12 +120,7 @@ mod benchmarks {
 		let pallets_origin = schedule_origin.caller().clone();
 
 		#[extrinsic_call]
-		fast_track_scheduled_dispatch(
-			RawOrigin::Root,
-			Box::new(pallets_origin),
-			0,
-			DispatchTime::At(4u32.into()),
-		);
+		fast_track_scheduled_dispatch(RawOrigin::Root, Box::new(pallets_origin), 0, DispatchTime::At(4u32.into()));
 	}
 
 	// delay a scheduled dispatchable.
@@ -144,10 +130,7 @@ mod benchmarks {
 
 		let sub_call = frame_system::Call::remark { remark: vec![] }.into();
 
-		let call: Call<T> = Call::dispatch_as {
-			as_origin: as_origin,
-			call: Box::new(sub_call),
-		};
+		let call: Call<T> = Call::dispatch_as { as_origin, call: Box::new(sub_call) };
 
 		let encoded_call = call.encode();
 		let bounded_call = Box::new(Bounded::Inline(encoded_call.try_into().unwrap()));
@@ -184,10 +167,7 @@ mod benchmarks {
 
 		let sub_call = frame_system::Call::remark { remark: vec![] }.into();
 
-		let call: Call<T> = Call::dispatch_as {
-			as_origin: as_origin,
-			call: Box::new(sub_call),
-		};
+		let call: Call<T> = Call::dispatch_as { as_origin, call: Box::new(sub_call) };
 
 		let encoded_call = call.encode();
 		let bounded_call = Box::new(Bounded::Inline(encoded_call.try_into().unwrap()));
@@ -241,11 +221,7 @@ mod benchmarks {
 		let hash = <T as frame_system::Config>::Hashing::hash_of(&call);
 
 		frame_system::Pallet::<T>::set_block_number(1u32.into());
-		assert_ok!(Pallet::<T>::authorize_call(
-			RawOrigin::Root.into(),
-			Box::new(call.clone()),
-			Some(caller.clone())
-		));
+		assert_ok!(Pallet::<T>::authorize_call(RawOrigin::Root.into(), Box::new(call.clone()), Some(caller.clone())));
 
 		#[extrinsic_call]
 		_(RawOrigin::Signed(caller), hash);
@@ -263,11 +239,7 @@ mod benchmarks {
 		let call_weight_bound = call.get_dispatch_info().call_weight;
 
 		frame_system::Pallet::<T>::set_block_number(1u32.into());
-		assert_ok!(Pallet::<T>::authorize_call(
-			RawOrigin::Root.into(),
-			Box::new(call.clone()),
-			Some(caller.clone())
-		));
+		assert_ok!(Pallet::<T>::authorize_call(RawOrigin::Root.into(), Box::new(call.clone()), Some(caller.clone())));
 
 		#[extrinsic_call]
 		_(RawOrigin::Signed(caller), hash, call_weight_bound);

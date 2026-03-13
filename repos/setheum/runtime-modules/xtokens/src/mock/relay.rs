@@ -83,10 +83,8 @@ parameter_types! {
 	pub UniversalLocation: InteriorLocation = [GlobalConsensus(KusamaNetwork::get())].into();
 }
 
-pub type SovereignAccountOf = (
-	ChildParachainConvertsVia<ParaId, AccountId>,
-	AccountId32Aliases<KusamaNetwork, AccountId>,
-);
+pub type SovereignAccountOf =
+	(ChildParachainConvertsVia<ParaId, AccountId>, AccountId32Aliases<KusamaNetwork, AccountId>);
 
 pub type LocalAssetTransactor = FungibleAdapter<Balances, IsConcrete<KsmLocation>, SovereignAccountOf, AccountId, ()>;
 

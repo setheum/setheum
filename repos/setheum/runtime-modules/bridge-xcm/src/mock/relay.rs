@@ -18,10 +18,9 @@ use sp_core::H256;
 use sp_runtime::{traits::IdentityLookup, AccountId32};
 use xcm::latest::prelude::*;
 use xcm_builder::{
-	AccountId32Aliases, AllowTopLevelPaidExecutionFrom, ChildParachainAsNative,
-	ChildParachainConvertsVia, CurrencyAdapter as XcmCurrencyAdapter, FixedWeightBounds,
-	IsConcrete, SignedAccountId32AsNative, SignedToAccountId32, SovereignSignedViaLocation,
-	TakeWeightCredit, UsingComponents,
+	AccountId32Aliases, AllowTopLevelPaidExecutionFrom, ChildParachainAsNative, ChildParachainConvertsVia,
+	CurrencyAdapter as XcmCurrencyAdapter, FixedWeightBounds, IsConcrete, SignedAccountId32AsNative,
+	SignedToAccountId32, SovereignSignedViaLocation, TakeWeightCredit, UsingComponents,
 };
 use xcm_executor::{traits::WithOriginFilter, Config, XcmExecutor};
 
@@ -219,11 +218,11 @@ impl ProcessMessage for MessageProcessor {
 			AggregateMessageOrigin::Ump(UmpQueueId::Para(para)) => para,
 		};
 		xcm_builder::ProcessXcmMessage::<Junction, xcm_executor::XcmExecutor<XcmConfig>, RuntimeCall>::process_message(
-            message,
-            Junction::Parachain(para.into()),
-            meter,
-            id,
-        )
+			message,
+			Junction::Parachain(para.into()),
+			meter,
+			id,
+		)
 	}
 }
 

@@ -45,14 +45,14 @@ use crate::{
 /// Read only pallet vk storage API.
 #[async_trait::async_trait]
 pub trait VkStorageApi {
-/// Get verification key from pallet's storage.
+    /// Get verification key from pallet's storage.
     async fn get_verification_key(&self, key_hash: H256, at: Option<BlockHash>) -> Vec<u8>;
 }
 
 /// Pallet vk storage API.
 #[async_trait::async_trait]
 pub trait VkStorageUserApi {
-/// Store a verifying key in pallet's storage.
+    /// Store a verifying key in pallet's storage.
     async fn store_key(&self, key: Vec<u8>, status: TxStatus) -> Result<TxInfo>;
 }
 

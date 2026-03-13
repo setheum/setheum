@@ -546,20 +546,14 @@ mod tests {
 		let parameter_key: pallet1::ParametersKey = key1.clone().into();
 		let runtime_key: RuntimeParametersKey = parameter_key.clone().into2();
 
-		assert_eq!(
-			runtime_key,
-			RuntimeParametersKey::Pallet1(pallet1::ParametersKey::Key1(key1))
-		);
+		assert_eq!(runtime_key, RuntimeParametersKey::Pallet1(pallet1::ParametersKey::Key1(key1)));
 		assert_eq!(runtime_key.encode(), vec![0, 0]);
 
 		let key2 = pallet2::Key2(1);
 		let parameter_key: pallet2::ParametersKey = key2.clone().into();
 		let runtime_key: RuntimeParametersKey = parameter_key.clone().into2();
 
-		assert_eq!(
-			runtime_key,
-			RuntimeParametersKey::Pallet2(pallet2::ParametersKey::Key2(key2))
-		);
+		assert_eq!(runtime_key, RuntimeParametersKey::Pallet2(pallet2::ParametersKey::Key2(key2)));
 		assert_eq!(runtime_key.encode(), vec![3, 2, 1, 0, 0, 0]);
 	}
 
@@ -570,22 +564,13 @@ mod tests {
 		let kv1 = RuntimeParameters::Pallet1(pallet1::Parameters::Key1(pallet1::Key1, None));
 		let (key1, value1) = kv1.clone().into_parts();
 
-		assert_eq!(
-			key1,
-			RuntimeParametersKey::Pallet1(pallet1::ParametersKey::Key1(pallet1::Key1))
-		);
+		assert_eq!(key1, RuntimeParametersKey::Pallet1(pallet1::ParametersKey::Key1(pallet1::Key1)));
 		assert_eq!(value1, None);
 
 		let kv2 = RuntimeParameters::Pallet2(pallet2::Parameters::Key2(pallet2::Key2(1), Some(2)));
 		let (key2, value2) = kv2.clone().into_parts();
 
-		assert_eq!(
-			key2,
-			RuntimeParametersKey::Pallet2(pallet2::ParametersKey::Key2(pallet2::Key2(1)))
-		);
-		assert_eq!(
-			value2,
-			Some(RuntimeParametersValue::Pallet2(pallet2::ParametersValue::Key2(2)))
-		);
+		assert_eq!(key2, RuntimeParametersKey::Pallet2(pallet2::ParametersKey::Key2(pallet2::Key2(1))));
+		assert_eq!(value2, Some(RuntimeParametersValue::Pallet2(pallet2::ParametersValue::Key2(2))));
 	}
 }

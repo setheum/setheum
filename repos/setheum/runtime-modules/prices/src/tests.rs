@@ -61,53 +61,23 @@ fn lp_token_fair_price_works() {
 	);
 
 	assert_eq!(
-		lp_token_fair_price(
-			0,
-			20000,
-			10000,
-			Price::saturating_from_integer(100),
-			Price::saturating_from_integer(200)
-		),
+		lp_token_fair_price(0, 20000, 10000, Price::saturating_from_integer(100), Price::saturating_from_integer(200)),
 		None
 	);
 	assert_eq!(
-		lp_token_fair_price(
-			10000,
-			0,
-			10000,
-			Price::saturating_from_integer(100),
-			Price::saturating_from_integer(200)
-		),
+		lp_token_fair_price(10000, 0, 10000, Price::saturating_from_integer(100), Price::saturating_from_integer(200)),
 		Some(Price::from_inner(0))
 	);
 	assert_eq!(
-		lp_token_fair_price(
-			10000,
-			20000,
-			0,
-			Price::saturating_from_integer(100),
-			Price::saturating_from_integer(200)
-		),
+		lp_token_fair_price(10000, 20000, 0, Price::saturating_from_integer(100), Price::saturating_from_integer(200)),
 		Some(Price::from_inner(0))
 	);
 	assert_eq!(
-		lp_token_fair_price(
-			10000,
-			20000,
-			10000,
-			Price::saturating_from_integer(100),
-			Price::from_inner(0)
-		),
+		lp_token_fair_price(10000, 20000, 10000, Price::saturating_from_integer(100), Price::from_inner(0)),
 		Some(Price::from_inner(0))
 	);
 	assert_eq!(
-		lp_token_fair_price(
-			10000,
-			20000,
-			10000,
-			Price::from_inner(0),
-			Price::saturating_from_integer(200)
-		),
+		lp_token_fair_price(10000, 20000, 10000, Price::from_inner(0), Price::saturating_from_integer(200)),
 		Some(Price::from_inner(0))
 	);
 
@@ -136,37 +106,25 @@ fn lp_token_fair_price_works() {
 #[test]
 fn access_price_of_seusd() {
 	ExtBuilder::default().build().execute_with(|| {
-		assert_eq!(
-			PricesModule::access_price(SEUSD),
-			Some(Price::saturating_from_integer(1000000u128))
-		); // 1 USD, right shift the decimal point (18-12) places
+		assert_eq!(PricesModule::access_price(SEUSD), Some(Price::saturating_from_integer(1000000u128))); // 1 USD, right shift the decimal point (18-12) places
 
 		mock_oracle_update();
-		assert_eq!(
-			PricesModule::access_price(SEUSD),
-			Some(Price::saturating_from_integer(1000000u128))
-		);
+		assert_eq!(PricesModule::access_price(SEUSD), Some(Price::saturating_from_integer(1000000u128)));
 	});
 }
 
 #[test]
 fn access_price_of_dex_share_currency() {
 	ExtBuilder::default().build().execute_with(|| {
-		assert_eq!(
-			PricesModule::access_price(SEU),
-			Some(Price::saturating_from_integer(10000000000u128))
-		); // 100 USD, right shift the decimal point (18-12) places
-		assert_eq!(
-			PricesModule::access_price(SEUSD),
-			Some(Price::saturating_from_integer(1000000u128))
-		);
+		assert_eq!(PricesModule::access_price(SEU), Some(Price::saturating_from_integer(10000000000u128))); // 100 USD, right shift the decimal point (18-12) places
+		assert_eq!(PricesModule::access_price(SEUSD), Some(Price::saturating_from_integer(1000000u128)));
 		assert_eq!(Tokens::total_issuance(LP_SEUSD_SEE), 0);
 		assert_eq!(MockDEX::get_liquidity_pool(SEUSD, SEU), (10000, 200));
 
-// when the total issuance of dex share currency is zero
+		// when the total issuance of dex share currency is zero
 		assert_eq!(PricesModule::access_price(LP_SEUSD_SEE), None);
 
-// issue LP
+		// issue LP
 		assert_ok!(Tokens::deposit(LP_SEUSD_SEE, &1, 100));
 		assert_eq!(Tokens::total_issuance(LP_SEUSD_SEE), 100);
 
@@ -179,7 +137,7 @@ fn access_price_of_dex_share_currency() {
 		);
 		assert_eq!(PricesModule::access_price(LP_SEUSD_SEE), lp_price_1);
 
-// issue more LP
+		// issue more LP
 		assert_ok!(Tokens::deposit(LP_SEUSD_SEE, &1, 100));
 		assert_eq!(Tokens::total_issuance(LP_SEUSD_SEE), 200);
 
@@ -212,13 +170,8 @@ fn access_price_of_other_currency() {
 
 		mock_oracle_update();
 
-		assert_eq!(
-			PricesModule::access_price(SEU),
-			Some(Price::saturating_from_integer(30000000u128))
-		); // 30 USD, right shift the decimal point (18-12) places
-		assert_eq!(
-			Some(Price::saturating_from_integer(200000000u128))
-		); // 200 USD, right shift the decimal point (18-12) places
+		assert_eq!(PricesModule::access_price(SEU), Some(Price::saturating_from_integer(30000000u128))); // 30 USD, right shift the decimal point (18-12) places
+		assert_eq!(Some(Price::saturating_from_integer(200000000u128))); // 200 USD, right shift the decimal point (18-12) places
 	});
 }
 
@@ -227,21 +180,15 @@ fn lock_price_work() {
 	ExtBuilder::default().build().execute_with(|| {
 		System::set_block_number(1);
 
-		assert_noop!(
-			Error::<Runtime>::AccessPriceFailed
-		);
+		assert_noop!(Error::<Runtime>::AccessPriceFailed);
 
 		mock_oracle_update();
 
-		assert_eq!(
-			Some(Price::saturating_from_integer(200000000u128))
-		);
+		assert_eq!(Some(Price::saturating_from_integer(200000000u128)));
 		System::assert_last_event(RuntimeEvent::PricesModule(crate::Event::LockPrice {
 			locked_price: Price::saturating_from_integer(200000000u128),
 		}));
-		assert_eq!(
-			Some(Price::saturating_from_integer(200000000u128))
-		);
+		assert_eq!(Some(Price::saturating_from_integer(200000000u128)));
 	});
 }
 
@@ -250,24 +197,18 @@ fn unlock_price_work() {
 	ExtBuilder::default().build().execute_with(|| {
 		System::set_block_number(1);
 
+		// unlock failed when there's no locked price
+		assert_noop!(Error::<Runtime>::NoLockedPrice);
 
-// unlock failed when there's no locked price
-		assert_noop!(
-			Error::<Runtime>::NoLockedPrice
-		);
-
-		assert_eq!(
-			Some(Price::saturating_from_integer(50000000000u128))
-		);
-		System::assert_last_event(RuntimeEvent::PricesModule(crate::Event::UnlockPrice {
-		}));
+		assert_eq!(Some(Price::saturating_from_integer(50000000000u128)));
+		System::assert_last_event(RuntimeEvent::PricesModule(crate::Event::UnlockPrice {}));
 	});
 }
 
 #[test]
 fn price_providers_work() {
 	ExtBuilder::default().build().execute_with(|| {
-// issue LP
+		// issue LP
 		assert_ok!(Tokens::deposit(LP_SEUSD_SEE, &1, 100));
 		assert_eq!(Tokens::total_issuance(LP_SEUSD_SEE), 100);
 		let lp_price_1 = lp_token_fair_price(
@@ -288,28 +229,20 @@ fn price_providers_work() {
 			PriorityLockedPriceProvider::<Runtime>::get_price(SEUSD),
 			Some(Price::saturating_from_integer(1000000u128))
 		);
-		assert_eq!(
-			PriorityLockedPriceProvider::<Runtime>::get_price(LP_SEUSD_SEE),
-			lp_price_1
-		);
+		assert_eq!(PriorityLockedPriceProvider::<Runtime>::get_price(LP_SEUSD_SEE), lp_price_1);
 
 		assert_eq!(LockedPriceProvider::<Runtime>::get_price(SEUSD), None);
 		assert_eq!(LockedPriceProvider::<Runtime>::get_price(LP_SEUSD_SEE), None);
 
-// lock price
+		// lock price
 		assert_ok!(PricesModule::lock_price(RuntimeOrigin::signed(1), SEUSD));
-		assert_noop!(
-			Error::<Runtime>::AccessPriceFailed
-		);
+		assert_noop!(Error::<Runtime>::AccessPriceFailed);
 		assert_ok!(PricesModule::lock_price(RuntimeOrigin::signed(1), LP_SEUSD_SEE));
 
-		assert_eq!(
-			LockedPriceProvider::<Runtime>::get_price(SEUSD),
-			Some(Price::saturating_from_integer(1000000u128))
-		);
+		assert_eq!(LockedPriceProvider::<Runtime>::get_price(SEUSD), Some(Price::saturating_from_integer(1000000u128)));
 		assert_eq!(LockedPriceProvider::<Runtime>::get_price(LP_SEUSD_SEE), lp_price_1);
 
-// mock oracle update
+		// mock oracle update
 		mock_oracle_update();
 		let lp_price_2 = lp_token_fair_price(
 			Tokens::total_issuance(LP_SEUSD_SEE),
@@ -323,47 +256,30 @@ fn price_providers_work() {
 			RealTimePriceProvider::<Runtime>::get_price(SEUSD),
 			Some(Price::saturating_from_integer(1000000u128))
 		);
-		assert_eq!(
-			Some(Price::saturating_from_integer(200000000u128))
-		);
+		assert_eq!(Some(Price::saturating_from_integer(200000000u128)));
 		assert_eq!(RealTimePriceProvider::<Runtime>::get_price(LP_SEUSD_SEE), lp_price_2);
 
 		assert_eq!(
 			PriorityLockedPriceProvider::<Runtime>::get_price(SEUSD),
 			Some(Price::saturating_from_integer(1000000u128))
 		);
-		assert_eq!(
-			Some(Price::saturating_from_integer(200000000u128))
-		);
-		assert_eq!(
-			PriorityLockedPriceProvider::<Runtime>::get_price(LP_SEUSD_SEE),
-			lp_price_1
-		);
+		assert_eq!(Some(Price::saturating_from_integer(200000000u128)));
+		assert_eq!(PriorityLockedPriceProvider::<Runtime>::get_price(LP_SEUSD_SEE), lp_price_1);
 
-		assert_eq!(
-			LockedPriceProvider::<Runtime>::get_price(SEUSD),
-			Some(Price::saturating_from_integer(1000000u128))
-		);
+		assert_eq!(LockedPriceProvider::<Runtime>::get_price(SEUSD), Some(Price::saturating_from_integer(1000000u128)));
 		assert_eq!(LockedPriceProvider::<Runtime>::get_price(LP_SEUSD_SEE), lp_price_1);
 
-// unlock price
+		// unlock price
 		assert_ok!(PricesModule::unlock_price(RuntimeOrigin::signed(1), SEUSD));
-		assert_noop!(
-			Error::<Runtime>::NoLockedPrice
-		);
+		assert_noop!(Error::<Runtime>::NoLockedPrice);
 		assert_ok!(PricesModule::unlock_price(RuntimeOrigin::signed(1), LP_SEUSD_SEE));
 
 		assert_eq!(
 			PriorityLockedPriceProvider::<Runtime>::get_price(SEUSD),
 			Some(Price::saturating_from_integer(1000000u128))
 		);
-		assert_eq!(
-			Some(Price::saturating_from_integer(200000000u128))
-		);
-		assert_eq!(
-			PriorityLockedPriceProvider::<Runtime>::get_price(LP_SEUSD_SEE),
-			lp_price_2
-		);
+		assert_eq!(Some(Price::saturating_from_integer(200000000u128)));
+		assert_eq!(PriorityLockedPriceProvider::<Runtime>::get_price(LP_SEUSD_SEE), lp_price_2);
 
 		assert_eq!(LockedPriceProvider::<Runtime>::get_price(SEUSD), None);
 		assert_eq!(LockedPriceProvider::<Runtime>::get_price(LP_SEUSD_SEE), None);

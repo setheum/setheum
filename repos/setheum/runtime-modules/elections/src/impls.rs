@@ -27,67 +27,64 @@ use sp_std::{collections::btree_set::BTreeSet, vec::Vec};
 use primitives::ValidatorProvider;
 
 use crate::{
-    CommitteeSize, Config, CurrentEraValidators, NextEraCommitteeSize,
-    NextEraNonReservedValidators, NextEraReservedValidators, Pallet,
+	CommitteeSize, Config, CurrentEraValidators, NextEraCommitteeSize, NextEraNonReservedValidators,
+	NextEraReservedValidators, Pallet,
 };
 
 impl<T> Pallet<T>
 where
-    T: Config,
+	T: Config,
 {
-    fn populate_next_era_validators_on_next_era_start(era: EraIndex) {
-        let parent_hash = frame_system::Pallet::<T>::parent_hash();
-        let mut bytes = [0u8; 8];
-        bytes.clone_from_slice(&parent_hash.as_ref()[..8]);
-        let seed = u64::from_le_bytes(bytes);
+	fn populate_next_era_validators_on_next_era_start(era: EraIndex) {
+		let parent_hash = frame_system::Pallet::<T>::parent_hash();
+		let mut bytes = [0u8; 8];
+		bytes.clone_from_slice(&parent_hash.as_ref()[..8]);
+		let seed = u64::from_le_bytes(bytes);
 
-        let mut rng = Pcg32::seed_from_u64(seed);
-        let elected_committee = BTreeSet::from_iter(T::ValidatorProvider::elected_validators(era));
+		let mut rng = Pcg32::seed_from_u64(seed);
+		let elected_committee = BTreeSet::from_iter(T::ValidatorProvider::elected_validators(era));
 
-        let mut retain_shuffle_elected = |vals: Vec<T::AccountId>| -> Vec<T::AccountId> {
-            let mut vals: Vec<_> = vals
-                .into_iter()
-                .filter(|v| elected_committee.contains(v))
-                .collect();
-            vals.shuffle(&mut rng);
+		let mut retain_shuffle_elected = |vals: Vec<T::AccountId>| -> Vec<T::AccountId> {
+			let mut vals: Vec<_> = vals.into_iter().filter(|v| elected_committee.contains(v)).collect();
+			vals.shuffle(&mut rng);
 
-            vals
-        };
+			vals
+		};
 
-        let reserved_validators = NextEraReservedValidators::<T>::get();
-        let non_reserved_validators = NextEraNonReservedValidators::<T>::get();
-        let committee_size = NextEraCommitteeSize::<T>::get();
+		let reserved_validators = NextEraReservedValidators::<T>::get();
+		let non_reserved_validators = NextEraNonReservedValidators::<T>::get();
+		let committee_size = NextEraCommitteeSize::<T>::get();
 
-        CurrentEraValidators::<T>::put(EraValidators {
-            reserved: retain_shuffle_elected(reserved_validators),
-            non_reserved: retain_shuffle_elected(non_reserved_validators),
-        });
-        CommitteeSize::<T>::put(committee_size);
-    }
+		CurrentEraValidators::<T>::put(EraValidators {
+			reserved: retain_shuffle_elected(reserved_validators),
+			non_reserved: retain_shuffle_elected(non_reserved_validators),
+		});
+		CommitteeSize::<T>::put(committee_size);
+	}
 }
 
 impl<T: Config> primitives::EraManager for Pallet<T> {
-    fn on_new_era(era: EraIndex) {
-        Self::populate_next_era_validators_on_next_era_start(era);
-    }
+	fn on_new_era(era: EraIndex) {
+		Self::populate_next_era_validators_on_next_era_start(era);
+	}
 }
 
 impl<T: Config> primitives::BanHandler for Pallet<T> {
-    type AccountId = T::AccountId;
-    fn can_ban(account_id: &Self::AccountId) -> bool {
-        !NextEraReservedValidators::<T>::get().contains(account_id)
-    }
+	type AccountId = T::AccountId;
+	fn can_ban(account_id: &Self::AccountId) -> bool {
+		!NextEraReservedValidators::<T>::get().contains(account_id)
+	}
 }
 
 impl<T: Config + pallet_staking::Config> primitives::ValidatorProvider for Pallet<T> {
-    type AccountId = T::AccountId;
-    fn current_era_validators() -> EraValidators<Self::AccountId> {
-        CurrentEraValidators::<T>::get()
-    }
-    fn current_era_committee_size() -> CommitteeSeats {
-        CommitteeSize::<T>::get()
-    }
-    fn elected_validators(era: sp_staking::EraIndex) -> Vec<Self::AccountId> {
-        pallet_staking::ErasStakersOverview::<T>::iter_key_prefix(era).collect()
-    }
+	type AccountId = T::AccountId;
+	fn current_era_validators() -> EraValidators<Self::AccountId> {
+		CurrentEraValidators::<T>::get()
+	}
+	fn current_era_committee_size() -> CommitteeSeats {
+		CommitteeSize::<T>::get()
+	}
+	fn elected_validators(era: sp_staking::EraIndex) -> Vec<Self::AccountId> {
+		pallet_staking::ErasStakersOverview::<T>::iter_key_prefix(era).collect()
+	}
 }

@@ -8,13 +8,11 @@ members = [
 	"runtime-modules/asset-registry",
 	"runtime-modules/committee-management",
 	"runtime-modules/currencies",
-	"runtime-modules/ecdp-loans",
-	"runtime-modules/ecdp-seusd-engine",
-	"runtime-modules/ecdp-seusd-treasury",
-	"runtime-modules/edfis-swap-legacy",
+	"runtime-modules/loans",
+	"runtime-modules/seusd-engine",
+	"runtime-modules/seusd-treasury",
+	"runtime-modules/swap-legacy",
 	"runtime-modules/elections",
-	"runtime-modules/evm",
-	"runtime-modules/evm-bridge",
 	"runtime-modules/bridge",
 	"runtime-modules/bridge-access-segregator",
 	"runtime-modules/bridge-basic-fee-handler",
@@ -24,8 +22,6 @@ members = [
 	"runtime-modules/bridge-percentage-fee-handler",
 	"runtime-modules/bridge-traits",
 	"runtime-modules/bridge-xcm",
-	"runtime-modules/evm-manager",
-	"runtime-modules/evm-utility",
 	"runtime-modules/idle-scheduler",
 	"runtime-modules/incentives",
 	"runtime-modules/operations",
@@ -47,7 +43,6 @@ members = [
 	"runtime-modules/oracle/runtime-api",
 	"runtime-modules/tokens/runtime-api",
 	"runtime-modules/setbft/runtime-api",
-	"runtime-modules/evm-utility/macro",
 	"primitives",
 	"clisee",
 	"chain-bootstrapper",
@@ -252,10 +247,9 @@ primitives = { package = "setheum-primitives", path = "primitives", default-feat
 runtime-common = { path = "runtime/common", default-features = false }
 setheum-runtime = { path = "runtime", default-features = false }
 
-module-evm-utility = { path = "runtime-modules/evm-utility", default-features = false }
-module-evm = { path = "runtime-modules/evm", default-features = false }
+# module-evm removed
 module-currencies = { path = "runtime-modules/currencies", default-features = false }
-module-evm-bridge = { path = "runtime-modules/evm-bridge", default-features = false }
+# module-evm-bridge removed
 module-bridge = { path = "runtime-modules/bridge", default-features = false }
 module-bridge-access-segregator = { path = "runtime-modules/bridge-access-segregator", default-features = false }
 module-bridge-basic-fee-handler = { path = "runtime-modules/bridge-basic-fee-handler", default-features = false }
@@ -268,13 +262,13 @@ module-bridge-xcm = { path = "runtime-modules/bridge-xcm", default-features = fa
 module-support = { path = "runtime-modules/support", default-features = false }
 module-transaction-payment = { path = "runtime-modules/transaction-payment", default-features = false }
 module-idle-scheduler = { path = "runtime-modules/idle-scheduler", default-features = false }
-module-edfis_swap_legacy = { package = "module-edfis-swap-legacy", path = "runtime-modules/edfis-swap-legacy", default-features = false }
-module-ecdp-loans = { path = "runtime-modules/ecdp-loans", default-features = false }
-module-ecdp-seusd-engine = { path = "runtime-modules/ecdp-seusd-engine", default-features = false }
-module-ecdp-seusd-treasury = { path = "runtime-modules/ecdp-seusd-treasury", default-features = false }
+module-swap_legacy = { package = "module-swap-legacy", path = "runtime-modules/swap-legacy", default-features = false }
+module-loans = { path = "runtime-modules/loans", default-features = false }
+module-seusd-engine = { path = "runtime-modules/seusd-engine", default-features = false }
+module-seusd-treasury = { path = "runtime-modules/seusd-treasury", default-features = false }
 module-evm-accounts = { package = "module-unified-accounts", path = "runtime-modules/unified-accounts", default-features = false }
-module-evm-manager = { path = "runtime-modules/evm-manager", default-features = false }
-module-edfis-legacy = { package = "module-edfis-swap-legacy", path = "runtime-modules/edfis-swap-legacy", default-features = false }
+# module-evm-manager removed
+module-legacy = { package = "module-swap-legacy", path = "runtime-modules/swap-legacy", default-features = false }
 module-unified-accounts = { path = "runtime-modules/unified-accounts", default-features = false }
 rate-limiter = { package = "finality-rate-limiter", path = "finality/rate-limiter", default-features = false }
 network-clique = { path = "clique" }
@@ -293,7 +287,7 @@ finality-setbft = { path = "finality/finality-setbft" }
 
 # Setheum & MODULE (client)
 setheum-node = { path = "node" }
-module-evm-utility-macro = { path = "runtime-modules/evm-utility/macro" }
+# module-evm-utility-macro removed
 
 # Substrate Pallets (WASM)
 frame-benchmarking = { git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2506", default-features = false }
@@ -433,3 +427,19 @@ parachains-common = { git = "https://github.com/paritytech/polkadot-sdk", branch
 cumulus-primitives-core = { git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2506", default-features = false }
 cumulus-pallet-xcm = { git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2506", default-features = false }
 pallet-message-queue = { git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2506", default-features = false }
+
+# Frontier dependencies
+pallet-evm = { git = "https://github.com/polkadot-evm/frontier", branch = "master", default-features = false }
+pallet-ethereum = { git = "https://github.com/polkadot-evm/frontier", branch = "master", default-features = false }
+fp-evm = { git = "https://github.com/polkadot-evm/frontier", branch = "master", default-features = false }
+fp-rpc = { git = "https://github.com/polkadot-evm/frontier", branch = "master", default-features = false }
+fp-self-contained = { git = "https://github.com/polkadot-evm/frontier", branch = "master", default-features = false }
+
+# Frontier Precompiles
+pallet-evm-precompile-simple = { git = "https://github.com/polkadot-evm/frontier", branch = "master", default-features = false }
+pallet-evm-precompile-sha2 = { git = "https://github.com/polkadot-evm/frontier", branch = "master", default-features = false }
+pallet-evm-precompile-ripemd160 = { git = "https://github.com/polkadot-evm/frontier", branch = "master", default-features = false }
+pallet-evm-precompile-identity = { git = "https://github.com/polkadot-evm/frontier", branch = "master", default-features = false }
+pallet-evm-precompile-bn128 = { git = "https://github.com/polkadot-evm/frontier", branch = "master", default-features = false }
+pallet-evm-precompile-modexp = { git = "https://github.com/polkadot-evm/frontier", branch = "master", default-features = false }
+pallet-evm-precompile-ecrecover = { git = "https://github.com/polkadot-evm/frontier", branch = "master", default-features = false }

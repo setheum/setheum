@@ -41,9 +41,9 @@ use crate::{
     scheduler::TaskScheduler,
     Message,
 };
-pub use set_bft_crypto::{MultiKeychain, Multisigned, Signable};
 use core::fmt::Debug;
 use log::{debug, warn};
+pub use set_bft_crypto::{MultiKeychain, Multisigned, Signable};
 use std::hash::Hash;
 
 const LOG_TARGET: &str = "SetBFT-rmc";
@@ -154,13 +154,13 @@ where
 #[cfg(test)]
 mod tests {
     use crate::{DoublingDelayScheduler, Handler, Message, Service};
-    use set_bft_crypto::{Multisigned, NodeCount, NodeIndex, Signed};
-    use set_bft_mock::{BadSigning, Keychain, PartialMultisignature, Signable, Signature};
     use futures::{
         channel::mpsc::{unbounded, UnboundedReceiver, UnboundedSender},
         future, StreamExt,
     };
     use rand::Rng;
+    use set_bft_crypto::{Multisigned, NodeCount, NodeIndex, Signed};
+    use set_bft_mock::{BadSigning, Keychain, PartialMultisignature, Signable, Signature};
     use std::{collections::HashMap, time::Duration};
 
     type TestMessage = Message<Signable, Signature, PartialMultisignature>;

@@ -8,9 +8,9 @@ use super::*;
 use frame_support::ensure;
 use frame_support::traits::{Get, OnRuntimeUpgrade, StorageVersion};
 use log;
+use module_bridge_traits::MpcAddress;
 #[cfg(feature = "try-runtime")]
 use sp_std::vec::Vec;
-use module_bridge_traits::MpcAddress;
 
 const EXPECTED_STORAGE_VERSION: StorageVersion = StorageVersion::new(0);
 #[cfg(feature = "try-runtime")]

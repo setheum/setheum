@@ -108,13 +108,8 @@ impl Erc20InfoMapping for MockErc20InfoMapping {
 	}
 
 	fn decode_evm_address(v: EvmAddress) -> Option<CurrencyId> {
-		let token = v.as_bytes()[H160_POSITION_TOKEN]
-			.try_into()
-			.map(CurrencyId::Token)
-			.ok()?;
-		EvmAddress::try_from(token)
-			.map(|addr| if addr == v { Some(token) } else { None })
-			.ok()?
+		let token = v.as_bytes()[H160_POSITION_TOKEN].try_into().map(CurrencyId::Token).ok()?;
+		EvmAddress::try_from(token).map(|addr| if addr == v { Some(token) } else { None }).ok()?
 	}
 }
 

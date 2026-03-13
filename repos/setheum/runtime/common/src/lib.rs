@@ -38,11 +38,7 @@ use sp_core::{
 	u32_trait::{_1, _2, _3, _4},
 	H160,
 };
-use sp_runtime::{
-	traits::Convert,
-	transaction_validity::TransactionPriority,
-	Perbill,
-};
+use sp_runtime::{traits::Convert, transaction_validity::TransactionPriority, Perbill};
 use static_assertions::const_assert;
 
 pub mod precompile;
@@ -50,9 +46,7 @@ pub use precompile::{
 	AllPrecompiles, DexPrecompile, MultiCurrencyPrecompile, NFTPrecompile, OraclePrecompile, ScheduleCallPrecompile,
 	StateRentPrecompile,
 };
-pub use primitives::{
-	AccountId,
-};
+pub use primitives::AccountId;
 
 mod gas_to_weight_ratio;
 
@@ -181,8 +175,8 @@ pub type TechnicalCommitteeMembershipInstance = pallet_membership::Instance3;
 pub type OperatorMembershipInstanceSetheum = pallet_membership::Instance4;
 
 // Shura Council
-pub type EnsureRootOrOneShuraCouncil = EnsureOneOf<
-AccountId, EnsureRoot<AccountId>, pallet_collective::EnsureMember<AccountId, ShuraCouncilInstance>>;
+pub type EnsureRootOrOneShuraCouncil =
+	EnsureOneOf<AccountId, EnsureRoot<AccountId>, pallet_collective::EnsureMember<AccountId, ShuraCouncilInstance>>;
 
 pub type EnsureRootOrAllShuraCouncil = EnsureOneOf<
 	AccountId,
@@ -328,9 +322,7 @@ mod tests {
 	#[test]
 	fn is_setheum_precompile_works() {
 		assert!(!is_setheum_precompile(H160::from_low_u64_be(0)));
-		assert!(!is_setheum_precompile(H160::from_low_u64_be(
-			PRECOMPILE_ADDRESS_START - 1
-		)));
+		assert!(!is_setheum_precompile(H160::from_low_u64_be(PRECOMPILE_ADDRESS_START - 1)));
 		assert!(is_setheum_precompile(H160::from_low_u64_be(PRECOMPILE_ADDRESS_START)));
 		assert!(is_setheum_precompile(H160::from_low_u64_be(PREDEPLOY_ADDRESS_START - 1)));
 		assert!(!is_setheum_precompile(H160::from_low_u64_be(PREDEPLOY_ADDRESS_START)));

@@ -69,7 +69,7 @@ pub struct ContractInstance {
 }
 
 impl ContractInstance {
-/// Creates a new contract instance under `address` with metadata read from `metadata_path`.
+    /// Creates a new contract instance under `address` with metadata read from `metadata_path`.
     pub fn new(address: AccountId, metadata_path: &str) -> Result<Self> {
         Ok(Self {
             address,
@@ -79,24 +79,24 @@ impl ContractInstance {
         })
     }
 
-/// From now on, the contract instance will use `limit_override` as the gas limit for all
-/// contract calls. If `limit_override` is `None`, then [DEFAULT_MAX_GAS] will be used.
+    /// From now on, the contract instance will use `limit_override` as the gas limit for all
+    /// contract calls. If `limit_override` is `None`, then [DEFAULT_MAX_GAS] will be used.
     pub fn override_gas_limit(&mut self, limit_override: Option<u64>) {
         self.max_gas_override = limit_override;
     }
 
-/// From now on, the contract instance will use `limit_override` as the proof size limit for all
-/// contract calls. If `limit_override` is `None`, then [DEFAULT_MAX_PROOF_SIZE] will be used.
+    /// From now on, the contract instance will use `limit_override` as the proof size limit for all
+    /// contract calls. If `limit_override` is `None`, then [DEFAULT_MAX_PROOF_SIZE] will be used.
     pub fn override_proof_size_limit(&mut self, limit_override: Option<u64>) {
         self.max_proof_size_override = limit_override;
     }
 
-/// The address of this contract instance.
+    /// The address of this contract instance.
     pub fn address(&self) -> &AccountId {
         &self.address
     }
 
-/// Reads the value of a read-only, 0-argument call via RPC.
+    /// Reads the value of a read-only, 0-argument call via RPC.
     pub async fn contract_read0<
         T: TryFrom<ConvertibleValue, Error = anyhow::Error>,
         C: ConnectionApi,
@@ -108,7 +108,7 @@ impl ContractInstance {
         self.contract_read::<String, T, C>(conn, message, &[]).await
     }
 
-/// Reads the value of a read-only call via RPC.
+    /// Reads the value of a read-only call via RPC.
     pub async fn contract_read<
         S: AsRef<str> + Debug,
         T: TryFrom<ConvertibleValue, Error = anyhow::Error>,
@@ -123,7 +123,7 @@ impl ContractInstance {
             .await
     }
 
-/// Reads the value of a contract call via RPC as if it was executed by `sender`.
+    /// Reads the value of a contract call via RPC as if it was executed by `sender`.
     pub async fn contract_read_as<
         S: AsRef<str> + Debug,
         T: TryFrom<ConvertibleValue, Error = anyhow::Error>,
@@ -145,7 +145,7 @@ impl ContractInstance {
         ConvertibleValue(decoded).try_into()?
     }
 
-/// Executes a 0-argument contract call.
+    /// Executes a 0-argument contract call.
     pub async fn contract_exec0<C: SignedConnectionApi>(
         &self,
         conn: &C,
@@ -154,7 +154,7 @@ impl ContractInstance {
         self.contract_exec::<C, String>(conn, message, &[]).await
     }
 
-/// Executes a contract call.
+    /// Executes a contract call.
     pub async fn contract_exec<C: SignedConnectionApi, S: AsRef<str> + Debug>(
         &self,
         conn: &C,
@@ -165,7 +165,7 @@ impl ContractInstance {
             .await
     }
 
-/// Executes a 0-argument contract call sending the given amount of value with it.
+    /// Executes a 0-argument contract call sending the given amount of value with it.
     pub async fn contract_exec_value0<C: SignedConnectionApi>(
         &self,
         conn: &C,
@@ -176,7 +176,7 @@ impl ContractInstance {
             .await
     }
 
-/// Executes a contract call sending the given amount of value with it.
+    /// Executes a contract call sending the given amount of value with it.
     pub async fn contract_exec_value<C: SignedConnectionApi, S: AsRef<str> + Debug>(
         &self,
         conn: &C,
@@ -246,8 +246,8 @@ impl ContractInstance {
             );
         }
 
-// For dry run, failed transactions don't return `Err` but `Ok(_)`
-// and we have to inspect flags manually.
+        // For dry run, failed transactions don't return `Err` but `Ok(_)`
+        // and we have to inspect flags manually.
         if let Ok(res) = &contract_read_result.result {
             if res.did_revert() {
                 return Err(anyhow!(

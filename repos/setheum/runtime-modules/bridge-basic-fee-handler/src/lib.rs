@@ -19,9 +19,9 @@ mod mock;
 pub mod pallet {
 	use frame_support::{dispatch::DispatchResult, pallet_prelude::*, traits::StorageVersion};
 	use frame_system::pallet_prelude::*;
-	use sp_std::boxed::Box;
 	use module_bridge_traits::{DomainID, FeeHandler};
-	use xcm::latest::{AssetId, Asset};
+	use sp_std::boxed::Box;
+	use xcm::latest::{Asset, AssetId};
 
 	const STORAGE_VERSION: StorageVersion = StorageVersion::new(0);
 
@@ -70,12 +70,7 @@ pub mod pallet {
 		/// Set bridge fee for a specific asset
 		#[pallet::call_index(0)]
 		#[pallet::weight(<T as Config>::WeightInfo::set_fee())]
-		pub fn set_fee(
-			origin: OriginFor<T>,
-			domain: DomainID,
-			asset: Box<AssetId>,
-			amount: u128,
-		) -> DispatchResult {
+		pub fn set_fee(origin: OriginFor<T>, domain: DomainID, asset: Box<AssetId>, amount: u128) -> DispatchResult {
 			let asset: AssetId = *asset;
 			ensure!(
 				<module_bridge_access_segregator::pallet::Pallet<T>>::has_access(
@@ -110,8 +105,8 @@ pub mod pallet {
 			RuntimeEvent as Event, RuntimeOrigin as Origin, Test, ALICE,
 		};
 		use frame_support::{assert_noop, assert_ok};
-		use sp_std::boxed::Box;
 		use module_bridge_traits::DomainID;
+		use sp_std::boxed::Box;
 		use xcm::latest::prelude::*;
 
 		#[test]
@@ -126,12 +121,7 @@ pub mod pallet {
 				let amount_b = 101u128;
 
 				// set fee 100 with assetId asset_id_a for one domain
-				assert_ok!(BasicFeeHandler::set_fee(
-					Origin::root(),
-					dest_domain_id,
-					Box::new(asset_id_a),
-					amount_a
-				));
+				assert_ok!(BasicFeeHandler::set_fee(Origin::root(), dest_domain_id, Box::new(asset_id_a), amount_a));
 				// set fee 200 with assetId asset_id_a for another domain
 				assert_ok!(BasicFeeHandler::set_fee(
 					Origin::root(),
@@ -140,18 +130,10 @@ pub mod pallet {
 					amount_a * 2
 				));
 				assert_eq!(AssetFees::<Test>::get((dest_domain_id, asset_id_a)).unwrap(), amount_a);
-				assert_eq!(
-					AssetFees::<Test>::get((another_dest_domain_id, asset_id_a)).unwrap(),
-					amount_a * 2
-				);
+				assert_eq!(AssetFees::<Test>::get((another_dest_domain_id, asset_id_a)).unwrap(), amount_a * 2);
 
 				// set fee 101 with assetId asset_id_b
-				assert_ok!(BasicFeeHandler::set_fee(
-					Origin::root(),
-					dest_domain_id,
-					Box::new(asset_id_b),
-					amount_b
-				));
+				assert_ok!(BasicFeeHandler::set_fee(Origin::root(), dest_domain_id, Box::new(asset_id_b), amount_b));
 				assert_eq!(AssetFees::<Test>::get((dest_domain_id, asset_id_b)).unwrap(), amount_b);
 
 				// fee of asset_id_a should not be equal to amount_b
@@ -163,12 +145,7 @@ pub mod pallet {
 				// permission test: unauthorized account should not be able to set fee
 				let unauthorized_account = Origin::from(Some(ALICE));
 				assert_noop!(
-					BasicFeeHandler::set_fee(
-						unauthorized_account,
-						dest_domain_id,
-						Box::new(asset_id_a),
-						amount_a
-					),
+					BasicFeeHandler::set_fee(unauthorized_account, dest_domain_id, Box::new(asset_id_a), amount_a),
 					basic_fee_handler::Error::<Test>::AccessDenied
 				);
 
@@ -198,19 +175,9 @@ pub mod pallet {
 				let dest_domain_id: DomainID = 0;
 				let asset_id = Concrete(Location::new(0, Here));
 
-				assert_ok!(BasicFeeHandler::set_fee(
-					Origin::root(),
-					dest_domain_id,
-					Box::new(asset_id),
-					100
-				),);
+				assert_ok!(BasicFeeHandler::set_fee(Origin::root(), dest_domain_id, Box::new(asset_id), 100),);
 				assert_noop!(
-					BasicFeeHandler::set_fee(
-						Some(ALICE).into(),
-						dest_domain_id,
-						Box::new(asset_id),
-						200
-					),
+					BasicFeeHandler::set_fee(Some(ALICE).into(), dest_domain_id, Box::new(asset_id), 200),
 					basic_fee_handler::Error::<Test>::AccessDenied
 				);
 				// (FeeHandlerPalletIndex:get(), b"set_fee") indicates extrinsic: `set_fee` of this
@@ -231,12 +198,7 @@ pub mod pallet {
 					b"set_fee".to_vec(),
 					Some(ALICE).into()
 				));
-				assert_ok!(BasicFeeHandler::set_fee(
-					Some(ALICE).into(),
-					dest_domain_id,
-					Box::new(asset_id),
-					200
-				),);
+				assert_ok!(BasicFeeHandler::set_fee(Some(ALICE).into(), dest_domain_id, Box::new(asset_id), 200),);
 				assert_eq!(AssetFees::<Test>::get((dest_domain_id, asset_id)).unwrap(), 200);
 			})
 		}

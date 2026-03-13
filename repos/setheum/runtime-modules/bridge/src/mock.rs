@@ -20,8 +20,7 @@ use sp_std::collections::btree_map::BTreeMap;
 use sp_std::{marker::PhantomData, prelude::*, result};
 
 use module_bridge_traits::{
-	ChainID, DecimalConverter, DomainID, ExtractDestinationData, ResourceId,
-	VerifyingContractAddress,
+	ChainID, DecimalConverter, DomainID, ExtractDestinationData, ResourceId, VerifyingContractAddress,
 };
 use xcm::latest::{prelude::*, AssetId as XcmAssetId, Location};
 use xcm_builder::{
@@ -354,9 +353,7 @@ impl ConcrateSygmaAsset {
 }
 
 pub struct SygmaDecimalConverter<DecimalPairs>(PhantomData<DecimalPairs>);
-impl<DecimalPairs: Get<Vec<(XcmAssetId, u8)>>> DecimalConverter
-	for SygmaDecimalConverter<DecimalPairs>
-{
+impl<DecimalPairs: Get<Vec<(XcmAssetId, u8)>>> DecimalConverter for SygmaDecimalConverter<DecimalPairs> {
 	fn convert_to(asset: &Asset) -> Option<u128> {
 		match (&asset.fun, &asset.id) {
 			(Fungible(amount), _) => {
@@ -367,8 +364,7 @@ impl<DecimalPairs: Get<Vec<(XcmAssetId, u8)>>> DecimalConverter
 						} else {
 							type U112F16 = FixedU128<U16>;
 							if *decimal > 18 {
-								let a =
-									U112F16::from_num(10u128.saturating_pow(*decimal as u32 - 18));
+								let a = U112F16::from_num(10u128.saturating_pow(*decimal as u32 - 18));
 								let b = U112F16::from_num(*amount).checked_div(a);
 								let r: u128 = b.unwrap_or_else(|| U112F16::from_num(0)).to_num();
 								if r == 0 {
@@ -382,8 +378,7 @@ impl<DecimalPairs: Get<Vec<(XcmAssetId, u8)>>> DecimalConverter
 								if *amount > U112F16::MAX {
 									return None;
 								}
-								let a =
-									U112F16::from_num(10u128.saturating_pow(18 - *decimal as u32));
+								let a = U112F16::from_num(10u128.saturating_pow(18 - *decimal as u32));
 								let b = U112F16::from_num(*amount).saturating_mul(a);
 								Some(b.to_num())
 							}
@@ -412,14 +407,12 @@ impl<DecimalPairs: Get<Vec<(XcmAssetId, u8)>>> DecimalConverter
 								if *amount > U112F16::MAX {
 									return None;
 								}
-								let a =
-									U112F16::from_num(10u128.saturating_pow(*decimal as u32 - 18));
+								let a = U112F16::from_num(10u128.saturating_pow(*decimal as u32 - 18));
 								let b = U112F16::from_num(*amount).saturating_mul(a);
 								let r: u128 = b.to_num();
 								Some((asset.id, r).into())
 							} else {
-								let a =
-									U112F16::from_num(10u128.saturating_pow(18 - *decimal as u32));
+								let a = U112F16::from_num(10u128.saturating_pow(18 - *decimal as u32));
 								let b = U112F16::from_num(*amount).checked_div(a);
 								let r: u128 = b.unwrap_or_else(|| U112F16::from_num(0)).to_num();
 								if r == 0 {
@@ -500,11 +493,7 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
 	let mut t = frame_system::GenesisConfig::<Runtime>::default().build_storage().unwrap();
 
 	pallet_balances::GenesisConfig::<Runtime> {
-		balances: vec![
-			(ALICE, ENDOWED_BALANCE),
-			(ASSET_OWNER, ENDOWED_BALANCE),
-			(BOB, ENDOWED_BALANCE),
-		],
+		balances: vec![(ALICE, ENDOWED_BALANCE), (ASSET_OWNER, ENDOWED_BALANCE), (BOB, ENDOWED_BALANCE)],
 	}
 	.assimilate_storage(&mut t)
 	.unwrap();
@@ -517,8 +506,7 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
 // include the most recent event, but do not have to include every past event.
 #[allow(dead_code)]
 pub fn assert_events(mut expected: Vec<RuntimeEvent>) {
-	let mut actual: Vec<RuntimeEvent> =
-		system::Pallet::<Runtime>::events().iter().map(|e| e.event.clone()).collect();
+	let mut actual: Vec<RuntimeEvent> = system::Pallet::<Runtime>::events().iter().map(|e| e.event.clone()).collect();
 
 	expected.reverse();
 

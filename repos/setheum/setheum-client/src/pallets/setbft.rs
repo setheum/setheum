@@ -47,9 +47,9 @@ use crate::{
     connections::TxInfo,
     module_setbft::pallet::Call::schedule_finality_version_change,
     sp_core::Bytes,
-    AccountId, SetBFTKeyPair, BlockHash, BlockNumber,
+    AccountId, BlockHash, BlockNumber,
     Call::SetBFT,
-    ConnectionApi, Pair, RootConnection, SessionIndex, SudoCall, TxStatus, Version,
+    ConnectionApi, Pair, RootConnection, SessionIndex, SetBFTKeyPair, SudoCall, TxStatus, Version,
 };
 
 // TODO replace docs with link to pallet setbft docs, once they are published
@@ -67,23 +67,23 @@ pub trait SetBFTApi {
 /// Pallet setbft API that requires sudo.
 #[async_trait::async_trait]
 pub trait SetBFTSudoApi {
-/// Sets the emergency finalization key.
-/// * `finalizer` - a new finalizer key
-/// * `status` - a [`TxStatus`] of a tx to wait for
-/// # Returns
-/// Block hash of block where transaction was put or error
+    /// Sets the emergency finalization key.
+    /// * `finalizer` - a new finalizer key
+    /// * `status` - a [`TxStatus`] of a tx to wait for
+    /// # Returns
+    /// Block hash of block where transaction was put or error
     async fn set_emergency_finalizer(
         &self,
         finalizer: AccountId,
         status: TxStatus,
     ) -> anyhow::Result<TxInfo>;
 
-/// Schedules a finality version change for a future session.
-/// * `version` - next version of the finalizer
-/// * `session` - from which session the next version applies
-/// * `status` - a [`TxStatus`] of a tx to wait for
-/// # Returns
-/// Block hash of block where transaction was put or error
+    /// Schedules a finality version change for a future session.
+    /// * `version` - next version of the finalizer
+    /// * `session` - from which session the next version applies
+    /// * `status` - a [`TxStatus`] of a tx to wait for
+    /// # Returns
+    /// Block hash of block where transaction was put or error
     async fn schedule_finality_version_change(
         &self,
         version: u32,
@@ -95,9 +95,9 @@ pub trait SetBFTSudoApi {
 /// Pallet setbft RPC api.
 #[async_trait::async_trait]
 pub trait SetBFTRpc {
-/// Finalize the block with given hash and number using attached signature.
-/// # Returns
-/// Block hash of block where transaction was put or error
+    /// Finalize the block with given hash and number using attached signature.
+    /// # Returns
+    /// Block hash of block where transaction was put or error
     async fn emergency_finalize(
         &self,
         number: BlockNumber,

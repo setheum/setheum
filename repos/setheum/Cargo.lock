@@ -7949,102 +7949,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "module-ecdp-loans"
-version = "0.9.81-dev"
-dependencies = [
- "frame-support",
- "frame-system",
- "log",
- "module-currencies",
- "module-ecdp-seusd-treasury",
- "module-support",
- "module-tokens",
- "module-traits",
- "pallet-balances",
- "parity-scale-codec 3.7.5",
- "scale-info",
- "setheum-primitives",
- "sp-core 37.0.0",
- "sp-io 41.0.1",
- "sp-runtime 42.0.0",
- "sp-std 14.0.0 (git+https://github.com/paritytech/polkadot-sdk?branch=stable2506)",
-]
-
-[[package]]
-name = "module-ecdp-seusd-engine"
-version = "0.9.81-dev"
-dependencies = [
- "frame-support",
- "frame-system",
- "log",
- "module-currencies",
- "module-ecdp-loans",
- "module-ecdp-seusd-treasury",
- "module-edfis-swap-legacy",
- "module-evm",
- "module-evm-bridge",
- "module-support",
- "module-tokens",
- "module-traits",
- "module-unified-accounts",
- "module-utilities",
- "pallet-balances",
- "pallet-timestamp",
- "parity-scale-codec 3.7.5",
- "rand_chacha 0.2.2",
- "scale-info",
- "setheum-primitives",
- "sp-application-crypto 41.0.0",
- "sp-core 37.0.0",
- "sp-io 41.0.1",
- "sp-runtime 42.0.0",
- "sp-std 14.0.0 (git+https://github.com/paritytech/polkadot-sdk?branch=stable2506)",
-]
-
-[[package]]
-name = "module-ecdp-seusd-treasury"
-version = "0.9.81-dev"
-dependencies = [
- "frame-support",
- "frame-system",
- "log",
- "module-auction",
- "module-currencies",
- "module-edfis-swap-legacy",
- "module-support",
- "module-tokens",
- "module-traits",
- "pallet-balances",
- "parity-scale-codec 3.7.5",
- "scale-info",
- "setheum-primitives",
- "sp-core 37.0.0",
- "sp-io 41.0.1",
- "sp-runtime 42.0.0",
- "sp-std 14.0.0 (git+https://github.com/paritytech/polkadot-sdk?branch=stable2506)",
-]
-
-[[package]]
-name = "module-edfis-swap-legacy"
-version = "0.9.81-dev"
-dependencies = [
- "frame-support",
- "frame-system",
- "log",
- "module-support",
- "module-tokens",
- "module-traits",
- "pallet-balances",
- "parity-scale-codec 3.7.5",
- "scale-info",
- "setheum-primitives",
- "sp-core 37.0.0",
- "sp-io 41.0.1",
- "sp-runtime 42.0.0",
- "sp-std 14.0.0 (git+https://github.com/paritytech/polkadot-sdk?branch=stable2506)",
-]
-
-[[package]]
 name = "module-elections"
 version = "0.6.0"
 dependencies = [
@@ -8078,10 +7982,10 @@ dependencies = [
  "hex-literal 0.4.1",
  "log",
  "module-currencies",
- "module-edfis-swap-legacy",
  "module-evm-utility",
  "module-idle-scheduler",
  "module-support",
+ "module-swap-legacy",
  "module-tokens",
  "module-traits",
  "module-transaction-payment",
@@ -8208,6 +8112,28 @@ dependencies = [
  "frame-system",
  "log",
  "module-rewards",
+ "module-support",
+ "module-tokens",
+ "module-traits",
+ "pallet-balances",
+ "parity-scale-codec 3.7.5",
+ "scale-info",
+ "setheum-primitives",
+ "sp-core 37.0.0",
+ "sp-io 41.0.1",
+ "sp-runtime 42.0.0",
+ "sp-std 14.0.0 (git+https://github.com/paritytech/polkadot-sdk?branch=stable2506)",
+]
+
+[[package]]
+name = "module-loans"
+version = "0.9.81-dev"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "log",
+ "module-currencies",
+ "module-seusd-treasury",
  "module-support",
  "module-tokens",
  "module-traits",
@@ -8424,6 +8350,60 @@ dependencies = [
 ]
 
 [[package]]
+name = "module-seusd-engine"
+version = "0.9.81-dev"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "log",
+ "module-currencies",
+ "module-evm",
+ "module-evm-bridge",
+ "module-loans",
+ "module-seusd-treasury",
+ "module-support",
+ "module-swap-legacy",
+ "module-tokens",
+ "module-traits",
+ "module-unified-accounts",
+ "module-utilities",
+ "pallet-balances",
+ "pallet-timestamp",
+ "parity-scale-codec 3.7.5",
+ "rand_chacha 0.2.2",
+ "scale-info",
+ "setheum-primitives",
+ "sp-application-crypto 41.0.0",
+ "sp-core 37.0.0",
+ "sp-io 41.0.1",
+ "sp-runtime 42.0.0",
+ "sp-std 14.0.0 (git+https://github.com/paritytech/polkadot-sdk?branch=stable2506)",
+]
+
+[[package]]
+name = "module-seusd-treasury"
+version = "0.9.81-dev"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "log",
+ "module-auction",
+ "module-currencies",
+ "module-support",
+ "module-swap-legacy",
+ "module-tokens",
+ "module-traits",
+ "pallet-balances",
+ "parity-scale-codec 3.7.5",
+ "scale-info",
+ "setheum-primitives",
+ "sp-core 37.0.0",
+ "sp-io 41.0.1",
+ "sp-runtime 42.0.0",
+ "sp-std 14.0.0 (git+https://github.com/paritytech/polkadot-sdk?branch=stable2506)",
+]
+
+[[package]]
 name = "module-support"
 version = "0.9.81-dev"
 dependencies = [
@@ -8441,6 +8421,26 @@ dependencies = [
  "sp-runtime 42.0.0",
  "sp-std 14.0.0 (git+https://github.com/paritytech/polkadot-sdk?branch=stable2506)",
  "staging-xcm 17.0.0",
+]
+
+[[package]]
+name = "module-swap-legacy"
+version = "0.9.81-dev"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "log",
+ "module-support",
+ "module-tokens",
+ "module-traits",
+ "pallet-balances",
+ "parity-scale-codec 3.7.5",
+ "scale-info",
+ "setheum-primitives",
+ "sp-core 37.0.0",
+ "sp-io 41.0.1",
+ "sp-runtime 42.0.0",
+ "sp-std 14.0.0 (git+https://github.com/paritytech/polkadot-sdk?branch=stable2506)",
 ]
 
 [[package]]
@@ -8530,8 +8530,8 @@ dependencies = [
  "frame-system",
  "log",
  "module-currencies",
- "module-edfis-swap-legacy",
  "module-support",
+ "module-swap-legacy",
  "module-tokens",
  "module-traits",
  "pallet-balances",

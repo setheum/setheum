@@ -25,7 +25,7 @@
 pub mod setbft;
 pub mod bonding;
 pub mod currency;
-pub mod edfis_launchpad;
+pub mod launchpad;
 pub mod evm;
 pub mod nft;
 pub mod signature;
@@ -96,7 +96,7 @@ pub const TOKEN: Balance = 1_000_000_000_000_000_000;
 /// Signed version of Balance
 pub type Amount = i128;
 
-/// Fees type primarily for Edfis `ExchangeFee` and `TradingFee`.
+/// Fees type primarily for  `ExchangeFee` and `TradingFee`.
 pub type Fees = u128;
 
 /// Auction ID
@@ -141,8 +141,8 @@ pub enum AuthoritysOriginId {
 	Treasury,
 	LiquidSeeStakingTreasury,
 	LiquidEdfStakingTreasury,
-	SetterEcdpTreasury,
-	SlickUsdEcdpTreasury,
+	SetterTreasury,
+	SlickUsdTreasury,
 	TreasuryReserve,
 }
 
@@ -200,7 +200,7 @@ impl Decode for TradingPair {
 }
 
 #[derive(Encode, Decode, Eq, PartialEq, Copy, Clone, RuntimeDebug, Default, MaxEncodedLen, TypeInfo)]
-pub struct EcdpPosition {
+pub struct Position {
 /// The amount of collateral.
 	pub collateral: Balance,
 /// The amount of debit.
@@ -213,7 +213,7 @@ pub enum ReserveIdentifier {
 	CollatorSelection,
 	EvmStorageDeposit,
 	EvmDeveloperDeposit,
-	Ecdp,
+	,
 	Nft,
 	TransactionPayment,
 	TransactionPaymentDeposit,

@@ -38,7 +38,7 @@
 use sp_std::vec::Vec;
 
 pub trait NextSessionAuthorityProvider<AuthorityId> {
-    fn next_authorities() -> Vec<AuthorityId>;
+	fn next_authorities() -> Vec<AuthorityId>;
 }
 
 pub struct SessionNextSessionAuthorityProvider<T>(sp_std::marker::PhantomData<T>);

@@ -41,9 +41,9 @@ use crate::{
     Data, Hasher, Keychain, MultiKeychain, Multisigned, NodeIndex, PartialMultisignature,
     Recipient, SessionId, Signature, Signed, UncheckedSigned,
 };
+use codec::{Decode, Encode};
 use set_bft_rmc::Message as RmcMessage;
 use set_bft_types::Round;
-use codec::{Decode, Encode};
 use std::{
     collections::{HashMap, HashSet},
     fmt::{Display, Formatter},

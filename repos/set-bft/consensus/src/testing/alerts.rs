@@ -41,14 +41,14 @@ use crate::{
     Index, Indexed, Keychain as _, NodeCount, NodeIndex, NodeMap, Recipient, Round, Signable,
     Signed, Terminator, UncheckedSigned,
 };
-use set_bft_mock::{Data, Hasher64, Keychain, PartialMultisignature, Signature};
-use set_bft_rmc::Message as RmcMessage;
 use futures::{
     channel::{mpsc, oneshot},
     FutureExt, StreamExt,
 };
 use futures_timer::Delay;
 use log::trace;
+use set_bft_mock::{Data, Hasher64, Keychain, PartialMultisignature, Signature};
+use set_bft_rmc::Message as RmcMessage;
 use std::{
     collections::{HashMap, HashSet},
     hash::Hash,

@@ -230,11 +230,7 @@ impl pallet_xcm::Config for Runtime {
 pub struct AccountIdToLocation;
 impl Convert<AccountId, Location> for AccountIdToLocation {
 	fn convert(account: AccountId) -> Location {
-		[Junction::AccountId32 {
-			network: None,
-			id: account.into(),
-		}]
-		.into()
+		[Junction::AccountId32 { network: None, id: account.into() }].into()
 	}
 }
 
@@ -243,54 +239,24 @@ impl Convert<CurrencyId, Option<Location>> for RelativeCurrencyIdConvert {
 	fn convert(id: CurrencyId) -> Option<Location> {
 		match id {
 			CurrencyId::R => Some(Parent.into()),
-			CurrencyId::A => Some(
-				(
-					Parent,
-					Parachain(1),
-					Junction::from(BoundedVec::try_from(b"A".to_vec()).unwrap()),
-				)
-					.into(),
-			),
-			CurrencyId::A1 => Some(
-				(
-					Parent,
-					Parachain(1),
-					Junction::from(BoundedVec::try_from(b"A1".to_vec()).unwrap()),
-				)
-					.into(),
-			),
-			CurrencyId::B => Some(
-				(
-					Parent,
-					Parachain(2),
-					Junction::from(BoundedVec::try_from(b"B".to_vec()).unwrap()),
-				)
-					.into(),
-			),
-			CurrencyId::B1 => Some(
-				(
-					Parent,
-					Parachain(2),
-					Junction::from(BoundedVec::try_from(b"B1".to_vec()).unwrap()),
-				)
-					.into(),
-			),
-			CurrencyId::B2 => Some(
-				(
-					Parent,
-					Parachain(2),
-					Junction::from(BoundedVec::try_from(b"B2".to_vec()).unwrap()),
-				)
-					.into(),
-			),
-			CurrencyId::C => Some(
-				(
-					Parent,
-					Parachain(3),
-					Junction::from(BoundedVec::try_from(b"C".to_vec()).unwrap()),
-				)
-					.into(),
-			),
+			CurrencyId::A => {
+				Some((Parent, Parachain(1), Junction::from(BoundedVec::try_from(b"A".to_vec()).unwrap())).into())
+			},
+			CurrencyId::A1 => {
+				Some((Parent, Parachain(1), Junction::from(BoundedVec::try_from(b"A1".to_vec()).unwrap())).into())
+			},
+			CurrencyId::B => {
+				Some((Parent, Parachain(2), Junction::from(BoundedVec::try_from(b"B".to_vec()).unwrap())).into())
+			},
+			CurrencyId::B1 => {
+				Some((Parent, Parachain(2), Junction::from(BoundedVec::try_from(b"B1".to_vec()).unwrap())).into())
+			},
+			CurrencyId::B2 => {
+				Some((Parent, Parachain(2), Junction::from(BoundedVec::try_from(b"B2".to_vec()).unwrap())).into())
+			},
+			CurrencyId::C => {
+				Some((Parent, Parachain(3), Junction::from(BoundedVec::try_from(b"C".to_vec()).unwrap())).into())
+			},
 			CurrencyId::D => Some(Junction::from(BoundedVec::try_from(b"D".to_vec()).unwrap()).into()),
 		}
 	}
@@ -326,7 +292,7 @@ impl Convert<Location, Option<CurrencyId>> for RelativeCurrencyIdConvert {
 				[Parachain(3), GeneralKey { data, .. }] if data.to_vec() == c => Some(CurrencyId::C),
 				[Parachain(para_id), GeneralKey { data, .. }] if data.to_vec() == d && *para_id == self_para_id => {
 					Some(CurrencyId::D)
-				}
+				},
 				_ => None,
 			},
 			(parents, interior) if parents == 0 => match interior {
@@ -345,11 +311,7 @@ impl Convert<Location, Option<CurrencyId>> for RelativeCurrencyIdConvert {
 }
 impl Convert<Asset, Option<CurrencyId>> for RelativeCurrencyIdConvert {
 	fn convert(a: Asset) -> Option<CurrencyId> {
-		if let Asset {
-			fun: Fungible(_),
-			id: AssetId(id),
-		} = a
-		{
+		if let Asset { fun: Fungible(_), id: AssetId(id) } = a {
 			Self::convert(id)
 		} else {
 			Option::None

@@ -35,14 +35,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use std::sync::Arc;
 use jsonrpc_core::{Error, ErrorCode, Result};
 use jsonrpc_derive::rpc;
-use sp_runtime::codec::Codec;
+pub use module_oracle_runtime_api::OracleApi as OracleRuntimeApi;
 use sp_api::ProvideRuntimeApi;
 use sp_blockchain::HeaderBackend;
+use sp_runtime::codec::Codec;
 use sp_runtime::{generic::BlockId, traits::Block as BlockT};
-pub use module_oracle_runtime_api::OracleApi as OracleRuntimeApi;
+use std::sync::Arc;
 
 #[rpc(server)]
 pub trait OracleApi<BlockHash, DataProviderId, CurrencyId, TimeStampedPrice> {
@@ -69,10 +69,7 @@ pub struct Oracle<C, B> {
 
 impl<C, B> Oracle<C, B> {
 	pub fn new(client: Arc<C>) -> Self {
-		Self {
-			client,
-			_marker: Default::default(),
-		}
+		Self { client, _marker: Default::default() }
 	}
 }
 

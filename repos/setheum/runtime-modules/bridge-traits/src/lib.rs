@@ -23,20 +23,7 @@ pub enum TransferType {
 	GenericTransfer,
 }
 
-#[derive(
-	Clone,
-	Eq,
-	PartialEq,
-	Ord,
-	PartialOrd,
-	Debug,
-	Encode,
-	Decode,
-	TypeInfo,
-	Copy,
-	Default,
-	MaxEncodedLen,
-)]
+#[derive(Clone, Eq, PartialEq, Ord, PartialOrd, Debug, Encode, Decode, TypeInfo, Copy, Default, MaxEncodedLen)]
 pub struct MpcAddress(pub [u8; 20]);
 
 pub trait ExtractDestinationData {
@@ -69,25 +56,12 @@ pub trait AssetTypeIdentifier {
 }
 
 pub trait TransactorForwarder {
-	fn xcm_transactor_forwarder(
-		sender: [u8; 32],
-		what: Asset,
-		dest: Location,
-	) -> DispatchResult;
-	fn other_world_transactor_forwarder(
-		sender: [u8; 32],
-		what: Asset,
-		dest: Location,
-	) -> DispatchResult;
+	fn xcm_transactor_forwarder(sender: [u8; 32], what: Asset, dest: Location) -> DispatchResult;
+	fn other_world_transactor_forwarder(sender: [u8; 32], what: Asset, dest: Location) -> DispatchResult;
 }
 
 pub trait Bridge {
-	fn transfer(
-		sender: [u8; 32],
-		asset: Asset,
-		dest: Location,
-		max_weight: Option<Weight>,
-	) -> DispatchResult;
+	fn transfer(sender: [u8; 32], asset: Asset, dest: Location, max_weight: Option<Weight>) -> DispatchResult;
 }
 
 pub trait AssetReserveLocationParser {

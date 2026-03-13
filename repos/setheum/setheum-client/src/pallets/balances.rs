@@ -38,10 +38,10 @@
 use subxt::utils::{MultiAddress, Static};
 
 use crate::{
-    setheum::{self, api},
     connections::TxInfo,
     pallet_balances::{pallet::Call::transfer_keep_alive, types::BalanceLock},
     pallets::utility::UtilityApi,
+    setheum::{self, api},
     AccountId, AsConnection, Balance, BlockHash,
     Call::Balances,
     ConnectionApi, ParamsBuilder, SignedConnectionApi, TxStatus,
@@ -50,35 +50,35 @@ use crate::{
 /// Pallet balances read-only API.
 #[async_trait::async_trait]
 pub trait BalanceApi {
-/// API for [`locks`](https://paritytech.github.io/substrate/master/pallet_balances/pallet/struct.Pallet.html#method.locks) call.
-/// * `account` - an account to query locked balance for
-/// * `at` - optional hash of a block to query state from
+    /// API for [`locks`](https://paritytech.github.io/substrate/master/pallet_balances/pallet/struct.Pallet.html#method.locks) call.
+    /// * `account` - an account to query locked balance for
+    /// * `at` - optional hash of a block to query state from
     async fn locks_for_account(
         &self,
         account: AccountId,
         at: Option<BlockHash>,
     ) -> Vec<BalanceLock<Balance>>;
 
-/// API for [`locks`](https://paritytech.github.io/substrate/master/pallet_balances/pallet/struct.Pallet.html#method.locks) call.
-/// * `accounts` - a list of accounts to query locked balance for
-/// * `at` - optional hash of a block to query state from
+    /// API for [`locks`](https://paritytech.github.io/substrate/master/pallet_balances/pallet/struct.Pallet.html#method.locks) call.
+    /// * `accounts` - a list of accounts to query locked balance for
+    /// * `at` - optional hash of a block to query state from
     async fn locks(
         &self,
         accounts: &[AccountId],
         at: Option<BlockHash>,
     ) -> Vec<Vec<BalanceLock<Balance>>>;
 
-/// Returns [`total_issuance`](https://paritytech.github.io/substrate/master/pallet_balances/pallet/type.TotalIssuance.html).
+    /// Returns [`total_issuance`](https://paritytech.github.io/substrate/master/pallet_balances/pallet/type.TotalIssuance.html).
     async fn total_issuance(&self, at: Option<BlockHash>) -> Balance;
 
-/// Returns [`existential_deposit`](https://paritytech.github.io/substrate/master/pallet_balances/index.html#terminology).
+    /// Returns [`existential_deposit`](https://paritytech.github.io/substrate/master/pallet_balances/index.html#terminology).
     async fn existential_deposit(&self) -> anyhow::Result<Balance>;
 }
 
 /// Pallet balances API
 #[async_trait::async_trait]
 pub trait BalanceUserApi {
-/// API for [`transfer_keep_alive`](https://paritytech.github.io/polkadot-sdk/master/pallet_balances/pallet/struct.Pallet.html#method.transfer_keep_alive) call.
+    /// API for [`transfer_keep_alive`](https://paritytech.github.io/polkadot-sdk/master/pallet_balances/pallet/struct.Pallet.html#method.transfer_keep_alive) call.
     async fn transfer_keep_alive(
         &self,
         dest: AccountId,
@@ -86,8 +86,8 @@ pub trait BalanceUserApi {
         status: TxStatus,
     ) -> anyhow::Result<TxInfo>;
 
-/// API for [`transfer_keep_alive`](https://paritytech.github.io/polkadot-sdk/master/pallet_balances/pallet/struct.Pallet.html#method.transfer_keep_alive) call.
-/// Include tip in the tx.
+    /// API for [`transfer_keep_alive`](https://paritytech.github.io/polkadot-sdk/master/pallet_balances/pallet/struct.Pallet.html#method.transfer_keep_alive) call.
+    /// Include tip in the tx.
     async fn transfer_keep_alive_with_tip(
         &self,
         dest: AccountId,
@@ -100,20 +100,20 @@ pub trait BalanceUserApi {
 /// Pallet balances logic not directly related to any pallet call.
 #[async_trait::async_trait]
 pub trait BalanceUserBatchExtApi {
-/// Performs batch of `balances.transfer_keep_alive` calls.
-/// * `dest` - a list of accounts to send tokens to
-/// * `amount` - an amount to transfer
-/// * `status` - a [`TxStatus`] for a tx to wait for
-///
-/// # Examples
-/// ```ignore
-///  for chunk in stash_accounts.chunks(1024) {
-///         connection
-///             .batch_transfer_keep_alive(chunk, 1_000_000_000_000u128, TxStatus::InBlock)
-///             .await
-///             .unwrap();
-///     }
-/// ```
+    /// Performs batch of `balances.transfer_keep_alive` calls.
+    /// * `dest` - a list of accounts to send tokens to
+    /// * `amount` - an amount to transfer
+    /// * `status` - a [`TxStatus`] for a tx to wait for
+    ///
+    /// # Examples
+    /// ```ignore
+    ///  for chunk in stash_accounts.chunks(1024) {
+    ///         connection
+    ///             .batch_transfer_keep_alive(chunk, 1_000_000_000_000u128, TxStatus::InBlock)
+    ///             .await
+    ///             .unwrap();
+    ///     }
+    /// ```
     async fn batch_transfer_keep_alive(
         &self,
         dest: &[AccountId],

@@ -120,10 +120,7 @@ pub mod pallet {
 	pub type ScheduledTaskOf<T> = ScheduledTask<BlockNumberFor<T>>;
 	/// list of ScheduledTasks, stored as a BoundedBTreeMap
 	pub type ScheduledTaskList<T> = BoundedBTreeMap<
-		(
-			<T as frame_system::Config>::AccountId,
-			<T as frame_system::Config>::AccountId,
-		),
+		(<T as frame_system::Config>::AccountId, <T as frame_system::Config>::AccountId),
 		ScheduledTaskOf<T>,
 		<T as Config>::MaxRemarkLength,
 	>;
@@ -194,17 +191,9 @@ pub mod pallet {
 		/// Payment has been cancelled by the creator
 		PaymentCancelled { from: T::AccountId, to: T::AccountId },
 		/// A payment that NeedsReview has been resolved by Judge
-		PaymentResolved {
-			from: T::AccountId,
-			to: T::AccountId,
-			recipient_share: Percent,
-		},
+		PaymentResolved { from: T::AccountId, to: T::AccountId, recipient_share: Percent },
 		/// the payment creator has created a refund request
-		PaymentCreatorRequestedRefund {
-			from: T::AccountId,
-			to: T::AccountId,
-			expiry: BlockNumberFor<T>,
-		},
+		PaymentCreatorRequestedRefund { from: T::AccountId, to: T::AccountId, expiry: BlockNumberFor<T> },
 		/// the refund request from creator was disputed by recipient
 		PaymentRefundDisputed { from: T::AccountId, to: T::AccountId },
 		/// Payment request was created by recipient
@@ -287,10 +276,7 @@ pub mod pallet {
 							);
 						} else {
 							// emit the cancel event if the refund was successful
-							Self::deposit_event(Event::PaymentCancelled {
-								from: account_pair.0,
-								to: account_pair.1,
-							});
+							Self::deposit_event(Event::PaymentCancelled { from: account_pair.0, to: account_pair.1 });
 						}
 					}
 				}
@@ -331,12 +317,7 @@ pub mod pallet {
 			// reserve funds for payment
 			<Self as PaymentHandler<T>>::reserve_payment_amount(&who, &recipient, payment_detail)?;
 			// emit paymentcreated event
-			Self::deposit_event(Event::PaymentCreated {
-				from: who,
-				asset,
-				amount,
-				remark,
-			});
+			Self::deposit_event(Event::PaymentCreated { from: who, asset, amount, remark });
 			Ok(().into())
 		}
 
@@ -371,7 +352,7 @@ pub mod pallet {
 					PaymentState::Created => {
 						<Self as PaymentHandler<T>>::settle_payment(&creator, &who, Percent::from_percent(0))?;
 						Self::deposit_event(Event::PaymentCancelled { from: creator, to: who });
-					}
+					},
 					// if the payment is in state PaymentRequested, remove from storage
 					PaymentState::PaymentRequested => Payment::<T>::remove(&creator, &who),
 					_ => fail!(Error::<T>::InvalidAction),
@@ -397,10 +378,7 @@ pub mod pallet {
 			// ensure the caller is the assigned resolver
 			if let Some(payment) = Payment::<T>::get(&account_pair.0, &account_pair.1) {
 				ensure!(who == payment.resolver_account, Error::<T>::InvalidAction);
-				ensure!(
-					payment.state != PaymentState::PaymentRequested,
-					Error::<T>::InvalidAction
-				);
+				ensure!(payment.state != PaymentState::PaymentRequested, Error::<T>::InvalidAction);
 				if matches!(payment.state, PaymentState::RefundRequested { .. }) {
 					ScheduledTasks::<T>::mutate(|tasks| {
 						tasks.remove(&account_pair);
@@ -409,11 +387,7 @@ pub mod pallet {
 			}
 			// try to update the payment to new state
 			<Self as PaymentHandler<T>>::settle_payment(&account_pair.0, &account_pair.1, recipient_share)?;
-			Self::deposit_event(Event::PaymentResolved {
-				from: account_pair.0,
-				to: account_pair.1,
-				recipient_share,
-			});
+			Self::deposit_event(Event::PaymentResolved { from: account_pair.0, to: account_pair.1, recipient_share });
 			Ok(().into())
 		}
 
@@ -433,18 +407,14 @@ pub mod pallet {
 
 				// set the payment to requested refund
 				let current_block = frame_system::Pallet::<T>::block_number();
-				let cancel_block = current_block
-					.checked_add(&T::CancelBufferBlockLength::get())
-					.ok_or(Error::<T>::MathError)?;
+				let cancel_block =
+					current_block.checked_add(&T::CancelBufferBlockLength::get()).ok_or(Error::<T>::MathError)?;
 
 				ScheduledTasks::<T>::try_mutate(|task_list| -> DispatchResult {
 					task_list
 						.try_insert(
 							(who.clone(), recipient.clone()),
-							ScheduledTask {
-								task: Task::Cancel,
-								when: cancel_block,
-							},
+							ScheduledTask { task: Task::Cancel, when: cancel_block },
 						)
 						.map_err(|_| Error::<T>::RefundQueueFull)?;
 					Ok(())
@@ -492,14 +462,12 @@ pub mod pallet {
 
 							// remove the payment from scheduled tasks
 							ScheduledTasks::<T>::try_mutate(|task_list| -> DispatchResult {
-								task_list
-									.remove(&(creator.clone(), who.clone()))
-									.ok_or(Error::<T>::InvalidAction)?;
+								task_list.remove(&(creator.clone(), who.clone())).ok_or(Error::<T>::InvalidAction)?;
 								Ok(())
 							})?;
 
 							Self::deposit_event(Event::PaymentRefundDisputed { from: creator, to: who });
-						}
+						},
 						_ => fail!(Error::<T>::InvalidAction),
 					}
 
@@ -551,10 +519,7 @@ pub mod pallet {
 
 			let payment = Payment::<T>::get(&from, &to).ok_or(Error::<T>::InvalidPayment)?;
 
-			ensure!(
-				payment.state == PaymentState::PaymentRequested,
-				Error::<T>::InvalidAction
-			);
+			ensure!(payment.state == PaymentState::PaymentRequested, Error::<T>::InvalidAction);
 
 			// reserve all the fees from the sender
 			<Self as PaymentHandler<T>>::reserve_payment_amount(&from, &to, payment)?;
@@ -588,10 +553,7 @@ pub mod pallet {
 				|maybe_payment| -> Result<PaymentDetail<T>, sp_runtime::DispatchError> {
 					// only payment requests can be overwritten
 					if let Some(payment) = maybe_payment {
-						ensure!(
-							payment.state == PaymentState::PaymentRequested,
-							Error::<T>::PaymentAlreadyInProcess
-						);
+						ensure!(payment.state == PaymentState::PaymentRequested, Error::<T>::PaymentAlreadyInProcess);
 					}
 
 					// Calculate incentive amount - this is to insentivise the user to release
@@ -662,10 +624,10 @@ pub mod pallet {
 								ExistenceRequirement::AllowDeath,
 							)?;
 						}
-					}
+					},
 					None => {
 						T::Asset::unreserve(payment.asset, from, payment.incentive_amount);
-					}
+					},
 				};
 
 				// Unreserve the transfer amount
@@ -674,13 +636,7 @@ pub mod pallet {
 				let amount_to_recipient = recipient_share.mul_floor(payment.amount);
 				let amount_to_sender = payment.amount.saturating_sub(amount_to_recipient);
 				// send share to recipient
-				T::Asset::transfer(
-					payment.asset,
-					to,
-					from,
-					amount_to_sender,
-					ExistenceRequirement::AllowDeath,
-				)?;
+				T::Asset::transfer(payment.asset, to, from, amount_to_sender, ExistenceRequirement::AllowDeath)?;
 
 				Ok(())
 			})?;

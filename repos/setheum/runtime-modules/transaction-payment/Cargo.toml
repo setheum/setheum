@@ -29,7 +29,7 @@ sp-core = { workspace = true, features = ["std"] }
 pallet-balances = { workspace = true, features = ["std"] }
 module-tokens = { workspace = true, features = ["std"] , default-features = false }
 module-currencies = { workspace = true, features = ["std"] , default-features = false }
-module-edfis_swap_legacy = { workspace = true, features = ["std"] , default-features = false }
+module-swap_legacy = { workspace = true, features = ["std"] , default-features = false }
 smallvec = { workspace = true , default-features = false }
 
 [features]

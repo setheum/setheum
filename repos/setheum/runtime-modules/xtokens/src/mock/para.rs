@@ -233,11 +233,7 @@ impl pallet_xcm::Config for Runtime {
 pub struct AccountIdToLocation;
 impl Convert<AccountId, Location> for AccountIdToLocation {
 	fn convert(account: AccountId) -> Location {
-		[Junction::AccountId32 {
-			network: None,
-			id: account.into(),
-		}]
-		.into()
+		[Junction::AccountId32 { network: None, id: account.into() }].into()
 	}
 }
 

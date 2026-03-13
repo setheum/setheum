@@ -62,50 +62,44 @@ pub mod module {
 	pub trait Config: frame_system::Config {
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 
-/// The origin which may set filter.
+		/// The origin which may set filter.
 		type UpdateOrigin: EnsureOrigin<Self::RuntimeOrigin>;
 
-/// Weight information for the extrinsics in this module.
+		/// Weight information for the extrinsics in this module.
 		type WeightInfo: WeightInfo;
 	}
 
 	#[pallet::error]
 	pub enum Error<T> {
-/// can not pause
+		/// can not pause
 		CannotPause,
-/// invalid character encoding
+		/// invalid character encoding
 		InvalidCharacter,
 	}
 
 	#[pallet::event]
 	#[pallet::generate_deposit(fn deposit_event)]
 	pub enum Event<T: Config> {
-/// Paused transaction
-		TransactionPaused {
-			pallet_name_bytes: Vec<u8>,
-			function_name_bytes: Vec<u8>,
-		},
-/// Unpaused transaction
-		TransactionUnpaused {
-			pallet_name_bytes: Vec<u8>,
-			function_name_bytes: Vec<u8>,
-		},
-/// Paused EVM precompile
+		/// Paused transaction
+		TransactionPaused { pallet_name_bytes: Vec<u8>, function_name_bytes: Vec<u8> },
+		/// Unpaused transaction
+		TransactionUnpaused { pallet_name_bytes: Vec<u8>, function_name_bytes: Vec<u8> },
+		/// Paused EVM precompile
 		EvmPrecompilePaused { address: H160 },
-/// Unpaused EVM precompile
+		/// Unpaused EVM precompile
 		EvmPrecompileUnpaused { address: H160 },
 	}
 
-/// The paused transaction map
-///
-/// map (PalletNameBytes, FunctionNameBytes) => Option<()>
+	/// The paused transaction map
+	///
+	/// map (PalletNameBytes, FunctionNameBytes) => Option<()>
 	#[pallet::storage]
 	#[pallet::getter(fn paused_transactions)]
 	pub type PausedTransactions<T: Config> = StorageMap<_, Twox64Concat, (Vec<u8>, Vec<u8>), (), OptionQuery>;
 
-/// The paused EVM precompile map
-///
-/// map (PrecompileAddress) => Option<()>
+	/// The paused EVM precompile map
+	///
+	/// map (PrecompileAddress) => Option<()>
 	#[pallet::storage]
 	#[pallet::getter(fn paused_evm_precompiles)]
 	pub type PausedEvmPrecompiles<T: Config> = StorageMap<_, Blake2_128Concat, H160, (), OptionQuery>;
@@ -124,12 +118,9 @@ pub mod module {
 		pub fn pause_transaction(origin: OriginFor<T>, pallet_name: Vec<u8>, function_name: Vec<u8>) -> DispatchResult {
 			T::UpdateOrigin::ensure_origin(origin)?;
 
-// not allowed to pause calls of this pallet to ensure safe
+			// not allowed to pause calls of this pallet to ensure safe
 			let pallet_name_string = sp_std::str::from_utf8(&pallet_name).map_err(|_| Error::<T>::InvalidCharacter)?;
-			ensure!(
-				pallet_name_string != <Self as PalletInfoAccess>::name(),
-				Error::<T>::CannotPause
-			);
+			ensure!(pallet_name_string != <Self as PalletInfoAccess>::name(), Error::<T>::CannotPause);
 
 			PausedTransactions::<T>::mutate_exists((pallet_name.clone(), function_name.clone()), |maybe_paused| {
 				if maybe_paused.is_none() {
@@ -191,10 +182,7 @@ where
 	<T as frame_system::Config>::RuntimeCall: GetCallMetadata,
 {
 	fn contains(call: &T::RuntimeCall) -> bool {
-		let CallMetadata {
-			function_name,
-			pallet_name,
-		} = call.get_call_metadata();
+		let CallMetadata { function_name, pallet_name } = call.get_call_metadata();
 		PausedTransactions::<T>::contains_key((pallet_name.as_bytes(), function_name.as_bytes()))
 	}
 }

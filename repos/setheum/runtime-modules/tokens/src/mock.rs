@@ -172,10 +172,7 @@ impl ChangeMembers<AccountId> for TestChangeMembers {
 		new_plus_outgoing.extend_from_slice(outgoing);
 		new_plus_outgoing.sort();
 
-		assert_eq!(
-			old_plus_incoming, new_plus_outgoing,
-			"change members call is incorrect!"
-		);
+		assert_eq!(old_plus_incoming, new_plus_outgoing, "change members call is incorrect!");
 
 		MEMBERS.with(|m| *m.borrow_mut() = new.to_vec());
 		PRIME.with(|p| *p.borrow_mut() = None);
@@ -337,10 +334,7 @@ impl<T: Config> OnDeposit<T::AccountId, T::CurrencyId, T::Balance> for PostDepos
 		ON_DEPOSIT_POSTHOOK_CALLS.with(|cell| *cell.borrow_mut() += 1);
 		let account_balance: AccountData<T::Balance> =
 			tokens::Pallet::<T>::accounts::<T::AccountId, T::CurrencyId>(account_id.clone(), currency_id);
-		assert!(
-			account_balance.free.ge(&amount),
-			"Posthook must run after the account balance is updated."
-		);
+		assert!(account_balance.free.ge(&amount), "Posthook must run after the account balance is updated.");
 		Ok(())
 	}
 }
@@ -379,10 +373,7 @@ impl<T: Config> OnTransfer<T::AccountId, T::CurrencyId, T::Balance> for PostTran
 		ON_TRANSFER_POSTHOOK_CALLS.with(|cell| *cell.borrow_mut() += 1);
 		let account_balance: AccountData<T::Balance> =
 			tokens::Pallet::<T>::accounts::<T::AccountId, T::CurrencyId>(to.clone(), currency_id);
-		assert!(
-			account_balance.free.ge(&amount),
-			"Posthook must run after the account balance is updated."
-		);
+		assert!(account_balance.free.ge(&amount), "Posthook must run after the account balance is updated.");
 		Ok(())
 	}
 }
@@ -461,26 +452,16 @@ impl ExtBuilder {
 	}
 
 	pub fn build(self) -> sp_io::TestExternalities {
-		let mut t = frame_system::GenesisConfig::<Runtime>::default()
-			.build_storage()
-			.unwrap();
+		let mut t = frame_system::GenesisConfig::<Runtime>::default().build_storage().unwrap();
 
-		tokens::GenesisConfig::<Runtime> {
-			balances: self.balances,
-		}
-		.assimilate_storage(&mut t)
-		.unwrap();
+		tokens::GenesisConfig::<Runtime> { balances: self.balances }.assimilate_storage(&mut t).unwrap();
 
 		if self.treasury_genesis {
-			pallet_treasury::GenesisConfig::<Runtime>::default()
+			pallet_treasury::GenesisConfig::<Runtime>::default().assimilate_storage(&mut t).unwrap();
+
+			pallet_elections_phragmen::GenesisConfig::<Runtime> { members: vec![(TREASURY_ACCOUNT, 10)] }
 				.assimilate_storage(&mut t)
 				.unwrap();
-
-			pallet_elections_phragmen::GenesisConfig::<Runtime> {
-				members: vec![(TREASURY_ACCOUNT, 10)],
-			}
-			.assimilate_storage(&mut t)
-			.unwrap();
 		}
 
 		TrackCreatedAccounts::<Runtime>::reset();

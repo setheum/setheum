@@ -90,11 +90,7 @@ pub mod module {
 		/// and keep remainder quota lte `max_quota`.
 		/// `can_consume` check return true when the remainder quota gte the
 		/// consume amount.
-		TokenBucket {
-			period: Period,
-			quota_increment: u128,
-			max_quota: u128,
-		},
+		TokenBucket { period: Period, quota_increment: u128, max_quota: u128 },
 		/// can_consume check return true always.
 		Unlimited,
 		/// can_consume check return false always.
@@ -165,11 +161,7 @@ pub mod module {
 	#[pallet::generate_deposit(pub(crate) fn deposit_event)]
 	pub enum Event<T: Config> {
 		/// The rate limit rule has updated.
-		RateLimitRuleUpdated {
-			rate_limiter_id: T::RateLimiterId,
-			encoded_key: Vec<u8>,
-			update: Option<RateLimitRule>,
-		},
+		RateLimitRuleUpdated { rate_limiter_id: T::RateLimiterId, encoded_key: Vec<u8>, update: Option<RateLimitRule> },
 		/// The whitelist of bypass rate limit has been added new KeyFilter.
 		WhitelistFilterAdded { rate_limiter_id: T::RateLimiterId },
 		/// The whitelist of bypass rate limit has been removed a KeyFilter.
@@ -241,35 +233,31 @@ pub mod module {
 							match period {
 								Period::Blocks(blocks_count) => {
 									ensure!(!blocks_count.is_zero(), Error::<T>::InvalidRateLimitRule);
-								}
+								},
 								Period::Seconds(secs_count) => {
 									ensure!(!secs_count.is_zero(), Error::<T>::InvalidRateLimitRule);
-								}
+								},
 							}
 
 							ensure!(!quota.is_zero(), Error::<T>::InvalidRateLimitRule);
-						}
-						RateLimitRule::TokenBucket {
-							period,
-							quota_increment,
-							max_quota,
-						} => {
+						},
+						RateLimitRule::TokenBucket { period, quota_increment, max_quota } => {
 							match period {
 								Period::Blocks(blocks_count) => {
 									ensure!(!blocks_count.is_zero(), Error::<T>::InvalidRateLimitRule);
-								}
+								},
 								Period::Seconds(secs_count) => {
 									ensure!(!secs_count.is_zero(), Error::<T>::InvalidRateLimitRule);
-								}
+								},
 							}
 
 							ensure!(
 								!quota_increment.is_zero() && !max_quota.is_zero(),
 								Error::<T>::InvalidRateLimitRule
 							);
-						}
-						RateLimitRule::Unlimited => {}
-						RateLimitRule::NotAllowed => {}
+						},
+						RateLimitRule::Unlimited => {},
+						RateLimitRule::NotAllowed => {},
 					}
 				}
 
@@ -378,10 +366,9 @@ pub mod module {
 				match rate_limit_rule {
 					RateLimitRule::PerPeriod { period, quota } => {
 						let (now, count): (u64, u64) = match period {
-							Period::Blocks(blocks_count) => (
-								T::BlockNumberProvider::current_block_number().saturated_into(),
-								blocks_count,
-							),
+							Period::Blocks(blocks_count) => {
+								(T::BlockNumberProvider::current_block_number().saturated_into(), blocks_count)
+							},
 							Period::Seconds(secs_count) => (T::UnixTime::now().as_secs(), secs_count),
 						};
 
@@ -390,18 +377,13 @@ pub mod module {
 							*last_updated = now;
 							*remainer_quota = quota;
 						}
-					}
+					},
 
-					RateLimitRule::TokenBucket {
-						period,
-						quota_increment,
-						max_quota,
-					} => {
+					RateLimitRule::TokenBucket { period, quota_increment, max_quota } => {
 						let (now, count): (u64, u64) = match period {
-							Period::Blocks(blocks_count) => (
-								T::BlockNumberProvider::current_block_number().saturated_into(),
-								blocks_count,
-							),
+							Period::Blocks(blocks_count) => {
+								(T::BlockNumberProvider::current_block_number().saturated_into(), blocks_count)
+							},
 							Period::Seconds(secs_count) => (T::UnixTime::now().as_secs(), secs_count),
 						};
 
@@ -418,9 +400,9 @@ pub mod module {
 								.saturating_add(*remainer_quota)
 								.min(max_quota);
 						}
-					}
+					},
 
-					RateLimitRule::Unlimited | RateLimitRule::NotAllowed => {}
+					RateLimitRule::Unlimited | RateLimitRule::NotAllowed => {},
 				}
 
 				*remainer_quota
@@ -440,17 +422,17 @@ pub mod module {
 						if encode_key == bounded_vec.into_inner() {
 							return true;
 						}
-					}
+					},
 					KeyFilter::StartsWith(prefix) => {
 						if encode_key.starts_with(&prefix) {
 							return true;
 						}
-					}
+					},
 					KeyFilter::EndsWith(postfix) => {
 						if encode_key.ends_with(&postfix) {
 							return true;
 						}
-					}
+					},
 				}
 			}
 
@@ -467,16 +449,16 @@ pub mod module {
 						Self::access_remainer_quota_after_update(rate_limit_rule, &limiter_id, &encoded_key);
 
 					value <= remainer_quota
-				}
+				},
 				Some(RateLimitRule::Unlimited) => true,
 				Some(RateLimitRule::NotAllowed) => {
 					// always return false, even if the value is zero.
 					false
-				}
+				},
 				None => {
 					// if doesn't rate limit rule, always return true.
 					true
-				}
+				},
 			};
 
 			ensure!(allowed, RateLimiterError::ExceedLimit);
@@ -493,8 +475,8 @@ pub mod module {
 					RateLimitQuota::<T>::mutate(limiter_id, &encoded_key, |(_, remainer_quota)| {
 						*remainer_quota = (*remainer_quota).saturating_sub(value);
 					});
-				}
-				_ => {}
+				},
+				_ => {},
 			};
 		}
 	}
