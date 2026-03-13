@@ -1,0 +1,14 @@
+[package]
+name = "CoinSwap"
+version = "0.0.0"
+
+[addresses]
+std = "0x1"
+CoinSwap = "0xC5"
+BasicCoin = "0xBC"
+GoldCoin = "0x9C"
+SilverCoin = "0x5C"
+
+[dependencies]
+MoveStdlib = { git = "https://github.com/eigerco/move-stdlib", rev = "main" }
+BasicCoin = { local = "../basic-coin"}
