@@ -1,6 +1,6 @@
 [package]
 license = "Apache-2.0 OR MIT"
-name = "module-oracle"
+name = "module-dex-oracle"
 version = "0.9.81-dev"
 authors.workspace = true
 edition.workspace = true
