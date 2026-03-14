@@ -15,7 +15,7 @@ use move_core_types::effects::{
 };
 use move_core_types::identifier::Identifier;
 use move_core_types::language_storage::{ModuleId, StructTag};
-use move_core_types::resolver::{BalanceResolver, ModuleResolver, ResourceResolver};
+use move_core_types::resolver::{BalanceResolver, ModuleResolver, ResourceResolver, SetheumResolver};
 use move_core_types::vm_status::StatusCode;
 use serde::{Deserialize, Serialize};
 
@@ -159,13 +159,19 @@ impl<S: Storage, B: BalanceHandler, H: SetheumHandler> BalanceResolver for Wareh
         src: AccountAddress,
         dst: AccountAddress,
         cheque_amount: u128,
-    ) -> Result<bool, Self::Error> {
+    ) -> Result<bool, StatusCode> {
         self.balance_handler
             .transfer(src, dst, cheque_amount)
             .map_err(Into::into)
     }
 
-    fn total_amount(&self, account: AccountAddress) -> Result<u128, Self::Error> {
+    fn cheque_amount(&self, account: AccountAddress) -> Result<u128, StatusCode> {
+        self.balance_handler
+            .cheque_amount(account)
+            .map_err(Into::into)
+    }
+
+    fn total_amount(&self, account: AccountAddress) -> Result<u128, StatusCode> {
         self.balance_handler
             .total_amount(account)
             .map_err(Into::into)
@@ -175,31 +181,31 @@ impl<S: Storage, B: BalanceHandler, H: SetheumHandler> BalanceResolver for Wareh
 impl<S: Storage, B: BalanceHandler, H: SetheumHandler> SetheumResolver for Warehouse<S, B, H> {
     type Error = StatusCode;
 
-    fn get_currency_balance(&self, currency_id: u32, account: AccountAddress) -> Result<u128, Self::Error> {
+    fn get_currency_balance(&self, currency_id: u32, account: AccountAddress) -> Result<u128, StatusCode> {
         self.setheum_handler
             .get_currency_balance(currency_id, account)
             .map_err(Into::into)
     }
 
-    fn transfer_currency(&self, currency_id: u32, src: AccountAddress, dst: AccountAddress, amount: u128) -> Result<bool, Self::Error> {
+    fn transfer_currency(&self, currency_id: u32, src: AccountAddress, dst: AccountAddress, amount: u128) -> Result<bool, StatusCode> {
         self.setheum_handler
             .transfer_currency(currency_id, src, dst, amount)
             .map_err(Into::into)
     }
 
-    fn swap_exact_tokens_for_tokens(&self, path: Vec<u32>, amount_in: u128, min_amount_out: u128) -> Result<u128, Self::Error> {
+    fn swap_exact_tokens_for_tokens(&self, path: Vec<u32>, amount_in: u128, min_amount_out: u128) -> Result<u128, StatusCode> {
         self.setheum_handler
             .swap_exact_tokens_for_tokens(path, amount_in, min_amount_out)
             .map_err(Into::into)
     }
 
-    fn get_nft_owner(&self, collection_id: u32, item_id: u32) -> Result<Option<AccountAddress>, Self::Error> {
+    fn get_nft_owner(&self, collection_id: u32, item_id: u32) -> Result<Option<AccountAddress>, StatusCode> {
         self.setheum_handler
             .get_nft_owner(collection_id, item_id)
             .map_err(Into::into)
     }
 
-    fn transfer_nft(&self, collection_id: u32, item_id: u32, src: AccountAddress, dst: AccountAddress) -> Result<bool, Self::Error> {
+    fn transfer_nft(&self, collection_id: u32, item_id: u32, src: AccountAddress, dst: AccountAddress) -> Result<bool, StatusCode> {
         self.setheum_handler
             .transfer_nft(collection_id, item_id, src, dst)
             .map_err(Into::into)

@@ -4,16 +4,18 @@ set -e
 
 # Build the move-stdlib bundle
 pushd .
-rm -rf MoveStdlib
-git clone https://github.com/eigerco/move-stdlib.git MoveStdlib
+if [ ! -d "MoveStdlib" ]; then
+    git clone https://github.com/eigerco/move-stdlib.git MoveStdlib
+fi
 cd MoveStdlib
-smove bundle
+$1 bundle
 popd
 
 # Build the substrate-stdlib bundle
 pushd .
-rm -rf SubstrateStdlib
-git clone https://github.com/eigerco/substrate-stdlib.git SubstrateStdlib
+if [ ! -d "SubstrateStdlib" ]; then
+    git clone https://github.com/eigerco/substrate-stdlib.git SubstrateStdlib
+fi
 cd SubstrateStdlib
-smove bundle
+$1 bundle
 popd

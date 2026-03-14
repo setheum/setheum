@@ -1,6 +1,7 @@
 //! Provides a configuration to prepare the initial MoveVM storage state.
 
 use crate::balance::DummyBalanceHandler;
+use crate::setheum::DummySetheumHandler;
 use crate::Mvm;
 use crate::VmResult;
 use crate::{storage::Storage, types::GasStrategy};
@@ -66,7 +67,7 @@ impl VmGenesisConfig {
     /// Apply the configuration to the storage.
     pub fn apply<S: Storage>(self, storage: S) -> Result<(), GenesisConfigError> {
         let storage_safe = StorageSafe::new(storage);
-        let vm = Mvm::new(&storage_safe, DummyBalanceHandler {})
+        let vm = Mvm::new(&storage_safe, DummyBalanceHandler {}, DummySetheumHandler {})
             .map_err(|_| GenesisConfigError::MoveVmInitFailure)?;
 
         let publish_under_stdaddr = |bundle: &[u8]| {
