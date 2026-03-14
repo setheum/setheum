@@ -12,7 +12,7 @@ use move_disassembler::disassembler::Disassembler;
 use move_package::BuildConfig;
 use std::path::PathBuf;
 
-#[derive(Parser)]
+#[derive(Parser, Clone, Debug)]
 pub enum CoverageSummaryOptions {
     /// Display a coverage summary for all modules in this package
     #[clap(name = "summary")]
@@ -40,7 +40,7 @@ pub enum CoverageSummaryOptions {
 
 /// Inspect test coverage for this package. A previous test run with the `--coverage` flag must
 /// have previously been run.
-#[derive(Parser)]
+#[derive(Parser, Clone, Debug)]
 #[clap(name = "coverage")]
 pub struct Coverage {
     #[clap(subcommand)]

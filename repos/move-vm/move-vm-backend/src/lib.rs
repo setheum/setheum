@@ -4,10 +4,12 @@ extern crate alloc;
 
 pub mod balance;
 pub mod genesis;
+pub mod setheum;
 pub mod storage;
 pub mod types;
 mod warehouse;
 
+use crate::setheum::SetheumHandler;
 use crate::storage::Storage;
 use crate::types::{Call, Transaction, VmResult};
 use crate::warehouse::Warehouse;
@@ -31,33 +33,36 @@ use move_vm_runtime::move_vm::MoveVM;
 use types::{GasHandler, GasStrategy};
 
 /// Main MoveVM structure, which is used to represent the virutal machine itself.
-pub struct Mvm<S, B>
+pub struct Mvm<S, B, H>
 where
     S: Storage,
     B: BalanceHandler,
+    H: SetheumHandler,
 {
     // MoveVM instance - from move_vm_runtime crate
     vm: MoveVM,
     // Storage instance
-    warehouse: Warehouse<S, B>,
+    warehouse: Warehouse<S, B, H>,
 }
 
-impl<S, B> Mvm<S, B>
+impl<S, B, H> Mvm<S, B, H>
 where
     S: Storage,
     B: BalanceHandler,
+    H: SetheumHandler,
 {
     /// Create a new Move VM with the given storage.
-    pub fn new(storage: S, balance_handler: B) -> Result<Mvm<S, B>, Error> {
-        Self::new_with_config(storage, balance_handler)
+    pub fn new(storage: S, balance_handler: B, setheum_handler: H) -> Result<Mvm<S, B, H>, Error> {
+        Self::new_with_config(storage, balance_handler, setheum_handler)
     }
 
     /// Create a new Move VM with the given storage and configuration.
     pub(crate) fn new_with_config(
         storage: S,
         balance_handler: B,
+        setheum_handler: H,
         // config: VMConfig,
-    ) -> Result<Mvm<S, B>, Error> {
+    ) -> Result<Mvm<S, B, H>, Error> {
         Ok(Mvm {
             // TODO(rqnsom): see if we can avoid GAS_PARAMS cloning
             vm: MoveVM::new(all_natives(CORE_CODE_ADDRESS, NATIVE_COST_PARAMS.clone())).map_err(
@@ -66,7 +71,7 @@ where
                     anyhow!("Error code:{:?}: msg: '{}'", code, msg.unwrap_or_default())
                 },
             )?,
-            warehouse: Warehouse::new(storage, balance_handler),
+            warehouse: Warehouse::new(storage, balance_handler, setheum_handler),
         })
     }
 

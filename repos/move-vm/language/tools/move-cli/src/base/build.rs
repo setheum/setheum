@@ -7,7 +7,7 @@ use move_package::{Architecture, BuildConfig};
 use std::path::PathBuf;
 
 /// Build the package at `path`. If no path is provided defaults to current directory.
-#[derive(Parser)]
+#[derive(Parser, Clone, Debug)]
 #[clap(name = "build")]
 pub struct Build;
 

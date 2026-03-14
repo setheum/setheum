@@ -1,4 +1,4 @@
-use crate::{balance::BalanceHandler, storage::Storage};
+use crate::{balance::BalanceHandler, storage::Storage, setheum::SetheumHandler};
 use alloc::{
     collections::{
         btree_map::Entry::{Occupied, Vacant},
@@ -65,18 +65,21 @@ impl AccountData {
 }
 
 /// Move VM storage implementation for Substrate storage.
-pub(crate) struct Warehouse<S: Storage, B: BalanceHandler> {
+pub(crate) struct Warehouse<S: Storage, B: BalanceHandler, H: SetheumHandler> {
     /// Substrate storage implementing the Storage trait.
     storage: S,
     /// Balance handler which provides access to the external balance handling mechanism.
     balance_handler: B,
+    /// Setheum handler which provides access to the Setheum specific pallets.
+    setheum_handler: H,
 }
 
-impl<S: Storage, B: BalanceHandler> Warehouse<S, B> {
-    pub(crate) fn new(storage: S, balance_handler: B) -> Warehouse<S, B> {
+impl<S: Storage, B: BalanceHandler, H: SetheumHandler> Warehouse<S, B, H> {
+    pub(crate) fn new(storage: S, balance_handler: B, setheum_handler: H) -> Warehouse<S, B, H> {
         Self {
             storage,
             balance_handler,
+            setheum_handler,
         }
     }
 
@@ -100,7 +103,7 @@ impl<S: Storage, B: BalanceHandler> Warehouse<S, B> {
     }
 }
 
-impl<S: Storage, B: BalanceHandler> Deref for Warehouse<S, B> {
+impl<S: Storage, B: BalanceHandler, H: SetheumHandler> Deref for Warehouse<S, B, H> {
     type Target = S;
 
     fn deref(&self) -> &Self::Target {
@@ -108,7 +111,7 @@ impl<S: Storage, B: BalanceHandler> Deref for Warehouse<S, B> {
     }
 }
 
-impl<S: Storage, B: BalanceHandler> ModuleResolver for Warehouse<S, B> {
+impl<S: Storage, B: BalanceHandler, H: SetheumHandler> ModuleResolver for Warehouse<S, B, H> {
     type Error = Error;
 
     fn get_module(&self, module_id: &ModuleId) -> Result<Option<Vec<u8>>, Self::Error> {
@@ -126,7 +129,7 @@ impl<S: Storage, B: BalanceHandler> ModuleResolver for Warehouse<S, B> {
     }
 }
 
-impl<S: Storage, B: BalanceHandler> ResourceResolver for Warehouse<S, B> {
+impl<S: Storage, B: BalanceHandler, H: SetheumHandler> ResourceResolver for Warehouse<S, B, H> {
     type Error = Error;
 
     fn get_resource(
@@ -148,7 +151,7 @@ impl<S: Storage, B: BalanceHandler> ResourceResolver for Warehouse<S, B> {
     }
 }
 
-impl<S: Storage, B: BalanceHandler> BalanceResolver for Warehouse<S, B> {
+impl<S: Storage, B: BalanceHandler, H: SetheumHandler> BalanceResolver for Warehouse<S, B, H> {
     type Error = StatusCode;
 
     fn transfer(
@@ -162,15 +165,43 @@ impl<S: Storage, B: BalanceHandler> BalanceResolver for Warehouse<S, B> {
             .map_err(Into::into)
     }
 
-    fn cheque_amount(&self, account: AccountAddress) -> Result<u128, Self::Error> {
-        self.balance_handler
-            .cheque_amount(account)
-            .map_err(Into::into)
-    }
-
     fn total_amount(&self, account: AccountAddress) -> Result<u128, Self::Error> {
         self.balance_handler
             .total_amount(account)
+            .map_err(Into::into)
+    }
+}
+
+impl<S: Storage, B: BalanceHandler, H: SetheumHandler> SetheumResolver for Warehouse<S, B, H> {
+    type Error = StatusCode;
+
+    fn get_currency_balance(&self, currency_id: u32, account: AccountAddress) -> Result<u128, Self::Error> {
+        self.setheum_handler
+            .get_currency_balance(currency_id, account)
+            .map_err(Into::into)
+    }
+
+    fn transfer_currency(&self, currency_id: u32, src: AccountAddress, dst: AccountAddress, amount: u128) -> Result<bool, Self::Error> {
+        self.setheum_handler
+            .transfer_currency(currency_id, src, dst, amount)
+            .map_err(Into::into)
+    }
+
+    fn swap_exact_tokens_for_tokens(&self, path: Vec<u32>, amount_in: u128, min_amount_out: u128) -> Result<u128, Self::Error> {
+        self.setheum_handler
+            .swap_exact_tokens_for_tokens(path, amount_in, min_amount_out)
+            .map_err(Into::into)
+    }
+
+    fn get_nft_owner(&self, collection_id: u32, item_id: u32) -> Result<Option<AccountAddress>, Self::Error> {
+        self.setheum_handler
+            .get_nft_owner(collection_id, item_id)
+            .map_err(Into::into)
+    }
+
+    fn transfer_nft(&self, collection_id: u32, item_id: u32, src: AccountAddress, dst: AccountAddress) -> Result<bool, Self::Error> {
+        self.setheum_handler
+            .transfer_nft(collection_id, item_id, src, dst)
             .map_err(Into::into)
     }
 }

@@ -9,7 +9,7 @@ use move_package::{compilation::compiled_package::CompiledUnitWithSource, BuildC
 use std::path::PathBuf;
 
 /// Disassemble the Move bytecode pointed to
-#[derive(Parser)]
+#[derive(Parser, Clone, Debug)]
 #[clap(name = "disassemble")]
 pub struct Disassemble {
     /// Start a disassembled bytecode-to-source explorer

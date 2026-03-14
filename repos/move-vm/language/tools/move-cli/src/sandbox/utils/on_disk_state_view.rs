@@ -15,8 +15,8 @@ use move_core_types::{
     account_address::AccountAddress,
     identifier::Identifier,
     language_storage::{ModuleId, StructTag, TypeTag},
-    parser, quick_balance_resolver_impl,
-    resolver::{BalanceResolver, ModuleResolver, ResourceResolver},
+    parser, quick_balance_resolver_impl, quick_setheum_resolver_impl,
+    resolver::{BalanceResolver, ModuleResolver, MoveResolver, ResourceResolver, SetheumResolver},
     vm_status::StatusCode,
 };
 use move_disassembler::disassembler::Disassembler;
@@ -422,6 +422,7 @@ impl ResourceResolver for OnDiskStateView {
 
 // This is not supposed to be used in these tests.
 quick_balance_resolver_impl!(OnDiskStateView, StatusCode);
+quick_setheum_resolver_impl!(OnDiskStateView, StatusCode);
 
 impl GetModule for &OnDiskStateView {
     type Error = anyhow::Error;

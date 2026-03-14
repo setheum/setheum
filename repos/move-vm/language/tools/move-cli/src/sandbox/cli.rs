@@ -22,7 +22,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-#[derive(Parser)]
+#[derive(Parser, Clone, Debug)]
 pub enum SandboxCommand {
     /// Compile the modules in this package and its dependencies and publish the resulting bytecodes in global storage.
     #[clap(name = "publish")]
@@ -144,7 +144,7 @@ pub enum SandboxCommand {
     },
 }
 
-#[derive(Parser)]
+#[derive(Parser, Clone, Debug)]
 pub enum GenerateCommand {
     /// Generate struct layout bindings for the modules stored on disk under `storage-dir`.
     #[clap(name = "struct-layouts")]
@@ -158,7 +158,7 @@ pub enum GenerateCommand {
         options: StructLayoutOptions,
     },
 }
-#[derive(Parser)]
+#[derive(Parser, Clone, Debug)]
 pub struct StructLayoutOptions {
     /// Generate layout bindings for this struct.
     #[clap(long = "struct")]

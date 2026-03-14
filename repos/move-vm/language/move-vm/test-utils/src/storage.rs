@@ -14,8 +14,8 @@ use move_core_types::{
     effects::{AccountChangeSet, ChangeSet, Op},
     identifier::Identifier,
     language_storage::{ModuleId, StructTag},
-    quick_balance_resolver_impl,
-    resolver::{BalanceResolver, ModuleResolver, MoveResolver, ResourceResolver},
+    quick_balance_resolver_impl, quick_setheum_resolver_impl,
+    resolver::{BalanceResolver, ModuleResolver, MoveResolver, ResourceResolver, SetheumResolver},
     vm_status::StatusCode,
 };
 
@@ -57,6 +57,7 @@ impl ResourceResolver for BlankStorage {
 
 // This is not supposed to be used in these tests.
 quick_balance_resolver_impl!(BlankStorage, StatusCode);
+quick_setheum_resolver_impl!(BlankStorage, StatusCode);
 
 #[cfg(feature = "table-extension")]
 impl TableResolver for BlankStorage {
@@ -115,19 +116,43 @@ impl<'a, 'b, S: BalanceResolver> BalanceResolver for DeltaStorage<'a, 'b, S> {
 
     fn transfer(
         &self,
-        _src: AccountAddress,
-        _dst: AccountAddress,
-        _cheque_amount: u128,
+        src: AccountAddress,
+        dst: AccountAddress,
+        cheque_amount: u128,
     ) -> Result<bool, Self::Error> {
-        unimplemented!("shouldn't be used");
+        self.base.transfer(src, dst, cheque_amount)
     }
 
-    fn cheque_amount(&self, _account: AccountAddress) -> Result<u128, Self::Error> {
-        unimplemented!("shouldn't be used");
+    fn cheque_amount(&self, account: AccountAddress) -> Result<u128, Self::Error> {
+        self.base.cheque_amount(account)
     }
 
-    fn total_amount(&self, _account: AccountAddress) -> Result<u128, Self::Error> {
-        unimplemented!("shouldn't be used");
+    fn total_amount(&self, account: AccountAddress) -> Result<u128, Self::Error> {
+        self.base.total_amount(account)
+    }
+}
+
+impl<'a, 'b, S: SetheumResolver> SetheumResolver for DeltaStorage<'a, 'b, S> {
+    type Error = S::Error;
+
+    fn get_currency_balance(&self, currency_id: u32, account: AccountAddress) -> Result<u128, Self::Error> {
+        self.base.get_currency_balance(currency_id, account)
+    }
+
+    fn transfer_currency(&self, currency_id: u32, src: AccountAddress, dst: AccountAddress, amount: u128) -> Result<bool, Self::Error> {
+        self.base.transfer_currency(currency_id, src, dst, amount)
+    }
+
+    fn swap_exact_tokens_for_tokens(&self, path: Vec<u32>, amount_in: u128, min_amount_out: u128) -> Result<u128, Self::Error> {
+        self.base.swap_exact_tokens_for_tokens(path, amount_in, min_amount_out)
+    }
+
+    fn get_nft_owner(&self, collection_id: u32, item_id: u32) -> Result<Option<AccountAddress>, Self::Error> {
+        self.base.get_nft_owner(collection_id, item_id)
+    }
+
+    fn transfer_nft(&self, collection_id: u32, item_id: u32, src: AccountAddress, dst: AccountAddress) -> Result<bool, Self::Error> {
+        self.base.transfer_nft(collection_id, item_id, src, dst)
     }
 }
 
@@ -352,3 +377,4 @@ impl TableResolver for InMemoryStorage {
 
 // This is not supposed to be used in these tests.
 quick_balance_resolver_impl!(InMemoryStorage, StatusCode);
+quick_setheum_resolver_impl!(InMemoryStorage, StatusCode);

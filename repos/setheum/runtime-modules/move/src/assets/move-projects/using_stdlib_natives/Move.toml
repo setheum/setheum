@@ -1,0 +1,10 @@
+[package]
+name = "using_stdlib_natives"
+version = "0.0.0"
+
+[dependencies]
+MoveStdlib = { git = "https://github.com/eigerco/move-stdlib", rev = "main" }
+
+[addresses]
+std =  "0x1"
+StdNativesUser = "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty"

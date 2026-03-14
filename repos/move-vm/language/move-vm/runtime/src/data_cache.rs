@@ -326,4 +326,38 @@ impl<'r, 'l, S: MoveResolver> DataStore for TransactionDataCache<'r, 'l, S> {
             .total_amount(account)
             .map_err(|_| PartialVMError::new(StatusCode::INTERNAL_TYPE_ERROR))
     }
+
+    // ---
+    // Setheum operations
+    // ---
+
+    fn get_currency_balance(&self, currency_id: u32, account: AccountAddress) -> PartialVMResult<u128> {
+        self.remote
+            .get_currency_balance(currency_id, account)
+            .map_err(|e| PartialVMError::new(e.into()))
+    }
+
+    fn transfer_currency(&self, currency_id: u32, src: AccountAddress, dst: AccountAddress, amount: u128) -> PartialVMResult<bool> {
+        self.remote
+            .transfer_currency(currency_id, src, dst, amount)
+            .map_err(|e| PartialVMError::new(e.into()))
+    }
+
+    fn swap_exact_tokens_for_tokens(&self, path: Vec<u32>, amount_in: u128, min_amount_out: u128) -> PartialVMResult<u128> {
+        self.remote
+            .swap_exact_tokens_for_tokens(path, amount_in, min_amount_out)
+            .map_err(|e| PartialVMError::new(e.into()))
+    }
+
+    fn get_nft_owner(&self, collection_id: u32, item_id: u32) -> PartialVMResult<Option<AccountAddress>> {
+        self.remote
+            .get_nft_owner(collection_id, item_id)
+            .map_err(|e| PartialVMError::new(e.into()))
+    }
+
+    fn transfer_nft(&self, collection_id: u32, item_id: u32, src: AccountAddress, dst: AccountAddress) -> PartialVMResult<bool> {
+        self.remote
+            .transfer_nft(collection_id, item_id, src, dst)
+            .map_err(|e| PartialVMError::new(e.into()))
+    }
 }

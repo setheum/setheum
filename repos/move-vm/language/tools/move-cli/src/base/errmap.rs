@@ -8,7 +8,7 @@ use std::path::PathBuf;
 
 /// Generate error map for the package and its dependencies at `path` for use by the Move
 /// explanation tool.
-#[derive(Parser)]
+#[derive(Parser, Clone, Debug)]
 #[clap(name = "errmap")]
 pub struct Errmap {
     /// The prefix that all error reasons within modules will be prefixed with, e.g., "E" if

@@ -32,7 +32,7 @@ use std::path::PathBuf;
 
 type NativeFunctionRecord = (AccountAddress, Identifier, Identifier, NativeFunction);
 
-#[derive(Parser)]
+#[derive(Parser, Clone, Debug)]
 #[clap(author, version, about)]
 pub struct Move {
     /// Path to a package which the command should be run with respect to.
@@ -51,7 +51,7 @@ pub struct Move {
 /// MoveCLI is the CLI that will be executed by the `move-cli` command
 /// The `cmd` argument is added here rather than in `Move` to make it
 /// easier for other crates to extend `move-cli`
-#[derive(Parser)]
+#[derive(Parser, Clone, Debug)]
 pub struct MoveCLI {
     #[clap(flatten)]
     pub move_args: Move,
@@ -60,7 +60,7 @@ pub struct MoveCLI {
     pub cmd: Command,
 }
 
-#[derive(Parser)]
+#[derive(Parser, Clone, Debug)]
 pub enum Command {
     Build(Build),
     Coverage(Coverage),

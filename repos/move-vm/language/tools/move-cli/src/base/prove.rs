@@ -15,7 +15,7 @@ use std::{
 };
 use tempfile::TempDir;
 
-#[derive(Parser, Debug)]
+#[derive(Parser, Clone, Debug)]
 pub enum ProverOptions {
     // Pass through unknown commands to the prover Clap parser
     #[clap(
@@ -29,7 +29,7 @@ pub enum ProverOptions {
 
 /// Run the Move Prover on the package at `path`. If no path is provided defaults to current
 /// directory. Use `.. prove .. -- <options>` to pass on options to the prover.
-#[derive(Parser)]
+#[derive(Parser, Clone, Debug)]
 #[clap(name = "prove")]
 pub struct Prove {
     /// The target filter used to prune the modules to verify. Modules with a name that contains

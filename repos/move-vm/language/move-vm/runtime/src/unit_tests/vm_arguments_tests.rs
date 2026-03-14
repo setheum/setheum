@@ -19,8 +19,8 @@ use move_core_types::{
     account_address::AccountAddress,
     identifier::{IdentStr, Identifier},
     language_storage::{ModuleId, StructTag, TypeTag},
-    quick_balance_resolver_impl,
-    resolver::{BalanceResolver, ModuleResolver, ResourceResolver},
+    quick_balance_resolver_impl, quick_setheum_resolver_impl,
+    resolver::{BalanceResolver, ModuleResolver, MoveResolver, ResourceResolver, SetheumResolver},
     u256::U256,
     value::{serialize_values, MoveValue},
     vm_status::{StatusCode, StatusType},
@@ -270,6 +270,7 @@ impl ResourceResolver for RemoteStore {
 
 // This is not supposed to be used in these tests.
 quick_balance_resolver_impl!(RemoteStore, StatusCode);
+quick_setheum_resolver_impl!(RemoteStore, StatusCode);
 
 fn combine_signers_and_args(
     signers: Vec<AccountAddress>,

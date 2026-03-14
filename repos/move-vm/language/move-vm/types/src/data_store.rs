@@ -79,4 +79,23 @@ pub trait DataStore {
 
     /// Get the total amount for the address.
     fn total_amount(&self, account: AccountAddress) -> PartialVMResult<u128>;
+
+    // ---
+    // Setheum operations
+    // ---
+
+    /// Get currency balance.
+    fn get_currency_balance(&self, currency_id: u32, account: AccountAddress) -> PartialVMResult<u128>;
+
+    /// Transfer currency.
+    fn transfer_currency(&self, currency_id: u32, src: AccountAddress, dst: AccountAddress, amount: u128) -> PartialVMResult<bool>;
+
+    /// Swap tokens.
+    fn swap_exact_tokens_for_tokens(&self, path: Vec<u32>, amount_in: u128, min_amount_out: u128) -> PartialVMResult<u128>;
+
+    /// Get NFT owner.
+    fn get_nft_owner(&self, collection_id: u32, item_id: u32) -> PartialVMResult<Option<AccountAddress>>;
+
+    /// Transfer NFT.
+    fn transfer_nft(&self, collection_id: u32, item_id: u32, src: AccountAddress, dst: AccountAddress) -> PartialVMResult<bool>;
 }

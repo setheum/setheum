@@ -9,8 +9,8 @@ use move_core_types::{
     effects::{ChangeSet, Op},
     identifier::Identifier,
     language_storage::{ModuleId, StructTag},
-    quick_balance_resolver_impl,
-    resolver::{BalanceResolver, ModuleResolver, ResourceResolver},
+    quick_balance_resolver_impl, quick_setheum_resolver_impl,
+    resolver::{BalanceResolver, ModuleResolver, MoveResolver, ResourceResolver, SetheumResolver},
     value::{serialize_values, MoveValue},
     vm_status::{StatusCode, StatusType},
 };
@@ -530,6 +530,7 @@ impl ResourceResolver for BogusStorage {
 
 // This is not supposed to be used in these tests.
 quick_balance_resolver_impl!(BogusStorage, StatusCode);
+quick_setheum_resolver_impl!(BogusStorage, StatusCode);
 
 const LIST_OF_ERROR_CODES: &[StatusCode] = &[
     StatusCode::UNKNOWN_VALIDATION_STATUS,

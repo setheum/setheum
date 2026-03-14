@@ -1,0 +1,33 @@
+[package]
+license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
+name = "module-move-rpc"
+version = "0.1.0"
+description = "RPC for the Move Pallet"
+authors = { workspace = true }
+edition = { workspace = true }
+readme = { workspace = true }
+repository = { workspace = true }
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[dependencies]
+codec = { workspace = true }
+serde = { workspace = true }
+frame-support = { workspace = true }
+jsonrpsee = { workspace = true }
+sp-api = { workspace = true }
+sp-blockchain = { workspace = true }
+sp-runtime = { workspace = true }
+
+module-move = { path = ".." }
+module-move-runtime-api = { path = "../runtime-api" }
+
+[features]
+default = ["std"]
+std = [
+    "sp-api/std",
+    "sp-runtime/std",
+    "module-move/std",
+    "module-move-runtime-api/std"
+]

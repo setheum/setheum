@@ -13,7 +13,7 @@ use std::path::Path;
 
 use clap::{ArgEnum, Parser};
 
-#[derive(Parser)]
+#[derive(Parser, Clone, Debug)]
 pub enum ExperimentalCommand {
     /// Perform a read/write set analysis and print the results for
     /// `module_file`::`script_name`.

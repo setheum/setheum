@@ -7,7 +7,7 @@ use move_package::BuildConfig;
 use std::path::PathBuf;
 
 /// Print address information.
-#[derive(Parser)]
+#[derive(Parser, Clone, Debug)]
 #[clap(name = "info")]
 pub struct Info;
 
