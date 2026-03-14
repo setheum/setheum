@@ -141,7 +141,7 @@ pub mod pallet {
 
     /// MoveVM pallet configuration trait
     #[pallet::config]
-    pub trait Config: frame_system::Config {
+    pub trait Config: frame_system::Config<RuntimeEvent: From<Event<Self>>> {
         /// The currency mechanism.
         type Currency: Currency<Self::AccountId, Balance = Self::CurrencyBalance>
             + ReservableCurrency<Self::AccountId, Balance = Self::CurrencyBalance>
@@ -164,7 +164,7 @@ pub mod pallet {
         type MultiCurrency: module_traits::MultiCurrency<Self::AccountId, CurrencyId = Self::CurrencyId, Balance = Self::CurrencyBalance>;
 
         /// Swap trait bound
-        type Swap: module_traits::Swap<Self::AccountId, Self::CurrencyId, Self::CurrencyBalance>;
+        type Swap: module_support::Swap<Self::AccountId, Self::CurrencyId, Self::CurrencyBalance>;
 
         /// NFT trait bound
         type NFT: module_traits::NFT<Self::AccountId, Self::ClassId, Self::TokenId>;
@@ -185,9 +185,6 @@ pub mod pallet {
         /// Maximum number of signatories in multi-signer requests.
         #[pallet::constant]
         type MaxScriptSigners: Get<u32>;
-
-        /// Because this pallet emits events, it depends on the runtime's definition of an event.
-        type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 
         /// Type representing the weight of this pallet
         type WeightInfo: WeightInfo;

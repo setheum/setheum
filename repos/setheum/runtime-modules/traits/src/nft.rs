@@ -51,3 +51,22 @@ pub trait InspectExtended<AccountId>: Inspect<AccountId> {
 	/// Get the next token ID to be minted for a Class
 	fn next_token_id(class: Self::CollectionId) -> Self::ItemId;
 }
+
+/// Trait to complement the Inspect trait
+pub trait NFT<AccountId, ClassId, TokenId>:
+	frame_support::traits::tokens::nonfungibles::Inspect<AccountId, CollectionId = ClassId, ItemId = TokenId>
+	+ frame_support::traits::tokens::nonfungibles::Transfer<AccountId>
+	+ frame_support::traits::tokens::nonfungibles::Mutate<AccountId>
+	+ frame_support::traits::tokens::nonfungibles::Destroy<AccountId>
+	+ InspectExtended<AccountId>
+{
+}
+
+impl<T, AccountId, ClassId, TokenId> NFT<AccountId, ClassId, TokenId> for T where
+	T: frame_support::traits::tokens::nonfungibles::Inspect<AccountId, CollectionId = ClassId, ItemId = TokenId>
+		+ frame_support::traits::tokens::nonfungibles::Transfer<AccountId>
+		+ frame_support::traits::tokens::nonfungibles::Mutate<AccountId>
+		+ frame_support::traits::tokens::nonfungibles::Destroy<AccountId>
+		+ InspectExtended<AccountId>
+{
+}
