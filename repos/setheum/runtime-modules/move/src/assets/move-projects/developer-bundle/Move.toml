@@ -1,0 +1,11 @@
+[package]
+name = "developer-bundle"
+version = "0.0.0"
+
+[dependencies]
+MoveStdlib = { git = "https://github.com/eigerco/move-stdlib", rev = "main" }
+SubstrateStdlib = { git = "https://github.com/eigerco/substrate-stdlib.git", rev = "main" }
+
+[addresses]
+std =  "0x1"
+DeveloperBob = "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty"

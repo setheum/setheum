@@ -1,0 +1,43 @@
+[package]
+name = "move-vm-runtime"
+version = "0.1.0"
+authors = ["Diem Association <opensource@diem.com>"]
+description = "Core Move execution logic"
+repository = "https://github.com/diem/diem"
+homepage = "https://diem.com"
+license = "Apache-2.0"
+publish = false
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+fail = { version = "0.5", default-features = false, optional = true }
+better_any = { git = "https://github.com/eigerco/better_any.git", branch = "main", default-features = false, features = ["derive"] }
+sha3 = { version = "0.10", default-features = false }
+tracing = { version = "0.1", default-features = false }
+hashbrown = { version = "0.14", default-features = false, features = ["ahash"] }
+once_cell = { version = "1.18", default-features = false, optional = true }
+
+move-bytecode-verifier = { path = "../../move-bytecode-verifier", default-features = false }
+move-core-types = { path = "../../move-core/types", default-features = false }
+move-vm-types = { path = "../types", default-features = false }
+move-binary-format = { path = "../../move-binary-format", default-features = false }
+
+[features]
+default = ["std"]
+fuzzing = ["move-vm-types/fuzzing"]
+failpoints = ["fail/failpoints"]
+# Enable tracing and debugging also for release builds. By default, it is only enabled for debug builds.
+debugging = ["once_cell/std", "std"]
+testing = []
+stacktrace = []
+lazy_natives = []
+std = [
+    "sha3/std",
+    "fail/failpoints",
+    "move-bytecode-verifier/std",
+    "move-core-types/std",
+    "move-vm-types/std",
+    "move-binary-format/std",
+]

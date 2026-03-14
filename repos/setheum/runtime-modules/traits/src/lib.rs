@@ -59,7 +59,7 @@ pub use elections::ValidatorProvider;
 pub use get_by_key::GetByKey;
 #[cfg(feature = "xcm")]
 pub use multi_asset::ConcreteFungibleAsset;
-pub use nft::InspectExtended;
+pub use nft::{InspectExtended, NFT};
 pub use operations::{
 	AccountInfoProvider, BalancesProvider, BondedStashProvider, ContractInfoProvider, NextKeysSessionProvider,
 };

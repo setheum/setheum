@@ -72,3 +72,5 @@ pub mod utility;
 pub mod vesting;
 /// Pallet vk storage API
 pub mod vk_storage;
+/// Pallet move-vm API
+pub mod move_vm;

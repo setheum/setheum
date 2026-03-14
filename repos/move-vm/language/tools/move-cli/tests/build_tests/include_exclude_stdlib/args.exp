@@ -1,0 +1,20 @@
+Command `build -v`:
+UPDATING GIT DEPENDENCY https://github.com/eigerco/move-stdlib
+BUILDING build_include_exclude_stdlib
+error[E03002]: unbound module
+  ┌─ ./sources/UseSigner.move:3:7
+  │
+3 │   use std::signer;
+  │       ^^^^^^^^^^^ Invalid 'use'. Unbound module: '(std=0x1)::signer'
+
+error[E03002]: unbound module
+  ┌─ ./sources/UseSigner.move:6:5
+  │
+6 │     signer::address_of(account)
+  │     ^^^^^^ Unbound module alias 'signer'
+
+Command `-d -v build`:
+UPDATING GIT DEPENDENCY https://github.com/eigerco/move-stdlib
+UPDATING GIT DEPENDENCY https://github.com/eigerco/move-stdlib
+INCLUDING DEPENDENCY MoveStdlib
+BUILDING build_include_exclude_stdlib

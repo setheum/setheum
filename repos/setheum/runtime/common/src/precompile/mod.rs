@@ -27,12 +27,12 @@ use fp_evm::{
 	Context, ExitError, ExitRevert, ExitSucceed, Precompile, PrecompileFailure, PrecompileOutput, PrecompileSet,
 };
 use pallet_evm::{IsPrecompileResult, PrecompileHandle};
-use pallet_evm_precompile_bn128::{Bn128Add, Bn128Mul, Bn128Pairing};
-use pallet_evm_precompile_ecrecover::ECRecover;
-use pallet_evm_precompile_identity::Identity;
-use pallet_evm_precompile_modexp::Modexp;
-use pallet_evm_precompile_ripemd160::Ripemd160;
-use pallet_evm_precompile_sha2::Sha256;
+// use pallet_evm_precompile_bn128::{Bn128Add, Bn128Mul, Bn128Pairing};
+// use pallet_evm_precompile_ecrecover::ECRecover;
+// use pallet_evm_precompile_identity::Identity;
+// use pallet_evm_precompile_modexp::Modexp;
+// use pallet_evm_precompile_ripemd160::Ripemd160;
+// use pallet_evm_precompile_sha2::Sha256;
 use module_support::PrecompileCallerFilter as PrecompileCallerFilterT;
 use primitives::PRECOMPILE_ADDRESS_START;
 use sp_core::H160;
@@ -104,21 +104,29 @@ where
 		let address = handle.code_address();
 
 		if address == H160::from_low_u64_be(1) {
-			Some(ECRecover::execute(handle))
+			// Some(ECRecover::execute(handle))
+			None
 		} else if address == H160::from_low_u64_be(2) {
-			Some(Sha256::execute(handle))
+			// Some(Sha256::execute(handle))
+			None
 		} else if address == H160::from_low_u64_be(3) {
-			Some(Ripemd160::execute(handle))
+			// Some(Ripemd160::execute(handle))
+			None
 		} else if address == H160::from_low_u64_be(4) {
-			Some(Identity::execute(handle))
+			// Some(Identity::execute(handle))
+			None
 		} else if address == H160::from_low_u64_be(5) {
-			Some(Modexp::execute(handle))
+			// Some(Modexp::execute(handle))
+			None
 		} else if address == H160::from_low_u64_be(6) {
-			Some(Bn128Add::execute(handle))
+			// Some(Bn128Add::execute(handle))
+			None
 		} else if address == H160::from_low_u64_be(7) {
-			Some(Bn128Mul::execute(handle))
+			// Some(Bn128Mul::execute(handle))
+			None
 		} else if address == H160::from_low_u64_be(8) {
-			Some(Bn128Pairing::execute(handle))
+			// Some(Bn128Pairing::execute(handle))
+			None
 		} else if address == H160::from_low_u64_be(PRECOMPILE_ADDRESS_START) {
 			Some(MultiCurrencyPrecompile::execute(handle))
 		} else if address == H160::from_low_u64_be(PRECOMPILE_ADDRESS_START + 1) {
