@@ -36,8 +36,11 @@ members = [
 	"runtime-modules/transaction-pause",
 	"runtime-modules/transaction-payment",
 	"runtime-modules/unified-accounts",
-	"runtime-modules/utilities",
 	"runtime-modules/vesting",
+	"runtime-modules/move",
+	"runtime-modules/move/rpc",
+	"runtime-modules/move/runtime-api",
+	"runtime-modules/dex-oracle",
 
 	"runtime-modules/currencies/runtime-api",
 	"runtime-modules/oracle/runtime-api",
@@ -47,6 +50,7 @@ members = [
 	"clisee",
 	"chain-bootstrapper",
 	"setheum-client",
+	"setheum-move",
 	"e2e-tests",
 	"benches/payout-stakers",
 	"scripts/synthetic-network/synthetic-link",
@@ -159,6 +163,17 @@ set-bft-rmc = { path = "../set-bft/rmc" }
 set-bft-types = { path = "../set-bft/types" }
 async-trait = { version = "0.1.71" }
 array-bytes = { version = "6" }
+anyhow = { version = "1.0.75", default-features = false }
+bcs = { git = "https://github.com/eigerco/bcs.git", branch = "master", default-features = false }
+blake2 = { version = "0.10.6", default-features = false }
+codec = { package = "parity-scale-codec", version = "3.7.5", default-features = false }
+hashbrown = { version = "0.14.0", default-features = false }
+
+move-core-types = { path = "../move-vm/language/move-core/types", default-features = false }
+move-vm-backend = { path = "../move-vm/move-vm-backend", default-features = false }
+move-vm-backend-common = { path = "../move-vm/move-vm-backend-common", default-features = false }
+move-stdlib = { path = "../move-vm/language/move-stdlib", default-features = false }
+
 bn = { package = "substrate-bn", version = "0.6", default-features = false }
 bytes = { version = "1.5" }
 bstringify = { version = "0.1.2" }
@@ -225,6 +240,7 @@ module-asset-registry = { path = "runtime-modules/module-asset-registry", defaul
 module-authority = { path = "runtime-modules/authority", default-features = false }
 module-benchmarking = { package = "module-benchmarking", path = "runtime-modules/benchmarking", default-features = false }
 module-build-script-utils = { path = "module/build-script-utils" }
+module-dex-oracle = { path = "runtime-modules/dex-oracle", default-features = false }
 module-oracle = { package = "module-oracle", path = "runtime-modules/oracle", default-features = false }
 module-oracle-runtime-api = { package = "module-oracle-runtime-api", path = "runtime-modules/oracle/runtime-api", default-features = false }
 module-parameters = { package = "module-parameters", path = "runtime-modules/parameters", default-features = false }
@@ -284,6 +300,9 @@ finality-setbft = { path = "finality/finality-setbft" }
 
 
 
+module-move = { path = "runtime-modules/move", default-features = false }
+module-move-rpc = { path = "runtime-modules/move/rpc", default-features = false }
+module-move-runtime-api = { path = "runtime-modules/move/runtime-api", default-features = false }
 
 # Setheum & MODULE (client)
 setheum-node = { path = "node" }
@@ -437,9 +456,3 @@ fp-self-contained = { git = "https://github.com/polkadot-evm/frontier", branch =
 
 # Frontier Precompiles
 pallet-evm-precompile-simple = { git = "https://github.com/polkadot-evm/frontier", branch = "master", default-features = false }
-pallet-evm-precompile-sha2 = { git = "https://github.com/polkadot-evm/frontier", branch = "master", default-features = false }
-pallet-evm-precompile-ripemd160 = { git = "https://github.com/polkadot-evm/frontier", branch = "master", default-features = false }
-pallet-evm-precompile-identity = { git = "https://github.com/polkadot-evm/frontier", branch = "master", default-features = false }
-pallet-evm-precompile-bn128 = { git = "https://github.com/polkadot-evm/frontier", branch = "master", default-features = false }
-pallet-evm-precompile-modexp = { git = "https://github.com/polkadot-evm/frontier", branch = "master", default-features = false }
-pallet-evm-precompile-ecrecover = { git = "https://github.com/polkadot-evm/frontier", branch = "master", default-features = false }

@@ -22,6 +22,10 @@ tokio = { workspace = true, features = ["full"] , default-features = false }
 
 pallet-staking = { workspace = true }
 sp-core = { workspace = true, features = ["full_crypto"] }
+move-core-types = { workspace = true }
+move-vm-backend-common = { workspace = true }
+setheum-move = { path = "../setheum-move" }
+bcs = { workspace = true }
 
 setheum_client = { path = "../setheum-client" , default-features = false }
 primitives = { workspace = true , default-features = false }

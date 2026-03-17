@@ -19,14 +19,14 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 use crate::{
-	currency::{CurrencyId, CurrencyIdType, DexShareType},
+	currency::{CurrencyId, CurrencyIdType, DexShareType, DexShare, ForeignAssetId},
 	Balance, BlockNumber, Nonce,
 };
 use core::ops::Range;
 use hex_literal::hex;
-pub use module_evm_utility::{
+pub use fp_evm::{
 	ethereum::{AccessListItem, Log, TransactionAction},
-	evm::ExitReason,
+	ExitReason,
 };
 use parity_scale_codec::{Decode, Encode};
 use scale_info::TypeInfo;
@@ -228,7 +228,7 @@ fn decode_evm_address_for_dex_share(address: &[u8], left: bool) -> Option<DexSha
 	match DexShareType::try_from(address[dex_share_type]).ok()? {
 		DexShareType::Token => address[dex_share_field][3].try_into().map(DexShare::Token).ok(),
 		DexShareType::Erc20 => {
-			let id = u32::from_be_bytes(address[dex_share_field].try_into().ok()?);
+			let _id = u32::from_be_bytes(address[dex_share_field].try_into().ok()?);
 			// NOTE: This Erc20 Id translation must be handled by the implementation of CurrencyIdMapping
 			// as it requires storage knowledge from asset-registry.
 			// However, for pure bit-encoding/decoding of system addresses, we still might need it.
