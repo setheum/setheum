@@ -90,8 +90,10 @@ pallet-identity = { workspace = true, default-features = false }
 
 module-authority = { workspace = true , default-features = false }
 module-benchmarking = { workspace = true, optional = true , default-features = false }
+module-dex-oracle = { workspace = true, default-features = false }
 module-oracle = { workspace = true , default-features = false }
 module-oracle-rpc-runtime-api = { package = "module-oracle-runtime-api", path = "../runtime-modules/oracle/runtime-api", default-features = false }
+module-swap_legacy = { workspace = true, default-features = false }
 module-tokens = { workspace = true , default-features = false }
 module-traits = { workspace = true , default-features = false }
 
@@ -101,7 +103,7 @@ module-transaction-payment = { workspace = true , default-features = false }
 module-airdrop = { path = "../runtime-modules/airdrop", default-features = false }
 
 module-currencies = { workspace = true , default-features = false }
-module-unified_accounts = { workspace = true , default-features = false }
+module-unified-accounts = { workspace = true , default-features = false }
 # module-evm removed
 # module-evm-bridge removed
 # module-evm-rpc-runtime-api removed
@@ -112,6 +114,7 @@ module-prices = { path = "../runtime-modules/prices", default-features = false }
 
 module-support = { workspace = true , default-features = false }
 module-vesting = { workspace = true , default-features = false }
+module-move = { package = "module-move", path = "../runtime-modules/move", default-features = false }
 
 primitives = { workspace = true , default-features = false }
 runtime-common = { workspace = true , default-features = false }
@@ -184,6 +187,7 @@ std = [
 	"module-authority/std",
 	"module-benchmarking/std",
 	"module-oracle-rpc-runtime-api/std",
+	"module-dex-oracle/std",
 	"module-oracle/std",
 
 	"module-airdrop/std",
@@ -194,6 +198,8 @@ std = [
 	"module-support/std",
 	"module-transaction-pause/std",
 	"module-vesting/std",
+	"module-swap_legacy/std",
+	"module-move/std",
 
 	"primitives/std",
 	"runtime-common/std",

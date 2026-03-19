@@ -1,0 +1,83 @@
+[package]
+license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
+name = "module-move"
+version = "0.1.0"
+description = "MoveVM support pallet"
+authors = { workspace = true }
+edition = { workspace = true }
+readme = { workspace = true }
+repository = { workspace = true }
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[dependencies]
+anyhow = { workspace = true }
+bcs = { workspace = true }
+blake2 = { workspace = true }
+codec = { workspace = true }
+hashbrown = { workspace = true }
+frame-benchmarking = { workspace = true, optional = true }
+frame-support = { workspace = true }
+frame-system = { workspace = true }
+log = { workspace = true }
+move-core-types = { workspace = true }
+move-vm-backend = { workspace = true }
+move-vm-backend-common = { workspace = true }
+pallet-balances = { workspace = true }
+scale-info = { workspace = true }
+serde = { workspace = true }
+sp-api = { workspace = true }
+sp-core = { workspace = true }
+sp-runtime = { workspace = true }
+sp-std = { workspace = true }
+module-traits = { workspace = true }
+module-support = { workspace = true }
+
+[dev-dependencies]
+hex = { workspace = true }
+rand = { workspace = true }
+move-stdlib = { workspace = true }
+pallet-balances = { workspace = true, default-features = true }
+sp-io = { workspace = true, default-features = true }
+
+[features]
+default = ["std"]
+std = [
+    "anyhow/std",
+    "blake2/std",
+    "bcs/std",
+    "codec/std",
+    "frame-benchmarking?/std",
+    "frame-support/std",
+    "frame-system/std",
+    "log/std",
+    "move-core-types/std",
+    "move-vm-backend/std",
+    "move-vm-backend-common/std",
+    "scale-info/std",
+    "serde/std",
+    "sp-api/std",
+    "sp-core/std",
+    "sp-runtime/std",
+    "sp-std/std",
+    "module-traits/std",
+    "module-support/std",
+]
+runtime-benchmarks = [
+    "frame-benchmarking/runtime-benchmarks",
+    "frame-support/runtime-benchmarks",
+    "frame-system/runtime-benchmarks",
+    "sp-runtime/runtime-benchmarks",
+]
+try-runtime = [
+    "frame-support/try-runtime",
+    "frame-system/try-runtime",
+    "sp-runtime/try-runtime",
+]
+
+# Builds move projects for test purposes.
+build-move-projects-for-test = []
+
+# Run gas cost measurement when testing.
+gas-cost-measurement = []
