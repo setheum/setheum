@@ -1,4 +1,4 @@
-# Licenses
+# License
 
 Different parts of this monorepo are licensed differently (GPLv3, Apache 2.0, or MIT). The projects in this monorepo, are licensed as follows:
 
