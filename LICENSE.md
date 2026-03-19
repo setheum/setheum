@@ -1,8 +1,6 @@
 # Licenses
 
-The projects in this monorepo are licensed as follows:
-
-- **Core Blockchain & Runtime**: Licensed under the [GNU GPL Version 3](./LICENSES/LICENSE-GPL3.md) (GPL-3.0-or-later WITH Classpath-exception-2.0). This includes the `repos/setheum/` node, runtime, and all the remaining code, except explicitly stated below or in a `LICENSE.md`.
+Different parts of this monorepo are licensed differently (GPLv3, Apache 2.0, or MIT). The projects in this monorepo, are licensed as follows:
 
 - **Frameworks & Tools**: Licensed under either [Apache License 2.0](./LICENSES/LICENSE-APACHE.md) or [MIT License](./LICENSES/LICENSE-MIT.md) at your option. This includes:
   - `repos/set-bft`
@@ -15,5 +13,7 @@ The projects in this monorepo are licensed as follows:
   - `repos/setheum/runtime-modules`
   - `repos/setheum/setheum-client`
   - `repos/setheum/tests/flooder`
+
+- **Core Blockchain & Runtime**: Licensed under the [GNU GPL Version 3](./LICENSES/LICENSE-GPL3.md) (GPL-3.0-or-later WITH Classpath-exception-2.0). This includes the `repos/setheum/` node, runtime, and all the remaining code, except explicitly stated below or in a `LICENSE.md`.
 
 Unless you explicitly state otherwise, any contribution that you submit to this repo shall be licensed as above, without any additional terms or conditions.
