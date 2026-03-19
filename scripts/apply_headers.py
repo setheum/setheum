@@ -4,7 +4,7 @@ import sys
 
 # Define the paths to the header templates
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-HEADER_DIR = os.path.join(ROOT_DIR, '.licenseheaders')
+HEADER_DIR = os.path.join(ROOT_DIR, 'LICENSES/headers')
 HEADER_GPL3 = os.path.join(HEADER_DIR, 'HEADER-GPL3')
 HEADER_MIT_APACHE = os.path.join(HEADER_DIR, 'HEADER-MIT-APACHE')
 
