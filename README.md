@@ -68,7 +68,7 @@ Mise handles all common development tasks:
 
 ## License
 
-Different parts of this monorepo are licensed differently (GPLv3, Apache 2.0, or MIT). See [LICENSES.md](./LICENSES.md) for the full breakdown of which license applies to each project.
+Different parts of this monorepo are licensed differently (GPLv3, Apache 2.0, or MIT). See [LICENSES.md](./LICENSES/LICENSES.md) for the full breakdown of which license applies to each project.
 
 Unless you explicitly state otherwise, any contribution that you submit to this repo shall be licensed as above, without any additional terms or conditions.
 
