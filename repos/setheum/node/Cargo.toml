@@ -1,117 +1,228 @@
-[package]
-authors = [ "Afsall Labs", "Afsall Labs", "Setheum Foundation" ]
-build = 'build.rs'
-description = 'Setheum Network Node'
-edition = '2018'
-homepage = 'https:/setheum.com'
-license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
-name = 'setheum-node'
-repository = 'https:/github.com/setheum/setheum'
-version = '1.0.0'
-
 [[bin]]
-name = 'setheum-node'
+name = "setheum-node"
 
-[package.metadata.docs.rs]
-targets = ['x86_64-unknown-linux-gnu']
-
-[build-dependencies]
-substrate-build-script-utils = { workspace = true }
+[package]
+authors = [ "Afsall Labs", "Afsall Labs", "Setheum Foundation",]
+build = "build.rs"
+description = "Setheum Network Node"
+edition = "2018"
+homepage = "https:/setheum.com"
+license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
+name = "setheum-node"
+repository = "https:/github.com/setheum/setheum"
+version = "1.0.0"
 
 [dependencies]
-hex-literal = "0.3.1"
-jsonrpc-core = '15.1.0'
-structopt = '0.3.8'
-serde = { workspace = true, features = ["derive"] }
-serde_json = "1.0.68"
-
-parity-scale-codec = { workspace = true, features = ["derive"] }
-log = { workspace = true }
-futures = { workspace = true }
-static_assertions = { workspace = true }
-thiserror = { workspace = true }
-fake-runtime-api = { workspace = true, features = ["std"] }
-jsonrpsee = { workspace = true, features = ["server"] }
-
-# Substrate dependencies
-frame-benchmarking = { workspace = true }
-frame-benchmarking-cli = { workspace = true, optional = true }
-pallet-transaction-payment-rpc = { workspace = true }
-sc-chain-spec = { workspace = true }
-sc-basic-authorship = { workspace = true }
-sc-cli = { workspace = true, optional = true }
-sc-client-api = { workspace = true }
-sc-client-db = { workspace = true }
-sc-executor = { workspace = true }
-sc-rpc = { workspace = true }
-sc-rpc-api = { workspace = true }
-sc-service = { workspace = true, optional = true }
-sc-transaction-pool = { workspace = true }
-sc-transaction-pool-api = { workspace = true }
-sc-telemetry = { workspace = true }
-sc-network = { workspace = true }
-sc-network-sync = { workspace = true }
-sp-std = { workspace = true }
-sp-api = { workspace = true }
-sp-arithmetic = { workspace = true }
-sp-block-builder = { workspace = true }
-sp-blockchain = { workspace = true }
-sp-core = { workspace = true, optional = true }
-sp-inherents = { workspace = true }
-sp-runtime = { workspace = true }
-sp-transaction-pool = { workspace = true }
-sp-timestamp = { workspace = true }
-substrate-frame-rpc-system = { workspace = true }
-
-sc-keystore = { workspace = true }
-sp-keystore = { workspace = true }
-
-sp-consensus = { workspace = true }
-sc-consensus = { workspace = true }
-sc-consensus-aura = { workspace = true }
-sp-consensus-aura = { workspace = true }
-sc-consensus-manual-seal = { workspace = true }
-sc-consensus-epochs = { workspace = true }
-sc-consensus-slots = { workspace = true }
-
-
-
-module-oracle-rpc = { path = "../runtime-modules/oracle/rpc" }
-module-move-rpc = { path = "../runtime-modules/move/rpc" }
-
-module-nft = { path = "../runtime-modules/nft" }
-# Frontier
-fc-rpc = { git = "https://github.com/polkadot-evm/frontier", branch = "master" }
-fc-rpc-core = { git = "https://github.com/polkadot-evm/frontier", branch = "master" }
-fc-db = { git = "https://github.com/polkadot-evm/frontier", branch = "master" }
-fc-mapping-sync = { git = "https://github.com/polkadot-evm/frontier", branch = "master" }
-fp-rpc = { workspace = true }
-pallet-evm = { workspace = true }
-pallet-ethereum = { workspace = true }
-
-setheum-primitives = { path = "../primitives" }
-
-finality-setbft = { workspace = true }
-module-setbft-runtime-api = { workspace = true }
-
-# runtime
-setheum-runtime = { workspace = true, default-features = false }
+structopt = "0.3.8"
 
 [features]
-default = [ "cli", "std" ]
-cli = [
-	"std",
-	"sp-core",
-	"sc-cli",
-	"sc-service",
-	"frame-benchmarking-cli",
-]
-runtime-benchmarks = [
-	'setheum-runtime/runtime-benchmarks'
-]
-std = [
-	'setheum-runtime/std'
-]
-with-ethereum-compatibility = [
-	"setheum-runtime/with-ethereum-compatibility"
-]
+default = [ "cli", "std",]
+cli = [ "std", "sp-core", "sc-cli", "sc-service", "frame-benchmarking-cli",]
+runtime-benchmarks = [ "setheum-runtime/runtime-benchmarks",]
+std = [ "setheum-runtime/std",]
+with-ethereum-compatibility = [ "setheum-runtime/with-ethereum-compatibility",]
+
+[build-dependencies.substrate-build-script-utils]
+workspace = true
+
+[dependencies.hex-literal]
+workspace = true
+
+[dependencies.jsonrpc-core]
+workspace = true
+
+[dependencies.serde]
+workspace = true
+features = [ "derive",]
+
+[dependencies.serde_json]
+workspace = true
+
+[dependencies.parity-scale-codec]
+workspace = true
+features = [ "derive",]
+
+[dependencies.log]
+workspace = true
+
+[dependencies.futures]
+workspace = true
+
+[dependencies.static_assertions]
+workspace = true
+
+[dependencies.thiserror]
+workspace = true
+
+[dependencies.fake-runtime-api]
+workspace = true
+features = [ "std",]
+
+[dependencies.jsonrpsee]
+workspace = true
+features = [ "server",]
+
+[dependencies.frame-benchmarking]
+workspace = true
+
+[dependencies.frame-benchmarking-cli]
+workspace = true
+optional = true
+
+[dependencies.pallet-transaction-payment-rpc]
+workspace = true
+
+[dependencies.sc-chain-spec]
+workspace = true
+
+[dependencies.sc-basic-authorship]
+workspace = true
+
+[dependencies.sc-cli]
+workspace = true
+optional = true
+
+[dependencies.sc-client-api]
+workspace = true
+
+[dependencies.sc-client-db]
+workspace = true
+
+[dependencies.sc-executor]
+workspace = true
+
+[dependencies.sc-rpc]
+workspace = true
+
+[dependencies.sc-rpc-api]
+workspace = true
+
+[dependencies.sc-service]
+workspace = true
+optional = true
+
+[dependencies.sc-transaction-pool]
+workspace = true
+
+[dependencies.sc-transaction-pool-api]
+workspace = true
+
+[dependencies.sc-telemetry]
+workspace = true
+
+[dependencies.sc-network]
+workspace = true
+
+[dependencies.sc-network-sync]
+workspace = true
+
+[dependencies.sp-std]
+workspace = true
+
+[dependencies.sp-api]
+workspace = true
+
+[dependencies.sp-arithmetic]
+workspace = true
+
+[dependencies.sp-block-builder]
+workspace = true
+
+[dependencies.sp-blockchain]
+workspace = true
+
+[dependencies.sp-core]
+workspace = true
+optional = true
+
+[dependencies.sp-inherents]
+workspace = true
+
+[dependencies.sp-runtime]
+workspace = true
+
+[dependencies.sp-transaction-pool]
+workspace = true
+
+[dependencies.sp-timestamp]
+workspace = true
+
+[dependencies.substrate-frame-rpc-system]
+workspace = true
+
+[dependencies.sc-keystore]
+workspace = true
+
+[dependencies.sp-keystore]
+workspace = true
+
+[dependencies.sp-consensus]
+workspace = true
+
+[dependencies.sc-consensus]
+workspace = true
+
+[dependencies.sc-consensus-aura]
+workspace = true
+
+[dependencies.sp-consensus-aura]
+workspace = true
+
+[dependencies.sc-consensus-manual-seal]
+workspace = true
+
+[dependencies.sc-consensus-epochs]
+workspace = true
+
+[dependencies.sc-consensus-slots]
+workspace = true
+
+[dependencies.module-oracle-rpc]
+path = "../runtime-modules/oracle/rpc"
+
+[dependencies.module-move-rpc]
+workspace = true
+
+[dependencies.module-nft]
+path = "../runtime-modules/nft"
+
+[dependencies.fc-rpc]
+git = "https://github.com/polkadot-evm/frontier"
+branch = "master"
+
+[dependencies.fc-rpc-core]
+git = "https://github.com/polkadot-evm/frontier"
+branch = "master"
+
+[dependencies.fc-db]
+git = "https://github.com/polkadot-evm/frontier"
+branch = "master"
+
+[dependencies.fc-mapping-sync]
+git = "https://github.com/polkadot-evm/frontier"
+branch = "master"
+
+[dependencies.fp-rpc]
+workspace = true
+
+[dependencies.pallet-evm]
+workspace = true
+
+[dependencies.pallet-ethereum]
+workspace = true
+
+[dependencies.setheum-primitives]
+workspace = true
+
+[dependencies.finality-setbft]
+workspace = true
+
+[dependencies.module-setbft-runtime-api]
+workspace = true
+
+[dependencies.setheum-runtime]
+workspace = true
+default-features = false
+
+[package.metadata.docs.rs]
+targets = [ "x86_64-unknown-linux-gnu",]

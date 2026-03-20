@@ -2,78 +2,211 @@
 name = "finality-setbft"
 version = "0.11.0"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
-authors.workspace = true
-edition.workspace = true
-homepage.workspace = true
-repository.workspace = true
-
-[dependencies]
-# fixed version to 'freeze' some types used in sbft, mainly `SignatureSet` used in justification and signature aggregation
-set-bft-crypto = { workspace = true , default-features = false }
-
-set-bft = { path = "../../../set-bft/consensus" , default-features = false }
-set-bft-rmc = { path = "../../../set-bft/rmc" , default-features = false }
-
-network-clique = { workspace = true , default-features = false }
-primitives = { workspace = true , default-features = false }
-setbft-aggregator = { package = "aggregator", path = "../aggregator" , default-features = false }
-finality-rate-limiter = { package = "finality-rate-limiter", path = "../rate-limiter" , default-features = false }
-fake-runtime-api = { workspace = true, features = ["std"] , default-features = false }
-module-setbft-runtime-api = { workspace = true, features = ["std"] , default-features = false }
-
-async-trait = { workspace = true , default-features = false }
-array-bytes = { workspace = true , default-features = false }
-derive_more = { workspace = true , default-features = false }
-futures = { workspace = true , default-features = false }
-futures-timer = { workspace = true , default-features = false }
-hex = { workspace = true , default-features = false }
-log = { workspace = true , default-features = false }
-lru = { workspace = true , default-features = false }
-parity-scale-codec = { workspace = true, features = ["derive"] }
-parking_lot = { workspace = true , default-features = false }
-rand = { workspace = true , default-features = false }
-serde = { workspace = true , default-features = false }
-static_assertions = { workspace = true , default-features = false }
-tiny-bip39 = { workspace = true , default-features = false }
-tokio = { workspace = true, features = ["sync", "macros", "time", "rt-multi-thread"] , default-features = false }
-libp2p = { workspace = true , default-features = false }
-
-substrate-prometheus-endpoint = { workspace = true , default-features = false }
-
-frame-support = { workspace = true }
-
-sc-client-api = { workspace = true }
-sc-consensus = { workspace = true }
-sc-consensus-aura = { workspace = true }
-sc-keystore = { workspace = true }
-sc-network = { workspace = true }
-sc-network-common = { workspace = true }
-sc-network-sync = { workspace = true }
-sc-network-light = { workspace = true }
-sc-network-transactions = { workspace = true }
-sc-rpc = { workspace = true }
-sc-service = { workspace = true }
-sc-transaction-pool = { workspace = true }
-sc-transaction-pool-api = { workspace = true }
-sc-utils = { workspace = true }
-
-sp-api = { workspace = true }
-sp-application-crypto = { workspace = true }
-sp-blockchain = { workspace = true }
-sp-consensus = { workspace = true }
-sp-consensus-aura = { workspace = true }
-sp-consensus-slots = { workspace = true }
-sp-core = { workspace = true }
-sp-keystore = { workspace = true }
-sp-runtime = { workspace = true }
-sp-timestamp = { workspace = true }
-
-[dev-dependencies]
-# substrate-test-runtime-client = { workspace = true , default-features = false }
-# substrate-test-runtime = { workspace = true , default-features = false }
-substrate-test-client = { workspace = true , default-features = false }
-sc-block-builder = { workspace = true }
-sc-basic-authorship = { workspace = true }
 
 [features]
 only_legacy = []
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[dependencies.set-bft-crypto]
+workspace = true
+default-features = false
+
+[dependencies.set-bft]
+workspace = true
+default-features = false
+
+[dependencies.set-bft-rmc]
+workspace = true
+default-features = false
+
+[dependencies.network-clique]
+workspace = true
+default-features = false
+
+[dependencies.primitives]
+workspace = true
+default-features = false
+
+[dependencies.setbft-aggregator]
+package = "aggregator"
+path = "../aggregator"
+default-features = false
+
+[dependencies.finality-rate-limiter]
+workspace = true
+default-features = false
+
+[dependencies.fake-runtime-api]
+workspace = true
+features = [ "std",]
+default-features = false
+
+[dependencies.module-setbft-runtime-api]
+workspace = true
+features = [ "std",]
+default-features = false
+
+[dependencies.async-trait]
+workspace = true
+default-features = false
+
+[dependencies.array-bytes]
+workspace = true
+default-features = false
+
+[dependencies.derive_more]
+workspace = true
+default-features = false
+
+[dependencies.futures]
+workspace = true
+default-features = false
+
+[dependencies.futures-timer]
+workspace = true
+default-features = false
+
+[dependencies.hex]
+workspace = true
+default-features = false
+
+[dependencies.log]
+workspace = true
+default-features = false
+
+[dependencies.lru]
+workspace = true
+default-features = false
+
+[dependencies.parity-scale-codec]
+workspace = true
+features = [ "derive",]
+
+[dependencies.parking_lot]
+workspace = true
+default-features = false
+
+[dependencies.rand]
+workspace = true
+default-features = false
+
+[dependencies.serde]
+workspace = true
+default-features = false
+
+[dependencies.static_assertions]
+workspace = true
+default-features = false
+
+[dependencies.tiny-bip39]
+workspace = true
+default-features = false
+
+[dependencies.tokio]
+workspace = true
+features = [ "sync", "macros", "time", "rt-multi-thread",]
+default-features = false
+
+[dependencies.libp2p]
+workspace = true
+default-features = false
+
+[dependencies.substrate-prometheus-endpoint]
+workspace = true
+default-features = false
+
+[dependencies.frame-support]
+workspace = true
+
+[dependencies.sc-client-api]
+workspace = true
+
+[dependencies.sc-consensus]
+workspace = true
+
+[dependencies.sc-consensus-aura]
+workspace = true
+
+[dependencies.sc-keystore]
+workspace = true
+
+[dependencies.sc-network]
+workspace = true
+
+[dependencies.sc-network-common]
+workspace = true
+
+[dependencies.sc-network-sync]
+workspace = true
+
+[dependencies.sc-network-light]
+workspace = true
+
+[dependencies.sc-network-transactions]
+workspace = true
+
+[dependencies.sc-rpc]
+workspace = true
+
+[dependencies.sc-service]
+workspace = true
+
+[dependencies.sc-transaction-pool]
+workspace = true
+
+[dependencies.sc-transaction-pool-api]
+workspace = true
+
+[dependencies.sc-utils]
+workspace = true
+
+[dependencies.sp-api]
+workspace = true
+
+[dependencies.sp-application-crypto]
+workspace = true
+
+[dependencies.sp-blockchain]
+workspace = true
+
+[dependencies.sp-consensus]
+workspace = true
+
+[dependencies.sp-consensus-aura]
+workspace = true
+
+[dependencies.sp-consensus-slots]
+workspace = true
+
+[dependencies.sp-core]
+workspace = true
+
+[dependencies.sp-keystore]
+workspace = true
+
+[dependencies.sp-runtime]
+workspace = true
+
+[dependencies.sp-timestamp]
+workspace = true
+
+[dev-dependencies.substrate-test-client]
+workspace = true
+default-features = false
+
+[dev-dependencies.sc-block-builder]
+workspace = true
+
+[dev-dependencies.sc-basic-authorship]
+workspace = true

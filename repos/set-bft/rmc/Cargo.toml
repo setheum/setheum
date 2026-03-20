@@ -2,26 +2,45 @@
 name = "set-bft-rmc"
 version = "0.16.0"
 edition = "2021"
-authors = ["Afsall Labs"]
-categories = ["algorithms", "cryptography"]
+authors = [ "Afsall Labs",]
+categories = [ "algorithms", "cryptography",]
 documentation = "https://docs.rs/?"
 homepage = "https://setheum.com"
 repository = "https://github.com/setheum/set-bft"
-keywords = ["asynchronous", "consensus", "bft", "distributed-systems"]
+keywords = [ "asynchronous", "consensus", "bft", "distributed-systems",]
 license = "Apache-2.0 OR MIT"
 readme = "./README.md"
 description = "Reliable MultiCast - a primitive for Reliable Broadcast protocol."
 
-[dependencies]
-set-bft-crypto = { path = "../crypto", version = "0.11" }
-set-bft-types = { path = "../types", version = "0.16" }
-async-trait = "0.1"
-codec = { package = "parity-scale-codec", version = "3.0", default-features = false, features = ["derive"] }
-futures = "0.3"
-futures-timer = "3.0"
-log = "0.4"
+[dependencies.set-bft-crypto]
+workspace = true
 
-[dev-dependencies]
-set-bft-mock = { path = "../mock" }
-rand = "0.8"
-tokio = { version = "1", features = ["macros", "rt", "rt-multi-thread", "time"] }
+[dependencies.set-bft-types]
+workspace = true
+
+[dependencies.async-trait]
+workspace = true
+
+[dependencies.codec]
+workspace = true
+features = [ "derive",]
+default-features = false
+
+[dependencies.futures]
+workspace = true
+
+[dependencies.futures-timer]
+workspace = true
+
+[dependencies.log]
+workspace = true
+
+[dev-dependencies.set-bft-mock]
+workspace = true
+
+[dev-dependencies.rand]
+workspace = true
+
+[dev-dependencies.tokio]
+workspace = true
+features = [ "macros", "rt", "rt-multi-thread", "time",]

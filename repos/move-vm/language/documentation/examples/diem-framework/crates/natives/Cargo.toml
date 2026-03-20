@@ -1,17 +1,25 @@
 [package]
 name = "diem-framework-natives"
 version = "0.0.0"
-authors = ["Diem Association <opensource@diem.com>"]
+authors = [ "Diem Association <opensource@diem.com>",]
 publish = false
 edition = "2021"
 license = "Apache-2.0"
 
-[dependencies]
-move-binary-format = { path = "../../../../../move-binary-format" }
-move-core-types = { path = "../../../../../move-core/types" }
-move-vm-types = { path = "../../../../../move-vm/types" }
-move-vm-runtime = { path = "../../../../../move-vm/runtime" }
+[dependencies.move-binary-format]
+workspace = true
 
-diem-crypto = { path = "../crypto" }
+[dependencies.move-core-types]
+workspace = true
 
-smallvec = "1.6.1"
+[dependencies.move-vm-types]
+workspace = true
+
+[dependencies.move-vm-runtime]
+workspace = true
+
+[dependencies.diem-crypto]
+workspace = true
+
+[dependencies.smallvec]
+workspace = true

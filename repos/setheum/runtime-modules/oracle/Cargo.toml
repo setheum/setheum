@@ -2,55 +2,70 @@
 license = "Apache-2.0 OR MIT"
 name = "module-oracle"
 version = "0.9.81-dev"
-authors.workspace = true
-edition.workspace = true
-homepage.workspace = true
-repository.workspace = true
-
-[dependencies]
-parity-scale-codec = { workspace = true }
-scale-info = { workspace = true }
-serde = { workspace = true, optional = true , default-features = false }
-
-frame-benchmarking = { workspace = true, optional = true }
-frame-support = { workspace = true }
-frame-system = { workspace = true }
-sp-runtime = { workspace = true }
-sp-std = { workspace = true }
-sp-application-crypto = { workspace = true }
-sp-io = { workspace = true }
-
-module-traits = { workspace = true , default-features = false }
-module-utilities = { version = "0.9.81-dev", path = "../utilities", default-features = false }
-
-[dev-dependencies]
-sp-core = { workspace = true, features = ["std"] }
-sp-io = { workspace = true, features = ["std"] }
 
 [features]
-default = [ "std" ]
-std = [
-	"frame-benchmarking?/std",
-	"frame-support/std",
-	"frame-system/std",
-	"module-traits/std",
-	"parity-scale-codec/std",
-	"scale-info/std",
-	"serde",
-	"sp-runtime/std",
-	"sp-std/std",
-	"sp-application-crypto/std",
-	"sp-io/std",
-	"module-utilities/std",
-]
-runtime-benchmarks = [
-	"frame-benchmarking/runtime-benchmarks",
-	"frame-support/runtime-benchmarks",
-	"frame-system/runtime-benchmarks",
-	"sp-runtime/runtime-benchmarks",
-]
-try-runtime = [
-	"frame-support/try-runtime",
-	"frame-system/try-runtime",
-	"sp-runtime/try-runtime",
-]
+default = [ "std",]
+std = [ "frame-benchmarking?/std", "frame-support/std", "frame-system/std", "module-traits/std", "parity-scale-codec/std", "scale-info/std", "serde", "sp-runtime/std", "sp-std/std", "sp-application-crypto/std", "sp-io/std", "module-utilities/std",]
+runtime-benchmarks = [ "frame-benchmarking/runtime-benchmarks", "frame-support/runtime-benchmarks", "frame-system/runtime-benchmarks", "sp-runtime/runtime-benchmarks",]
+try-runtime = [ "frame-support/try-runtime", "frame-system/try-runtime", "sp-runtime/try-runtime",]
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[dependencies.parity-scale-codec]
+workspace = true
+
+[dependencies.scale-info]
+workspace = true
+
+[dependencies.serde]
+workspace = true
+optional = true
+default-features = false
+
+[dependencies.frame-benchmarking]
+workspace = true
+optional = true
+
+[dependencies.frame-support]
+workspace = true
+
+[dependencies.frame-system]
+workspace = true
+
+[dependencies.sp-runtime]
+workspace = true
+
+[dependencies.sp-std]
+workspace = true
+
+[dependencies.sp-application-crypto]
+workspace = true
+
+[dependencies.sp-io]
+workspace = true
+
+[dependencies.module-traits]
+workspace = true
+default-features = false
+
+[dependencies.module-utilities]
+workspace = true
+default-features = false
+
+[dev-dependencies.sp-core]
+workspace = true
+features = [ "std",]
+
+[dev-dependencies.sp-io]
+workspace = true
+features = [ "std",]

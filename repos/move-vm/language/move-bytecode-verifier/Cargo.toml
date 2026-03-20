@@ -1,7 +1,7 @@
 [package]
 name = "move-bytecode-verifier"
 version = "0.1.0"
-authors = ["Diem Association <opensource@diem.com>"]
+authors = [ "Diem Association <opensource@diem.com>",]
 description = "Move bytecode verifier"
 repository = "https://github.com/diem/diem"
 homepage = "https://diem.com"
@@ -9,28 +9,44 @@ license = "Apache-2.0"
 publish = false
 edition = "2021"
 
-[dependencies]
-anyhow = { version = "1.0", default-features = false }
-petgraph = { git = "https://github.com/eigerco/petgraph.git", branch = "master", default-features = false, features = ["graphmap"] }
-fail = { version = "0.5", default-features = false, optional = true }
-hashbrown = { version = "0.14", default-features = false, features = ["ahash"] }
-
-move-borrow-graph = { path = "../move-borrow-graph", default-features = false }
-move-binary-format = { path = "../move-binary-format", default-features = false }
-move-core-types = { path = "../move-core/types", default-features = false }
-
-[dev-dependencies]
-hex-literal = "0.4"
-invalid-mutations = { path = "invalid-mutations" }
-
 [features]
-default = ["std"]
+default = [ "std",]
+std = [ "anyhow/std", "fail/failpoints", "move-borrow-graph/std", "move-binary-format/std", "move-core-types/std", "petgraph/std",]
 
-std = [
-    "anyhow/std",
-    "fail/failpoints",
-    "move-borrow-graph/std",
-    "move-binary-format/std",
-    "move-core-types/std",
-    "petgraph/std",
-]
+[dependencies.anyhow]
+workspace = true
+default-features = false
+
+[dependencies.petgraph]
+git = "https://github.com/eigerco/petgraph.git"
+branch = "master"
+default-features = false
+features = [ "graphmap",]
+
+[dependencies.fail]
+version = "0.5"
+default-features = false
+optional = true
+
+[dependencies.hashbrown]
+workspace = true
+features = [ "ahash",]
+default-features = false
+
+[dependencies.move-borrow-graph]
+workspace = true
+default-features = false
+
+[dependencies.move-binary-format]
+workspace = true
+default-features = false
+
+[dependencies.move-core-types]
+workspace = true
+default-features = false
+
+[dev-dependencies.hex-literal]
+workspace = true
+
+[dev-dependencies.invalid-mutations]
+workspace = true

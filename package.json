@@ -1,0 +1,11 @@
+{
+  "name": "setheum-workspace",
+  "private": true,
+  "workspaces": [
+    "repos/bridge/bridge-sdk/packages/*",
+    "repos/bridge/bridge-sdk/examples/*",
+    "repos/bridge/bridge-x-solidity",
+    "repos/bridge/bridge-docs",
+    "repos/setheum-js"
+  ]
+}

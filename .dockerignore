@@ -1,2 +1,8 @@
 target/
-Dockerfile
+target-js/
+node_modules/
+.git/
+.github/
+.vscode/
+.mise/
+*.log

@@ -1,25 +1,62 @@
 [tools]
-rust = "stable"
-node = "lts"
+rust = "1.81.0"
+bun = "latest"
 python = "latest"
-yarn = "1.22.19"
+go = "latest"
 
 [tasks.default]
 alias = "build"
 
-[tasks.build]
-description = "Build the project"
-run = "cargo build --release"
-
-[tasks.test]
-description = "Run all tests"
+[tasks.init]
+description = "Initialize toolchain and dependencies"
 run = [
-  "cargo test --workspace --exclude setheum-js",
-  "cd setheum-js && yarn install && yarn test",
+  "git submodule update --init --recursive",
+  "bun install",
+  "bash repos/setheum/scripts/init.sh",
 ]
 
+[tasks.build]
+description = "Build the project in release mode"
+run = "cargo build --release"
+
+[tasks."build:wasm"]
+description = "Build WASM runtimes"
+run = "cargo build -p setheum-runtime --features with-ethereum-compatibility --release"
+
+[tasks."build:bench"]
+description = "Build with runtime benchmarks"
+run = "cargo build -p setheum-node --features runtime-benchmarks,with-ethereum-compatibility --release"
+
+[tasks.test]
+description = "Run all tests (Rust and JS)"
+depends = ["test:rust", "test:js"]
+
+[tasks."test:rust"]
+description = "Run Rust tests"
+run = "SKIP_WASM_BUILD=1 cargo test --workspace --features with-ethereum-compatibility"
+
+[tasks."test:js"]
+description = "Run JS tests"
+run = "bun test"
+
+[tasks."test:move"]
+description = "Run MoveVM backend tests"
+run = "cargo test -p move-vm-backend -p move-vm-backend-common --features build-move-projects-for-test"
+
+[tasks."test:sheyth"]
+description = "Run Sheyth (Ink!) tests"
+run = "cargo test -p ink --all-features"
+
+[tasks."test:bridge:rust"]
+description = "Run bridge Rust tests"
+run = "cargo test -p bridge-relayer -p bridge-core"
+
+[tasks."test:bridge:go"]
+description = "Run bridge Go tests"
+run = "go test repos/bridge/..."
+
 [tasks.fmt]
-description = "Format the codebase"
+description = "Format the codebase and apply headers"
 run = ["cargo fmt --all", "python3 scripts/apply_headers.py"]
 
 [tasks.headers]
@@ -28,7 +65,44 @@ run = "python3 scripts/apply_headers.py"
 
 [tasks.clean]
 description = "Clean build artifacts"
-run = ["cargo clean", "rm -rf target/"]
+run = ["cargo clean", "rm -rf target/ target-js/ node_modules/"]
+
+[tasks.check]
+description = "Run cargo check on workspace"
+run = "SKIP_WASM_BUILD=1 cargo check --workspace"
+
+[tasks."check:runtime"]
+description = "Run cargo check for runtime"
+run = "SKIP_WASM_BUILD= cargo check --features with-ethereum-compatibility --tests --all"
+
+[tasks.clippy]
+description = "Run cargo clippy"
+run = "SKIP_WASM_BUILD=1 cargo clippy --workspace -- -D warnings"
+
+[tasks."gen:genesis"]
+description = "Generate genesis configurations"
+run = [
+  "mise run build:bench",
+  "./target/release/setheum-node build-spec --chain testnet-new > chain-specs/testnet.json",
+  "./target/release/setheum-node build-spec --chain mainnet-new > chain-specs/mainnet.json",
+  "./target/release/setheum-node build-spec --chain testnet-new --raw > chain-specs/testnet_raw.json",
+  "./target/release/setheum-node build-spec --chain mainnet-new --raw > chain-specs/mainnet_raw.json",
+]
+
+[tasks."bench:pallets"]
+description = "Run runtime benchmarks for all pallets"
+run = "cargo run --release --features=runtime-benchmarks --features=with-ethereum-compatibility -- benchmark --chain=dev --steps=50 --repeat=20 '--pallet=*' '--extrinsic=*' --execution=wasm --wasm-execution=compiled --heap-pages=4096 --template=.maintain/runtime-weight-template.hbs --output=./runtime/src/weights/"
+
+[tasks."gen:tokens"]
+description = "Generate tokens and predeploy contracts"
+run = [
+  "cargo test -p setheum-primitives -- --ignored",
+  "cd repos/setheum/predeploy-contracts && bun install && bun run generate-bytecode",
+]
+
+[tasks."debug:node"]
+description = "Run node in debug mode with GDB"
+run = "cargo build && RUST_LOG=debug RUST_BACKTRACE=1 rust-gdb --args target/debug/setheum-node --dev --tmp -lruntime=debug"
 
 [tasks."prdoc:scaffold"]
 description = "Generate draft PRDocs from git history"
@@ -43,5 +117,5 @@ description = "Generate CHANGELOG entries from PRDocs"
 run = "python3 scripts/prdoc.py generate"
 
 [tasks.all]
-description = "Default build task"
-depends = ["build"]
+description = "Run complete build pipeline"
+depends = ["build", "test"]

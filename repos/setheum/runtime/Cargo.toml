@@ -1,234 +1,366 @@
 [package]
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
-authors = [ "Afsall Labs", "Afsall Labs", "Setheum Foundation" ]
-version = '1.0.0'
-edition = '2018'
+authors = [ "Afsall Labs", "Afsall Labs", "Setheum Foundation",]
+version = "1.0.0"
+edition = "2018"
 build = "build.rs"
-homepage = 'https://setheum.com'
-name = 'setheum-runtime'
-repository = 'https://github.com/setheum/setheum'
-
-[package.metadata.docs.rs]
-targets = ['x86_64-unknown-linux-gnu']
-
-[build-dependencies]
-substrate-wasm-builder = { workspace = true , default-features = false }
-
-[dependencies]
-codec = { package = "parity-scale-codec", version = "3.7.5", default-features = false, features = ['derive'] }
-smallvec = { workspace = true }
-hex-literal = { workspace = true, optional = true , default-features = false }
-serde = { workspace = true, optional = true, features = ['derive'] , default-features = false }
-serde_json = { workspace = true, default-features = false }
-hex = { workspace = true, optional = true , default-features = false }
-# evm removed
-log = { workspace = true , default-features = false }
-
-# Substrate dependencies
-frame-benchmarking = { workspace = true, optional = true, default-features = false }
-frame-executive = { workspace = true, default-features = false }
-frame-support = { workspace = true, default-features = false }
-frame-system = { workspace = true, default-features = false }
-frame-system-benchmarking = { workspace = true, optional = true, default-features = false }
-frame-system-rpc-runtime-api = { workspace = true, default-features = false }
-frame-election-provider-support = { workspace = true, default-features = false }
-pallet-balances = { workspace = true, default-features = false }
-# pallet-grandpa = { workspace = true, default-features = false }
-pallet-indices = { workspace = true, default-features = false }
-pallet-bounties = { workspace = true, default-features = false }
-pallet-collective = { workspace = true, default-features = false }
-pallet-insecure-randomness-collective-flip = { workspace = true, default-features = false }
-pallet-democracy = { workspace = true, default-features = false }
-pallet-membership = { workspace = true, default-features = false }
-pallet-multisig = { workspace = true, default-features = false }
-pallet-proxy = { workspace = true, default-features = false }
-pallet-recovery = { workspace = true, default-features = false }
-pallet-scheduler = { workspace = true, default-features = false }
-pallet-sudo = { workspace = true, default-features = false }
-pallet-tips = { workspace = true, default-features = false }
-pallet-timestamp = { workspace = true, default-features = false }
-pallet-transaction-payment = { workspace = true, default-features = false }
-pallet-transaction-payment-rpc-runtime-api = { workspace = true, default-features = false }
-sp-api = { workspace = true, default-features = false }
-sp-application-crypto = { workspace = true, default-features = false }
-sp-block-builder = { workspace = true, default-features = false }
-sp-core = { workspace = true, default-features = false }
-sp-inherents = { workspace = true, default-features = false }
-pallet-treasury = { workspace = true, default-features = false }
-pallet-utility = { workspace = true, default-features = false }
-sp-io = { workspace = true, default-features = false }
-sp-offchain = { workspace = true, default-features = false }
-sp-runtime = { workspace = true, default-features = false }
-sp-session = { workspace = true, default-features = false }
-sp-staking = { workspace = true, default-features = false }
-sp-std = { workspace = true, default-features = false }
-sp-transaction-pool = { workspace = true, default-features = false }
-sp-version = { workspace = true, default-features = false }
-libsecp256k1 = { workspace = true, optional = true , default-features = false }
-
-# Frontier dependencies
-pallet-evm = { workspace = true }
-pallet-ethereum = { workspace = true }
-fp-evm = { workspace = true }
-
-# NPoS
-pallet-session = { workspace = true, features = ["historical"], default-features = false }
-pallet-staking = { workspace = true, default-features = false }
-pallet-staking-reward-curve = { workspace = true, default-features = false }
-pallet-authorship = { workspace = true, default-features = false }
-pallet-aura = { workspace = true, default-features = false }
-sp-consensus-aura = { workspace = true, default-features = false }
-# sp-consensus-babe = { workspace = true, default-features = false }
-pallet-im-online = { workspace = true, default-features = false }
-pallet-offences = { workspace = true, default-features = false }
-sp-authority-discovery = { workspace = true, default-features = false }
-pallet-authority-discovery = { workspace = true, default-features = false }
-
-pallet-identity = { workspace = true, default-features = false }
-
-# local dependencies
-
-module-authority = { workspace = true , default-features = false }
-module-benchmarking = { workspace = true, optional = true , default-features = false }
-module-dex-oracle = { workspace = true, default-features = false }
-module-oracle = { workspace = true , default-features = false }
-module-oracle-rpc-runtime-api = { package = "module-oracle-runtime-api", path = "../runtime-modules/oracle/runtime-api", default-features = false }
-module-swap_legacy = { workspace = true, default-features = false }
-module-tokens = { workspace = true , default-features = false }
-module-traits = { workspace = true , default-features = false }
-
-
-module-transaction-pause = { path = "../runtime-modules/transaction-pause", default-features = false }
-module-transaction-payment = { workspace = true , default-features = false }
-module-airdrop = { path = "../runtime-modules/airdrop", default-features = false }
-
-module-currencies = { workspace = true , default-features = false }
-module-unified-accounts = { workspace = true , default-features = false }
-# module-evm removed
-# module-evm-bridge removed
-# module-evm-rpc-runtime-api removed
-# module-evm-manager removed
-
-module-nft = { path = "../runtime-modules/nft", default-features = false }
-module-prices = { path = "../runtime-modules/prices", default-features = false }
-
-module-support = { workspace = true , default-features = false }
-module-vesting = { workspace = true , default-features = false }
-module-move = { package = "module-move", path = "../runtime-modules/move", default-features = false }
-
-primitives = { workspace = true , default-features = false }
-runtime-common = { workspace = true , default-features = false }
-
-
-[dev-dependencies]
-libsecp256k1 = "0.3.4"
-hex = "0.4.0"
-hex-literal = "0.3.1"
-
-sp-io = { workspace = true, default-features = false }
-sp-trie = { workspace = true, default-features = false }
-
+homepage = "https://setheum.com"
+name = "setheum-runtime"
+repository = "https://github.com/setheum/setheum"
 
 [features]
-default = ['std']
-std = [
-	'codec/std',
-	'serde',
-	'frame-executive/std',
-	'frame-support/std',
-	'frame-system/std',
-	'frame-system-rpc-runtime-api/std',
-	"frame-benchmarking/std",
-	'frame-election-provider-support/std',
-	'pallet-balances/std',
-	"pallet-bounties/std",
-	"pallet-collective/std",
-	"pallet-democracy/std",
-# 	'pallet-grandpa/std',
-	"pallet-indices/std",
-	"pallet-membership/std",
-	"pallet-multisig/std",
-	"pallet-proxy/std",
-	"pallet-recovery/std",
-	'pallet-insecure-randomness-collective-flip/std',
-	'pallet-sudo/std',
-	"pallet-scheduler/std",
-	'pallet-timestamp/std',
-	"pallet-tips/std",
-	'pallet-transaction-payment/std',
-	'pallet-transaction-payment-rpc-runtime-api/std',
-	"pallet-treasury/std",
-	"pallet-utility/std",
-	"pallet-session/std",
-	"pallet-staking/std",
-	"pallet-authorship/std",
-	"pallet-aura/std",
-	"sp-consensus-aura/std",
-# 	"sp-consensus-babe/std",
-	"sp-authority-discovery/std",
-	"pallet-authority-discovery/std",
-	"pallet-im-online/std",
-	"pallet-offences/std",
-	"pallet-identity/std",
+default = [ "std",]
+std = [ "codec/std", "serde", "frame-executive/std", "frame-support/std", "frame-system/std", "frame-system-rpc-runtime-api/std", "frame-benchmarking/std", "frame-election-provider-support/std", "pallet-balances/std", "pallet-bounties/std", "pallet-collective/std", "pallet-democracy/std", "pallet-indices/std", "pallet-membership/std", "pallet-multisig/std", "pallet-proxy/std", "pallet-recovery/std", "pallet-insecure-randomness-collective-flip/std", "pallet-sudo/std", "pallet-scheduler/std", "pallet-timestamp/std", "pallet-tips/std", "pallet-transaction-payment/std", "pallet-transaction-payment-rpc-runtime-api/std", "pallet-treasury/std", "pallet-utility/std", "pallet-session/std", "pallet-staking/std", "pallet-authorship/std", "pallet-aura/std", "sp-consensus-aura/std", "sp-authority-discovery/std", "pallet-authority-discovery/std", "pallet-im-online/std", "pallet-offences/std", "pallet-identity/std", "sp-api/std", "sp-block-builder/std", "sp-core/std", "sp-offchain/std", "sp-runtime/std", "sp-session/std", "sp-staking/std", "sp-std/std", "sp-transaction-pool/std", "sp-version/std", "module-traits/std", "module-tokens/std", "module-authority/std", "module-benchmarking/std", "module-oracle-rpc-runtime-api/std", "module-dex-oracle/std", "module-oracle/std", "module-airdrop/std", "module-currencies/std", "module-unified-accounts/std", "module-nft/std", "module-prices/std", "module-support/std", "module-transaction-pause/std", "module-vesting/std", "module-swap_legacy/std", "module-move/std", "primitives/std", "runtime-common/std", "pallet-evm/std", "pallet-ethereum/std", "fp-evm/std",]
+with-ethereum-compatibility = [ "runtime-common/with-ethereum-compatibility",]
+runtime-benchmarks = [ "hex-literal", "libsecp256k1/hmac", "frame-benchmarking", "frame-support/runtime-benchmarks", "frame-system-benchmarking", "frame-system/runtime-benchmarks", "pallet-balances/runtime-benchmarks", "pallet-collective/runtime-benchmarks", "pallet-timestamp/runtime-benchmarks", "sp-runtime/runtime-benchmarks", "module-unified-accounts/runtime-benchmarks", "module-nft/runtime-benchmarks", "module-vesting/runtime-benchmarks", "module-benchmarking", "module-authority/runtime-benchmarks", "module-tokens/runtime-benchmarks",]
 
-	"sp-api/std",
-	"sp-block-builder/std",
-	"sp-core/std",
-	"sp-offchain/std",
-	"sp-runtime/std",
-	"sp-session/std",
-	"sp-staking/std",
-	"sp-std/std",
-	"sp-transaction-pool/std",
-	"sp-version/std",
+[build-dependencies.substrate-wasm-builder]
+workspace = true
+default-features = false
 
-	"module-traits/std",
-	"module-tokens/std",
-	"module-authority/std",
-	"module-benchmarking/std",
-	"module-oracle-rpc-runtime-api/std",
-	"module-dex-oracle/std",
-	"module-oracle/std",
+[dependencies.codec]
+workspace = true
+features = [ "derive",]
+default-features = false
 
-	"module-airdrop/std",
-	"module-currencies/std",
-	"module-unified-accounts/std",
-	"module-nft/std",
-	"module-prices/std",
-	"module-support/std",
-	"module-transaction-pause/std",
-	"module-vesting/std",
-	"module-swap_legacy/std",
-	"module-move/std",
+[dependencies.smallvec]
+workspace = true
 
-	"primitives/std",
-	"runtime-common/std",
+[dependencies.hex-literal]
+workspace = true
+optional = true
+default-features = false
 
-	"pallet-evm/std",
-	"pallet-ethereum/std",
-	"fp-evm/std",
-]
-with-ethereum-compatibility = [
-	"runtime-common/with-ethereum-compatibility",
-]
-runtime-benchmarks = [
-	'hex-literal',
-	"libsecp256k1/hmac",
+[dependencies.serde]
+workspace = true
+optional = true
+features = [ "derive",]
+default-features = false
 
-	'frame-benchmarking',
-	'frame-support/runtime-benchmarks',
-	'frame-system-benchmarking',
-	'frame-system/runtime-benchmarks',
-	'pallet-balances/runtime-benchmarks',
-	"pallet-collective/runtime-benchmarks",
-	'pallet-timestamp/runtime-benchmarks',
-	'sp-runtime/runtime-benchmarks',
+[dependencies.serde_json]
+workspace = true
+default-features = false
 
-	"module-unified-accounts/runtime-benchmarks",
-	"module-nft/runtime-benchmarks",
-	"module-vesting/runtime-benchmarks",
+[dependencies.hex]
+workspace = true
+optional = true
+default-features = false
 
-	"module-benchmarking",
-	"module-authority/runtime-benchmarks",
-	"module-tokens/runtime-benchmarks",
-]
+[dependencies.log]
+workspace = true
+default-features = false
+
+[dependencies.frame-benchmarking]
+workspace = true
+optional = true
+default-features = false
+
+[dependencies.frame-executive]
+workspace = true
+default-features = false
+
+[dependencies.frame-support]
+workspace = true
+default-features = false
+
+[dependencies.frame-system]
+workspace = true
+default-features = false
+
+[dependencies.frame-system-benchmarking]
+workspace = true
+optional = true
+default-features = false
+
+[dependencies.frame-system-rpc-runtime-api]
+workspace = true
+default-features = false
+
+[dependencies.frame-election-provider-support]
+workspace = true
+default-features = false
+
+[dependencies.pallet-balances]
+workspace = true
+default-features = false
+
+[dependencies.pallet-indices]
+workspace = true
+default-features = false
+
+[dependencies.pallet-bounties]
+workspace = true
+default-features = false
+
+[dependencies.pallet-collective]
+workspace = true
+default-features = false
+
+[dependencies.pallet-insecure-randomness-collective-flip]
+workspace = true
+default-features = false
+
+[dependencies.pallet-democracy]
+workspace = true
+default-features = false
+
+[dependencies.pallet-membership]
+workspace = true
+default-features = false
+
+[dependencies.pallet-multisig]
+workspace = true
+default-features = false
+
+[dependencies.pallet-proxy]
+workspace = true
+default-features = false
+
+[dependencies.pallet-recovery]
+workspace = true
+default-features = false
+
+[dependencies.pallet-scheduler]
+workspace = true
+default-features = false
+
+[dependencies.pallet-sudo]
+workspace = true
+default-features = false
+
+[dependencies.pallet-tips]
+workspace = true
+default-features = false
+
+[dependencies.pallet-timestamp]
+workspace = true
+default-features = false
+
+[dependencies.pallet-transaction-payment]
+workspace = true
+default-features = false
+
+[dependencies.pallet-transaction-payment-rpc-runtime-api]
+workspace = true
+default-features = false
+
+[dependencies.sp-api]
+workspace = true
+default-features = false
+
+[dependencies.sp-application-crypto]
+workspace = true
+default-features = false
+
+[dependencies.sp-block-builder]
+workspace = true
+default-features = false
+
+[dependencies.sp-core]
+workspace = true
+default-features = false
+
+[dependencies.sp-inherents]
+workspace = true
+default-features = false
+
+[dependencies.pallet-treasury]
+workspace = true
+default-features = false
+
+[dependencies.pallet-utility]
+workspace = true
+default-features = false
+
+[dependencies.sp-io]
+workspace = true
+default-features = false
+
+[dependencies.sp-offchain]
+workspace = true
+default-features = false
+
+[dependencies.sp-runtime]
+workspace = true
+default-features = false
+
+[dependencies.sp-session]
+workspace = true
+default-features = false
+
+[dependencies.sp-staking]
+workspace = true
+default-features = false
+
+[dependencies.sp-std]
+workspace = true
+default-features = false
+
+[dependencies.sp-transaction-pool]
+workspace = true
+default-features = false
+
+[dependencies.sp-version]
+workspace = true
+default-features = false
+
+[dependencies.libsecp256k1]
+workspace = true
+optional = true
+default-features = false
+
+[dependencies.pallet-evm]
+workspace = true
+
+[dependencies.pallet-ethereum]
+workspace = true
+
+[dependencies.fp-evm]
+workspace = true
+
+[dependencies.pallet-session]
+workspace = true
+features = [ "historical",]
+default-features = false
+
+[dependencies.pallet-staking]
+workspace = true
+default-features = false
+
+[dependencies.pallet-staking-reward-curve]
+workspace = true
+default-features = false
+
+[dependencies.pallet-authorship]
+workspace = true
+default-features = false
+
+[dependencies.pallet-aura]
+workspace = true
+default-features = false
+
+[dependencies.sp-consensus-aura]
+workspace = true
+default-features = false
+
+[dependencies.pallet-im-online]
+workspace = true
+default-features = false
+
+[dependencies.pallet-offences]
+workspace = true
+default-features = false
+
+[dependencies.sp-authority-discovery]
+workspace = true
+default-features = false
+
+[dependencies.pallet-authority-discovery]
+workspace = true
+default-features = false
+
+[dependencies.pallet-identity]
+workspace = true
+default-features = false
+
+[dependencies.module-authority]
+workspace = true
+default-features = false
+
+[dependencies.module-benchmarking]
+workspace = true
+optional = true
+default-features = false
+
+[dependencies.module-dex-oracle]
+workspace = true
+default-features = false
+
+[dependencies.module-oracle]
+workspace = true
+default-features = false
+
+[dependencies.module-oracle-rpc-runtime-api]
+package = "module-oracle-runtime-api"
+path = "../runtime-modules/oracle/runtime-api"
+default-features = false
+
+[dependencies.module-swap_legacy]
+workspace = true
+default-features = false
+
+[dependencies.module-tokens]
+workspace = true
+default-features = false
+
+[dependencies.module-traits]
+workspace = true
+default-features = false
+
+[dependencies.module-transaction-pause]
+workspace = true
+default-features = false
+
+[dependencies.module-transaction-payment]
+workspace = true
+default-features = false
+
+[dependencies.module-airdrop]
+workspace = true
+default-features = false
+
+[dependencies.module-currencies]
+workspace = true
+default-features = false
+
+[dependencies.module-unified-accounts]
+workspace = true
+default-features = false
+
+[dependencies.module-nft]
+path = "../runtime-modules/nft"
+default-features = false
+
+[dependencies.module-prices]
+workspace = true
+default-features = false
+
+[dependencies.module-support]
+workspace = true
+default-features = false
+
+[dependencies.module-vesting]
+workspace = true
+default-features = false
+
+[dependencies.module-move]
+workspace = true
+default-features = false
+
+[dependencies.primitives]
+workspace = true
+default-features = false
+
+[dependencies.runtime-common]
+workspace = true
+default-features = false
+
+[dev-dependencies.libsecp256k1]
+workspace = true
+
+[dev-dependencies.hex]
+workspace = true
+
+[dev-dependencies.hex-literal]
+workspace = true
+
+[dev-dependencies.sp-io]
+workspace = true
+default-features = false
+
+[dev-dependencies.sp-trie]
+workspace = true
+default-features = false
+
+[package.metadata.docs.rs]
+targets = [ "x86_64-unknown-linux-gnu",]

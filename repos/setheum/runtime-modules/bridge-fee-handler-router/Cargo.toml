@@ -4,58 +4,90 @@ version = "0.3.0"
 edition = "2021"
 license = "LGPL-3.0"
 
-[dependencies]
-codec = { package = "parity-scale-codec", version = "3.6.1", default-features = false, features = ["derive", "max-encoded-len"] }
-scale-info = { version = "2.5.0", default-features = false, features = ["derive", "serde", "decode"] }
-
-# Substrate
-frame-support = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506", default-features = false }
-frame-system = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506", default-features = false }
-frame-benchmarking = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506", default-features = false, optional = true }
-sp-std = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506", default-features = false }
-
-# Polkadot
-xcm = { package = "staging-xcm", git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506", default-features = false }
-xcm-builder = { package = "staging-xcm-builder", git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506", default-features = false }
-
-# Local
-module-bridge-traits = { path = "../bridge-traits", default-features = false }
-module-bridge-basic-fee-handler = { path = "../bridge-basic-fee-handler", default-features = false }
-module-bridge-percentage-fee-handler = { path = "../bridge-percentage-fee-handler", default-features = false }
-module-bridge-access-segregator = { path = "../bridge-access-segregator", default-features = false }
-
-[dev-dependencies]
-# Substrate
-sp-runtime = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
-sp-io = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
-frame-support = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
-frame-system = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
-pallet-balances = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
-pallet-assets = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
-
-module-bridge-access-segregator = { path = "../bridge-access-segregator" , default-features = false }
-module-bridge-basic-fee-handler = { path = "../bridge-basic-fee-handler" , default-features = false }
-module-bridge-traits = { path = "../bridge-traits" , default-features = false }
-
 [features]
-default = ["std"]
-std = [
-	"codec/std",
-	"scale-info/std",
-    "frame-support/std",
-    "frame-system/std",
-    "frame-benchmarking/std",
-	"sp-std/std",
-	"xcm/std",
-	"xcm-builder/std",
-    "module-bridge-traits/std",
-	"module-bridge-basic-fee-handler/std",
-	"module-bridge-percentage-fee-handler/std",
-	"module-bridge-access-segregator/std",
-]
-runtime-benchmarks = [
-	'frame-benchmarking',
-	'frame-support/runtime-benchmarks',
-	'frame-system/runtime-benchmarks',
-]
-try-runtime = ["frame-support/try-runtime"]
+default = [ "std",]
+std = [ "codec/std", "scale-info/std", "frame-support/std", "frame-system/std", "frame-benchmarking/std", "sp-std/std", "xcm/std", "xcm-builder/std", "module-bridge-traits/std", "module-bridge-basic-fee-handler/std", "module-bridge-percentage-fee-handler/std", "module-bridge-access-segregator/std",]
+runtime-benchmarks = [ "frame-benchmarking", "frame-support/runtime-benchmarks", "frame-system/runtime-benchmarks",]
+try-runtime = [ "frame-support/try-runtime",]
+
+[dependencies.codec]
+workspace = true
+features = [ "derive", "max-encoded-len",]
+default-features = false
+
+[dependencies.scale-info]
+workspace = true
+features = [ "derive", "serde", "decode",]
+default-features = false
+
+[dependencies.frame-support]
+workspace = true
+default-features = false
+
+[dependencies.frame-system]
+workspace = true
+default-features = false
+
+[dependencies.frame-benchmarking]
+workspace = true
+default-features = false
+optional = true
+
+[dependencies.sp-std]
+workspace = true
+default-features = false
+
+[dependencies.xcm]
+workspace = true
+default-features = false
+
+[dependencies.xcm-builder]
+workspace = true
+default-features = false
+
+[dependencies.module-bridge-traits]
+workspace = true
+default-features = false
+
+[dependencies.module-bridge-basic-fee-handler]
+workspace = true
+default-features = false
+
+[dependencies.module-bridge-percentage-fee-handler]
+workspace = true
+default-features = false
+
+[dependencies.module-bridge-access-segregator]
+workspace = true
+default-features = false
+
+[dev-dependencies.sp-runtime]
+workspace = true
+
+[dev-dependencies.sp-io]
+workspace = true
+
+[dev-dependencies.frame-support]
+workspace = true
+
+[dev-dependencies.frame-system]
+workspace = true
+
+[dev-dependencies.pallet-balances]
+workspace = true
+
+[dev-dependencies.pallet-assets]
+git = "https://github.com/paritytech/polkadot-sdk.git"
+branch = "stable2506"
+
+[dev-dependencies.module-bridge-access-segregator]
+workspace = true
+default-features = false
+
+[dev-dependencies.module-bridge-basic-fee-handler]
+workspace = true
+default-features = false
+
+[dev-dependencies.module-bridge-traits]
+workspace = true
+default-features = false

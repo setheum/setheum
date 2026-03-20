@@ -1,22 +1,35 @@
 [package]
 name = "move-bytecode-source-map"
 version = "0.1.0"
-authors = ["Diem Association <opensource@diem.com>"]
+authors = [ "Diem Association <opensource@diem.com>",]
 license = "Apache-2.0"
 publish = false
 edition = "2021"
 
-[dependencies]
-anyhow = "1.0.52"
-move-core-types = { path = "../../move-core/types" }
-move-ir-types = { path = "../../move-ir/types" }
-move-symbol-pool = { path = "../../move-symbol-pool" }
-move-binary-format = { path = "../../move-binary-format" }
-move-command-line-common = { path = "../../move-command-line-common" }
-
-bcs.workspace = true
-
-serde = { version = "1.0.124", default-features = false }
-
 [features]
 default = []
+
+[dependencies.anyhow]
+workspace = true
+
+[dependencies.move-core-types]
+workspace = true
+
+[dependencies.move-ir-types]
+workspace = true
+
+[dependencies.move-symbol-pool]
+workspace = true
+
+[dependencies.move-binary-format]
+workspace = true
+
+[dependencies.move-command-line-common]
+workspace = true
+
+[dependencies.bcs]
+workspace = true
+
+[dependencies.serde]
+workspace = true
+default-features = false

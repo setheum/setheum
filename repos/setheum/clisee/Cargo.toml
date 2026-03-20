@@ -5,31 +5,79 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-anyhow = "1.0"
-clap = { workspace = true, features = ["derive"] , default-features = false }
-codec = { package = 'parity-scale-codec', version = "3.0.0", features = ['derive'] }
-contract-metadata = "3.2.0"
-contract-transcode = "3.2.0"
 dialoguer = "0.10.0"
-env_logger = "0.8"
-hex = "0.4.3"
-ink_metadata = { version = "4.3.0", features = ["derive"] }
-log = "0.4"
-serde = { workspace = true, features = ["derive"] , default-features = false }
-serde_json = "1.0.81"
-
-tokio = { workspace = true, features = ["full"] , default-features = false }
-
-pallet-staking = { workspace = true }
-sp-core = { workspace = true, features = ["full_crypto"] }
-move-core-types = { workspace = true }
-move-vm-backend-common = { workspace = true }
-setheum-move = { path = "../setheum-move" }
-bcs = { workspace = true }
-
-setheum_client = { path = "../setheum-client" , default-features = false }
-primitives = { workspace = true , default-features = false }
 
 [features]
-default = ["std"]
+default = [ "std",]
 std = []
+
+[dependencies.anyhow]
+workspace = true
+
+[dependencies.clap]
+workspace = true
+features = [ "derive",]
+default-features = false
+
+[dependencies.codec]
+workspace = true
+features = [ "derive",]
+
+[dependencies.contract-metadata]
+workspace = true
+
+[dependencies.contract-transcode]
+workspace = true
+
+[dependencies.env_logger]
+workspace = true
+
+[dependencies.hex]
+workspace = true
+
+[dependencies.ink_metadata]
+workspace = true
+features = [ "derive",]
+
+[dependencies.log]
+workspace = true
+
+[dependencies.serde]
+workspace = true
+features = [ "derive",]
+default-features = false
+
+[dependencies.serde_json]
+workspace = true
+
+[dependencies.tokio]
+workspace = true
+features = [ "full",]
+default-features = false
+
+[dependencies.pallet-staking]
+workspace = true
+
+[dependencies.sp-core]
+workspace = true
+features = [ "full_crypto",]
+
+[dependencies.move-core-types]
+workspace = true
+
+[dependencies.move-vm-backend-common]
+workspace = true
+
+[dependencies.setheum-move]
+workspace = true
+
+[dependencies.bcs]
+workspace = true
+
+[dependencies.setheum_client]
+workspace = true
+default-features = false
+
+[dependencies.primitives]
+workspace = true
+default-features = false

@@ -1,23 +1,42 @@
 [package]
 name = "sandbox-runtime"
 version = "0.1.0"
-authors.workspace = true
-edition.workspace = true
-homepage.workspace = true
-keywords.workspace = true
 license = "Apache-2.0 OR MIT"
-repository.workspace = true
-
-[dependencies]
-ink_sandbox = { path = "../../../../crates/e2e/sandbox" }
-pallet-contract-caller = { path = "pallet-contract-caller", default-features = false }
-frame-support = { workspace = true }
-frame-system = { workspace = true }
-codec = { workspace = true }
-scale-info = { workspace = true }
 
 [features]
-default = ["std"]
-std = [
-    "pallet-contract-caller/std",
-]
+default = [ "std",]
+std = [ "pallet-contract-caller/std",]
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.keywords]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[dependencies.ink_sandbox]
+workspace = true
+
+[dependencies.pallet-contract-caller]
+path = "pallet-contract-caller"
+default-features = false
+
+[dependencies.frame-support]
+workspace = true
+
+[dependencies.frame-system]
+workspace = true
+
+[dependencies.codec]
+workspace = true
+
+[dependencies.scale-info]
+workspace = true

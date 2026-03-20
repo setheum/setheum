@@ -1,50 +1,81 @@
 [package]
 name = "ink_storage"
-version.workspace = true
-authors = ["Use Ink <ink@use.ink>"]
-edition.workspace = true
-
+authors = [ "Use Ink <ink@use.ink>",]
 license = "Apache-2.0 OR MIT"
 readme = "README.md"
-repository.workspace = true
 documentation = "https://docs.rs/ink_storage/"
-homepage.workspace = true
 description = "[ink!] Data structures to organize and manipulate ink! contract storage."
-keywords.workspace = true
-categories.workspace = true
-include = ["Cargo.toml", "src/**/*.rs", "README.md", "LICENSE"]
-
-[dependencies]
-ink_env = { workspace = true }
-ink_metadata = { workspace = true, optional = true }
-ink_primitives = { workspace = true }
-ink_storage_traits = { workspace = true }
-ink_prelude = { workspace = true }
-pallet-contracts-uapi = { workspace = true}
-
-scale = { workspace = true }
-derive_more = { workspace = true, features = ["from", "display"] }
-scale-info = { workspace = true, features = ["derive"], optional = true }
-cfg-if = { workspace = true }
-array-init = { workspace = true }
-
-[dev-dependencies]
-quickcheck = { workspace = true }
-quickcheck_macros = { workspace = true }
-itertools = { workspace = true, default-features = true }
-
-ink = { path = "../ink"}
+include = [ "Cargo.toml", "src/**/*.rs", "README.md", "LICENSE",]
 
 [features]
-default = [ "std" ]
-std = [
-	"ink_env/std",
-	"ink_metadata/std",
-	"ink_prelude/std",
-	"ink_primitives/std",
-	"ink_storage_traits/std",
-	"scale-info/std",
-	"scale/std",
-	"derive_more/std"
-]
-ink-fuzz-tests = [ "std" ]
+default = [ "std",]
+std = [ "ink_env/std", "ink_metadata/std", "ink_prelude/std", "ink_primitives/std", "ink_storage_traits/std", "scale-info/std", "scale/std", "derive_more/std",]
+ink-fuzz-tests = [ "std",]
+
+[package.version]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.keywords]
+workspace = true
+
+[package.categories]
+workspace = true
+
+[dependencies.ink_env]
+workspace = true
+
+[dependencies.ink_metadata]
+workspace = true
+optional = true
+
+[dependencies.ink_primitives]
+workspace = true
+
+[dependencies.ink_storage_traits]
+workspace = true
+
+[dependencies.ink_prelude]
+workspace = true
+
+[dependencies.pallet-contracts-uapi]
+workspace = true
+
+[dependencies.scale]
+workspace = true
+
+[dependencies.derive_more]
+workspace = true
+features = [ "from", "display",]
+
+[dependencies.scale-info]
+workspace = true
+features = [ "derive",]
+optional = true
+
+[dependencies.cfg-if]
+workspace = true
+
+[dependencies.array-init]
+workspace = true
+
+[dev-dependencies.quickcheck]
+workspace = true
+
+[dev-dependencies.quickcheck_macros]
+workspace = true
+
+[dev-dependencies.itertools]
+workspace = true
+default-features = true
+
+[dev-dependencies.ink]
+workspace = true

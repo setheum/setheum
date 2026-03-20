@@ -1,7 +1,7 @@
 [package]
 name = "serializer-tests"
 version = "0.1.0"
-authors = ["Diem Association <opensource@diem.com>"]
+authors = [ "Diem Association <opensource@diem.com>",]
 description = "Diem serializer tests"
 repository = "https://github.com/diem/diem"
 homepage = "https://diem.com"
@@ -12,7 +12,10 @@ edition = "2021"
 [dev-dependencies]
 proptest = "1.0.0"
 proptest-derive = "0.3.0"
-move-binary-format = { path = "../", features = ["fuzzing"] }
 
 [features]
-fuzzing = ["move-binary-format/fuzzing"]
+fuzzing = [ "move-binary-format/fuzzing",]
+
+[dev-dependencies.move-binary-format]
+workspace = true
+features = [ "fuzzing",]

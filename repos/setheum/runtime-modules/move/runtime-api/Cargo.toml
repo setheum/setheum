@@ -1,28 +1,36 @@
 [package]
 name = "module-move-runtime-api"
 version = "0.1.0"
-authors = ["Setheum Developers"]
+authors = [ "Setheum Developers",]
 edition = "2021"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 description = "Runtime API for Setheum MoveVM module"
 
-[dependencies]
-codec = { package = "parity-scale-codec", version = "3.6.1", default-features = false, features = ["derive"] }
-frame-support = { workspace = true }
-sp-api = { workspace = true }
-sp-runtime = { workspace = true }
-sp-std = { workspace = true }
-scale-info = { version = "2.11.1", default-features = false, features = ["derive"] }
-move-vm-backend-common = { workspace = true }
-
 [features]
-default = ["std"]
-std = [
-    "codec/std",
-    "frame-support/std",
-    "sp-api/std",
-    "sp-runtime/std",
-    "sp-std/std",
-    "scale-info/std",
-    "move-vm-backend-common/std",
-]
+default = [ "std",]
+std = [ "codec/std", "frame-support/std", "sp-api/std", "sp-runtime/std", "sp-std/std", "scale-info/std", "move-vm-backend-common/std",]
+
+[dependencies.codec]
+workspace = true
+features = [ "derive",]
+default-features = false
+
+[dependencies.frame-support]
+workspace = true
+
+[dependencies.sp-api]
+workspace = true
+
+[dependencies.sp-runtime]
+workspace = true
+
+[dependencies.sp-std]
+workspace = true
+
+[dependencies.scale-info]
+workspace = true
+features = [ "derive",]
+default-features = false
+
+[dependencies.move-vm-backend-common]
+workspace = true

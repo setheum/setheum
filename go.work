@@ -1,0 +1,6 @@
+go 1.26.1
+
+use (
+	./repos/bridge/bridge-core
+	./repos/bridge/bridge-relayer
+)

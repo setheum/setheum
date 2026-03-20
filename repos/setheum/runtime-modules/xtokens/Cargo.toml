@@ -4,86 +4,119 @@ description = "Cross-chain token transfer."
 repository = "https://github.com/open-web3-stack/open-runtime-module-library/tree/master/xtokens"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 version = "1.5.0"
-authors = ["Setheum Developers"]
+authors = [ "Setheum Developers",]
 edition = "2021"
 
-[dependencies]
-parity-scale-codec = { workspace = true }
-log = { workspace = true , default-features = false }
-scale-info = { workspace = true }
-serde = { workspace = true, optional = true , default-features = false }
-
-# substrate
-frame-support = { workspace = true }
-frame-system = { workspace = true }
-sp-io = { workspace = true }
-sp-runtime = { workspace = true }
-sp-std = { workspace = true }
-
-# polkadot
-parachains-common = { workspace = true, optional = true , default-features = false }
-pallet-xcm = { workspace = true }
-xcm = { workspace = true , default-features = false }
-xcm-executor = { workspace = true , default-features = false }
-
-module-traits = { workspace = true , default-features = false }
-module-xcm-support = { workspace = true , default-features = false }
-
-[dev-dependencies]
-# substrate
-pallet-balances = { workspace = true, features = ["std"] }
-sp-core = { workspace = true, features = ["std"] }
-# pallet-message-queue = { workspace = true, features = ["std"] , default-features = false }
-
-# cumulus
-cumulus-pallet-xcm = { workspace = true, features = ["std"] , default-features = false }
-cumulus-primitives-core = { workspace = true, features = ["std"] , default-features = false }
-
-# polkadot
-polkadot-parachain-primitives = { workspace = true, features = ["std"] , default-features = false }
-polkadot-runtime-parachains = { workspace = true, features = ["std"] , default-features = false }
-polkadot-runtime-common = { workspace = true, features = ["std"] , default-features = false }
-xcm-builder = { workspace = true, features = ["std"] , default-features = false }
-xcm-simulator = { workspace = true , default-features = false }
-
-module-tokens = { workspace = true , default-features = false }
-module-xcm = { workspace = true , default-features = false }
-module-xcm-mock-message-queue = { package = "module-xcm-mock-message-queue", path = "../xcm-mock-message-queue" , default-features = false }
-
 [features]
-default = [ "std" ]
-std = [
-	"cumulus-primitives-core/std",
-	"frame-support/std",
-	"frame-system/std",
-	"log/std",
-	"module-traits/std",
-	"module-xcm-support/std",
-	"pallet-xcm/std",
-	"parachains-common/std",
-	"parity-scale-codec/std",
-	"scale-info/std",
-	"serde",
-	"sp-io/std",
-	"sp-runtime/std",
-	"sp-std/std",
-	"xcm-executor/std",
-	"xcm/std",
-]
-runtime-benchmarks = [
-	"frame-support/runtime-benchmarks",
-	"frame-system/runtime-benchmarks",
-	"module-tokens/runtime-benchmarks",
-	"pallet-xcm/runtime-benchmarks",
-	"parachains-common/runtime-benchmarks",
-	"sp-runtime/runtime-benchmarks",
-	"xcm-executor/runtime-benchmarks",
-]
-try-runtime = [
-	"frame-support/try-runtime",
-	"frame-system/try-runtime",
-	"pallet-xcm/try-runtime",
-	# "parachains-common/try-runtime",
-	"sp-runtime/try-runtime",
-]
+default = [ "std",]
+std = [ "cumulus-primitives-core/std", "frame-support/std", "frame-system/std", "log/std", "module-traits/std", "module-xcm-support/std", "pallet-xcm/std", "parachains-common/std", "parity-scale-codec/std", "scale-info/std", "serde", "sp-io/std", "sp-runtime/std", "sp-std/std", "xcm-executor/std", "xcm/std",]
+runtime-benchmarks = [ "frame-support/runtime-benchmarks", "frame-system/runtime-benchmarks", "module-tokens/runtime-benchmarks", "pallet-xcm/runtime-benchmarks", "parachains-common/runtime-benchmarks", "sp-runtime/runtime-benchmarks", "xcm-executor/runtime-benchmarks",]
+try-runtime = [ "frame-support/try-runtime", "frame-system/try-runtime", "pallet-xcm/try-runtime", "sp-runtime/try-runtime",]
 
+[dependencies.parity-scale-codec]
+workspace = true
+
+[dependencies.log]
+workspace = true
+default-features = false
+
+[dependencies.scale-info]
+workspace = true
+
+[dependencies.serde]
+workspace = true
+optional = true
+default-features = false
+
+[dependencies.frame-support]
+workspace = true
+
+[dependencies.frame-system]
+workspace = true
+
+[dependencies.sp-io]
+workspace = true
+
+[dependencies.sp-runtime]
+workspace = true
+
+[dependencies.sp-std]
+workspace = true
+
+[dependencies.parachains-common]
+workspace = true
+optional = true
+default-features = false
+
+[dependencies.pallet-xcm]
+workspace = true
+
+[dependencies.xcm]
+workspace = true
+default-features = false
+
+[dependencies.xcm-executor]
+workspace = true
+default-features = false
+
+[dependencies.module-traits]
+workspace = true
+default-features = false
+
+[dependencies.module-xcm-support]
+workspace = true
+default-features = false
+
+[dev-dependencies.pallet-balances]
+workspace = true
+features = [ "std",]
+
+[dev-dependencies.sp-core]
+workspace = true
+features = [ "std",]
+
+[dev-dependencies.cumulus-pallet-xcm]
+workspace = true
+features = [ "std",]
+default-features = false
+
+[dev-dependencies.cumulus-primitives-core]
+workspace = true
+features = [ "std",]
+default-features = false
+
+[dev-dependencies.polkadot-parachain-primitives]
+workspace = true
+features = [ "std",]
+default-features = false
+
+[dev-dependencies.polkadot-runtime-parachains]
+workspace = true
+features = [ "std",]
+default-features = false
+
+[dev-dependencies.polkadot-runtime-common]
+workspace = true
+features = [ "std",]
+default-features = false
+
+[dev-dependencies.xcm-builder]
+workspace = true
+features = [ "std",]
+default-features = false
+
+[dev-dependencies.xcm-simulator]
+workspace = true
+default-features = false
+
+[dev-dependencies.module-tokens]
+workspace = true
+default-features = false
+
+[dev-dependencies.module-xcm]
+workspace = true
+default-features = false
+
+[dev-dependencies.module-xcm-mock-message-queue]
+workspace = true
+default-features = false

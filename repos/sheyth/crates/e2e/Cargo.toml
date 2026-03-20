@@ -1,80 +1,139 @@
 [package]
 name = "ink_e2e"
-version.workspace = true
-authors.workspace = true
-edition.workspace = true
-
 license = "Apache-2.0 OR MIT"
 readme = "README.md"
-repository.workspace = true
 documentation = "https://docs.rs/ink_e2e/"
-homepage.workspace = true
 description = "[ink!] End-to-end testing framework for smart contracts."
-keywords.workspace = true
-categories.workspace = true
-include = ["/Cargo.toml", "src/**/*.rs", "/README.md", "/LICENSE"]
+include = [ "/Cargo.toml", "src/**/*.rs", "/README.md", "/LICENSE",]
 
 [dependencies]
-ink_e2e_macro = { workspace = true, default-features = true }
-ink = { workspace = true, default-features = true }
-ink_env = { workspace = true, default-features = true }
-ink_primitives = { workspace = true, default-features = true }
-
-cargo_metadata = { workspace = true }
-contract-build = { workspace = true }
-ink_sandbox = { version = "=5.1.1", path =  "./sandbox", optional = true }
-pallet-contracts-mock-network = { workspace = true, optional = true }
-funty = { workspace = true }
-impl-serde = { workspace = true }
-jsonrpsee = { workspace = true, features = ["ws-client"] }
-serde = { workspace = true, features = ["derive"] }
-serde_json = { workspace = true }
-tokio = { workspace = true, features = ["rt-multi-thread"] }
-tracing = { workspace = true }
-tracing-subscriber = { workspace = true, features = ["env-filter"] }
-scale = { workspace = true }
-subxt = { workspace = true }
-subxt-metadata = { workspace = true, optional = true }
-subxt-signer = { workspace = true, features = ["subxt", "sr25519"] }
-thiserror = { workspace = true }
-wasm-instrument = { workspace = true }
-which = { workspace = true }
-
-# Substrate
-frame-support = { workspace = true }
-pallet-contracts = { workspace = true }
-sp-core = { workspace = true }
-sp-keyring = { workspace = true }
-sp-runtime = { workspace = true }
-sp-weights = { workspace = true }
 regex = "1.11.1"
 
-[dev-dependencies]
-# Required for the doctest of `MessageBuilder::call`
-scale-info = { workspace = true, features = ["derive"] }
-
 [features]
-default = [ "std" ]
-std = [
-	"impl-serde/std",
-	"ink_e2e_macro/std",
-	"pallet-contracts/std",
-	"scale-info/std",
-	"scale/std",
-	"serde/std",
-	"sp-core/std",
-	"sp-keyring/std",
-	"sp-runtime/std",
-	"sp-weights/std",
-	"ink_e2e_macro/std",
-	"ink_sandbox/std",
-	"frame-support/std",
-	"pallet-contracts-mock-network?/std",
-]
+default = [ "std",]
+std = [ "impl-serde/std", "ink_e2e_macro/std", "pallet-contracts/std", "scale-info/std", "scale/std", "serde/std", "sp-core/std", "sp-keyring/std", "sp-runtime/std", "sp-weights/std", "ink_e2e_macro/std", "ink_sandbox/std", "frame-support/std", "pallet-contracts-mock-network?/std",]
+sandbox = [ "dep:ink_sandbox", "subxt-metadata", "pallet-contracts-mock-network", "ink_e2e_macro/sandbox",]
 
-sandbox = [
-    "dep:ink_sandbox",
-    "subxt-metadata",
-    "pallet-contracts-mock-network",
-    "ink_e2e_macro/sandbox",
-]
+[package.version]
+workspace = true
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.keywords]
+workspace = true
+
+[package.categories]
+workspace = true
+
+[dependencies.ink_e2e_macro]
+workspace = true
+default-features = true
+
+[dependencies.ink]
+workspace = true
+default-features = true
+
+[dependencies.ink_env]
+workspace = true
+default-features = true
+
+[dependencies.ink_primitives]
+workspace = true
+default-features = true
+
+[dependencies.cargo_metadata]
+workspace = true
+
+[dependencies.contract-build]
+workspace = true
+
+[dependencies.ink_sandbox]
+workspace = true
+optional = true
+
+[dependencies.pallet-contracts-mock-network]
+workspace = true
+optional = true
+
+[dependencies.funty]
+workspace = true
+
+[dependencies.impl-serde]
+workspace = true
+
+[dependencies.jsonrpsee]
+workspace = true
+features = [ "ws-client",]
+
+[dependencies.serde]
+workspace = true
+features = [ "derive",]
+
+[dependencies.serde_json]
+workspace = true
+
+[dependencies.tokio]
+workspace = true
+features = [ "rt-multi-thread",]
+
+[dependencies.tracing]
+workspace = true
+
+[dependencies.tracing-subscriber]
+workspace = true
+features = [ "env-filter",]
+
+[dependencies.scale]
+workspace = true
+
+[dependencies.subxt]
+workspace = true
+
+[dependencies.subxt-metadata]
+workspace = true
+optional = true
+
+[dependencies.subxt-signer]
+workspace = true
+features = [ "subxt", "sr25519",]
+
+[dependencies.thiserror]
+workspace = true
+
+[dependencies.wasm-instrument]
+workspace = true
+
+[dependencies.which]
+workspace = true
+
+[dependencies.frame-support]
+workspace = true
+
+[dependencies.pallet-contracts]
+workspace = true
+
+[dependencies.sp-core]
+workspace = true
+
+[dependencies.sp-keyring]
+workspace = true
+
+[dependencies.sp-runtime]
+workspace = true
+
+[dependencies.sp-weights]
+workspace = true
+
+[dev-dependencies.scale-info]
+workspace = true
+features = [ "derive",]

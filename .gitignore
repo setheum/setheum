@@ -13,7 +13,28 @@
 .local
 .vscode
 
+# JS / Node / Bun ignores
 **/fork/data/
-**/fork/node_modules/
+**/node_modules/
+**/dist/
+**/build/
+**/coverage/
+.npm/
+.yarn/
+.pnpm-store/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+bun.log
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.bun/
+.next/
+.nuxt/
+.vuepress/
 
 .REFERENCES

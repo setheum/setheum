@@ -2,7 +2,7 @@
 name = "set-bft-types"
 version = "0.16.0"
 edition = "2021"
-authors = ["Afsall Labs"]
+authors = [ "Afsall Labs",]
 documentation = "https://docs.rs/?"
 homepage = "https://setheum.com"
 license = "Apache-2.0 OR MIT"
@@ -10,8 +10,16 @@ repository = "https://github.com/setheum/set-bft"
 readme = "./README.md"
 description = "Traits that need to be implemented by the user of the set-bft package."
 
-[dependencies]
-set-bft-crypto = { path = "../crypto", version = "0.11" }
-async-trait = "0.1"
-codec = { package = "parity-scale-codec", version = "3.0", default-features = false, features = ["derive"] }
-futures = "0.3"
+[dependencies.set-bft-crypto]
+workspace = true
+
+[dependencies.async-trait]
+workspace = true
+
+[dependencies.codec]
+workspace = true
+features = [ "derive",]
+default-features = false
+
+[dependencies.futures]
+workspace = true

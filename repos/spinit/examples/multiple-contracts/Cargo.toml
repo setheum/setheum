@@ -1,25 +1,28 @@
 [package]
 license = "Apache-2.0 OR MIT"
 name = "multiple-contracts"
-authors = ["Afsall Labs", "Setheum Foundation">"]
+authors = [ "Afsall Labs", "Setheum Foundation",]
 edition = "2021"
 homepage = "https://setheum.com"
 repository = "https://github.com/use-ink/drink"
 version = "0.1.0"
 
-[dependencies]
-ink = { version = "6.0.0-alpha", default-features = false }
-flipper = { path = "../flipper", default-features = false, features = [
-    "ink-as-dependency",
-] }
-
-[dev-dependencies]
-drink = { path = "../../drink" }
-
 [lib]
 path = "lib.rs"
 
 [features]
-default = ["std"]
-std = ["ink/std", "flipper/std"]
+default = [ "std",]
+std = [ "ink/std", "flipper/std",]
 ink-as-dependency = []
+
+[dependencies.ink]
+workspace = true
+default-features = false
+
+[dependencies.flipper]
+path = "../flipper"
+default-features = false
+features = [ "ink-as-dependency",]
+
+[dev-dependencies.drink]
+workspace = true

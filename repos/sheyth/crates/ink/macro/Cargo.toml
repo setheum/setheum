@@ -1,48 +1,82 @@
 [package]
 name = "ink_macro"
-version.workspace = true
-authors = ["Use Ink <ink@use.ink>"]
-edition.workspace = true
-
+authors = [ "Use Ink <ink@use.ink>",]
 license = "Apache-2.0 OR MIT"
 readme = "README.md"
-repository.workspace = true
 documentation = "https://docs.rs/ink_macro/"
-homepage.workspace = true
 description = "[ink!] Rust based eDSL for writing smart contracts for Substrate"
-keywords.workspace = true
-categories.workspace = true
-include = ["Cargo.toml", "src/**/*.rs", "README.md", "LICENSE"]
-
-[dependencies]
-ink_ir = { workspace = true }
-ink_codegen = { workspace = true }
-ink_primitives = { workspace = true }
-
-scale = { workspace = true }
-syn = { workspace = true }
-synstructure = { workspace = true }
-proc-macro2 = { workspace = true }
-quote = { workspace = true }
-
-[dev-dependencies]
-ink_env = { workspace = true, default-features = true }
-ink = { path = "..", default-features = true }
-ink_metadata = { workspace = true, default-features = true }
-ink_prelude = { workspace = true, default-features = true }
-ink_storage = { workspace = true, default-features = true }
-scale-info = { workspace = true, features = ["derive"] }
+include = [ "Cargo.toml", "src/**/*.rs", "README.md", "LICENSE",]
 
 [lib]
 name = "ink_macro"
 proc-macro = true
 
 [features]
-default = [ "std" ]
-std = [
-	"ink_codegen/std",
-	"ink_ir/std",
-	"ink_primitives/std",
-	"scale/std",
-	"scale-info/std"
-]
+default = [ "std",]
+std = [ "ink_codegen/std", "ink_ir/std", "ink_primitives/std", "scale/std", "scale-info/std",]
+
+[package.version]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.keywords]
+workspace = true
+
+[package.categories]
+workspace = true
+
+[dependencies.ink_ir]
+workspace = true
+
+[dependencies.ink_codegen]
+workspace = true
+
+[dependencies.ink_primitives]
+workspace = true
+
+[dependencies.scale]
+workspace = true
+
+[dependencies.syn]
+workspace = true
+
+[dependencies.synstructure]
+workspace = true
+
+[dependencies.proc-macro2]
+workspace = true
+
+[dependencies.quote]
+workspace = true
+
+[dev-dependencies.ink_env]
+workspace = true
+default-features = true
+
+[dev-dependencies.ink]
+workspace = true
+default-features = true
+
+[dev-dependencies.ink_metadata]
+workspace = true
+default-features = true
+
+[dev-dependencies.ink_prelude]
+workspace = true
+default-features = true
+
+[dev-dependencies.ink_storage]
+workspace = true
+default-features = true
+
+[dev-dependencies.scale-info]
+workspace = true
+features = [ "derive",]

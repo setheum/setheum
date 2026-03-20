@@ -3,31 +3,49 @@ license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 name = "module-move-rpc"
 version = "0.1.0"
 description = "RPC for the Move Pallet"
-authors = { workspace = true }
-edition = { workspace = true }
-readme = { workspace = true }
-repository = { workspace = true }
-
-[package.metadata.docs.rs]
-targets = ["x86_64-unknown-linux-gnu"]
-
-[dependencies]
-codec = { workspace = true }
-serde = { workspace = true }
-frame-support = { workspace = true }
-jsonrpsee = { workspace = true }
-sp-api = { workspace = true }
-sp-blockchain = { workspace = true }
-sp-runtime = { workspace = true }
-
-module-move = { path = ".." }
-module-move-runtime-api = { path = "../runtime-api" }
 
 [features]
-default = ["std"]
-std = [
-    "sp-api/std",
-    "sp-runtime/std",
-    "module-move/std",
-    "module-move-runtime-api/std"
-]
+default = [ "std",]
+std = [ "sp-api/std", "sp-runtime/std", "module-move/std", "module-move-runtime-api/std",]
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.readme]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[dependencies.codec]
+workspace = true
+
+[dependencies.serde]
+workspace = true
+
+[dependencies.frame-support]
+workspace = true
+
+[dependencies.jsonrpsee]
+workspace = true
+
+[dependencies.sp-api]
+workspace = true
+
+[dependencies.sp-blockchain]
+workspace = true
+
+[dependencies.sp-runtime]
+workspace = true
+
+[dependencies.module-move]
+workspace = true
+
+[dependencies.module-move-runtime-api]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = [ "x86_64-unknown-linux-gnu",]

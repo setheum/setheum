@@ -1,44 +1,73 @@
 [package]
 name = "move-vm-backend-common"
 version = "0.1.0"
-authors = ["Eiger <hello@eiger.co>"]
+authors = [ "Eiger <hello@eiger.co>",]
 edition = "2021"
-
 repository = "https://github.com/eigerco/substrate-move"
 description = "MoveVM backend common"
 
-[dependencies]
-anyhow = { version = "1.0", default-features = false }
-bcs = { git = "https://github.com/eigerco/bcs.git", default-features = false, branch = "master" }
-lazy_static = { version = "1.4", default-features = false, features = ["spin_no_std"] }
-move-binary-format = { path = "../language/move-binary-format", default-features = false }
-move-core-types = { path = "../language/move-core/types", default-features = false, features = ["address32"] }
-move-stdlib = { path = "../language/move-stdlib", default-features = false, features = ["address32"] }
-move-vm-test-utils = { path = "../language/move-vm/test-utils", default-features = false }
-move-vm-types = { path = "../language/move-vm/types", default-features = false }
-move-vm-runtime = { path = "../language/move-vm/runtime", default-features = false }
-parity-scale-codec = { version = "3.6", default-features = false, features = ["derive"] }
-scale-info = { version = "2.10", default-features = false, features = ["derive"] }
-serde = { version = "1.0", default-features = false, features = ["derive"] }
-serde_bytes = { version = "0.11", default-features = false, features = ["alloc"] }
-
 [features]
-default = ["std", "gas_schedule"]
+default = [ "std", "gas_schedule",]
 gas_schedule = []
 testing = []
-
-# Builds move projects for test purposes.
 build-move-projects-for-test = []
+std = [ "anyhow/std", "move-binary-format/std", "move-core-types/std", "move-stdlib/std", "move-vm-test-utils/std", "move-vm-types/std", "parity-scale-codec/std", "scale-info/std", "serde/std", "serde_bytes/std",]
 
-std = [
-    "anyhow/std",
-    "move-binary-format/std",
-    "move-core-types/std",
-    "move-stdlib/std",
-    "move-vm-test-utils/std",
-    "move-vm-types/std",
-    "parity-scale-codec/std",
-    "scale-info/std",
-    "serde/std",
-    "serde_bytes/std",
-]
+[dependencies.anyhow]
+workspace = true
+default-features = false
+
+[dependencies.bcs]
+workspace = true
+default-features = false
+
+[dependencies.lazy_static]
+version = "1.4"
+default-features = false
+features = [ "spin_no_std",]
+
+[dependencies.move-binary-format]
+workspace = true
+default-features = false
+
+[dependencies.move-core-types]
+workspace = true
+features = [ "address32",]
+default-features = false
+
+[dependencies.move-stdlib]
+workspace = true
+features = [ "address32",]
+default-features = false
+
+[dependencies.move-vm-test-utils]
+workspace = true
+default-features = false
+
+[dependencies.move-vm-types]
+workspace = true
+default-features = false
+
+[dependencies.move-vm-runtime]
+workspace = true
+default-features = false
+
+[dependencies.parity-scale-codec]
+workspace = true
+features = [ "derive",]
+default-features = false
+
+[dependencies.scale-info]
+workspace = true
+features = [ "derive",]
+default-features = false
+
+[dependencies.serde]
+workspace = true
+features = [ "derive",]
+default-features = false
+
+[dependencies.serde_bytes]
+version = "0.11"
+default-features = false
+features = [ "alloc",]

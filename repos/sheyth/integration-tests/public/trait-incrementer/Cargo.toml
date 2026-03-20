@@ -2,22 +2,22 @@
 license = "Apache-2.0 OR MIT"
 name = "trait-incrementer"
 version = "5.1.1"
-authors = ["Use Ink <ink@use.ink>"]
+authors = [ "Use Ink <ink@use.ink>",]
 edition = "2021"
 publish = false
-
-[dependencies]
-ink = { path = "../../../crates/ink", default-features = false }
-
-traits = { path = "./traits", default-features = false }
 
 [lib]
 path = "lib.rs"
 
 [features]
-default = ["std"]
-std = [
-    "ink/std",
-    "traits/std",
-]
+default = [ "std",]
+std = [ "ink/std", "traits/std",]
 ink-as-dependency = []
+
+[dependencies.ink]
+workspace = true
+default-features = false
+
+[dependencies.traits]
+path = "./traits"
+default-features = false
