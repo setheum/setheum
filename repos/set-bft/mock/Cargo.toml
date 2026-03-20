@@ -2,7 +2,7 @@
 name = "set-bft-mock"
 version = "0.18.0"
 edition = "2021"
-authors = ["Afsall Labs"]
+authors = [ "Afsall Labs",]
 documentation = "https://docs.rs/?"
 homepage = "https://setheum.com"
 license = "Apache-2.0 OR MIT"
@@ -10,12 +10,29 @@ repository = "https://github.com/setheum/set-bft"
 readme = "./README.md"
 description = "Mock implementations of traits required by the set-bft package. Do NOT use outside of testing!"
 
-[dependencies]
-set-bft-types = { path = "../types", version = "0.16" }
-async-trait = "0.1"
-codec = { package = "parity-scale-codec", version = "3.0", default-features = false, features = ["derive"] }
-futures = "0.3"
-log = "0.4"
-parking_lot = "0.12"
-rand = "0.8"
-tokio = { version = "1", features = ["macros", "rt", "rt-multi-thread"] }
+[dependencies.set-bft-types]
+workspace = true
+
+[dependencies.async-trait]
+workspace = true
+
+[dependencies.codec]
+workspace = true
+features = [ "derive",]
+default-features = false
+
+[dependencies.futures]
+workspace = true
+
+[dependencies.log]
+workspace = true
+
+[dependencies.parking_lot]
+workspace = true
+
+[dependencies.rand]
+workspace = true
+
+[dependencies.tokio]
+workspace = true
+features = [ "macros", "rt", "rt-multi-thread",]

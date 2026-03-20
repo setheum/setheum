@@ -1,73 +1,65 @@
-name: Monorepo CI
+name: CI
 
 on:
   push:
-    branches: [ main, master ]
-    paths-ignore:
-      - 'CODEOWNERS'
-      - 'LICENSE'
-      - 'LICENSE-APACHE'
-      - 'LICENSE-GPL3'
-      - 'LICENSE-MIT'
-      - 'HEADER-APACHE'
-      - 'HEADER-GPL3'
-      - 'HEADER-MIT-APACHE'
-      - 'CODE_OF_CONDUCT.md'
+    branches: [ master ]
   pull_request:
-    branches: [ main, master ]
-    paths-ignore:
-      - 'CODEOWNERS'
-      - 'LICENSE'
-      - 'LICENSE-APACHE'
-      - 'LICENSE-GPL3'
-      - 'LICENSE-MIT'
-      - 'HEADER-APACHE'
-      - 'HEADER-GPL3'
-      - 'HEADER-MIT-APACHE'
+    branches: [ master ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  fmt:
-    name: Rustfmt
+  check-rust:
+    name: Rust Check & Clippy
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/checkout@v4
         with:
-          components: rustfmt
-      - name: Check formatting
-        run: cargo fmt --all -- --check
+          submodules: recursive
 
-  headers:
-    name: License Headers
+      - name: Install mise
+        uses: jdx/mise-action@v2
+
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: Cargo Check
+        run: mise run check
+
+      - name: Cargo Clippy
+        run: mise run clippy
+
+  test-rust:
+    name: Rust Tests
     runs-on: ubuntu-latest
+    needs: check-rust
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
         with:
-          python-version: '3.x'
-      - name: Verify Headers
-        run: |
-          python3 scripts/apply_headers.py
-          git diff --exit-code || (echo "Headers are missing or incorrect. Run 'python3 scripts/apply_headers.py' to fix." && exit 1)
+          submodules: recursive
 
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: dtolnay/rust-toolchain@stable
+      - name: Install mise
+        uses: jdx/mise-action@v2
+
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+
       - name: Run Tests
-        run: cargo test --workspace --exclude setheum-js
-      # For setheum-js (Node.js/Yarn)
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-          cache: 'yarn'
-          cache-dependency-path: setheum-js/yarn.lock
-      - name: Test setheum-js
-        working-directory: setheum-js
-        run: |
-          yarn install
-          yarn test
+        run: mise run test:rust
+
+  test-js:
+    name: JS Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install mise
+        uses: jdx/mise-action@v2
+
+      - name: Install dependencies
+        run: mise run init
+
+      - name: Run Tests
+        run: mise run test:js

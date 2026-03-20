@@ -1,0 +1,45 @@
+[package]
+name = "move-vm-test-utils"
+version = "0.1.0"
+authors = [ "Diem Association <opensource@diem.com>",]
+description = "Move VM Test Utils"
+repository = "https://github.com/diem/diem"
+homepage = "https://diem.com"
+license = "Apache-2.0"
+publish = false
+edition = "2021"
+
+[features]
+default = [ "std",]
+table-extension = [ "move-table-extension",]
+std = [ "move-binary-format/std", "move-core-types/std", "move-vm-types/std",]
+
+[dependencies.anyhow]
+workspace = true
+default-features = false
+
+[dependencies.lazy_static]
+version = "1.4"
+default-features = false
+features = [ "spin_no_std",]
+
+[dependencies.move-binary-format]
+workspace = true
+default-features = false
+
+[dependencies.move-core-types]
+workspace = true
+default-features = false
+
+[dependencies.move-table-extension]
+workspace = true
+optional = true
+
+[dependencies.move-vm-types]
+workspace = true
+default-features = false
+
+[dependencies.serde]
+workspace = true
+features = [ "derive", "rc",]
+default-features = false

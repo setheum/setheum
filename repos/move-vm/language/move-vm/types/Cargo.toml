@@ -1,0 +1,44 @@
+[package]
+name = "move-vm-types"
+version = "0.1.0"
+authors = [ "Diem Association <opensource@diem.com>",]
+description = "Types for Move VM"
+repository = "https://github.com/diem/diem"
+homepage = "https://diem.com"
+license = "Apache-2.0"
+publish = false
+edition = "2021"
+
+[dev-dependencies]
+proptest = "1.2"
+
+[features]
+default = [ "std",]
+fuzzing = [ "proptest", "move-binary-format/fuzzing",]
+std = [ "move-core-types/std", "move-binary-format/std", "bcs/std",]
+
+[dependencies.proptest]
+version = "1.2"
+default-features = false
+optional = true
+
+[dependencies.serde]
+workspace = true
+features = [ "derive", "rc",]
+default-features = false
+
+[dependencies.smallvec]
+workspace = true
+default-features = false
+
+[dependencies.bcs]
+workspace = true
+default-features = false
+
+[dependencies.move-core-types]
+workspace = true
+default-features = false
+
+[dependencies.move-binary-format]
+workspace = true
+default-features = false

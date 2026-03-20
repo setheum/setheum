@@ -2,24 +2,53 @@
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 name = "payout-stakers"
 version = "0.3.2"
-authors = ["Cardinal Cryptography"]
+authors = [ "Cardinal Cryptography",]
 edition = "2021"
 
-[dependencies]
-anyhow = "^1.0"
-clap = { version = "3.0.0", features = ["derive"] }
-codec = { package = 'parity-scale-codec', version = "3.0.0", features = ['derive'] }
-env_logger = "0.8"
-hex = { version = "0.4.3", default-features = false, features = ["alloc"] }
-log = "0.4"
-futures = "0.3.25"
-rand = "0.8.5"
+[dependencies.anyhow]
+workspace = true
 
-sp-core = { workspace = true, features = ["full_crypto"] }
-sp-keyring = { workspace = true }
+[dependencies.clap]
+workspace = true
+features = [ "derive",]
 
-subxt = "0.30.1"
-tokio = { version = "1.21.2", features = ["full"] }
+[dependencies.codec]
+workspace = true
+features = [ "derive",]
 
-setheum_client = { path = "../../setheum-client" }
-primitives = { path = "../../primitives", package = "setheum-primitives" }
+[dependencies.env_logger]
+workspace = true
+
+[dependencies.hex]
+workspace = true
+features = [ "alloc",]
+default-features = false
+
+[dependencies.log]
+workspace = true
+
+[dependencies.futures]
+workspace = true
+
+[dependencies.rand]
+workspace = true
+
+[dependencies.sp-core]
+workspace = true
+features = [ "full_crypto",]
+
+[dependencies.sp-keyring]
+workspace = true
+
+[dependencies.subxt]
+workspace = true
+
+[dependencies.tokio]
+workspace = true
+features = [ "full",]
+
+[dependencies.setheum_client]
+workspace = true
+
+[dependencies.primitives]
+workspace = true

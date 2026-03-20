@@ -4,11 +4,10 @@ name = "event-def-unused"
 version = "0.1.0"
 edition = "2021"
 
-[dependencies]
-ink = { path = "../../../../crates/ink", default-features = false }
-
 [features]
-default = ["std"]
-std = [
-    "ink/std",
-]
+default = [ "std",]
+std = [ "ink/std",]
+
+[dependencies.ink]
+workspace = true
+default-features = false

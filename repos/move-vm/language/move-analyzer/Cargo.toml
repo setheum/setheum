@@ -1,0 +1,54 @@
+[package]
+name = "move-analyzer"
+version = "1.0.0"
+authors = [ "Diem Association <opensource@diem.com>",]
+description = "A language server for Move"
+repository = "https://github.com/move-language/move"
+license = "Apache-2.0"
+publish = false
+edition = "2021"
+
+[dependencies]
+codespan-reporting = "0.11.1"
+derivative = "2.2.0"
+dunce = "1.0.2"
+im = "15.1.0"
+lsp-server = "0.5.1"
+lsp-types = "0.90.1"
+petgraph = "0.5.1"
+tempfile = "3.2.0"
+url = "2.2.2"
+crossbeam = "0.8"
+
+[features]
+address20 = [ "move-compiler/address20",]
+address32 = [ "move-compiler/address32",]
+
+[dependencies.anyhow]
+workspace = true
+
+[dependencies.serde]
+workspace = true
+features = [ "derive",]
+
+[dependencies.serde_json]
+workspace = true
+
+[dependencies.clap]
+workspace = true
+features = [ "derive",]
+
+[dependencies.move-command-line-common]
+workspace = true
+
+[dependencies.move-compiler]
+workspace = true
+
+[dependencies.move-ir-types]
+workspace = true
+
+[dependencies.move-package]
+workspace = true
+
+[dependencies.move-symbol-pool]
+workspace = true

@@ -2,16 +2,36 @@
 license = "Apache-2.0 OR MIT"
 name = "flooder"
 version = "0.3.0"
-authors = [ "Afsall Labs", "Afsall Labs", "Setheum Foundation" ]
+authors = [ "Afsall Labs", "Afsall Labs", "Setheum Foundation",]
 edition = "2021"
 
-[dependencies]
-anyhow = "^1.0"
-clap = { workspace = true, features = ["derive"] , default-features = false }
-env_logger = "0.11.1"
-futures = { workspace = true, features = ["alloc"] , default-features = false }
-log = "0.4"
-subxt = "0.30.1"
-tokio = { workspace = true, features = ["full"] , default-features = false }
+[dependencies.anyhow]
+workspace = true
 
-setheum_client = { path = "../../../interfaces/setheum-client" , default-features = false }
+[dependencies.clap]
+workspace = true
+features = [ "derive",]
+default-features = false
+
+[dependencies.env_logger]
+workspace = true
+
+[dependencies.futures]
+workspace = true
+features = [ "alloc",]
+default-features = false
+
+[dependencies.log]
+workspace = true
+
+[dependencies.subxt]
+workspace = true
+
+[dependencies.tokio]
+workspace = true
+features = [ "full",]
+default-features = false
+
+[dependencies.setheum_client]
+workspace = true
+default-features = false

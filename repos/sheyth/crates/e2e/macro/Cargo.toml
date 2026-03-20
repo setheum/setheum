@@ -1,38 +1,73 @@
 [package]
 name = "ink_e2e_macro"
-version.workspace = true
-authors.workspace = true
-edition.workspace = true
-
 license = "Apache-2.0 OR MIT"
 readme = "../README.md"
-repository.workspace = true
 documentation = "https://docs.rs/ink_macro/"
-homepage.workspace = true
 description = "[ink!] Macro for generating end-to-end tests"
-keywords.workspace = true
-categories.workspace = true
-include = ["Cargo.toml", "src/**/*.rs", "README.md", "LICENSE"]
+include = [ "Cargo.toml", "src/**/*.rs", "README.md", "LICENSE",]
 
 [lib]
 name = "ink_e2e_macro"
 proc-macro = true
 
-[dependencies]
-darling = { workspace = true }
-ink_ir = { workspace = true, default-features = true }
-derive_more = { workspace = true, features = ["from"] }
-tracing-subscriber = { workspace = true, features = ["env-filter"] }
-serde_json = { workspace = true }
-syn = { workspace = true }
-proc-macro2 = { workspace = true }
-quote = { workspace = true }
-
 [dev-dependencies]
-ink = { path = "../../ink" }
-ink_e2e = { path = "../", features = ["sandbox"] }
 temp-env = "0.3.6"
 
 [features]
-std = ["derive_more/std"]
+std = [ "derive_more/std",]
 sandbox = []
+
+[package.version]
+workspace = true
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.keywords]
+workspace = true
+
+[package.categories]
+workspace = true
+
+[dependencies.darling]
+workspace = true
+
+[dependencies.ink_ir]
+workspace = true
+default-features = true
+
+[dependencies.derive_more]
+workspace = true
+features = [ "from",]
+
+[dependencies.tracing-subscriber]
+workspace = true
+features = [ "env-filter",]
+
+[dependencies.serde_json]
+workspace = true
+
+[dependencies.syn]
+workspace = true
+
+[dependencies.proc-macro2]
+workspace = true
+
+[dependencies.quote]
+workspace = true
+
+[dev-dependencies.ink]
+workspace = true
+
+[dev-dependencies.ink_e2e]
+workspace = true
+features = [ "sandbox",]

@@ -1,0 +1,11 @@
+[package]
+name = "EvmStdlib"
+version = "1.0.0"
+
+[addresses]
+std = "0x1"
+Evm = "0x2"
+
+[dependencies]
+MoveStdlib = { git = "https://github.com/eigerco/move-stdlib", rev = "main" }
+MoveNursery = { local = "../../move-stdlib/nursery" }

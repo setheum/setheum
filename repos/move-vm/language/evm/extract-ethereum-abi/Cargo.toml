@@ -1,0 +1,41 @@
+[package]
+name = "extract-ethereum-abi"
+version = "0.1.0"
+authors = [ "Diem Association <opensource@diem.com>",]
+description = "Extract Etherem ABI"
+publish = false
+edition = "2021"
+license = "Apache-2.0"
+
+[dependencies]
+atty = "0.2.14"
+codespan = "0.11.1"
+codespan-reporting = "0.11.1"
+regex = "1.4.3"
+once_cell = "1.7.2"
+
+[dependencies.move-ethereum-abi]
+workspace = true
+
+[dependencies.move-to-yul]
+workspace = true
+
+[dependencies.move-core-types]
+workspace = true
+
+[dependencies.anyhow]
+workspace = true
+
+[dependencies.ethabi]
+workspace = true
+
+[dependencies.serde]
+workspace = true
+features = [ "derive",]
+
+[dependencies.serde_json]
+workspace = true
+
+[dependencies.clap]
+workspace = true
+features = [ "derive", "env",]

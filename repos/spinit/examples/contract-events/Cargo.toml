@@ -1,7 +1,7 @@
 [package]
 license = "Apache-2.0 OR MIT"
 name = "contract-events"
-authors = ["Cardinal"]
+authors = [ "Cardinal",]
 edition = "2021"
 homepage = "https://setheum.com"
 repository = "https://github.com/use-ink/drink"
@@ -10,20 +10,26 @@ version = "0.1.0"
 [lib]
 path = "lib.rs"
 
-[dependencies]
-ink = { version = "6.0.0-alpha", features = ["unstable-hostfn"], default-features = false }
-
-scale = { package = "parity-scale-codec", version = "3", default-features = false, features = [
-    "derive",
-] }
-scale-info = { version = "2.11.1", default-features = false, features = [
-    "derive",
-], optional = true }
-
-[dev-dependencies]
-drink = { path = "../../drink" }
-
 [features]
-default = ["std"]
-std = ["ink/std", "scale/std", "scale-info/std"]
+default = [ "std",]
+std = [ "ink/std", "scale/std", "scale-info/std",]
 ink-as-dependency = []
+
+[dependencies.ink]
+workspace = true
+features = [ "unstable-hostfn",]
+default-features = false
+
+[dependencies.scale]
+workspace = true
+features = [ "derive",]
+default-features = false
+
+[dependencies.scale-info]
+workspace = true
+features = [ "derive",]
+default-features = false
+optional = true
+
+[dev-dependencies.drink]
+workspace = true

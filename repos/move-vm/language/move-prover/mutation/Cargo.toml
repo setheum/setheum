@@ -1,0 +1,52 @@
+[package]
+name = "prover-mutation"
+version = "0.1.0"
+authors = [ "Diem Association <opensource@diem.com>",]
+publish = false
+edition = "2021"
+license = "Apache-2.0"
+
+[dependencies]
+codespan = "0.11.1"
+codespan-reporting = "0.11.1"
+chrono = "0.4.19"
+simplelog = "0.12.0"
+
+[dependencies.move-compiler]
+workspace = true
+
+[dependencies.move-model]
+workspace = true
+
+[dependencies.move-prover]
+workspace = true
+
+[dependencies.move-stackless-bytecode]
+workspace = true
+
+[dependencies.anyhow]
+workspace = true
+
+[dependencies.clap]
+workspace = true
+features = [ "derive",]
+
+[dependencies.hex]
+workspace = true
+
+[dependencies.itertools]
+workspace = true
+
+[dependencies.log]
+workspace = true
+features = [ "serde",]
+
+[dependencies.num]
+workspace = true
+
+[dependencies.serde]
+workspace = true
+features = [ "derive",]
+
+[dependencies.serde_json]
+workspace = true

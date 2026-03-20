@@ -1,0 +1,28 @@
+[package]
+name = "move-ethereum-abi"
+version = "0.1.0"
+authors = [ "Diem Association <opensource@diem.com>",]
+description = "Move Ethereum ABI"
+publish = false
+edition = "2021"
+license = "Apache-2.0"
+
+[dependencies]
+regex = "1.4.3"
+once_cell = "1.7.2"
+
+[lib]
+doctest = false
+
+[dependencies.anyhow]
+workspace = true
+
+[dependencies.ethabi]
+workspace = true
+
+[dependencies.serde]
+workspace = true
+features = [ "derive",]
+
+[dependencies.serde_json]
+workspace = true

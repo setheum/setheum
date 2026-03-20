@@ -31,9 +31,11 @@ mod validators;
 mod version_upgrade;
 mod vesting;
 mod vk_storage;
+mod move_vm;
 
-pub use commands::{Command, VkStorage};
+pub use commands::{Command, VkStorage, MoveCommand, MoveExecute, MovePublish};
 pub use contracts::{call, code_info, instantiate, instantiate_with_code, remove_code, upload_code};
+pub use move_vm::move_command;
 pub use finalization::{finalize, set_emergency_finalizer};
 pub use keys::{next_session_keys, prepare_keys, rotate_keys, set_keys};
 pub use runtime::update_runtime;

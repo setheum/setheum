@@ -2,14 +2,24 @@
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 name = "primitives-proc-macro"
 version = "0.1.0"
-authors = ["Afsall Labs"]
+authors = [ "Afsall Labs",]
 edition = "2021"
 
 [lib]
 proc-macro = true
 
-[dependencies]
-syn = { workspace = true, features = ["full", "fold"] , default-features = false }
-quote = "1.0"
-proc-macro2 = "1.0"
-tiny-keccak = { workspace = true, features = ["keccak"] , default-features = false }
+[dependencies.syn]
+workspace = true
+features = [ "full", "fold",]
+default-features = false
+
+[dependencies.quote]
+workspace = true
+
+[dependencies.proc-macro2]
+workspace = true
+
+[dependencies.tiny-keccak]
+workspace = true
+features = [ "keccak",]
+default-features = false

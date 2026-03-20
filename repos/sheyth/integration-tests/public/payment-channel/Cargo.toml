@@ -2,25 +2,25 @@
 license = "Apache-2.0 OR MIT"
 name = "payment_channel"
 version = "5.1.1"
-authors = ["Use Ink <ink@use.ink>"]
+authors = [ "Use Ink <ink@use.ink>",]
 edition = "2021"
 publish = false
-
-[dependencies]
-ink = { path = "../../../crates/ink", default-features = false }
-
-[dev-dependencies]
-hex-literal = { version = "0.4.1" }
-sp-core = { version = "21.0.0", default-features = false }
 
 [lib]
 path = "lib.rs"
 
 [features]
-default = ["std"]
-std = [
-    "ink/std",
-    "sp-core/std",
-]
-
+default = [ "std",]
+std = [ "ink/std", "sp-core/std",]
 ink-as-dependency = []
+
+[dependencies.ink]
+workspace = true
+default-features = false
+
+[dev-dependencies.hex-literal]
+workspace = true
+
+[dev-dependencies.sp-core]
+workspace = true
+default-features = false

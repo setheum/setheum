@@ -4,93 +4,170 @@ version = "0.3.0"
 edition = "2021"
 license = "LGPL-3.0"
 
-[dependencies]
-codec = { package = "parity-scale-codec", version = "3.6.1", default-features = false, features = ["derive", "max-encoded-len"] }
-scale-info = { version = "2.5.0", default-features = false, features = ["derive", "serde", "decode"] }
-
-# Substrate
-frame-support = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506", default-features = false }
-frame-system = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506", default-features = false }
-pallet-assets = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506", default-features = false }
-pallet-balances = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506", default-features = false }
-sp-io = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506", default-features = false }
-sp-runtime = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506", default-features = false }
-sp-core = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506", default-features = false }
-sp-std = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506", default-features = false }
-
-# Polkadot
-xcm = { package = "staging-xcm", git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506", default-features = false }
-xcm-builder = { package = "staging-xcm-builder", git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506", default-features = false }
-xcm-executor = { package = "staging-xcm-executor", git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506", default-features = false }
-
-# Cumulus
-cumulus-pallet-xcm = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506", default-features = false }
-cumulus-primitives-utility = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506", default-features = false }
-cumulus-primitives-core = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506", default-features = false }
-
-# Local
-module-bridge-traits = { path = "../bridge-traits", default-features = false }
-module-bridge-forwarder = { path = "../bridge-forwarder", default-features = false }
-half = { version = "2.3.1", default-features = false }
-log = "0.4.20"
-
-[dev-dependencies]
-# Substrate
-sp-io = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
-sp-core = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
-sp-runtime = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
-frame-support = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
-frame-system = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
-pallet-balances = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
-pallet-assets = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
-pallet-message-queue = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
-
-# Polkadot
-xcm = { package = "staging-xcm", git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
-xcm-executor = { package = "staging-xcm-executor", git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
-xcm-simulator = { workspace = true, default-features = false }
-xcm-builder = { package = "staging-xcm-builder", git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
-polkadot-parachain-primitives = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
-polkadot-runtime-common = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
-polkadot-runtime-parachains = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
-pallet-xcm = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
-
-# Cumulus
-cumulus-primitives-core = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
-cumulus-pallet-dmp-queue = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
-cumulus-pallet-xcmp-queue = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
-cumulus-pallet-xcm = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
-cumulus-primitives-utility = { git = "https://github.com/paritytech/polkadot-sdk.git", branch = "stable2506" }
-
-# Local
-module-bridge-traits = { path = "../bridge-traits" , default-features = false }
-module-bridge-parachain-info = { path = "../bridge-parachain-info" , default-features = false }
-
-env_logger = "0.10.2"
-
 [features]
-default = ["std"]
-std = [
-    "codec/std",
-    "scale-info/std",
-    "frame-support/std",
-    "frame-system/std",
-    "sp-runtime/std",
-    "sp-std/std",
-    "sp-core/full_crypto",
-    "xcm/std",
-    "xcm-builder/std",
-    "xcm-executor/std",
-    "pallet-balances/std",
-    "pallet-assets/std",
-    "cumulus-primitives-core/std",
-    "cumulus-primitives-utility/std",
-    "cumulus-pallet-xcm/std",
-    "module-bridge-traits/std",
-    "module-bridge-forwarder/std",
-]
-runtime-benchmarks = [
-    'frame-support/runtime-benchmarks',
-    'frame-system/runtime-benchmarks',
-]
-try-runtime = ["frame-support/try-runtime"]
+default = [ "std",]
+std = [ "codec/std", "scale-info/std", "frame-support/std", "frame-system/std", "sp-runtime/std", "sp-std/std", "sp-core/full_crypto", "xcm/std", "xcm-builder/std", "xcm-executor/std", "pallet-balances/std", "pallet-assets/std", "cumulus-primitives-core/std", "cumulus-primitives-utility/std", "cumulus-pallet-xcm/std", "module-bridge-traits/std", "module-bridge-forwarder/std",]
+runtime-benchmarks = [ "frame-support/runtime-benchmarks", "frame-system/runtime-benchmarks",]
+try-runtime = [ "frame-support/try-runtime",]
+
+[dependencies.codec]
+workspace = true
+features = [ "derive", "max-encoded-len",]
+default-features = false
+
+[dependencies.scale-info]
+workspace = true
+features = [ "derive", "serde", "decode",]
+default-features = false
+
+[dependencies.frame-support]
+workspace = true
+default-features = false
+
+[dependencies.frame-system]
+workspace = true
+default-features = false
+
+[dependencies.pallet-assets]
+git = "https://github.com/paritytech/polkadot-sdk.git"
+branch = "stable2506"
+default-features = false
+
+[dependencies.pallet-balances]
+workspace = true
+default-features = false
+
+[dependencies.sp-io]
+workspace = true
+default-features = false
+
+[dependencies.sp-runtime]
+workspace = true
+default-features = false
+
+[dependencies.sp-core]
+workspace = true
+default-features = false
+
+[dependencies.sp-std]
+workspace = true
+default-features = false
+
+[dependencies.xcm]
+workspace = true
+default-features = false
+
+[dependencies.xcm-builder]
+workspace = true
+default-features = false
+
+[dependencies.xcm-executor]
+workspace = true
+default-features = false
+
+[dependencies.cumulus-pallet-xcm]
+workspace = true
+default-features = false
+
+[dependencies.cumulus-primitives-utility]
+git = "https://github.com/paritytech/polkadot-sdk.git"
+branch = "stable2506"
+default-features = false
+
+[dependencies.cumulus-primitives-core]
+workspace = true
+default-features = false
+
+[dependencies.module-bridge-traits]
+workspace = true
+default-features = false
+
+[dependencies.module-bridge-forwarder]
+workspace = true
+default-features = false
+
+[dependencies.half]
+version = "2.3.1"
+default-features = false
+
+[dependencies.log]
+workspace = true
+
+[dev-dependencies.sp-io]
+workspace = true
+
+[dev-dependencies.sp-core]
+workspace = true
+
+[dev-dependencies.sp-runtime]
+workspace = true
+
+[dev-dependencies.frame-support]
+workspace = true
+
+[dev-dependencies.frame-system]
+workspace = true
+
+[dev-dependencies.pallet-balances]
+workspace = true
+
+[dev-dependencies.pallet-assets]
+git = "https://github.com/paritytech/polkadot-sdk.git"
+branch = "stable2506"
+
+[dev-dependencies.pallet-message-queue]
+workspace = true
+
+[dev-dependencies.xcm]
+workspace = true
+
+[dev-dependencies.xcm-executor]
+workspace = true
+
+[dev-dependencies.xcm-simulator]
+workspace = true
+default-features = false
+
+[dev-dependencies.xcm-builder]
+workspace = true
+
+[dev-dependencies.polkadot-parachain-primitives]
+workspace = true
+
+[dev-dependencies.polkadot-runtime-common]
+workspace = true
+
+[dev-dependencies.polkadot-runtime-parachains]
+workspace = true
+
+[dev-dependencies.pallet-xcm]
+workspace = true
+
+[dev-dependencies.cumulus-primitives-core]
+workspace = true
+
+[dev-dependencies.cumulus-pallet-dmp-queue]
+git = "https://github.com/paritytech/polkadot-sdk.git"
+branch = "stable2506"
+
+[dev-dependencies.cumulus-pallet-xcmp-queue]
+git = "https://github.com/paritytech/polkadot-sdk.git"
+branch = "stable2506"
+
+[dev-dependencies.cumulus-pallet-xcm]
+workspace = true
+
+[dev-dependencies.cumulus-primitives-utility]
+git = "https://github.com/paritytech/polkadot-sdk.git"
+branch = "stable2506"
+
+[dev-dependencies.module-bridge-traits]
+workspace = true
+default-features = false
+
+[dev-dependencies.module-bridge-parachain-info]
+workspace = true
+default-features = false
+
+[dev-dependencies.env_logger]
+workspace = true

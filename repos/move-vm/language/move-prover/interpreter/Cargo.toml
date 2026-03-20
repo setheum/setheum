@@ -1,0 +1,48 @@
+[package]
+name = "move-stackless-bytecode-interpreter"
+version = "0.1.0"
+authors = [ "Diem Association <opensource@diem.com>",]
+publish = false
+edition = "2021"
+license = "Apache-2.0"
+
+[dependencies]
+codespan-reporting = "0.11.1"
+
+[dev-dependencies]
+datatest-stable = "0.1.1"
+
+[dependencies.move-stackless-bytecode]
+workspace = true
+
+[dependencies.bytecode-interpreter-crypto]
+workspace = true
+
+[dependencies.move-binary-format]
+workspace = true
+
+[dependencies.move-core-types]
+workspace = true
+
+[dependencies.move-model]
+workspace = true
+
+[dependencies.anyhow]
+workspace = true
+
+[dependencies.itertools]
+workspace = true
+
+[dependencies.num]
+workspace = true
+
+[dependencies.serde]
+workspace = true
+features = [ "derive",]
+
+[dependencies.clap]
+workspace = true
+features = [ "derive",]
+
+[dev-dependencies.move-prover-test-utils]
+workspace = true

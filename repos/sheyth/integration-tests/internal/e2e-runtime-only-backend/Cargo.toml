@@ -2,23 +2,23 @@
 license = "Apache-2.0 OR MIT"
 name = "e2e-runtime-only-backend"
 version = "5.1.1"
-authors = ["Use Ink <ink@use.ink>"]
+authors = [ "Use Ink <ink@use.ink>",]
 edition = "2021"
 publish = false
-
-[dependencies]
-ink = { path = "../../../crates/ink", default-features = false }
-
-[dev-dependencies]
-ink_e2e = { path = "../../../crates/e2e", features = ["sandbox"] }
 
 [lib]
 path = "lib.rs"
 
 [features]
-default = ["std"]
-std = [
-    "ink/std",
-]
+default = [ "std",]
+std = [ "ink/std",]
 ink-as-dependency = []
 e2e-tests = []
+
+[dependencies.ink]
+workspace = true
+default-features = false
+
+[dev-dependencies.ink_e2e]
+workspace = true
+features = [ "sandbox",]

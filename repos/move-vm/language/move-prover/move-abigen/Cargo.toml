@@ -1,0 +1,53 @@
+[[test]]
+name = "testsuite"
+harness = false
+
+[package]
+name = "move-abigen"
+version = "0.1.0"
+authors = [ "Diem Association <opensource@diem.com>",]
+publish = false
+edition = "2021"
+license = "Apache-2.0"
+
+[dev-dependencies]
+codespan-reporting = "0.11.1"
+datatest-stable = "0.1.1"
+tempfile = "3.2.0"
+
+[dependencies.move-model]
+workspace = true
+
+[dependencies.move-core-types]
+workspace = true
+
+[dependencies.move-binary-format]
+workspace = true
+
+[dependencies.move-bytecode-verifier]
+workspace = true
+
+[dependencies.move-command-line-common]
+workspace = true
+
+[dependencies.bcs]
+workspace = true
+
+[dependencies.log]
+workspace = true
+
+[dependencies.anyhow]
+workspace = true
+
+[dependencies.heck]
+workspace = true
+
+[dependencies.serde]
+workspace = true
+features = [ "derive",]
+
+[dev-dependencies.move-prover]
+workspace = true
+
+[dev-dependencies.move-prover-test-utils]
+workspace = true

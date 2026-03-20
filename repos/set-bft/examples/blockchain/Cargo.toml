@@ -2,22 +2,54 @@
 name = "set-bft-examples-blockchain"
 version = "0.0.3"
 edition = "2021"
-authors = ["Afsall Labs"]
+authors = [ "Afsall Labs",]
 license = "Apache-2.0 OR MIT"
 publish = false
 
-[dependencies]
-set-bft = { path = "../../consensus", version = "*" }
-set-bft-mock = { path = "../../mock", version = "*" }
-async-trait = "0.1"
-clap = { version = "4", features = ["derive"] }
-codec = { package = "parity-scale-codec", version = "3.0", default-features = false, features = ["derive"] }
-env_logger = "0.11"
-futures = "0.3"
-futures-timer = "3.0"
-log = "0.4"
-parking_lot = "0.12"
-sha3 = "0.10"
-time = { version = "0.3", features = ["formatting", "macros", "local-offset"] }
-tokio = { version = "1", features = ["macros", "rt", "rt-multi-thread", "io-util", "net", "time"] }
-unsigned-varint = { version = "0.8.0", features = ["futures", "asynchronous_codec"] }
+[dependencies.set-bft]
+workspace = true
+
+[dependencies.set-bft-mock]
+workspace = true
+
+[dependencies.async-trait]
+workspace = true
+
+[dependencies.clap]
+workspace = true
+features = [ "derive",]
+
+[dependencies.codec]
+workspace = true
+features = [ "derive",]
+default-features = false
+
+[dependencies.env_logger]
+workspace = true
+
+[dependencies.futures]
+workspace = true
+
+[dependencies.futures-timer]
+workspace = true
+
+[dependencies.log]
+workspace = true
+
+[dependencies.parking_lot]
+workspace = true
+
+[dependencies.sha3]
+workspace = true
+
+[dependencies.time]
+version = "0.3"
+features = [ "formatting", "macros", "local-offset",]
+
+[dependencies.tokio]
+workspace = true
+features = [ "macros", "rt", "rt-multi-thread", "io-util", "net", "time",]
+
+[dependencies.unsigned-varint]
+version = "0.8.0"
+features = [ "futures", "asynchronous_codec",]

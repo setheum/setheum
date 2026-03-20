@@ -1,0 +1,45 @@
+[package]
+name = "move-disassembler"
+version = "0.1.0"
+authors = [ "Diem Association <opensource@diem.com>",]
+description = "Print a human-readable version of Move bytecode (.mv files)"
+license = "Apache-2.0"
+publish = false
+edition = "2021"
+
+[dependencies]
+colored = "2.0.0"
+
+[features]
+default = []
+
+[dependencies.anyhow]
+workspace = true
+
+[dependencies.move-bytecode-verifier]
+workspace = true
+
+[dependencies.move-bytecode-source-map]
+workspace = true
+
+[dependencies.move-command-line-common]
+workspace = true
+
+[dependencies.move-core-types]
+workspace = true
+
+[dependencies.move-ir-types]
+workspace = true
+
+[dependencies.move-binary-format]
+workspace = true
+
+[dependencies.move-coverage]
+workspace = true
+
+[dependencies.move-compiler]
+workspace = true
+
+[dependencies.clap]
+workspace = true
+features = [ "derive",]

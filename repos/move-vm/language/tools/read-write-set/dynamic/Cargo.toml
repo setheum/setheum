@@ -1,0 +1,25 @@
+[package]
+name = "read-write-set-dynamic"
+version = "0.1.0"
+authors = [ "Diem Association <opensource@diem.com>",]
+description = "Read/write set inference for Move bytecode programs by concretizing the static analysis result"
+repository = "https://github.com/diem/diem"
+homepage = "https://diem.com"
+license = "Apache-2.0"
+publish = false
+edition = "2021"
+
+[dependencies.anyhow]
+workspace = true
+
+[dependencies.move-binary-format]
+workspace = true
+
+[dependencies.move-bytecode-utils]
+workspace = true
+
+[dependencies.move-core-types]
+workspace = true
+
+[dependencies.move-read-write-set-types]
+workspace = true

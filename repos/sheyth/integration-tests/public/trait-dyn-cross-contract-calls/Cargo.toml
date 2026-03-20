@@ -2,33 +2,31 @@
 license = "Apache-2.0 OR MIT"
 name = "trait-incrementer-caller"
 version = "5.1.1"
-authors = ["Use Ink <ink@use.ink>"]
+authors = [ "Use Ink <ink@use.ink>",]
 edition = "2021"
 publish = false
-
-[dependencies]
-ink = { path = "../../../crates/ink", default-features = false }
-
-dyn-traits = { path = "./traits", default-features = false }
-
-[dev-dependencies]
-ink_e2e = { path = "../../../crates/e2e" }
-trait-incrementer = { path = "./contracts/incrementer", default-features = false, features = ["ink-as-dependency"] }
 
 [lib]
 path = "lib.rs"
 
 [features]
-default = ["std"]
-std = [
-    "ink/std",
-    "dyn-traits/std",
-]
+default = [ "std",]
+std = [ "ink/std", "dyn-traits/std",]
 e2e-tests = []
 ink-as-dependency = []
 
-# Required to be able to run e2e test with sub-contracts
-[workspace]
-members = [
-    "contracts/incrementer",
-]
+[dependencies.ink]
+workspace = true
+default-features = false
+
+[dependencies.dyn-traits]
+path = "./traits"
+default-features = false
+
+[dev-dependencies.ink_e2e]
+workspace = true
+
+[dev-dependencies.trait-incrementer]
+path = "./contracts/incrementer"
+default-features = false
+features = [ "ink-as-dependency",]

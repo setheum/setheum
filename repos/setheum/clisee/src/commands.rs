@@ -390,4 +390,92 @@ pub enum Command {
 	/// Interact with `module_vk_storage`.
 	#[clap(subcommand)]
 	VkStorage(VkStorage),
+
+	/// MoveVM commands.
+	#[clap(subcommand)]
+	Move(MoveCommand),
+}
+
+#[derive(Debug, Clone, Subcommand)]
+pub enum MoveCommand {
+	/// Execute a Move script.
+	Execute(MoveExecute),
+	/// Publish a Move module.
+	PublishModule(MovePublish),
+	/// Publish a Move bundle.
+	PublishBundle(MovePublish),
+	/// Get a resource from MoveVM storage.
+	GetResource {
+		/// AccountId (SS58) of the resource owner.
+		#[clap(long)]
+		account: AccountId,
+		/// Hex-encoded resource tag.
+		#[clap(long)]
+		tag: String,
+	},
+	/// Get Move module ABI.
+	GetModuleABI {
+		/// AccountId (SS58) of the module owner.
+		#[clap(long)]
+		address: AccountId,
+		/// Name of the module.
+		#[clap(long)]
+		name: String,
+	},
+	/// Get Move module bytecode.
+	GetModule {
+		/// AccountId (SS58) of the module owner.
+		#[clap(long)]
+		address: AccountId,
+		/// Name of the module.
+		#[clap(long)]
+		name: String,
+	},
+	/// Move package management (build, bundle, test, etc.)
+	Package {
+		/// Package management command.
+		#[clap(subcommand)]
+		cmd: MovePackageCommand,
+	},
+}
+
+#[derive(Debug, Clone, Subcommand)]
+pub enum MovePackageCommand {
+	/// Build the package.
+	Build,
+	/// Create a package bundle.
+	Bundle,
+	/// Run Move units tests.
+	Test,
+	/// Create a new Move package.
+	New {
+		/// Name of the package.
+		name: String,
+	},
+}
+
+#[derive(Debug, Clone, Args)]
+pub struct MoveExecute {
+	/// Path to the Move script bytecode (binary).
+	#[clap(long, parse(from_os_str))]
+	pub script_path: PathBuf,
+	/// Gas limit for Move execution.
+	#[clap(long, default_value = "100000")]
+	pub gas_limit: u32,
+	/// Cheque limit (maximum balance the script can move from the signer).
+	#[clap(long, default_value = "0")]
+	pub cheque_limit: Balance,
+	/// Script arguments, hex-encoded (optional, multiple).
+	#[clap(long, multiple_values = true)]
+	pub args: Option<Vec<String>>,
+}
+
+#[derive(Debug, Clone, Args)]
+pub struct MovePublish {
+	/// Path to the Move module or bundle binary.
+	#[clap(long, parse(from_os_str))]
+	pub bytecode_path: PathBuf,
+	/// Gas limit for publishing.
+	#[clap(long, default_value = "100000")]
+	pub gas_limit: u32,
 }

@@ -85,6 +85,8 @@ use module_traits::{
 // MultiCurrency,
 };
 use module_currencies::BasicCurrencyAdapter;
+use module_swap_legacy as swap_legacy_module;
+use module_dex_oracle as dex_oracle;
 use module_transaction_payment::{Multiplier, TargetedFeeAdjustment};
 
 // Frontier
@@ -805,18 +807,23 @@ parameter_types! {
 	];
 }
 
-// impl swap_legacy_module::Config for Runtime {
-// 	type Event = Event;
-// 	type Currency = Currencies;
-// 	type StableCurrencyIds = StableCurrencyIds;
-// 	type GetExchangeFee = GetExchangeFee;
-// 	type GetStableCurrencyExchangeFee = GetStableCurrencyExchangeFee;
-// 	type TradingPathLimit = TradingPathLimit;
-// 	type PalletId = DEXPalletId;
-// 	type CurrencyIdMapping = EvmCurrencyIdMapping<Runtime>;
-// 	type WeightInfo = weights::swap_legacy_module::WeightInfo<Runtime>;
-// 	type ListingOrigin = EnsureRootOrHalfFinancialCouncil;
-// }
+impl swap_legacy_module::Config for Runtime {
+	type Event = Event;
+	type Currency = Currencies;
+	type StableCurrencyIds = StableCurrencyIds;
+	type GetExchangeFee = GetExchangeFee;
+	type GetStableCurrencyExchangeFee = GetStableCurrencyExchangeFee;
+	type TradingPathLimit = TradingPathLimit;
+	type PalletId = DEXPalletId;
+	type CurrencyIdMapping = EvmCurrencyIdMapping<Runtime>;
+	type WeightInfo = weights::module_dex::WeightInfo<Runtime>;
+	type ListingOrigin = EnsureRootOrHalfFinancialCouncil;
+}
+
+impl dex_oracle::Config for Runtime {
+	type Event = Event;
+	type DEX = swap_legacy_module::Pallet<Runtime>;
+}
 
 // parameter_types! {
 // 	pub const MaxAirdropListSize: usize = 250;
@@ -1040,16 +1047,17 @@ impl pallet_ethereum::Config for Runtime {
 }
 
 parameter_types! {
-	pub const MoveWeightInfo: () = ();
+	pub const MoveMultisigReqExpireTime: frame_support::traits::ConstU32<100> = frame_support::traits::ConstU32<100>;
+	pub const MoveMaxScriptSigners: frame_support::traits::ConstU32<8> = frame_support::traits::ConstU32<8>;
 }
 
-impl pallet_move::Config for Runtime {
+impl module_move::Config for Runtime {
 	type RuntimeEvent = Event;
-	type WeightInfo = ();
+	type WeightInfo = module_move::weights::SubstrateWeight<Runtime>;
 	type Currency = Balances;
 	type CurrencyBalance = Balance;
-	type MultisigReqExpireTime = frame_support::traits::ConstU32<100>;
-	type MaxScriptSigners = frame_support::traits::ConstU32<8>;
+	type MultisigReqExpireTime = MoveMultisigReqExpireTime;
+	type MaxScriptSigners = MoveMaxScriptSigners;
 }
 
 impl module_evm_bridge::Config for Runtime {
@@ -1493,7 +1501,7 @@ construct_runtime!(
 		Sudo: pallet_sudo::{Pallet, Call, Config<T>, Storage, Event<T>} = 3,
 		Scheduler: pallet_scheduler::{Pallet, Call, Storage, Event<T>} = 4,
 		Prices: module_prices::{Pallet, Storage, Call, Event<T>} = 5,
-// Dex: swap_legacy_module::{Pallet, Storage, Call, Event<T>, Config<T>} = 6,
+		Dex: swap_legacy_module::{Pallet, Storage, Call, Event<T>, Config<T>} = 6,
 
 		Multisig: pallet_multisig::{Pallet, Call, Storage, Event<T>} = 7,
 		Recovery: pallet_recovery::{Pallet, Call, Storage, Event<T>} = 8,
@@ -1518,7 +1526,7 @@ construct_runtime!(
 // Oracle
 //
 // NOTE: OperatorMembership must be placed after Oracle or else will have race condition on initialization
-// DexOracle: dex_oracle::{Pallet, Storage, Call}, = 20
+		DexOracle: dex_oracle::{Pallet, Storage, Call} = 20,
 		SetheumOracle: module_oracle::<Instance1>::{Pallet, Storage, Call, Event<T>} = 21,
 		OperatorMembershipSetheum: pallet_membership::<Instance4>::{Pallet, Call, Storage, Event<T>, Config<T>} = 22,
 
@@ -1576,7 +1584,7 @@ construct_runtime!(
 		// CommitteeManagement: module_committee_management::{Pallet, Call, Storage, Event<T>} = 57,
 		// Operations: module_operations::{Pallet, Call, Storage, Event<T>} = 58,
 		Auction: module_auction::{Pallet, Call, Storage, Event<T>} = 56,
-		Move: pallet_move::{Pallet, Call, Storage, Event<T>} = 57,
+		Move: module_move::{Pallet, Call, Storage, Event<T>} = 57,
 	}
 );
 
@@ -1948,7 +1956,35 @@ impl_runtime_apis! {
 		fn gas_limit_multiplier_at_20_percent_excess() -> U256 {
 			U256::zero()
 		}
+	impl module_move_runtime_api::MoveApi<Block, AccountId> for Runtime {
+		fn estimate_gas_publish_module(account: AccountId, bytecode: Vec<u8>) -> Result<module_move_runtime_api::MoveApiEstimation, DispatchError> {
+			Move::rpc_estimate_gas_publish_module(&account, bytecode)
+		}
+
+		fn estimate_gas_publish_bundle(account: AccountId, bytecode: Vec<u8>) -> Result<module_move_runtime_api::MoveApiEstimation, DispatchError> {
+			Move::rpc_estimate_gas_publish_bundle(&account, bytecode)
+		}
+
+		fn estimate_gas_execute_script(transaction_bc: Vec<u8>) -> Result<module_move_runtime_api::MoveApiEstimation, DispatchError> {
+			Move::rpc_estimate_gas_execute_script(transaction_bc)
+		}
+
+		fn get_module(account: AccountId, name: alloc::string::String) -> Result<Option<Vec<u8>>, Vec<u8>> {
+			Move::rpc_get_module(account, name)
+		}
+
+		fn get_module_abi(account: AccountId, name: alloc::string::String) -> Result<Option<module_move_runtime_api::ModuleAbi>, Vec<u8>> {
+			Move::rpc_get_module_abi(account, name)
+		}
+
+		fn get_resource(
+			account: AccountId,
+			tag: Vec<u8>,
+		) -> Result<Option<Vec<u8>>, Vec<u8>> {
+			Move::rpc_get_resource(account, tag)
+		}
 	}
+}
 
 	impl fp_rpc::ConvertTransactionRuntimeApi<Block> for Runtime {
 		fn convert_transaction(transaction: pallet_ethereum::Transaction) -> UncheckedExtrinsic {

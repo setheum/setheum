@@ -1,7 +1,1653 @@
 [workspace]
-members = [
-    "repos/setheum",
-    "repos/sheyth",
-    "repos/set-bft",
-]
 resolver = "2"
+members = [ "repos/setheum/node", "repos/setheum/runtime-modules/airdrop", "repos/setheum/runtime-modules/setbft", "repos/setheum/runtime-modules/asset-registry", "repos/setheum/runtime-modules/committee-management", "repos/setheum/runtime-modules/currencies", "repos/setheum/runtime-modules/loans", "repos/setheum/runtime-modules/seusd-engine", "repos/setheum/runtime-modules/seusd-treasury", "repos/setheum/runtime-modules/swap-legacy", "repos/setheum/runtime-modules/elections", "repos/setheum/runtime-modules/bridge", "repos/setheum/runtime-modules/bridge-access-segregator", "repos/setheum/runtime-modules/bridge-basic-fee-handler", "repos/setheum/runtime-modules/bridge-fee-handler-router", "repos/setheum/runtime-modules/bridge-forwarder", "repos/setheum/runtime-modules/bridge-parachain-info", "repos/setheum/runtime-modules/bridge-percentage-fee-handler", "repos/setheum/runtime-modules/bridge-traits", "repos/setheum/runtime-modules/bridge-xcm", "repos/setheum/runtime-modules/idle-scheduler", "repos/setheum/runtime-modules/incentives", "repos/setheum/runtime-modules/operations", "repos/setheum/runtime-modules/oracle", "repos/setheum/runtime-modules/parameters", "repos/setheum/runtime-modules/prices", "repos/setheum/runtime-modules/rate-limit", "repos/setheum/runtime-modules/rewards", "repos/setheum/runtime-modules/support", "repos/setheum/runtime-modules/tokens", "repos/setheum/runtime-modules/traits", "repos/setheum/runtime-modules/transaction-pause", "repos/setheum/runtime-modules/transaction-payment", "repos/setheum/runtime-modules/unified-accounts", "repos/setheum/runtime-modules/vesting", "repos/setheum/runtime-modules/move", "repos/setheum/runtime-modules/move/rpc", "repos/setheum/runtime-modules/move/runtime-api", "repos/setheum/runtime-modules/dex-oracle", "repos/setheum/runtime-modules/currencies/runtime-api", "repos/setheum/runtime-modules/oracle/runtime-api", "repos/setheum/runtime-modules/tokens/runtime-api", "repos/setheum/runtime-modules/setbft/runtime-api", "repos/setheum/primitives", "repos/setheum/clisee", "repos/setheum/chain-bootstrapper", "repos/setheum/setheum-client", "repos/setheum/setheum-move", "repos/setheum/e2e-tests", "repos/setheum/benches/payout-stakers", "repos/setheum/scripts/synthetic-network/synthetic-link", "repos/setheum/finality/aggregator", "repos/setheum/finality/rate-limiter", "repos/setheum/finality/finality-setbft", "repos/setheum/finality/fake-runtime-api", "repos/setheum/runtime", "repos/setheum/runtime/common", "repos/setheum/runtime-modules/authority", "repos/setheum/runtime-modules/payments", "repos/setheum/runtime-modules/unknown-tokens", "repos/setheum/runtime-modules/xcm-support", "repos/setheum/runtime-modules/xcm", "repos/setheum/runtime-modules/xtokens", "repos/setheum/runtime-modules/xcm-mock-message-queue", "repos/sheyth/crates/allocator", "repos/sheyth/crates/e2e", "repos/sheyth/crates/e2e/macro", "repos/sheyth/crates/e2e/sandbox", "repos/sheyth/crates/engine", "repos/sheyth/crates/env", "repos/sheyth/crates/ink", "repos/sheyth/crates/ink/codegen", "repos/sheyth/crates/ink/ir", "repos/sheyth/crates/ink/macro", "repos/sheyth/crates/metadata", "repos/sheyth/crates/prelude", "repos/sheyth/crates/primitives", "repos/sheyth/crates/storage", "repos/sheyth/crates/storage/traits", "repos/sheyth/crates/contract-analyze", "repos/sheyth/crates/contract-build", "repos/sheyth/crates/cargo-contract", "repos/sheyth/crates/contract-extrinsics", "repos/sheyth/crates/contract-metadata", "repos/sheyth/crates/contract-transcode", "repos/set-bft/consensus", "repos/set-bft/types", "repos/set-bft/crypto", "repos/set-bft/rmc", "repos/set-bft/mock", "repos/set-bft/examples/ordering", "repos/set-bft/examples/blockchain", "repos/move-vm/devtools/x", "repos/move-vm/devtools/x-core", "repos/move-vm/devtools/x-lint", "repos/move-vm/language/benchmarks", "repos/move-vm/language/documentation/examples/diem-framework/crates/cli", "repos/move-vm/language/documentation/examples/diem-framework/crates/crypto", "repos/move-vm/language/documentation/examples/diem-framework/crates/crypto-derive", "repos/move-vm/language/documentation/examples/diem-framework/crates/natives", "repos/move-vm/language/evm/exec-utils", "repos/move-vm/language/evm/extract-ethereum-abi", "repos/move-vm/language/evm/move-ethereum-abi", "repos/move-vm/language/evm/move-to-yul", "repos/move-vm/language/extensions/async/move-async-vm", "repos/move-vm/language/extensions/move-table-extension", "repos/move-vm/language/move-analyzer", "repos/move-vm/language/move-binary-format", "repos/move-vm/language/move-binary-format/serializer-tests", "repos/move-vm/language/move-borrow-graph", "repos/move-vm/language/move-bytecode-verifier", "repos/move-vm/language/move-bytecode-verifier/bytecode-verifier-tests", "repos/move-vm/language/move-bytecode-verifier/fuzz", "repos/move-vm/language/move-bytecode-verifier/invalid-mutations", "repos/move-vm/language/move-bytecode-verifier/transactional-tests", "repos/move-vm/language/move-command-line-common", "repos/move-vm/language/move-compiler", "repos/move-vm/language/move-compiler/transactional-tests", "repos/move-vm/language/move-core/types", "repos/move-vm/language/move-ir/types", "repos/move-vm/language/move-ir-compiler", "repos/move-vm/language/move-ir-compiler/move-bytecode-source-map", "repos/move-vm/language/move-ir-compiler/move-ir-to-bytecode", "repos/move-vm/language/move-ir-compiler/move-ir-to-bytecode/syntax", "repos/move-vm/language/move-ir-compiler/transactional-tests", "repos/move-vm/language/move-model", "repos/move-vm/language/move-prover", "repos/move-vm/language/move-prover/boogie-backend", "repos/move-vm/language/move-prover/bytecode", "repos/move-vm/language/move-prover/interpreter", "repos/move-vm/language/move-prover/interpreter/crypto", "repos/move-vm/language/move-prover/interpreter-testsuite", "repos/move-vm/language/move-prover/lab", "repos/move-vm/language/move-prover/move-abigen", "repos/move-vm/language/move-prover/move-docgen", "repos/move-vm/language/move-prover/move-errmapgen", "repos/move-vm/language/move-prover/mutation", "repos/move-vm/language/move-prover/test-utils", "repos/move-vm/language/move-prover/tools/spec-flatten", "repos/move-vm/language/move-stdlib", "repos/move-vm/language/move-symbol-pool", "repos/move-vm/language/move-vm/integration-tests", "repos/move-vm/language/move-vm/paranoid-tests", "repos/move-vm/language/move-vm/runtime", "repos/move-vm/language/move-vm/test-utils", "repos/move-vm/language/move-vm/transactional-tests", "repos/move-vm/language/move-vm/types", "repos/move-vm/language/testing-infra/module-generation", "repos/move-vm/language/testing-infra/test-generation", "repos/move-vm/language/testing-infra/transactional-test-runner", "repos/move-vm/language/tools/move-bytecode-utils", "repos/move-vm/language/tools/move-bytecode-viewer", "repos/move-vm/language/tools/move-cli", "repos/move-vm/language/tools/move-coverage", "repos/move-vm/language/tools/move-disassembler", "repos/move-vm/language/tools/move-explain", "repos/move-vm/language/tools/move-package", "repos/move-vm/language/tools/move-resource-viewer", "repos/move-vm/language/tools/move-unit-test", "repos/move-vm/language/tools/read-write-set", "repos/move-vm/language/tools/read-write-set/dynamic", "repos/move-vm/language/tools/read-write-set/types", "repos/move-vm/move-vm-backend", "repos/move-vm/move-vm-backend-common", "repos/move-vm/move-vm-support", "repos/spinit/drink", "repos/spinit/drink/test-macro", "repos/spinit/drink-cli",]
+
+[workspace.package]
+version = "0.9.81+dev"
+license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
+authors = [ "Afsall Labs", "Setheum Foundation",]
+edition = "2021"
+homepage = "https://setheum.com"
+repository = "https://github.com/setheum/setheum"
+keywords = [ "wasm", "ink", "webassembly", "blockchain", "edsl",]
+categories = [ "no-std", "embedded",]
+rust-version = "1.81.0"
+publish = false
+
+[workspace.dependencies.aggregator]
+path = "repos/setheum/finality/aggregator"
+
+[workspace.dependencies.anyhow]
+version = "1.0.75"
+default-features = false
+
+[workspace.dependencies.array-bytes]
+version = "6"
+
+[workspace.dependencies.array-init]
+version = "2.0"
+default-features = false
+
+[workspace.dependencies.arrayref]
+version = "0.3"
+
+[workspace.dependencies.async-trait]
+version = "0.1.71"
+
+[workspace.dependencies.bcs]
+git = "https://github.com/eigerco/bcs.git"
+branch = "master"
+default-features = false
+
+[workspace.dependencies.blake2]
+version = "0.10.6"
+default-features = false
+
+[workspace.dependencies.bn]
+package = "substrate-bn"
+version = "0.6"
+default-features = false
+
+[workspace.dependencies.bstringify]
+version = "0.1.2"
+
+[workspace.dependencies.bytecode-interpreter-crypto]
+path = "repos/move-vm/language/move-prover/interpreter/crypto"
+
+[workspace.dependencies.bytecode-interpreter-testsuite]
+path = "repos/move-vm/language/move-prover/interpreter-testsuite"
+
+[workspace.dependencies.bytecode-verifier-libfuzzer]
+path = "repos/move-vm/language/move-bytecode-verifier/fuzz"
+
+[workspace.dependencies.bytecode-verifier-tests]
+path = "repos/move-vm/language/move-bytecode-verifier/bytecode-verifier-tests"
+
+[workspace.dependencies.bytecode-verifier-transactional-tests]
+path = "repos/move-vm/language/move-bytecode-verifier/transactional-tests"
+
+[workspace.dependencies.bytes]
+version = "1.5"
+
+[workspace.dependencies.cargo-contract]
+path = "repos/sheyth/crates/cargo-contract"
+
+[workspace.dependencies.cargo_metadata]
+version = "0.18.0"
+
+[workspace.dependencies.cfg-if]
+version = "1.0"
+
+[workspace.dependencies.chain-bootstrapper]
+path = "repos/setheum/chain-bootstrapper"
+
+[workspace.dependencies.clap]
+version = "4.0.9"
+
+[workspace.dependencies.clisee]
+path = "repos/setheum/clisee"
+
+[workspace.dependencies.codec]
+package = "parity-scale-codec"
+version = "3.7.5"
+default-features = false
+
+[workspace.dependencies.coins-bip32]
+version = "0.7.0"
+
+[workspace.dependencies.coins-bip39]
+version = "0.7.0"
+
+[workspace.dependencies.const_env]
+version = "0.1"
+
+[workspace.dependencies.contract-analyze]
+path = "repos/sheyth/crates/contract-analyze"
+
+[workspace.dependencies.contract-build]
+path = "repos/sheyth/crates/contract-build"
+
+[workspace.dependencies.contract-extrinsics]
+path = "repos/sheyth/crates/contract-extrinsics"
+
+[workspace.dependencies.contract-metadata]
+path = "repos/sheyth/crates/contract-metadata"
+
+[workspace.dependencies.contract-transcode]
+path = "repos/sheyth/crates/contract-transcode"
+
+[workspace.dependencies.convert_case]
+version = "0.6.0"
+
+[workspace.dependencies.crossterm]
+version = "0.26.0"
+
+[workspace.dependencies.cumulus-pallet-xcm]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.cumulus-primitives-core]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.darling]
+version = "0.20.10"
+
+[workspace.dependencies.derive_more]
+version = "1.0.0"
+
+[workspace.dependencies.df-cli]
+path = "repos/move-vm/language/documentation/examples/diem-framework/crates/cli"
+
+[workspace.dependencies.diem-crypto]
+path = "repos/move-vm/language/documentation/examples/diem-framework/crates/crypto"
+
+[workspace.dependencies.diem-crypto-derive]
+path = "repos/move-vm/language/documentation/examples/diem-framework/crates/crypto-derive"
+
+[workspace.dependencies.diem-framework-natives]
+path = "repos/move-vm/language/documentation/examples/diem-framework/crates/natives"
+
+[workspace.dependencies.drink]
+path = "repos/spinit/drink"
+
+[workspace.dependencies.drink-cli]
+path = "repos/spinit/drink-cli"
+
+[workspace.dependencies.drink-test-macro]
+path = "repos/spinit/drink/test-macro"
+
+[workspace.dependencies.either]
+version = "1.13"
+default-features = false
+
+[workspace.dependencies.enumflags2]
+version = "0.7.7"
+
+[workspace.dependencies.env_logger]
+version = "0.10.0"
+
+[workspace.dependencies.ethabi]
+version = "18.0.0"
+default-features = false
+
+[workspace.dependencies.ethereum-types]
+version = "0.14.0"
+default-features = false
+
+[workspace.dependencies.evm-exec-utils]
+path = "repos/move-vm/language/evm/exec-utils"
+
+[workspace.dependencies.extract-ethereum-abi]
+path = "repos/move-vm/language/evm/extract-ethereum-abi"
+
+[workspace.dependencies.fake-runtime-api]
+path = "repos/setheum/finality/fake-runtime-api"
+default-features = false
+
+[workspace.dependencies.finality-rate-limiter]
+path = "repos/setheum/finality/rate-limiter"
+
+[workspace.dependencies.finality-setbft]
+path = "repos/setheum/finality/finality-setbft"
+
+[workspace.dependencies.fp-evm]
+git = "https://github.com/polkadot-evm/frontier"
+branch = "master"
+default-features = false
+
+[workspace.dependencies.fp-rpc]
+git = "https://github.com/polkadot-evm/frontier"
+branch = "master"
+default-features = false
+
+[workspace.dependencies.fp-self-contained]
+git = "https://github.com/polkadot-evm/frontier"
+branch = "master"
+default-features = false
+
+[workspace.dependencies.frame-benchmarking]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.frame-benchmarking-cli]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.frame-election-provider-support]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.frame-executive]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.frame-metadata]
+version = "16.0.0"
+
+[workspace.dependencies.frame-support]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.frame-system]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.frame-system-benchmarking]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.frame-system-rpc-runtime-api]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.frame-try-runtime]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.funty]
+version = "2.0.0"
+
+[workspace.dependencies.futures]
+version = "0.3.28"
+
+[workspace.dependencies.futures-timer]
+version = "3.0"
+
+[workspace.dependencies.halo2_proofs]
+git = "https://github.com/Cardinal-Cryptography/pse-halo2"
+branch = "setbft"
+default-features = false
+
+[workspace.dependencies.hash-db]
+version = "0.16"
+default-features = false
+
+[workspace.dependencies.hashbrown]
+version = "0.14.0"
+default-features = false
+
+[workspace.dependencies.heck]
+version = "0.5.0"
+
+[workspace.dependencies.hex]
+version = "0.4"
+default-features = false
+
+[workspace.dependencies.hex-literal]
+version = "0.4.1"
+
+[workspace.dependencies.impl-serde]
+version = "0.4.0"
+default-features = false
+
+[workspace.dependencies.impl-trait-for-tuples]
+version = "0.2.3"
+
+[workspace.dependencies.ink]
+path = "repos/sheyth/crates/ink"
+
+[workspace.dependencies.ink_allocator]
+path = "repos/sheyth/crates/allocator"
+default-features = false
+
+[workspace.dependencies.ink_codegen]
+path = "repos/sheyth/crates/ink/codegen"
+default-features = false
+
+[workspace.dependencies.ink_e2e]
+path = "repos/sheyth/crates/e2e"
+
+[workspace.dependencies.ink_e2e_macro]
+path = "repos/sheyth/crates/e2e/macro"
+default-features = false
+
+[workspace.dependencies.ink_engine]
+path = "repos/sheyth/crates/engine"
+default-features = false
+
+[workspace.dependencies.ink_env]
+path = "repos/sheyth/crates/env"
+default-features = false
+
+[workspace.dependencies.ink_ir]
+path = "repos/sheyth/crates/ink/ir"
+default-features = false
+
+[workspace.dependencies.ink_macro]
+path = "repos/sheyth/crates/ink/macro"
+default-features = false
+
+[workspace.dependencies.ink_metadata]
+path = "repos/sheyth/crates/metadata"
+default-features = false
+
+[workspace.dependencies.ink_prelude]
+path = "repos/sheyth/crates/prelude"
+default-features = false
+
+[workspace.dependencies.ink_primitives]
+path = "repos/sheyth/crates/primitives"
+default-features = false
+
+[workspace.dependencies.ink_sandbox]
+path = "repos/sheyth/crates/e2e/sandbox"
+
+[workspace.dependencies.ink_storage]
+path = "repos/sheyth/crates/storage"
+default-features = false
+
+[workspace.dependencies.ink_storage_traits]
+path = "repos/sheyth/crates/storage/traits"
+default-features = false
+
+[workspace.dependencies.invalid-mutations]
+path = "repos/move-vm/language/move-bytecode-verifier/invalid-mutations"
+
+[workspace.dependencies.ip_network]
+version = "0.4"
+
+[workspace.dependencies.itertools]
+version = "0.12"
+default-features = false
+
+[workspace.dependencies.jsonrpc-core]
+version = "15.1.0"
+
+[workspace.dependencies.jsonrpc-derive]
+version = "15.1.0"
+
+[workspace.dependencies.jsonrpsee]
+version = "0.16.3"
+
+[workspace.dependencies.k256]
+version = "0.11.5"
+default-features = false
+
+[workspace.dependencies.language-benchmarks]
+path = "repos/move-vm/language/benchmarks"
+
+[workspace.dependencies.libp2p]
+version = "0.51"
+
+[workspace.dependencies.libsecp256k1]
+version = "0.7"
+default-features = false
+
+[workspace.dependencies.linkme]
+version = "0.3.30"
+
+[workspace.dependencies.log]
+version = "0.4.20"
+default-features = false
+
+[workspace.dependencies.lru]
+version = "0.10"
+
+[workspace.dependencies.module-airdrop]
+path = "repos/setheum/runtime-modules/airdrop"
+
+[workspace.dependencies.module-asset-registry]
+path = "repos/setheum/runtime-modules/asset-registry"
+default-features = false
+
+[workspace.dependencies.module-auction]
+package = "module-auction"
+path = "repos/setheum/runtime-modules/auction"
+default-features = false
+
+[workspace.dependencies.module-authority]
+path = "repos/setheum/runtime-modules/authority"
+default-features = false
+
+[workspace.dependencies.module-benchmarking]
+package = "module-benchmarking"
+path = "repos/setheum/runtime-modules/benchmarking"
+default-features = false
+
+[workspace.dependencies.module-bridge]
+path = "repos/setheum/runtime-modules/bridge"
+default-features = false
+
+[workspace.dependencies.module-bridge-access-segregator]
+path = "repos/setheum/runtime-modules/bridge-access-segregator"
+default-features = false
+
+[workspace.dependencies.module-bridge-basic-fee-handler]
+path = "repos/setheum/runtime-modules/bridge-basic-fee-handler"
+default-features = false
+
+[workspace.dependencies.module-bridge-fee-handler-router]
+path = "repos/setheum/runtime-modules/bridge-fee-handler-router"
+default-features = false
+
+[workspace.dependencies.module-bridge-forwarder]
+path = "repos/setheum/runtime-modules/bridge-forwarder"
+default-features = false
+
+[workspace.dependencies.module-bridge-parachain-info]
+path = "repos/setheum/runtime-modules/bridge-parachain-info"
+default-features = false
+
+[workspace.dependencies.module-bridge-percentage-fee-handler]
+path = "repos/setheum/runtime-modules/bridge-percentage-fee-handler"
+default-features = false
+
+[workspace.dependencies.module-bridge-traits]
+path = "repos/setheum/runtime-modules/bridge-traits"
+default-features = false
+
+[workspace.dependencies.module-bridge-xcm]
+path = "repos/setheum/runtime-modules/bridge-xcm"
+default-features = false
+
+[workspace.dependencies.module-build-script-utils]
+path = "module/build-script-utils"
+
+[workspace.dependencies.module-committee-management]
+path = "repos/setheum/runtime-modules/committee-management"
+default-features = false
+
+[workspace.dependencies.module-currencies]
+path = "repos/setheum/runtime-modules/currencies"
+default-features = false
+
+[workspace.dependencies.module-currencies-runtime-api]
+path = "repos/setheum/runtime-modules/currencies/runtime-api"
+
+[workspace.dependencies.module-dex-oracle]
+path = "repos/setheum/runtime-modules/dex-oracle"
+default-features = false
+
+[workspace.dependencies.module-elections]
+path = "repos/setheum/runtime-modules/elections"
+default-features = false
+
+[workspace.dependencies.module-evm-accounts]
+package = "module-unified-accounts"
+path = "repos/setheum/runtime-modules/unified-accounts"
+default-features = false
+
+[workspace.dependencies.module-generation]
+path = "repos/move-vm/language/testing-infra/module-generation"
+
+[workspace.dependencies.module-idle-scheduler]
+path = "repos/setheum/runtime-modules/idle-scheduler"
+default-features = false
+
+[workspace.dependencies.module-incentives]
+path = "repos/setheum/runtime-modules/incentives"
+
+[workspace.dependencies.module-legacy]
+package = "module-swap-legacy"
+path = "repos/setheum/runtime-modules/swap-legacy"
+default-features = false
+
+[workspace.dependencies.module-loans]
+path = "repos/setheum/runtime-modules/loans"
+default-features = false
+
+[workspace.dependencies.module-move]
+path = "repos/setheum/runtime-modules/move"
+default-features = false
+
+[workspace.dependencies.module-move-rpc]
+path = "repos/setheum/runtime-modules/move/rpc"
+default-features = false
+
+[workspace.dependencies.module-move-runtime-api]
+path = "repos/setheum/runtime-modules/move/runtime-api"
+default-features = false
+
+[workspace.dependencies.module-operations]
+path = "repos/setheum/runtime-modules/operations"
+default-features = false
+
+[workspace.dependencies.module-oracle]
+path = "repos/setheum/runtime-modules/oracle"
+default-features = false
+
+[workspace.dependencies.module-oracle-runtime-api]
+path = "repos/setheum/runtime-modules/oracle/runtime-api"
+default-features = false
+
+[workspace.dependencies.module-parameters]
+path = "repos/setheum/runtime-modules/parameters"
+default-features = false
+
+[workspace.dependencies.module-payments]
+path = "repos/setheum/runtime-modules/payments"
+default-features = false
+
+[workspace.dependencies.module-prices]
+path = "repos/setheum/runtime-modules/prices"
+
+[workspace.dependencies.module-rate-limit]
+path = "repos/setheum/runtime-modules/rate-limit"
+
+[workspace.dependencies.module-rewards]
+path = "repos/setheum/runtime-modules/rewards"
+default-features = false
+
+[workspace.dependencies.module-setbft]
+path = "repos/setheum/runtime-modules/setbft"
+default-features = false
+
+[workspace.dependencies.module-setbft-runtime-api]
+path = "repos/setheum/runtime-modules/setbft/runtime-api"
+default-features = false
+
+[workspace.dependencies.module-seusd-engine]
+path = "repos/setheum/runtime-modules/seusd-engine"
+default-features = false
+
+[workspace.dependencies.module-seusd-treasury]
+path = "repos/setheum/runtime-modules/seusd-treasury"
+default-features = false
+
+[workspace.dependencies.module-support]
+path = "repos/setheum/runtime-modules/support"
+default-features = false
+
+[workspace.dependencies.module-swap-legacy]
+path = "repos/setheum/runtime-modules/swap-legacy"
+
+[workspace.dependencies.module-swap_legacy]
+package = "module-swap-legacy"
+path = "repos/setheum/runtime-modules/swap-legacy"
+default-features = false
+
+[workspace.dependencies.module-tokens]
+path = "repos/setheum/runtime-modules/tokens"
+default-features = false
+
+[workspace.dependencies.module-tokens-runtime-api]
+path = "repos/setheum/runtime-modules/tokens/runtime-api"
+default-features = false
+
+[workspace.dependencies.module-traits]
+path = "repos/setheum/runtime-modules/traits"
+default-features = false
+
+[workspace.dependencies.module-transaction-pause]
+path = "repos/setheum/runtime-modules/transaction-pause"
+
+[workspace.dependencies.module-transaction-payment]
+path = "repos/setheum/runtime-modules/transaction-payment"
+default-features = false
+
+[workspace.dependencies.module-unified-accounts]
+path = "repos/setheum/runtime-modules/unified-accounts"
+default-features = false
+
+[workspace.dependencies.module-unknown-tokens]
+path = "repos/setheum/runtime-modules/unknown-tokens"
+default-features = false
+
+[workspace.dependencies.module-utilities]
+package = "module-utilities"
+path = "repos/setheum/runtime-modules/utilities"
+default-features = false
+
+[workspace.dependencies.module-vesting]
+path = "repos/setheum/runtime-modules/vesting"
+default-features = false
+
+[workspace.dependencies.module-xcm]
+path = "repos/setheum/runtime-modules/xcm"
+default-features = false
+
+[workspace.dependencies.module-xcm-mock-message-queue]
+path = "repos/setheum/runtime-modules/xcm-mock-message-queue"
+
+[workspace.dependencies.module-xcm-support]
+path = "repos/setheum/runtime-modules/xcm-support"
+default-features = false
+
+[workspace.dependencies.module-xtokens]
+path = "repos/setheum/runtime-modules/xtokens"
+default-features = false
+
+[workspace.dependencies.move-abigen]
+path = "repos/move-vm/language/move-prover/move-abigen"
+
+[workspace.dependencies.move-analyzer]
+path = "repos/move-vm/language/move-analyzer"
+
+[workspace.dependencies.move-async-vm]
+path = "repos/move-vm/language/extensions/async/move-async-vm"
+
+[workspace.dependencies.move-binary-format]
+path = "repos/move-vm/language/move-binary-format"
+
+[workspace.dependencies.move-borrow-graph]
+path = "repos/move-vm/language/move-borrow-graph"
+
+[workspace.dependencies.move-bytecode-source-map]
+path = "repos/move-vm/language/move-ir-compiler/move-bytecode-source-map"
+
+[workspace.dependencies.move-bytecode-utils]
+path = "repos/move-vm/language/tools/move-bytecode-utils"
+
+[workspace.dependencies.move-bytecode-verifier]
+path = "repos/move-vm/language/move-bytecode-verifier"
+
+[workspace.dependencies.move-bytecode-viewer]
+path = "repos/move-vm/language/tools/move-bytecode-viewer"
+
+[workspace.dependencies.move-cli]
+path = "repos/move-vm/language/tools/move-cli"
+
+[workspace.dependencies.move-command-line-common]
+path = "repos/move-vm/language/move-command-line-common"
+
+[workspace.dependencies.move-compiler]
+path = "repos/move-vm/language/move-compiler"
+
+[workspace.dependencies.move-compiler-transactional-tests]
+path = "repos/move-vm/language/move-compiler/transactional-tests"
+
+[workspace.dependencies.move-core-types]
+path = "repos/move-vm/language/move-core/types"
+default-features = false
+
+[workspace.dependencies.move-coverage]
+path = "repos/move-vm/language/tools/move-coverage"
+
+[workspace.dependencies.move-disassembler]
+path = "repos/move-vm/language/tools/move-disassembler"
+
+[workspace.dependencies.move-docgen]
+path = "repos/move-vm/language/move-prover/move-docgen"
+
+[workspace.dependencies.move-errmapgen]
+path = "repos/move-vm/language/move-prover/move-errmapgen"
+
+[workspace.dependencies.move-ethereum-abi]
+path = "repos/move-vm/language/evm/move-ethereum-abi"
+
+[workspace.dependencies.move-explain]
+path = "repos/move-vm/language/tools/move-explain"
+
+[workspace.dependencies.move-ir-compiler]
+path = "repos/move-vm/language/move-ir-compiler"
+
+[workspace.dependencies.move-ir-compiler-transactional-tests]
+path = "repos/move-vm/language/move-ir-compiler/transactional-tests"
+
+[workspace.dependencies.move-ir-to-bytecode]
+path = "repos/move-vm/language/move-ir-compiler/move-ir-to-bytecode"
+
+[workspace.dependencies.move-ir-to-bytecode-syntax]
+path = "repos/move-vm/language/move-ir-compiler/move-ir-to-bytecode/syntax"
+
+[workspace.dependencies.move-ir-types]
+path = "repos/move-vm/language/move-ir/types"
+
+[workspace.dependencies.move-model]
+path = "repos/move-vm/language/move-model"
+
+[workspace.dependencies.move-package]
+path = "repos/move-vm/language/tools/move-package"
+
+[workspace.dependencies.move-prover]
+path = "repos/move-vm/language/move-prover"
+
+[workspace.dependencies.move-prover-boogie-backend]
+path = "repos/move-vm/language/move-prover/boogie-backend"
+
+[workspace.dependencies.move-prover-test-utils]
+path = "repos/move-vm/language/move-prover/test-utils"
+
+[workspace.dependencies.move-read-write-set-types]
+path = "repos/move-vm/language/tools/read-write-set/types"
+
+[workspace.dependencies.move-resource-viewer]
+path = "repos/move-vm/language/tools/move-resource-viewer"
+
+[workspace.dependencies.move-stackless-bytecode]
+path = "repos/move-vm/language/move-prover/bytecode"
+
+[workspace.dependencies.move-stackless-bytecode-interpreter]
+path = "repos/move-vm/language/move-prover/interpreter"
+
+[workspace.dependencies.move-stdlib]
+path = "repos/move-vm/language/move-stdlib"
+default-features = false
+
+[workspace.dependencies.move-symbol-pool]
+path = "repos/move-vm/language/move-symbol-pool"
+
+[workspace.dependencies.move-table-extension]
+path = "repos/move-vm/language/extensions/move-table-extension"
+
+[workspace.dependencies.move-to-yul]
+path = "repos/move-vm/language/evm/move-to-yul"
+
+[workspace.dependencies.move-transactional-test-runner]
+path = "repos/move-vm/language/testing-infra/transactional-test-runner"
+
+[workspace.dependencies.move-unit-test]
+path = "repos/move-vm/language/tools/move-unit-test"
+
+[workspace.dependencies.move-vm-backend]
+path = "repos/move-vm/move-vm-backend"
+default-features = false
+
+[workspace.dependencies.move-vm-backend-common]
+path = "repos/move-vm/move-vm-backend-common"
+default-features = false
+
+[workspace.dependencies.move-vm-integration-tests]
+path = "repos/move-vm/language/move-vm/integration-tests"
+
+[workspace.dependencies.move-vm-paranoid-tests]
+path = "repos/move-vm/language/move-vm/paranoid-tests"
+
+[workspace.dependencies.move-vm-runtime]
+path = "repos/move-vm/language/move-vm/runtime"
+
+[workspace.dependencies.move-vm-support]
+path = "repos/move-vm/move-vm-support"
+
+[workspace.dependencies.move-vm-test-utils]
+path = "repos/move-vm/language/move-vm/test-utils"
+
+[workspace.dependencies.move-vm-transactional-tests]
+path = "repos/move-vm/language/move-vm/transactional-tests"
+
+[workspace.dependencies.move-vm-types]
+path = "repos/move-vm/language/move-vm/types"
+
+[workspace.dependencies.network-clique]
+path = "repos/setheum/clique"
+
+[workspace.dependencies.num]
+version = "0.4"
+default-features = false
+
+[workspace.dependencies.num-traits]
+version = "0.2"
+default-features = false
+
+[workspace.dependencies.num_enum]
+version = "0.5.1"
+default-features = false
+
+[workspace.dependencies.pallet-aura]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.pallet-authority-discovery]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.pallet-authorship]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.pallet-balances]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.pallet-bounties]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.pallet-collective]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.pallet-contracts]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.pallet-contracts-mock-network]
+version = "7.0.0"
+default-features = false
+
+[workspace.dependencies.pallet-contracts-uapi]
+version = "9.0.0"
+default-features = false
+
+[workspace.dependencies.pallet-democracy]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.pallet-elections-phragmen]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.pallet-ethereum]
+git = "https://github.com/polkadot-evm/frontier"
+branch = "master"
+default-features = false
+
+[workspace.dependencies.pallet-evm]
+git = "https://github.com/polkadot-evm/frontier"
+branch = "master"
+default-features = false
+
+[workspace.dependencies.pallet-evm-precompile-simple]
+git = "https://github.com/polkadot-evm/frontier"
+branch = "master"
+default-features = false
+
+[workspace.dependencies.pallet-grandpa]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.pallet-identity]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.pallet-im-online]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.pallet-indices]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.pallet-insecure-randomness-collective-flip]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.pallet-membership]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.pallet-message-queue]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.pallet-multisig]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.pallet-nomination-pools]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.pallet-nomination-pools-runtime-api]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.pallet-offences]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.pallet-preimage]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.pallet-proxy]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.pallet-recovery]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.pallet-root-testing]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.pallet-scheduler]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.pallet-session]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.pallet-staking]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.pallet-staking-reward-curve]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.pallet-staking-runtime-api]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.pallet-sudo]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.pallet-timestamp]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.pallet-tips]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.pallet-transaction-payment]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.pallet-transaction-payment-rpc]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.pallet-transaction-payment-rpc-runtime-api]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.pallet-treasury]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.pallet-utility]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.pallet-xcm]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.parachains-common]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.parity-scale-codec]
+version = "3.7.5"
+default-features = false
+
+[workspace.dependencies.parity-scale-codec-derive]
+version = "3.6.9"
+
+[workspace.dependencies.parking_lot]
+version = "0.12"
+
+[workspace.dependencies.paste]
+version = "1.0"
+
+[workspace.dependencies.payout-stakers]
+path = "repos/setheum/benches/payout-stakers"
+
+[workspace.dependencies.polkadot-parachain-primitives]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.polkadot-runtime-common]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.polkadot-runtime-parachains]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.pretty_assertions]
+version = "1"
+
+[workspace.dependencies.primitives]
+package = "setheum-primitives"
+path = "repos/setheum/primitives"
+default-features = false
+
+[workspace.dependencies.proc-macro2]
+version = "1.0.40"
+
+[workspace.dependencies.prover-lab]
+path = "repos/move-vm/language/move-prover/lab"
+
+[workspace.dependencies.prover-mutation]
+path = "repos/move-vm/language/move-prover/mutation"
+
+[workspace.dependencies.quickcheck]
+version = "1"
+
+[workspace.dependencies.quickcheck_macros]
+version = "1"
+
+[workspace.dependencies.quote]
+version = "1.0.20"
+
+[workspace.dependencies.rand]
+version = "0.8.5"
+default-features = false
+
+[workspace.dependencies.rand_chacha]
+version = "0.2"
+default-features = false
+
+[workspace.dependencies.rand_pcg]
+version = "0.3.1"
+default-features = false
+
+[workspace.dependencies.ratatui]
+version = "0.21.0"
+
+[workspace.dependencies.rate-limiter]
+package = "finality-rate-limiter"
+path = "repos/setheum/finality/rate-limiter"
+default-features = false
+
+[workspace.dependencies.read-write-set]
+path = "repos/move-vm/language/tools/read-write-set"
+
+[workspace.dependencies.read-write-set-dynamic]
+path = "repos/move-vm/language/tools/read-write-set/dynamic"
+
+[workspace.dependencies.ripemd]
+version = "0.1.3"
+default-features = false
+
+[workspace.dependencies.rlibc]
+version = "1"
+
+[workspace.dependencies.rlp]
+version = "0.5.2"
+default-features = false
+
+[workspace.dependencies.runtime-common]
+path = "repos/setheum/runtime/common"
+default-features = false
+
+[workspace.dependencies.sc-basic-authorship]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sc-block-builder]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sc-chain-spec]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sc-cli]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sc-client-api]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sc-client-db]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sc-consensus]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sc-consensus-aura]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sc-consensus-epochs]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sc-consensus-grandpa]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sc-consensus-grandpa-rpc]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sc-consensus-manual-seal]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sc-consensus-slots]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sc-executor]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sc-keystore]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sc-network]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sc-network-common]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sc-network-light]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sc-network-sync]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sc-network-transactions]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sc-offchain]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sc-rpc]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sc-rpc-api]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sc-rpc-server]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sc-service]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sc-telemetry]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sc-tracing]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sc-transaction-pool]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sc-transaction-pool-api]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sc-utils]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.scale]
+package = "parity-scale-codec"
+version = "3.6.9"
+default-features = false
+features = [ "derive",]
+
+[workspace.dependencies.scale-decode]
+version = "0.11.1"
+default-features = false
+
+[workspace.dependencies.scale-encode]
+version = "0.6.0"
+default-features = false
+
+[workspace.dependencies.scale-info]
+version = "2.11.6"
+default-features = false
+features = [ "derive",]
+
+[workspace.dependencies.schemars]
+version = "0.8"
+
+[workspace.dependencies.secp256k1]
+version = "0.28.2"
+
+[workspace.dependencies.serde]
+version = "1.0.214"
+default-features = false
+
+[workspace.dependencies.serde_json]
+version = "1.0.81"
+default-features = false
+
+[workspace.dependencies.serializer-tests]
+path = "repos/move-vm/language/move-binary-format/serializer-tests"
+
+[workspace.dependencies.set-bft]
+path = "repos/set-bft/consensus"
+
+[workspace.dependencies.set-bft-crypto]
+path = "repos/set-bft/crypto"
+
+[workspace.dependencies.set-bft-examples-blockchain]
+path = "repos/set-bft/examples/blockchain"
+
+[workspace.dependencies.set-bft-examples-ordering]
+path = "repos/set-bft/examples/ordering"
+
+[workspace.dependencies.set-bft-mock]
+path = "repos/set-bft/mock"
+
+[workspace.dependencies.set-bft-rmc]
+path = "repos/set-bft/rmc"
+
+[workspace.dependencies.set-bft-types]
+path = "repos/set-bft/types"
+
+[workspace.dependencies.setheum-e2e-client]
+path = "repos/setheum/e2e-tests"
+
+[workspace.dependencies.setheum-move]
+path = "repos/setheum/setheum-move"
+
+[workspace.dependencies.setheum-node]
+path = "repos/setheum/node"
+
+[workspace.dependencies.setheum-primitives]
+path = "repos/setheum/primitives"
+
+[workspace.dependencies.setheum-runtime]
+path = "repos/setheum/runtime"
+default-features = false
+
+[workspace.dependencies.setheum_client]
+path = "repos/setheum/setheum-client"
+
+[workspace.dependencies.sha2]
+version = "0.10"
+
+[workspace.dependencies.sha3]
+version = "0.10.8"
+default-features = false
+
+[workspace.dependencies.smallvec]
+version = "1.4.1"
+
+[workspace.dependencies.sp-api]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sp-application-crypto]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sp-arithmetic]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sp-authority-discovery]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sp-block-builder]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sp-blockchain]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sp-consensus]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sp-consensus-aura]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sp-consensus-babe]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sp-consensus-grandpa]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sp-consensus-slots]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sp-core]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sp-debug-derive]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sp-externalities]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sp-inherents]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sp-io]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sp-keyring]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sp-keystore]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sp-offchain]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sp-runtime]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sp-runtime-interface]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sp-session]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sp-staking]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sp-state-machine]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sp-std]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sp-storage]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sp-timestamp]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sp-tracing]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sp-transaction-pool]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sp-trie]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sp-version]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sp-wasm-interface]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.sp-weights]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.spec-flatten]
+path = "repos/move-vm/language/move-prover/tools/spec-flatten"
+
+[workspace.dependencies.static_assertions]
+version = "1.1.0"
+
+[workspace.dependencies.substrate-build-script-utils]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+
+[workspace.dependencies.substrate-frame-rpc-system]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+
+[workspace.dependencies.substrate-prometheus-endpoint]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+
+[workspace.dependencies.substrate-test-client]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.substrate-test-runtime]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.substrate-test-runtime-client]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.substrate-wasm-builder]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+
+[workspace.dependencies.subxt]
+version = "0.35.3"
+
+[workspace.dependencies.subxt-metadata]
+version = "0.35.2"
+
+[workspace.dependencies.subxt-signer]
+version = "0.35.3"
+
+[workspace.dependencies.syn]
+version = "1.0.98"
+
+[workspace.dependencies.synstructure]
+version = "0.13.1"
+
+[workspace.dependencies.synthetic-link]
+path = "repos/setheum/scripts/synthetic-network/synthetic-link"
+
+[workspace.dependencies.test-generation]
+path = "repos/move-vm/language/testing-infra/test-generation"
+
+[workspace.dependencies.thiserror]
+version = "1.0"
+
+[workspace.dependencies.tiny-bip39]
+version = "1.0"
+
+[workspace.dependencies.tiny-keccak]
+version = "2.0"
+
+[workspace.dependencies.tokio]
+version = "1.36"
+
+[workspace.dependencies.tracing]
+version = "0.1.41"
+
+[workspace.dependencies.tracing-subscriber]
+version = "0.3.17"
+
+[workspace.dependencies.try-runtime-cli]
+version = "0.35.0"
+
+[workspace.dependencies.trybuild]
+version = "1.0.101"
+
+[workspace.dependencies.wasm-bencher]
+git = "https://github.com/open-web3-stack/wasm-bencher"
+branch = "polkadot-v1.3.0"
+default-features = false
+
+[workspace.dependencies.wasm-instrument]
+version = "0.4.0"
+
+[workspace.dependencies.wat]
+version = "1.219.1"
+
+[workspace.dependencies.which]
+version = "6.0.3"
+
+[workspace.dependencies.x]
+path = "repos/move-vm/devtools/x"
+
+[workspace.dependencies.x-core]
+path = "repos/move-vm/devtools/x-core"
+
+[workspace.dependencies.x-lint]
+path = "repos/move-vm/devtools/x-lint"
+
+[workspace.dependencies.xcm]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+package = "staging-xcm"
+default-features = false
+
+[workspace.dependencies.xcm-builder]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+package = "staging-xcm-builder"
+default-features = false
+
+[workspace.dependencies.xcm-executor]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+package = "staging-xcm-executor"
+default-features = false
+
+[workspace.dependencies.xcm-simulator]
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.xxhash-rust]
+version = "0.8"
+
+
+[profile.bench]
+debug = true
+
+[profile.dev]
+debug = true
+
+# use release settings to reduce memory pressure in the linking step in CI
+[profile.ci]
+inherits = "test"
+debug = 0 # for saving disk space during linking
+incremental = false
+codegen-units = 16
+
+
+[profile.test]
+opt-level = 3
+
