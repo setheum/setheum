@@ -1,0 +1,22 @@
+---
+name: GH Action YAML validator
+
+on:
+  merge_group:
+  pull_request:
+    paths:
+      - '.github/**.yml'
+      - '.github/**.yaml'
+
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  main:
+    name: YAML Validate
+    runs-on: ubuntu-24.04
+    steps:
+      - name: VALIDATE | Execute github-actions-validator
+        # yamllint disable-line rule:line-length
+        uses: Cardinal-Cryptography/github-actions/yaml-validate@v7

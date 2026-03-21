@@ -1,0 +1,73 @@
+# This workflow performs the Extrinsic Ordering Check on demand using a binary
+
+name: Extrinsic Ordering Check from Binary
+on:
+  workflow_dispatch:
+    inputs:
+      reference_url:
+        description: The WebSocket url of the reference node
+        default: wss://setheum-rpc-0.aca-api.network
+        required: true
+      chain:
+        description: The name of the chain under test.
+        default: setheum
+        required: true
+      image:
+        description: The docker image.
+        default: setheum/setheum-node:latest
+        required: true
+
+jobs:
+  check:
+    name: Run check
+    runs-on: ubuntu-latest
+    env:
+      CHAIN: ${{ github.event.inputs.chain }}
+      REF_URL: ${{ github.event.inputs.reference_url }}
+      IMAGE: ${{ github.event.inputs.image }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install Yarn
+        run: npm install -g yarn
+
+      - name: Prepare output
+        run: |
+          VERSION=$(docker run --rm $IMAGE --version)
+          echo "Metadata comparison:" >> output.txt
+          echo "Date: $(date)" >> output.txt
+          echo "Reference: $REF_URL" >> output.txt
+          echo "Target version: $VERSION" >> output.txt
+          echo "-------------------------------------------" >> output.txt
+
+      - name: Start local node
+        run: docker run --name extrinsic-ordering-check-from-bin -d -p 9944:9944 --rm $IMAGE --chain=${{ env.CHAIN }}-dev --rpc-cors=all --ws-external --tmp -- --dev
+
+      - name: Compare the metadata
+        run: |
+          git clone https://github.com/ermalkaleci/tools.git
+          cd tools
+          yarn install --immutable
+          yarn run:metadata $REF_URL ws://localhost:9944 >> ../output.txt
+          cd ..
+          sed -z -i 's/\n\n/\n/g' output.txt
+
+      - name: Stop our local node
+        run: docker stop extrinsic-ordering-check-from-bin
+
+      - name: Show result
+        run: cat output.txt
+
+      - name: Save output as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.CHAIN }}
+          path: |
+            output.txt
