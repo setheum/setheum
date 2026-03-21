@@ -1,0 +1,22 @@
+---
+compiled_package_info:
+  package_name: SubstrateStdlib
+  address_alias_instantiation:
+    std: "0000000000000000000000000000000000000000000000000000000000000001"
+    substrate: "0000000000000000000000000000000000000000000000000000000000000001"
+  source_digest: 5CD172C8A19371A259276E7B8E7A8EA5EF80AE690A6395D4B93BED005EA2E1DD
+  build_flags:
+    dev_mode: false
+    test_mode: false
+    generate_docs: false
+    generate_abis: false
+    install_dir: ~
+    force_recompilation: false
+    lock_file: ~
+    additional_named_addresses: {}
+    architecture: ~
+    fetch_deps_only: false
+    skip_fetch_latest_git_deps: false
+    bytecode_version: ~
+dependencies:
+  - MoveStdlib

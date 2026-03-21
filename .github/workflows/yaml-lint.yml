@@ -1,0 +1,22 @@
+---
+name: GH Action YAML linter
+
+on:
+  merge_group:
+  pull_request:
+    paths:
+      - '.github/**.yml'
+      - '.github/**.yaml'
+
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  main:
+    name: YAML Lint
+    runs-on: ubuntu-24.04
+    steps:
+      - name: LINT | Execute YAML linter
+        # yamllint disable-line rule:line-length
+        uses: Cardinal-Cryptography/github-actions/yaml-lint@v7
