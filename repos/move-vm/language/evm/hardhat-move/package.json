@@ -8,8 +8,8 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "hardhat": "^2.9.3",
-    "mocha": "^7.1.2"
+    "hardhat": "^3.2.0",
+    "mocha": "^11.7.5"
   },
   "scripts": {
     "lint:fix": "prettier --write 'src/**/*.{js,ts}' 'test/**/*.{js,ts}' && tslint --fix --config tslint.json --project tsconfig.json",
