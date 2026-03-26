@@ -68,8 +68,6 @@ workspace = true
 [dependencies.move-vm-backend-common]
 workspace = true
 
-[dependencies.setheum-move]
-workspace = true
 
 [dependencies.bcs]
 workspace = true

@@ -2480,7 +2480,6 @@ dependencies = [
  "parity-scale-codec 3.7.5",
  "serde 1.0.228",
  "serde_json",
- "setheum-move",
  "setheum-primitives",
  "setheum_client",
  "sp-core 37.0.0",
@@ -7791,7 +7790,6 @@ dependencies = [
  "rustls-native-certs 0.6.3",
  "tokio",
  "tokio-rustls 0.24.1",
- "webpki-roots",
 ]
 
 [[package]]
@@ -8802,7 +8800,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "367a292944c07385839818bb71c8d76611138e2dedb0677d035b8da21d29c78b"
 dependencies = [
  "jsonrpsee-core 0.16.3",
- "jsonrpsee-http-client 0.16.3",
  "jsonrpsee-server 0.16.3",
  "jsonrpsee-types 0.16.3",
  "jsonrpsee-ws-client 0.16.3",
@@ -8816,7 +8813,7 @@ checksum = "cfdb12a2381ea5b2e68c3469ec604a007b367778cdb14d09612c8069ebd616ad"
 dependencies = [
  "jsonrpsee-client-transport 0.22.5",
  "jsonrpsee-core 0.22.5",
- "jsonrpsee-http-client 0.22.5",
+ "jsonrpsee-http-client",
  "jsonrpsee-types 0.22.5",
 ]
 
@@ -8975,25 +8972,6 @@ dependencies = [
  "thiserror 1.0.69",
  "tokio",
  "tokio-stream",
- "tracing",
-]
-
-[[package]]
-name = "jsonrpsee-http-client"
-version = "0.16.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7e5f9fabdd5d79344728521bb65e3106b49ec405a78b66fbff073b72b389fa43"
-dependencies = [
- "async-trait",
- "hyper 0.14.32",
- "hyper-rustls",
- "jsonrpsee-core 0.16.3",
- "jsonrpsee-types 0.16.3",
- "rustc-hash 1.1.0",
- "serde 1.0.228",
- "serde_json",
- "thiserror 1.0.69",
- "tokio",
  "tracing",
 ]
 
@@ -21188,32 +21166,6 @@ dependencies = [
  "tokio",
  "url",
  "wat",
-]
-
-[[package]]
-name = "setheum-move"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "bcs",
- "blake2 0.10.6",
- "clap 4.6.0",
- "hex",
- "jsonrpsee 0.16.3",
- "move-binary-format",
- "move-cli",
- "move-command-line-common",
- "move-core-types",
- "move-package",
- "move-stdlib",
- "move-vm-backend-common",
- "move-vm-runtime",
- "move-vm-support",
- "move-vm-test-utils",
- "serde 1.0.228",
- "serde_json",
- "tokio",
- "url",
 ]
 
 [[package]]
