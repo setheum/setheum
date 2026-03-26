@@ -65,6 +65,15 @@ Mise handles all common development tasks:
 - **PRDoc Validation**: `mise run prdoc:validate`
 - **PRDoc Generation**: `mise run prdoc:generate`
 - **Clean artifacts**: `mise run clean`
+- **Run the node**: `cargo run -p setheum-node --release -- --dev --tmp --alice`
+
+### 4. Node Execution
+To run the Setheum node locally for development and testing:
+```bash
+# Build and run the node in development mode with a temporary state
+cargo run --release -p setheum-node -- --dev --tmp --alice
+```
+This command builds the optimized release binary and starts a local authority node with the Alice identity, using a temporary database that clears on restart.
 
 ## License
 
