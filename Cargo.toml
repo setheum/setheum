@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = [ "repos/setheum/node", "repos/setheum/runtime-modules/airdrop", "repos/setheum/runtime-modules/setbft", "repos/setheum/runtime-modules/asset-registry", "repos/setheum/runtime-modules/committee-management", "repos/setheum/runtime-modules/currencies", "repos/setheum/runtime-modules/loans", "repos/setheum/runtime-modules/seusd-engine", "repos/setheum/runtime-modules/seusd-treasury", "repos/setheum/runtime-modules/swap-legacy", "repos/setheum/runtime-modules/elections", "repos/setheum/runtime-modules/bridge", "repos/setheum/runtime-modules/bridge-access-segregator", "repos/setheum/runtime-modules/bridge-basic-fee-handler", "repos/setheum/runtime-modules/bridge-fee-handler-router", "repos/setheum/runtime-modules/bridge-forwarder", "repos/setheum/runtime-modules/bridge-parachain-info", "repos/setheum/runtime-modules/bridge-percentage-fee-handler", "repos/setheum/runtime-modules/bridge-traits", "repos/setheum/runtime-modules/bridge-xcm", "repos/setheum/runtime-modules/idle-scheduler", "repos/setheum/runtime-modules/incentives", "repos/setheum/runtime-modules/operations", "repos/setheum/runtime-modules/oracle", "repos/setheum/runtime-modules/parameters", "repos/setheum/runtime-modules/prices", "repos/setheum/runtime-modules/rate-limit", "repos/setheum/runtime-modules/rewards", "repos/setheum/runtime-modules/support", "repos/setheum/runtime-modules/tokens", "repos/setheum/runtime-modules/traits", "repos/setheum/runtime-modules/transaction-pause", "repos/setheum/runtime-modules/transaction-payment", "repos/setheum/runtime-modules/unified-accounts", "repos/setheum/runtime-modules/vesting", "repos/setheum/runtime-modules/move", "repos/setheum/runtime-modules/move/rpc", "repos/setheum/runtime-modules/move/runtime-api", "repos/setheum/runtime-modules/dex-oracle", "repos/setheum/runtime-modules/currencies/runtime-api", "repos/setheum/runtime-modules/oracle/runtime-api", "repos/setheum/runtime-modules/tokens/runtime-api", "repos/setheum/runtime-modules/setbft/runtime-api", "repos/setheum/primitives", "repos/setheum/clisee", "repos/setheum/chain-bootstrapper", "repos/setheum/setheum-client", "repos/setheum/e2e-tests", "repos/setheum/benches/payout-stakers", "repos/setheum/scripts/synthetic-network/synthetic-link", "repos/setheum/finality/aggregator", "repos/setheum/finality/rate-limiter", "repos/setheum/finality/finality-setbft", "repos/setheum/finality/fake-runtime-api", "repos/setheum/runtime", "repos/setheum/runtime/common", "repos/setheum/runtime-modules/authority", "repos/setheum/runtime-modules/payments", "repos/setheum/runtime-modules/unknown-tokens", "repos/setheum/runtime-modules/xcm-support", "repos/setheum/runtime-modules/xcm", "repos/setheum/runtime-modules/xtokens", "repos/setheum/runtime-modules/xcm-mock-message-queue", "repos/sheyth/crates/allocator", "repos/sheyth/crates/e2e", "repos/sheyth/crates/e2e/macro", "repos/sheyth/crates/e2e/sandbox", "repos/sheyth/crates/engine", "repos/sheyth/crates/env", "repos/sheyth/crates/ink", "repos/sheyth/crates/ink/codegen", "repos/sheyth/crates/ink/ir", "repos/sheyth/crates/ink/macro", "repos/sheyth/crates/metadata", "repos/sheyth/crates/prelude", "repos/sheyth/crates/primitives", "repos/sheyth/crates/storage", "repos/sheyth/crates/storage/traits", "repos/sheyth/crates/contract-analyze", "repos/sheyth/crates/contract-build", "repos/sheyth/crates/cargo-contract", "repos/sheyth/crates/contract-extrinsics", "repos/sheyth/crates/contract-metadata", "repos/sheyth/crates/contract-transcode", "repos/set-bft/consensus", "repos/set-bft/types", "repos/set-bft/crypto", "repos/set-bft/rmc", "repos/set-bft/mock", "repos/set-bft/examples/ordering", "repos/set-bft/examples/blockchain", "repos/move-vm/devtools/x", "repos/move-vm/devtools/x-core", "repos/move-vm/devtools/x-lint", "repos/move-vm/language/benchmarks", "repos/move-vm/language/documentation/examples/diem-framework/crates/cli", "repos/move-vm/language/documentation/examples/diem-framework/crates/crypto", "repos/move-vm/language/documentation/examples/diem-framework/crates/crypto-derive", "repos/move-vm/language/documentation/examples/diem-framework/crates/natives", "repos/move-vm/language/evm/exec-utils", "repos/move-vm/language/evm/extract-ethereum-abi", "repos/move-vm/language/evm/move-ethereum-abi", "repos/move-vm/language/evm/move-to-yul", "repos/move-vm/language/extensions/async/move-async-vm", "repos/move-vm/language/extensions/move-table-extension", "repos/move-vm/language/move-analyzer", "repos/move-vm/language/move-binary-format", "repos/move-vm/language/move-binary-format/serializer-tests", "repos/move-vm/language/move-borrow-graph", "repos/move-vm/language/move-bytecode-verifier", "repos/move-vm/language/move-bytecode-verifier/bytecode-verifier-tests", "repos/move-vm/language/move-bytecode-verifier/fuzz", "repos/move-vm/language/move-bytecode-verifier/invalid-mutations", "repos/move-vm/language/move-bytecode-verifier/transactional-tests", "repos/move-vm/language/move-command-line-common", "repos/move-vm/language/move-compiler", "repos/move-vm/language/move-compiler/transactional-tests", "repos/move-vm/language/move-core/types", "repos/move-vm/language/move-ir/types", "repos/move-vm/language/move-ir-compiler", "repos/move-vm/language/move-ir-compiler/move-bytecode-source-map", "repos/move-vm/language/move-ir-compiler/move-ir-to-bytecode", "repos/move-vm/language/move-ir-compiler/move-ir-to-bytecode/syntax", "repos/move-vm/language/move-ir-compiler/transactional-tests", "repos/move-vm/language/move-model", "repos/move-vm/language/move-prover", "repos/move-vm/language/move-prover/boogie-backend", "repos/move-vm/language/move-prover/bytecode", "repos/move-vm/language/move-prover/interpreter", "repos/move-vm/language/move-prover/interpreter/crypto", "repos/move-vm/language/move-prover/interpreter-testsuite", "repos/move-vm/language/move-prover/lab", "repos/move-vm/language/move-prover/move-abigen", "repos/move-vm/language/move-prover/move-docgen", "repos/move-vm/language/move-prover/move-errmapgen", "repos/move-vm/language/move-prover/mutation", "repos/move-vm/language/move-prover/test-utils", "repos/move-vm/language/move-prover/tools/spec-flatten", "repos/move-vm/language/move-stdlib", "repos/move-vm/language/move-symbol-pool", "repos/move-vm/language/move-vm/integration-tests", "repos/move-vm/language/move-vm/paranoid-tests", "repos/move-vm/language/move-vm/runtime", "repos/move-vm/language/move-vm/test-utils", "repos/move-vm/language/move-vm/transactional-tests", "repos/move-vm/language/move-vm/types", "repos/move-vm/language/testing-infra/module-generation", "repos/move-vm/language/testing-infra/test-generation", "repos/move-vm/language/testing-infra/transactional-test-runner", "repos/move-vm/language/tools/move-bytecode-utils", "repos/move-vm/language/tools/move-bytecode-viewer", "repos/move-vm/language/tools/move-cli", "repos/move-vm/language/tools/move-coverage", "repos/move-vm/language/tools/move-disassembler", "repos/move-vm/language/tools/move-explain", "repos/move-vm/language/tools/move-package", "repos/move-vm/language/tools/move-resource-viewer", "repos/move-vm/language/tools/move-unit-test", "repos/move-vm/language/tools/read-write-set", "repos/move-vm/language/tools/read-write-set/dynamic", "repos/move-vm/language/tools/read-write-set/types", "repos/move-vm/move-vm-backend", "repos/move-vm/move-vm-backend-common", "repos/move-vm/move-vm-support", "repos/spinit/drink", "repos/spinit/drink/test-macro", "repos/spinit/drink-cli",]
+members = [ "repos/setheum/node", "repos/setheum/runtime-modules/airdrop", "repos/setheum/runtime-modules/setbft", "repos/setheum/runtime-modules/asset-registry", "repos/setheum/runtime-modules/committee-management", "repos/setheum/runtime-modules/currencies", "repos/setheum/runtime-modules/loans", "repos/setheum/runtime-modules/seusd-engine", "repos/setheum/runtime-modules/seusd-treasury", "repos/setheum/runtime-modules/swap-legacy", "repos/setheum/runtime-modules/elections", "repos/setheum/runtime-modules/bridge", "repos/setheum/runtime-modules/bridge-access-segregator", "repos/setheum/runtime-modules/bridge-basic-fee-handler", "repos/setheum/runtime-modules/bridge-fee-handler-router", "repos/setheum/runtime-modules/bridge-forwarder", "repos/setheum/runtime-modules/bridge-parachain-info", "repos/setheum/runtime-modules/bridge-percentage-fee-handler", "repos/setheum/runtime-modules/bridge-traits", "repos/setheum/runtime-modules/bridge-xcm", "repos/setheum/runtime-modules/idle-scheduler", "repos/setheum/runtime-modules/incentives", "repos/setheum/runtime-modules/operations", "repos/setheum/runtime-modules/oracle", "repos/setheum/runtime-modules/parameters", "repos/setheum/runtime-modules/prices", "repos/setheum/runtime-modules/rate-limit", "repos/setheum/runtime-modules/rewards", "repos/setheum/runtime-modules/support", "repos/setheum/runtime-modules/tokens", "repos/setheum/runtime-modules/traits", "repos/setheum/runtime-modules/transaction-pause", "repos/setheum/runtime-modules/transaction-payment", "repos/setheum/runtime-modules/unified-accounts", "repos/setheum/runtime-modules/vesting",    "repos/setheum/runtime-modules/dex-oracle", "repos/setheum/runtime-modules/currencies/runtime-api", "repos/setheum/runtime-modules/oracle/runtime-api", "repos/setheum/runtime-modules/tokens/runtime-api", "repos/setheum/runtime-modules/setbft/runtime-api", "repos/setheum/primitives", "repos/setheum/clisee", "repos/setheum/chain-bootstrapper", "repos/setheum/setheum-client", "repos/setheum/e2e-tests", "repos/setheum/benches/payout-stakers", "repos/setheum/scripts/synthetic-network/synthetic-link", "repos/setheum/finality/aggregator", "repos/setheum/finality/rate-limiter", "repos/setheum/finality/finality-setbft", "repos/setheum/finality/fake-runtime-api", "repos/setheum/runtime", "repos/setheum/runtime/common", "repos/setheum/runtime-modules/authority", "repos/setheum/runtime-modules/payments", "repos/setheum/runtime-modules/unknown-tokens", "repos/setheum/runtime-modules/xcm-support", "repos/setheum/runtime-modules/xcm", "repos/setheum/runtime-modules/xtokens", "repos/setheum/runtime-modules/xcm-mock-message-queue", "repos/sheyth/crates/allocator", "repos/sheyth/crates/e2e", "repos/sheyth/crates/e2e/macro", "repos/sheyth/crates/e2e/sandbox", "repos/sheyth/crates/engine", "repos/sheyth/crates/env", "repos/sheyth/crates/ink", "repos/sheyth/crates/ink/codegen", "repos/sheyth/crates/ink/ir", "repos/sheyth/crates/ink/macro", "repos/sheyth/crates/metadata", "repos/sheyth/crates/prelude", "repos/sheyth/crates/primitives", "repos/sheyth/crates/storage", "repos/sheyth/crates/storage/traits", "repos/sheyth/crates/contract-analyze", "repos/sheyth/crates/contract-build", "repos/sheyth/crates/cargo-contract", "repos/sheyth/crates/contract-extrinsics", "repos/sheyth/crates/contract-metadata", "repos/sheyth/crates/contract-transcode", "repos/set-bft/consensus", "repos/set-bft/types", "repos/set-bft/crypto", "repos/set-bft/rmc", "repos/set-bft/mock", "repos/set-bft/examples/ordering", "repos/set-bft/examples/blockchain",                                                                          "repos/spinit/drink", "repos/spinit/drink/test-macro", "repos/spinit/drink-cli",]
 
 [workspace.package]
 version = "0.9.81+dev"
@@ -52,19 +52,14 @@ default-features = false
 version = "0.1.2"
 
 [workspace.dependencies.bytecode-interpreter-crypto]
-path = "repos/move-vm/language/move-prover/interpreter/crypto"
 
 [workspace.dependencies.bytecode-interpreter-testsuite]
-path = "repos/move-vm/language/move-prover/interpreter-testsuite"
 
 [workspace.dependencies.bytecode-verifier-libfuzzer]
-path = "repos/move-vm/language/move-bytecode-verifier/fuzz"
 
 [workspace.dependencies.bytecode-verifier-tests]
-path = "repos/move-vm/language/move-bytecode-verifier/bytecode-verifier-tests"
 
 [workspace.dependencies.bytecode-verifier-transactional-tests]
-path = "repos/move-vm/language/move-bytecode-verifier/transactional-tests"
 
 [workspace.dependencies.bytes]
 version = "1.5"
@@ -139,16 +134,12 @@ version = "0.20.10"
 version = "1.0.0"
 
 [workspace.dependencies.df-cli]
-path = "repos/move-vm/language/documentation/examples/diem-framework/crates/cli"
 
 [workspace.dependencies.diem-crypto]
-path = "repos/move-vm/language/documentation/examples/diem-framework/crates/crypto"
 
 [workspace.dependencies.diem-crypto-derive]
-path = "repos/move-vm/language/documentation/examples/diem-framework/crates/crypto-derive"
 
 [workspace.dependencies.diem-framework-natives]
-path = "repos/move-vm/language/documentation/examples/diem-framework/crates/natives"
 
 [workspace.dependencies.drink]
 path = "repos/spinit/drink"
@@ -178,10 +169,8 @@ version = "0.14.0"
 default-features = false
 
 [workspace.dependencies.evm-exec-utils]
-path = "repos/move-vm/language/evm/exec-utils"
 
 [workspace.dependencies.extract-ethereum-abi]
-path = "repos/move-vm/language/evm/extract-ethereum-abi"
 
 [workspace.dependencies.fake-runtime-api]
 path = "repos/setheum/finality/fake-runtime-api"
@@ -353,7 +342,6 @@ path = "repos/sheyth/crates/storage/traits"
 default-features = false
 
 [workspace.dependencies.invalid-mutations]
-path = "repos/move-vm/language/move-bytecode-verifier/invalid-mutations"
 
 [workspace.dependencies.ip_network]
 version = "0.4"
@@ -377,7 +365,6 @@ version = "0.11.5"
 default-features = false
 
 [workspace.dependencies.language-benchmarks]
-path = "repos/move-vm/language/benchmarks"
 
 [workspace.dependencies.libp2p]
 version = "0.51"
@@ -481,7 +468,6 @@ path = "repos/setheum/runtime-modules/unified-accounts"
 default-features = false
 
 [workspace.dependencies.module-generation]
-path = "repos/move-vm/language/testing-infra/module-generation"
 
 [workspace.dependencies.module-idle-scheduler]
 path = "repos/setheum/runtime-modules/idle-scheduler"
@@ -499,17 +485,8 @@ default-features = false
 path = "repos/setheum/runtime-modules/loans"
 default-features = false
 
-[workspace.dependencies.module-move]
-path = "repos/setheum/runtime-modules/move"
-default-features = false
 
-[workspace.dependencies.module-move-rpc]
-path = "repos/setheum/runtime-modules/move/rpc"
-default-features = false
 
-[workspace.dependencies.module-move-runtime-api]
-path = "repos/setheum/runtime-modules/move/runtime-api"
-default-features = false
 
 [workspace.dependencies.module-operations]
 path = "repos/setheum/runtime-modules/operations"
@@ -620,156 +597,54 @@ default-features = false
 path = "repos/setheum/runtime-modules/xtokens"
 default-features = false
 
-[workspace.dependencies.move-abigen]
-path = "repos/move-vm/language/move-prover/move-abigen"
 
-[workspace.dependencies.move-analyzer]
-path = "repos/move-vm/language/move-analyzer"
 
-[workspace.dependencies.move-async-vm]
-path = "repos/move-vm/language/extensions/async/move-async-vm"
 
-[workspace.dependencies.move-binary-format]
-path = "repos/move-vm/language/move-binary-format"
 
-[workspace.dependencies.move-borrow-graph]
-path = "repos/move-vm/language/move-borrow-graph"
 
-[workspace.dependencies.move-bytecode-source-map]
-path = "repos/move-vm/language/move-ir-compiler/move-bytecode-source-map"
 
-[workspace.dependencies.move-bytecode-utils]
-path = "repos/move-vm/language/tools/move-bytecode-utils"
 
-[workspace.dependencies.move-bytecode-verifier]
-path = "repos/move-vm/language/move-bytecode-verifier"
 
-[workspace.dependencies.move-bytecode-viewer]
-path = "repos/move-vm/language/tools/move-bytecode-viewer"
 
-[workspace.dependencies.move-cli]
-path = "repos/move-vm/language/tools/move-cli"
 
-[workspace.dependencies.move-command-line-common]
-path = "repos/move-vm/language/move-command-line-common"
 
-[workspace.dependencies.move-compiler]
-path = "repos/move-vm/language/move-compiler"
 
-[workspace.dependencies.move-compiler-transactional-tests]
-path = "repos/move-vm/language/move-compiler/transactional-tests"
 
-[workspace.dependencies.move-core-types]
-path = "repos/move-vm/language/move-core/types"
-default-features = false
 
-[workspace.dependencies.move-coverage]
-path = "repos/move-vm/language/tools/move-coverage"
 
-[workspace.dependencies.move-disassembler]
-path = "repos/move-vm/language/tools/move-disassembler"
 
-[workspace.dependencies.move-docgen]
-path = "repos/move-vm/language/move-prover/move-docgen"
 
-[workspace.dependencies.move-errmapgen]
-path = "repos/move-vm/language/move-prover/move-errmapgen"
 
-[workspace.dependencies.move-ethereum-abi]
-path = "repos/move-vm/language/evm/move-ethereum-abi"
 
-[workspace.dependencies.move-explain]
-path = "repos/move-vm/language/tools/move-explain"
 
-[workspace.dependencies.move-ir-compiler]
-path = "repos/move-vm/language/move-ir-compiler"
 
-[workspace.dependencies.move-ir-compiler-transactional-tests]
-path = "repos/move-vm/language/move-ir-compiler/transactional-tests"
 
-[workspace.dependencies.move-ir-to-bytecode]
-path = "repos/move-vm/language/move-ir-compiler/move-ir-to-bytecode"
 
-[workspace.dependencies.move-ir-to-bytecode-syntax]
-path = "repos/move-vm/language/move-ir-compiler/move-ir-to-bytecode/syntax"
 
-[workspace.dependencies.move-ir-types]
-path = "repos/move-vm/language/move-ir/types"
 
-[workspace.dependencies.move-model]
-path = "repos/move-vm/language/move-model"
 
-[workspace.dependencies.move-package]
-path = "repos/move-vm/language/tools/move-package"
 
-[workspace.dependencies.move-prover]
-path = "repos/move-vm/language/move-prover"
 
-[workspace.dependencies.move-prover-boogie-backend]
-path = "repos/move-vm/language/move-prover/boogie-backend"
 
-[workspace.dependencies.move-prover-test-utils]
-path = "repos/move-vm/language/move-prover/test-utils"
 
-[workspace.dependencies.move-read-write-set-types]
-path = "repos/move-vm/language/tools/read-write-set/types"
 
-[workspace.dependencies.move-resource-viewer]
-path = "repos/move-vm/language/tools/move-resource-viewer"
 
-[workspace.dependencies.move-stackless-bytecode]
-path = "repos/move-vm/language/move-prover/bytecode"
 
-[workspace.dependencies.move-stackless-bytecode-interpreter]
-path = "repos/move-vm/language/move-prover/interpreter"
 
-[workspace.dependencies.move-stdlib]
-path = "repos/move-vm/language/move-stdlib"
-default-features = false
 
-[workspace.dependencies.move-symbol-pool]
-path = "repos/move-vm/language/move-symbol-pool"
 
-[workspace.dependencies.move-table-extension]
-path = "repos/move-vm/language/extensions/move-table-extension"
 
-[workspace.dependencies.move-to-yul]
-path = "repos/move-vm/language/evm/move-to-yul"
 
-[workspace.dependencies.move-transactional-test-runner]
-path = "repos/move-vm/language/testing-infra/transactional-test-runner"
 
-[workspace.dependencies.move-unit-test]
-path = "repos/move-vm/language/tools/move-unit-test"
 
-[workspace.dependencies.move-vm-backend]
-path = "repos/move-vm/move-vm-backend"
-default-features = false
 
-[workspace.dependencies.move-vm-backend-common]
-path = "repos/move-vm/move-vm-backend-common"
-default-features = false
 
-[workspace.dependencies.move-vm-integration-tests]
-path = "repos/move-vm/language/move-vm/integration-tests"
 
-[workspace.dependencies.move-vm-paranoid-tests]
-path = "repos/move-vm/language/move-vm/paranoid-tests"
 
-[workspace.dependencies.move-vm-runtime]
-path = "repos/move-vm/language/move-vm/runtime"
 
-[workspace.dependencies.move-vm-support]
-path = "repos/move-vm/move-vm-support"
 
-[workspace.dependencies.move-vm-test-utils]
-path = "repos/move-vm/language/move-vm/test-utils"
 
-[workspace.dependencies.move-vm-transactional-tests]
-path = "repos/move-vm/language/move-vm/transactional-tests"
 
-[workspace.dependencies.move-vm-types]
-path = "repos/move-vm/language/move-vm/types"
 
 [workspace.dependencies.network-clique]
 path = "repos/setheum/clique"
@@ -1047,10 +922,8 @@ default-features = false
 version = "1.0.40"
 
 [workspace.dependencies.prover-lab]
-path = "repos/move-vm/language/move-prover/lab"
 
 [workspace.dependencies.prover-mutation]
-path = "repos/move-vm/language/move-prover/mutation"
 
 [workspace.dependencies.quickcheck]
 version = "1"
@@ -1082,10 +955,8 @@ path = "repos/setheum/finality/rate-limiter"
 default-features = false
 
 [workspace.dependencies.read-write-set]
-path = "repos/move-vm/language/tools/read-write-set"
 
 [workspace.dependencies.read-write-set-dynamic]
-path = "repos/move-vm/language/tools/read-write-set/dynamic"
 
 [workspace.dependencies.ripemd]
 version = "0.1.3"
@@ -1286,7 +1157,6 @@ version = "1.0.81"
 default-features = false
 
 [workspace.dependencies.serializer-tests]
-path = "repos/move-vm/language/move-binary-format/serializer-tests"
 
 [workspace.dependencies.set-bft]
 path = "repos/set-bft/consensus"
@@ -1503,7 +1373,6 @@ branch = "stable2506"
 default-features = false
 
 [workspace.dependencies.spec-flatten]
-path = "repos/move-vm/language/move-prover/tools/spec-flatten"
 
 [workspace.dependencies.static_assertions]
 version = "1.1.0"
@@ -1558,7 +1427,6 @@ version = "0.13.1"
 path = "repos/setheum/scripts/synthetic-network/synthetic-link"
 
 [workspace.dependencies.test-generation]
-path = "repos/move-vm/language/testing-infra/test-generation"
 
 [workspace.dependencies.thiserror]
 version = "1.0"
@@ -1599,13 +1467,10 @@ version = "1.219.1"
 version = "6.0.3"
 
 [workspace.dependencies.x]
-path = "repos/move-vm/devtools/x"
 
 [workspace.dependencies.x-core]
-path = "repos/move-vm/devtools/x-core"
 
 [workspace.dependencies.x-lint]
-path = "repos/move-vm/devtools/x-lint"
 
 [workspace.dependencies.xcm]
 git = "https://github.com/paritytech/polkadot-sdk"

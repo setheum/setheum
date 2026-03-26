@@ -1,9 +1,0 @@
-[package]
-name = "signer-scripts"
-version = "0.0.0"
-
-[dependencies]
-MoveStdlib = { git = "https://github.com/eigerco/move-stdlib", rev = "main" }
-
-[addresses]
-HelperModule = "0xCAFE"
