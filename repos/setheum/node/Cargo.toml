@@ -180,8 +180,6 @@ workspace = true
 [dependencies.module-oracle-rpc]
 path = "../runtime-modules/oracle/rpc"
 
-[dependencies.module-move-rpc]
-workspace = true
 
 [dependencies.module-nft]
 path = "../runtime-modules/nft"

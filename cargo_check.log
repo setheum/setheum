@@ -1,0 +1,598 @@
+warning: /home/balqaasem/setheum/repos/move-vm/language/move-bytecode-verifier/Cargo.toml: `default-features` is ignored for move-binary-format, since `default-features` was not specified for `workspace.dependencies.move-binary-format`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/move-vm/language/move-bytecode-verifier/Cargo.toml: `default-features` is ignored for move-borrow-graph, since `default-features` was not specified for `workspace.dependencies.move-borrow-graph`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/move-vm/language/move-vm/test-utils/Cargo.toml: `default-features` is ignored for move-binary-format, since `default-features` was not specified for `workspace.dependencies.move-binary-format`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/move-vm/language/move-vm/test-utils/Cargo.toml: `default-features` is ignored for move-vm-types, since `default-features` was not specified for `workspace.dependencies.move-vm-types`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/runtime-modules/bridge-forwarder/Cargo.toml: `default-features` is ignored for hex-literal, since `default-features` was not specified for `workspace.dependencies.hex-literal`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/runtime-modules/currencies/Cargo.toml: `default-features` is ignored for hex-literal, since `default-features` was not specified for `workspace.dependencies.hex-literal`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/runtime/Cargo.toml: `default-features` is ignored for hex-literal, since `default-features` was not specified for `workspace.dependencies.hex-literal`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/runtime/Cargo.toml: `default-features` is ignored for module-airdrop, since `default-features` was not specified for `workspace.dependencies.module-airdrop`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/runtime/Cargo.toml: `default-features` is ignored for module-prices, since `default-features` was not specified for `workspace.dependencies.module-prices`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/runtime/Cargo.toml: `default-features` is ignored for module-transaction-pause, since `default-features` was not specified for `workspace.dependencies.module-transaction-pause`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/runtime/Cargo.toml: `default-features` is ignored for substrate-wasm-builder, since `default-features` was not specified for `workspace.dependencies.substrate-wasm-builder`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/move-vm/language/move-vm/runtime/Cargo.toml: `default-features` is ignored for move-binary-format, since `default-features` was not specified for `workspace.dependencies.move-binary-format`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/move-vm/language/move-vm/runtime/Cargo.toml: `default-features` is ignored for move-bytecode-verifier, since `default-features` was not specified for `workspace.dependencies.move-bytecode-verifier`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/move-vm/language/move-vm/runtime/Cargo.toml: `default-features` is ignored for move-vm-types, since `default-features` was not specified for `workspace.dependencies.move-vm-types`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/move-vm/language/move-vm/runtime/Cargo.toml: `default-features` is ignored for tracing, since `default-features` was not specified for `workspace.dependencies.tracing`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/runtime-modules/traits/Cargo.toml: `default-features` is ignored for impl-trait-for-tuples, since `default-features` was not specified for `workspace.dependencies.impl-trait-for-tuples`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/runtime-modules/traits/Cargo.toml: `default-features` is ignored for paste, since `default-features` was not specified for `workspace.dependencies.paste`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/finality-setbft/Cargo.toml: `default-features` is ignored for array-bytes, since `default-features` was not specified for `workspace.dependencies.array-bytes`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/finality-setbft/Cargo.toml: `default-features` is ignored for async-trait, since `default-features` was not specified for `workspace.dependencies.async-trait`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/finality-setbft/Cargo.toml: `default-features` is ignored for derive_more, since `default-features` was not specified for `workspace.dependencies.derive_more`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/finality-setbft/Cargo.toml: `default-features` is ignored for finality-rate-limiter, since `default-features` was not specified for `workspace.dependencies.finality-rate-limiter`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/finality-setbft/Cargo.toml: `default-features` is ignored for futures, since `default-features` was not specified for `workspace.dependencies.futures`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/finality-setbft/Cargo.toml: `default-features` is ignored for futures-timer, since `default-features` was not specified for `workspace.dependencies.futures-timer`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/finality-setbft/Cargo.toml: `default-features` is ignored for libp2p, since `default-features` was not specified for `workspace.dependencies.libp2p`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/finality-setbft/Cargo.toml: `default-features` is ignored for lru, since `default-features` was not specified for `workspace.dependencies.lru`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/finality-setbft/Cargo.toml: `default-features` is ignored for network-clique, since `default-features` was not specified for `workspace.dependencies.network-clique`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/finality-setbft/Cargo.toml: `default-features` is ignored for parking_lot, since `default-features` was not specified for `workspace.dependencies.parking_lot`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/finality-setbft/Cargo.toml: `default-features` is ignored for set-bft, since `default-features` was not specified for `workspace.dependencies.set-bft`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/finality-setbft/Cargo.toml: `default-features` is ignored for set-bft-crypto, since `default-features` was not specified for `workspace.dependencies.set-bft-crypto`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/finality-setbft/Cargo.toml: `default-features` is ignored for set-bft-rmc, since `default-features` was not specified for `workspace.dependencies.set-bft-rmc`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/finality-setbft/Cargo.toml: `default-features` is ignored for static_assertions, since `default-features` was not specified for `workspace.dependencies.static_assertions`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/finality-setbft/Cargo.toml: `default-features` is ignored for substrate-prometheus-endpoint, since `default-features` was not specified for `workspace.dependencies.substrate-prometheus-endpoint`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/finality-setbft/Cargo.toml: `default-features` is ignored for tiny-bip39, since `default-features` was not specified for `workspace.dependencies.tiny-bip39`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/finality-setbft/Cargo.toml: `default-features` is ignored for tokio, since `default-features` was not specified for `workspace.dependencies.tokio`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/aggregator/Cargo.toml: `default-features` is ignored for async-trait, since `default-features` was not specified for `workspace.dependencies.async-trait`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/aggregator/Cargo.toml: `default-features` is ignored for futures, since `default-features` was not specified for `workspace.dependencies.futures`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/aggregator/Cargo.toml: `default-features` is ignored for set-bft-rmc, since `default-features` was not specified for `workspace.dependencies.set-bft-rmc`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/aggregator/Cargo.toml: `default-features` is ignored for set-bft-types, since `default-features` was not specified for `workspace.dependencies.set-bft-types`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/aggregator/Cargo.toml: `default-features` is ignored for tokio, since `default-features` was not specified for `workspace.dependencies.tokio`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/runtime-modules/support/Cargo.toml: `default-features` is ignored for impl-trait-for-tuples, since `default-features` was not specified for `workspace.dependencies.impl-trait-for-tuples`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/move-vm/language/move-stdlib/Cargo.toml: `default-features` is ignored for move-binary-format, since `default-features` was not specified for `workspace.dependencies.move-binary-format`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/move-vm/language/move-stdlib/Cargo.toml: `default-features` is ignored for move-vm-runtime, since `default-features` was not specified for `workspace.dependencies.move-vm-runtime`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/move-vm/language/move-stdlib/Cargo.toml: `default-features` is ignored for move-vm-types, since `default-features` was not specified for `workspace.dependencies.move-vm-types`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/move-vm/language/move-stdlib/Cargo.toml: `default-features` is ignored for sha2, since `default-features` was not specified for `workspace.dependencies.sha2`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/move-vm/language/move-stdlib/Cargo.toml: `default-features` is ignored for smallvec, since `default-features` was not specified for `workspace.dependencies.smallvec`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/move-vm/language/move-stdlib/Cargo.toml: `default-features` is ignored for tiny-keccak, since `default-features` was not specified for `workspace.dependencies.tiny-keccak`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/runtime-modules/transaction-payment/Cargo.toml: `default-features` is ignored for smallvec, since `default-features` was not specified for `workspace.dependencies.smallvec`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/primitives/proc-macro/Cargo.toml: `default-features` is ignored for syn, since `default-features` was not specified for `workspace.dependencies.syn`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/primitives/proc-macro/Cargo.toml: `default-features` is ignored for tiny-keccak, since `default-features` was not specified for `workspace.dependencies.tiny-keccak`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/runtime-modules/unknown-tokens/Cargo.toml: `default-features` is ignored for hex-literal, since `default-features` was not specified for `workspace.dependencies.hex-literal`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/runtime-modules/bridge/Cargo.toml: `default-features` is ignored for arrayref, since `default-features` was not specified for `workspace.dependencies.arrayref`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/runtime-modules/bridge/Cargo.toml: `default-features` is ignored for funty, since `default-features` was not specified for `workspace.dependencies.funty`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/runtime-modules/bridge/Cargo.toml: `default-features` is ignored for hex-literal, since `default-features` was not specified for `workspace.dependencies.hex-literal`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/clique/Cargo.toml: `default-features` is ignored for async-trait, since `default-features` was not specified for `workspace.dependencies.async-trait`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/clique/Cargo.toml: `default-features` is ignored for bytes, since `default-features` was not specified for `workspace.dependencies.bytes`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/clique/Cargo.toml: `default-features` is ignored for derive_more, since `default-features` was not specified for `workspace.dependencies.derive_more`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/clique/Cargo.toml: `default-features` is ignored for env_logger, since `default-features` was not specified for `workspace.dependencies.env_logger`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/clique/Cargo.toml: `default-features` is ignored for futures, since `default-features` was not specified for `workspace.dependencies.futures`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/clique/Cargo.toml: `default-features` is ignored for futures-timer, since `default-features` was not specified for `workspace.dependencies.futures-timer`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/clique/Cargo.toml: `default-features` is ignored for ip_network, since `default-features` was not specified for `workspace.dependencies.ip_network`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/clique/Cargo.toml: `default-features` is ignored for lru, since `default-features` was not specified for `workspace.dependencies.lru`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/clique/Cargo.toml: `default-features` is ignored for substrate-prometheus-endpoint, since `default-features` was not specified for `workspace.dependencies.substrate-prometheus-endpoint`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/clique/Cargo.toml: `default-features` is ignored for tiny-bip39, since `default-features` was not specified for `workspace.dependencies.tiny-bip39`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/clique/Cargo.toml: `default-features` is ignored for set-bft-mock, since `default-features` was not specified for `workspace.dependencies.set-bft-mock`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/clique/Cargo.toml: `default-features` is ignored for set-bft-types, since `default-features` was not specified for `workspace.dependencies.set-bft-types`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/rate-limiter/Cargo.toml: `default-features` is ignored for futures, since `default-features` was not specified for `workspace.dependencies.futures`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/rate-limiter/Cargo.toml: `default-features` is ignored for tokio, since `default-features` was not specified for `workspace.dependencies.tokio`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/rate-limiter/Cargo.toml: `default-features` is ignored for parking_lot, since `default-features` was not specified for `workspace.dependencies.parking_lot`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/move-vm/language/move-prover/lab/Cargo.toml: `default_features` is deprecated in favor of `default-features` and will not work in the 2024 edition
+(in the `plotters` dependency)
+warning: /home/balqaasem/setheum/repos/setheum/runtime-modules/transaction-pause/Cargo.toml: `default-features` is ignored for hex-literal, since `default-features` was not specified for `workspace.dependencies.hex-literal`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/runtime-modules/transaction-pause/Cargo.toml: `default-features` is ignored for smallvec, since `default-features` was not specified for `workspace.dependencies.smallvec`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/runtime-modules/idle-scheduler/Cargo.toml: `default-features` is ignored for setheum-primitives, since `default-features` was not specified for `workspace.dependencies.setheum-primitives`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/runtime-modules/xtokens/Cargo.toml: `default-features` is ignored for module-xcm-mock-message-queue, since `default-features` was not specified for `workspace.dependencies.module-xcm-mock-message-queue`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/primitives/Cargo.toml: `default-features` is ignored for enumflags2, since `default-features` was not specified for `workspace.dependencies.enumflags2`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/primitives/Cargo.toml: `default-features` is ignored for hex-literal, since `default-features` was not specified for `workspace.dependencies.hex-literal`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/primitives/Cargo.toml: `default-features` is ignored for paste, since `default-features` was not specified for `workspace.dependencies.paste`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/move-vm/move-vm-backend/Cargo.toml: `default-features` is ignored for move-binary-format, since `default-features` was not specified for `workspace.dependencies.move-binary-format`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/move-vm/move-vm-backend/Cargo.toml: `default-features` is ignored for move-vm-runtime, since `default-features` was not specified for `workspace.dependencies.move-vm-runtime`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/move-vm/move-vm-backend/Cargo.toml: `default-features` is ignored for move-vm-test-utils, since `default-features` was not specified for `workspace.dependencies.move-vm-test-utils`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/move-vm/move-vm-backend/Cargo.toml: `default-features` is ignored for move-vm-types, since `default-features` was not specified for `workspace.dependencies.move-vm-types`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/runtime/common/Cargo.toml: `default-features` is ignored for module-prices, since `default-features` was not specified for `workspace.dependencies.module-prices`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/move-vm/move-vm-backend-common/Cargo.toml: `default-features` is ignored for move-binary-format, since `default-features` was not specified for `workspace.dependencies.move-binary-format`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/move-vm/move-vm-backend-common/Cargo.toml: `default-features` is ignored for move-vm-runtime, since `default-features` was not specified for `workspace.dependencies.move-vm-runtime`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/move-vm/move-vm-backend-common/Cargo.toml: `default-features` is ignored for move-vm-test-utils, since `default-features` was not specified for `workspace.dependencies.move-vm-test-utils`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/move-vm/move-vm-backend-common/Cargo.toml: `default-features` is ignored for move-vm-types, since `default-features` was not specified for `workspace.dependencies.move-vm-types`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/move-vm/language/move-vm/types/Cargo.toml: `default-features` is ignored for move-binary-format, since `default-features` was not specified for `workspace.dependencies.move-binary-format`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/move-vm/language/move-vm/types/Cargo.toml: `default-features` is ignored for smallvec, since `default-features` was not specified for `workspace.dependencies.smallvec`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/sheyth/crates/contract-extrinsics/Cargo.toml: `default-features` is ignored for futures, since `default-features` was not specified for `workspace.dependencies.futures`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/clisee/Cargo.toml: `default-features` is ignored for clap, since `default-features` was not specified for `workspace.dependencies.clap`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/clisee/Cargo.toml: `default-features` is ignored for setheum_client, since `default-features` was not specified for `workspace.dependencies.setheum_client`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/clisee/Cargo.toml: `default-features` is ignored for tokio, since `default-features` was not specified for `workspace.dependencies.tokio`, this could become a hard error in the future
+warning: unexpected `cfg` condition value: `serde1`
+   --> repos/move-vm/language/move-core/types/src/u256.rs:586:12
+    |
+586 | ...tr(feature = "serde1", d...
+    |       ^^^^^^^^^^^^^^^^^^
+    |
+    = note: expected values for `feature` are: `address20`, `address32`, `arbitrary`, `default`, `fuzzing`, `proptest`, `proptest-derive`, and `std`
+    = help: consider adding `serde1` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+    = note: `#[warn(unexpected_cfgs)]` on by default
+
+warning: `move-core-types` (lib) generated 1 warning
+    Checking staging-xcm-builder v21.1.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#8fc23bab)
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> repos/move-vm/language/move-borrow-graph/src/references.rs:134:24
+    |
+134 | ...er(&self) -> alloc::collections::btree_set::Iter<BorrowEdge<Loc, Lbl>> {
+    |       ^^^^^     ^^^^^^^^^^^^^^^^...ame lifetime is hidden here
+    |       |
+    |       the lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+    = note: `#[warn(mismatched_lifetime_syntaxes)]` on by default
+help: use `'_` for type paths
+    |
+134 |     pub(crate) fn iter(&self) -> alloc::collections::btree_set::Iter<'_, BorrowEdge<Loc, Lbl>> {
+    |                                                                      +++
+
+warning: `move-borrow-graph` (lib) generated 1 warning (run `cargo fix --lib -p move-borrow-graph` to apply 1 suggestion)
+warning: value assigned to `bvlen` is never read
+   --> repos/move-vm/language/move-ir-compiler/move-ir-to-bytecode/syntax/src/lexer.rs:251:45
+    |
+251 | ...vlen = 0;
+    |           ^
+    |
+    = help: maybe it is overwritten before being read?
+    = note: `#[warn(unused_assignments)]` (part of `#[warn(unused)]`) on by default
+
+warning: `move-ir-to-bytecode-syntax` (lib) generated 1 warning
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> repos/move-vm/language/move-ir-compiler/move-ir-to-bytecode/src/context.rs:714:19
+    |
+714 | ...cy(&self, m: &ModuleIdent) -> Result<&CompiledDependencyView> {
+    |       ^^^^^                             ^^^^^^^^^^^^^^^^^^^^^^^
+    |       |                                 ||
+    |       |                                 |the same lifetime is hidden here
+    |       the lifetime is elided here       the same lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+    = note: `#[warn(mismatched_lifetime_syntaxes)]` on by default
+help: use `'_` for type paths
+    |
+714 |     fn dependency(&self, m: &ModuleIdent) -> Result<&CompiledDependencyView<'_>> {
+    |                                                                            ++++
+
+warning: `move-ir-to-bytecode` (lib) generated 1 warning (run `cargo fix --lib -p move-ir-to-bytecode` to apply 1 suggestion)
+    Checking itertools v0.12.1
+warning: unexpected `cfg` condition value: `evm-backend`
+    --> repos/move-vm/language/move-compiler/src/to_bytecode/translate.rs:1126:36
+     |
+1126 | ...g!(feature = "evm-backend") => {
+     |       ^^^^^^^^^^^^^^^^^^^^^^^
+     |
+     = note: expected values for `feature` are: `address20` and `address32`
+     = help: consider adding `evm-backend` as a feature in `Cargo.toml`
+     = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+     = note: `#[warn(unexpected_cfgs)]` on by default
+
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> repos/move-vm/language/move-compiler/src/expansion/ast.rs:644:17
+    |
+644 | ...er(&self) -> AbilitySetIter {
+    |       ^^^^^     ^^^^^^^^^^^^^^ the same lifetime is hidden here
+    |       |
+    |       the lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+    = note: `#[warn(mismatched_lifetime_syntaxes)]` on by default
+help: use `'_` for type paths
+    |
+644 |     pub fn iter(&self) -> AbilitySetIter<'_> {
+    |                                         ++++
+
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> repos/move-vm/language/move-compiler/src/shared/remembering_unique_map.rs:107:17
+    |
+107 | ...er(&self) -> Iter<K, V> {
+    |       ^^^^^     ^^^^^^^^^^ the same lifetime is hidden here
+    |       |
+    |       the lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+help: use `'_` for type paths
+    |
+107 |     pub fn iter(&self) -> Iter<'_, K, V> {
+    |                                +++
+
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> repos/move-vm/language/move-compiler/src/shared/remembering_unique_map.rs:111:21
+    |
+111 | ...ut(&mut self) -> IterMut<K, V> {
+    |       ^^^^^^^^^     ^^^^^^^^^^^^^ the same lifetime is hidden here
+    |       |
+    |       the lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+help: use `'_` for type paths
+    |
+111 |     pub fn iter_mut(&mut self) -> IterMut<'_, K, V> {
+    |                                           +++
+
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> repos/move-vm/language/move-compiler/src/shared/unique_map.rs:154:17
+    |
+154 | ...er(&self) -> Iter<K, V> {
+    |       ^^^^^     ^^^^^^^^^^ the same lifetime is hidden here
+    |       |
+    |       the lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+help: use `'_` for type paths
+    |
+154 |     pub fn iter(&self) -> Iter<'_, K, V> {
+    |                                +++
+
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> repos/move-vm/language/move-compiler/src/shared/unique_map.rs:163:21
+    |
+163 | ...ut(&mut self) -> IterMut<K, V> {
+    |       ^^^^^^^^^     ^^^^^^^^^^^^^ the same lifetime is hidden here
+    |       |
+    |       the lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+help: use `'_` for type paths
+    |
+163 |     pub fn iter_mut(&mut self) -> IterMut<'_, K, V> {
+    |                                           +++
+
+warning: hiding a lifetime that's elided elsewhere is confusing
+  --> repos/move-vm/language/move-compiler/src/shared/unique_set.rs:84:17
+   |
+84 | ...er(&self) -> Iter<T> {
+   |       ^^^^^     ^^^^^^^ the same lifetime is hidden here
+   |       |
+   |       the lifetime is elided here
+   |
+   = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+help: use `'_` for type paths
+   |
+84 |     pub fn iter(&self) -> Iter<'_, T> {
+   |                                +++
+
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> repos/move-vm/language/move-compiler/src/unit_test/mod.rs:110:21
+    |
+110 | ...ge(&self, is_past_tense: bool) -> ExpectedMoveErrorDisplay {
+    |       ^^^^^                          ^^^^^^^^^^^^^^^^^^^^^^^^ the same lifetime is hidden here
+    |       |
+    |       the lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+help: use `'_` for type paths
+    |
+110 |     pub fn verbiage(&self, is_past_tense: bool) -> ExpectedMoveErrorDisplay<'_> {
+    |                                                                            ++++
+
+warning: `move-compiler` (lib) generated 8 warnings (run `cargo fix --lib -p move-compiler` to apply 7 suggestions)
+    Checking sc-rpc-api v0.50.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#8fc23bab)
+   Compiling static_init_macro v1.0.4
+   Compiling chrono-tz v0.9.0
+   Compiling link-cplusplus v1.0.12
+    Checking phf_shared v0.11.3
+    Checking tower-http v0.5.2
+   Compiling static_init v1.0.4
+   Compiling sc-network-sync v0.50.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#8fc23bab)
+    Checking move-model v0.1.0 (/home/balqaasem/setheum/repos/move-vm/language/move-model)
+    Checking sp-timestamp v40.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2512#dab785fb)
+    Checking ripemd v0.1.3
+    Checking bitmaps v2.1.0
+    Checking rand_pcg v0.3.1
+   Compiling cxxbridge-macro v1.0.194
+   Compiling im v15.1.0
+    Checking unicode-segmentation v1.12.0
+   Compiling futures-sink v0.3.32
+    Checking option-ext v0.2.0
+    Checking sp-consensus-slots v0.46.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2512#dab785fb)
+    Checking dirs-sys v0.4.1
+    Checking sized-chunks v0.6.5
+   Compiling icu_properties v2.1.2
+   Compiling icu_normalizer v2.1.1
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> repos/move-vm/language/move-model/src/model.rs:724:31
+    |
+724 | ...es(&self) -> Vec<ModuleEnv> {
+    |       ^^^^^         ^^^^^^^^^ the same lifetime is hidden here
+    |       |
+    |       the lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+    = note: `#[warn(mismatched_lifetime_syntaxes)]` on by default
+help: use `'_` for type paths
+    |
+724 |     pub fn get_target_modules(&self) -> Vec<ModuleEnv<'_>> {
+    |                                                      ++++
+
+warning: hiding a lifetime that's elided elsewhere is confusing
+    --> repos/move-vm/language/move-model/src/model.rs:1705:33
+     |
+1705 | ...tx(&self) -> TypeDisplayContext {
+     |       ^^^^^     ^^^^^^^^^^^^^^^^^^ the same lifetime is hidden here
+     |       |
+     |       the lifetime is elided here
+     |
+     = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+help: use `'_` for type paths
+     |
+1705 |     pub fn get_type_display_ctx(&self) -> TypeDisplayContext<'_> {
+     |                                                             ++++
+
+    Checking phf v0.11.3
+warning: hiding a lifetime that's elided elsewhere is confusing
+    --> repos/move-vm/language/move-model/src/model.rs:3724:33
+     |
+3724 | ...tx(&self) -> TypeDisplayContext {
+     |       ^^^^^     ^^^^^^^^^^^^^^^^^^ the same lifetime is hidden here
+     |       |
+     |       the lifetime is elided here
+     |
+     = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+help: use `'_` for type paths
+     |
+3724 |     pub fn get_type_display_ctx(&self) -> TypeDisplayContext<'_> {
+     |                                                             ++++
+
+    Checking pallet-contracts v41.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#8fc23bab)
+warning: `move-model` (lib) generated 3 warnings (run `cargo fix --lib -p move-model` to apply 3 suggestions)
+   Compiling wasm-opt-cxx-sys v0.116.0
+    Checking ignore v0.4.25
+    Checking sc-keystore v36.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#8fc23bab)
+    Checking scale-type-resolver v0.2.0
+   Compiling sc-tracing-proc-macro v11.1.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#8fc23bab)
+    Checking rand_xoshiro v0.6.0
+    Checking coarsetime v0.1.37
+    Checking deunicode v1.6.2
+   Compiling camino v1.2.2
+    Checking scale-bits v0.7.0
+    Checking slug v0.1.6
+    Checking globwalk v0.9.1
+    Checking sc-tracing v40.0.2 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#8fc23bab)
+   Compiling cxx v1.0.194
+   Compiling libsqlite3-sys v0.30.1
+   Compiling wasm-opt-sys v0.116.0
+   Compiling idna_adapter v1.2.1
+    Checking directories v5.0.1
+   Compiling hashbrown v0.13.2
+    Checking sp-statement-store v21.2.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#8fc23bab)
+    Checking move-read-write-set-types v0.0.3 (/home/balqaasem/setheum/repos/move-vm/language/tools/read-write-set/types)
+    Checking sc-telemetry v30.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2512#dab785fb)
+    Checking module-traits v0.9.81-dev (/home/balqaasem/setheum/repos/setheum/runtime-modules/traits)
+warning: unused import: `sp_staking::StakingAccount`
+ --> repos/setheum/runtime-modules/traits/src/operations.rs:9:5
+  |
+9 | use sp_staking::StakingAccount;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+   Compiling sc-network-light v0.50.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#8fc23bab)
+    Checking tracing-futures v0.2.5
+    Checking frame-system-rpc-runtime-api v37.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#8fc23bab)
+   Compiling parking_lot_core v0.9.12
+    Checking exit-future v0.2.0
+    Checking humansize v2.1.3
+   Compiling num-traits v0.2.19
+    Checking atty v0.2.14
+    Checking arrayvec v0.5.2
+    Checking typed-arena v2.0.2
+warning: `module-traits` (lib) generated 1 warning (run `cargo fix --lib -p module-traits` to apply 1 suggestion)
+    Checking setheum-primitives v0.9.81-dev (/home/balqaasem/setheum/repos/setheum/primitives)
+    Checking module-tokens v0.9.81-dev (/home/balqaasem/setheum/repos/setheum/runtime-modules/tokens)
+error: expected identifier, found `,`
+   --> repos/setheum/primitives/src/lib.rs:216:2
+    |
+216 |     ,
+    |     ^ expected identifier
+    |
+help: remove this comma
+    |
+216 -     ,
+    |
+
+   Compiling arrayvec v0.4.12
+   Compiling futures-io v0.3.32
+   Compiling slab v0.4.12
+   Compiling sc-sysinfo v43.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#8fc23bab)
+   Compiling rustc-hash v1.1.0
+   Compiling futures-task v0.3.32
+   Compiling idna v1.1.0
+error: expected identifier
+   --> repos/setheum/primitives/src/lib.rs:216:2
+    |
+216 |     ,
+    |     ^
+
+error[E0432]: unresolved import `fp_evm::ethereum`
+  --> repos/setheum/primitives/src/evm.rs:28:2
+   |
+28 |     ethereum::{...
+   |     ^^^^^^^^ could not find `ethereum` in `fp_evm`
+
+warning: unused imports: `IdentifyAccount`, `MultiSignature`, and `Verify`
+  --> repos/setheum/primitives/src/setbft.rs:35:14
+   |
+35 |     traits::{IdentifyAccount, Verify},
+   |              ^^^^^^^^^^^^^^^  ^^^^^^
+36 |     MultiSignature, Perquintill,
+   |     ^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `BlockNumber`
+  --> repos/setheum/primitives/src/setbft.rs:41:33
+   |
+41 | ...e, BlockNumber, S...
+   |       ^^^^^^^^^^^
+
+warning: unused imports: `DispatchError` and `DispatchResult`
+  --> repos/setheum/primitives/src/launchpad.rs:26:2
+   |
+26 |     DispatchError, DispatchResult, R...
+   |     ^^^^^^^^^^^^^  ^^^^^^^^^^^^^^
+
+   Compiling futures-util v0.3.32
+warning: unexpected `cfg` condition value: `evm-tests`
+   --> repos/setheum/primitives/src/evm.rs:329:11
+    |
+329 | ...ot(feature = "evm-tests"))]
+    |       ^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: expected values for `feature` are: `default`, `short_session`, `std`, and `try-runtime`
+    = help: consider adding `evm-tests` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+    = note: `#[warn(unexpected_cfgs)]` on by default
+
+warning: unexpected `cfg` condition value: `evm-tests`
+   --> repos/setheum/primitives/src/evm.rs:363:7
+    |
+363 | #[cfg(feature = "evm-tests")]
+    |       ^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: expected values for `feature` are: `default`, `short_session`, `std`, and `try-runtime`
+    = help: consider adding `evm-tests` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+   Compiling regalloc2 v0.9.3
+warning: private item shadows public glob re-export
+   --> repos/setheum/primitives/src/lib.rs:44:2
+    |
+ 44 |     generic,
+    |     ^^^^^^^
+    |
+note: the name `generic` in the type namespace is supposed to be publicly re-exported here
+   --> repos/setheum/primitives/src/lib.rs:231:9
+    |
+231 | ...se setbft::*;
+    |       ^^^^^^^^^
+note: but the private item here shadows it
+   --> repos/setheum/primitives/src/lib.rs:44:2
+    |
+ 44 |     generic,
+    |     ^^^^^^^
+    = note: `#[warn(hidden_glob_reexports)]` on by default
+
+    Checking pretty v0.10.0
+   Compiling strum_macros v0.24.3
+   Compiling tokio v1.50.0
+    Checking tera v1.20.1
+   Compiling parking_lot v0.12.5
+    Checking sc-rpc v46.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#8fc23bab)
+    Checking move-stackless-bytecode v0.1.0 (/home/balqaasem/setheum/repos/move-vm/language/move-prover/bytecode)
+   Compiling openssl v0.10.76
+warning: unexpected `cfg` condition name: `invariant_trace`
+  --> repos/move-vm/language/move-prover/bytecode/src/global_invariant_instrumentation_v2.rs:13:7
+   |
+13 | #[cfg(invariant_trace)]
+   |       ^^^^^^^^^^^^^^^
+   |
+   = help: expected names are: `docsrs`, `feature`, and `test` and 31 more
+   = help: consider using a Cargo feature instead
+   = help: or consider adding in `Cargo.toml` the `check-cfg` lint config for the lint:
+            [lints.rust]
+            unexpected_cfgs = { level = "warn", check-cfg = ['cfg(invariant_trace)'] }
+   = help: or consider adding `println!("cargo::rustc-check-cfg=cfg(invariant_trace)");` to the top of the `build.rs`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: `#[warn(unexpected_cfgs)]` on by default
+
+warning: unexpected `cfg` condition name: `invariant_trace`
+   --> repos/move-vm/language/move-prover/bytecode/src/global_invariant_instrumentation_v2.rs:215:15
+    |
+215 | ...fg(invariant_trace)]
+    |       ^^^^^^^^^^^^^^^
+    |
+    = help: consider using a Cargo feature instead
+    = help: or consider adding in `Cargo.toml` the `check-cfg` lint config for the lint:
+             [lints.rust]
+             unexpected_cfgs = { level = "warn", check-cfg = ['cfg(invariant_trace)'] }
+    = help: or consider adding `println!("cargo::rustc-check-cfg=cfg(invariant_trace)");` to the top of the `build.rs`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `invariant_trace`
+   --> repos/move-vm/language/move-prover/bytecode/src/global_invariant_instrumentation_v2.rs:748:23
+    |
+748 | ...fg(invariant_trace)]
+    |       ^^^^^^^^^^^^^^^
+    |
+    = help: consider using a Cargo feature instead
+    = help: or consider adding in `Cargo.toml` the `check-cfg` lint config for the lint:
+             [lints.rust]
+             unexpected_cfgs = { level = "warn", check-cfg = ['cfg(invariant_trace)'] }
+    = help: or consider adding `println!("cargo::rustc-check-cfg=cfg(invariant_trace)");` to the top of the `build.rs`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `invariant_trace`
+   --> repos/move-vm/language/move-prover/bytecode/src/global_invariant_instrumentation_v2.rs:759:31
+    |
+759 | ...fg(invariant_trace)]
+    |       ^^^^^^^^^^^^^^^
+    |
+    = help: consider using a Cargo feature instead
+    = help: or consider adding in `Cargo.toml` the `check-cfg` lint config for the lint:
+             [lints.rust]
+             unexpected_cfgs = { level = "warn", check-cfg = ['cfg(invariant_trace)'] }
+    = help: or consider adding `println!("cargo::rustc-check-cfg=cfg(invariant_trace)");` to the top of the `build.rs`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+   Compiling scale-decode-derive v0.16.2
+error[E0282]: type annotations needed
+  --> repos/setheum/primitives/src/evm.rs:85:2
+   |
+85 |     pub logs: V...
+   |     ^^^ cannot infer type
+
+    Checking sc-transaction-pool v40.1.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#8fc23bab)
+error[E0282]: type annotations needed
+   --> repos/setheum/primitives/src/evm.rs:115:1
+    |
+115 | /// AccessList
+    | ^^^^^^^^^^^^^^ cannot infer type
+
+error[E0282]: type annotations needed
+   --> repos/setheum/primitives/src/evm.rs:129:2
+    |
+129 |     pub action...
+    |     ^^^ cannot infer type
+
+error[E0282]: type annotations needed
+   --> repos/setheum/primitives/src/evm.rs:133:2
+    |
+133 |     pub access...
+    |     ^^^ cannot infer type
+
+warning: unused import: `crate`
+  --> repos/setheum/primitives/src/currency.rs:22:5
+   |
+22 | use crate::*;
+   |     ^^^^^
+
+    Checking move-vm-types v0.1.0 (/home/balqaasem/setheum/repos/move-vm/language/move-vm/types)
+Some errors have detailed explanations: E0282, E0432.
+For more information about an error, try `rustc --explain E0282`.
+warning: `setheum-primitives` (lib) generated 7 warnings
+error: could not compile `setheum-primitives` (lib) due to 7 previous errors; 7 warnings emitted
+warning: build failed, waiting for other jobs to finish...
+warning: hiding a lifetime that's elided elsewhere is confusing
+  --> repos/move-vm/language/move-prover/bytecode/src/access_path_trie.rs:98:18
+   |
+98 | ...ry(&mut self, o: Offset) -> Entry<Offset, TrieNode<T>> {
+   |       ^^^^^^^^^                ^^^^^^^^^^^^^^^^^^^^^^^^^^ the same lifetime is hidden here
+   |       |
+   |       the lifetime is elided here
+   |
+   = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+   = note: `#[warn(mismatched_lifetime_syntaxes)]` on by default
+help: use `'_` for type paths
+   |
+98 |     pub fn entry(&mut self, o: Offset) -> Entry<'_, Offset, TrieNode<T>> {
+   |                                                 +++
+
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> repos/move-vm/language/move-prover/bytecode/src/function_target.rs:122:23
+    |
+122 | ...nv(&self) -> &ModuleEnv {
+    |       ^^^^^     ^^^^^^^^^^
+    |       |         ||
+    |       |         |the same lifetime is hidden here
+    |       |         the same lifetime is elided here
+    |       the lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+help: use `'_` for type paths
+    |
+122 |     pub fn module_env(&self) -> &ModuleEnv<'_> {
+    |                                           ++++
+
+warning: `move-stackless-bytecode` (lib) generated 6 warnings (run `cargo fix --lib -p move-stackless-bytecode` to apply 2 suggestions)

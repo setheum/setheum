@@ -34,7 +34,6 @@ Welcome to the Setheum ecosystem. This repository contains all core components o
 ## Repos
 
 - **[bridge](./repos/bridge)**: The bridging repos for Setheum. Includes `bridge-core`, `bridge-docs`, `bridge-relayer`, `bridge-sdk`, and `bridge-x-solidity`.
-- **[move-vm](./repos/cargo-sheyth)**: The MoveVM repo powering move language smart contracts on Setheum.
 - **[set-bft](./repos/set-bft)**: The Set-BFT Consensus Engine.
 - **[setheum](./repos/setheum)**: The core Setheum blockchain.
 - **[setheum-js](./repos/setheum-js)**: JavaScript/TypeScript SDK for interacting with Setheum.
