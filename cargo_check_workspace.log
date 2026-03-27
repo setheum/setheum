@@ -1,0 +1,391 @@
+warning: /home/balqaasem/setheum/repos/setheum/primitives/Cargo.toml: `default-features` is ignored for enumflags2, since `default-features` was not specified for `workspace.dependencies.enumflags2`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/primitives/Cargo.toml: `default-features` is ignored for hex-literal, since `default-features` was not specified for `workspace.dependencies.hex-literal`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/primitives/Cargo.toml: `default-features` is ignored for paste, since `default-features` was not specified for `workspace.dependencies.paste`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/finality-setbft/Cargo.toml: `default-features` is ignored for array-bytes, since `default-features` was not specified for `workspace.dependencies.array-bytes`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/finality-setbft/Cargo.toml: `default-features` is ignored for async-trait, since `default-features` was not specified for `workspace.dependencies.async-trait`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/finality-setbft/Cargo.toml: `default-features` is ignored for derive_more, since `default-features` was not specified for `workspace.dependencies.derive_more`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/finality-setbft/Cargo.toml: `default-features` is ignored for finality-rate-limiter, since `default-features` was not specified for `workspace.dependencies.finality-rate-limiter`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/finality-setbft/Cargo.toml: `default-features` is ignored for futures, since `default-features` was not specified for `workspace.dependencies.futures`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/finality-setbft/Cargo.toml: `default-features` is ignored for futures-timer, since `default-features` was not specified for `workspace.dependencies.futures-timer`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/finality-setbft/Cargo.toml: `default-features` is ignored for libp2p, since `default-features` was not specified for `workspace.dependencies.libp2p`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/finality-setbft/Cargo.toml: `default-features` is ignored for lru, since `default-features` was not specified for `workspace.dependencies.lru`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/finality-setbft/Cargo.toml: `default-features` is ignored for network-clique, since `default-features` was not specified for `workspace.dependencies.network-clique`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/finality-setbft/Cargo.toml: `default-features` is ignored for parking_lot, since `default-features` was not specified for `workspace.dependencies.parking_lot`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/finality-setbft/Cargo.toml: `default-features` is ignored for set-bft, since `default-features` was not specified for `workspace.dependencies.set-bft`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/finality-setbft/Cargo.toml: `default-features` is ignored for set-bft-crypto, since `default-features` was not specified for `workspace.dependencies.set-bft-crypto`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/finality-setbft/Cargo.toml: `default-features` is ignored for set-bft-rmc, since `default-features` was not specified for `workspace.dependencies.set-bft-rmc`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/finality-setbft/Cargo.toml: `default-features` is ignored for static_assertions, since `default-features` was not specified for `workspace.dependencies.static_assertions`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/finality-setbft/Cargo.toml: `default-features` is ignored for substrate-prometheus-endpoint, since `default-features` was not specified for `workspace.dependencies.substrate-prometheus-endpoint`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/finality-setbft/Cargo.toml: `default-features` is ignored for tiny-bip39, since `default-features` was not specified for `workspace.dependencies.tiny-bip39`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/finality-setbft/Cargo.toml: `default-features` is ignored for tokio, since `default-features` was not specified for `workspace.dependencies.tokio`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/runtime-modules/idle-scheduler/Cargo.toml: `default-features` is ignored for setheum-primitives, since `default-features` was not specified for `workspace.dependencies.setheum-primitives`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/runtime-modules/bridge-forwarder/Cargo.toml: `default-features` is ignored for hex-literal, since `default-features` was not specified for `workspace.dependencies.hex-literal`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/aggregator/Cargo.toml: `default-features` is ignored for async-trait, since `default-features` was not specified for `workspace.dependencies.async-trait`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/aggregator/Cargo.toml: `default-features` is ignored for futures, since `default-features` was not specified for `workspace.dependencies.futures`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/aggregator/Cargo.toml: `default-features` is ignored for set-bft-rmc, since `default-features` was not specified for `workspace.dependencies.set-bft-rmc`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/aggregator/Cargo.toml: `default-features` is ignored for set-bft-types, since `default-features` was not specified for `workspace.dependencies.set-bft-types`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/aggregator/Cargo.toml: `default-features` is ignored for tokio, since `default-features` was not specified for `workspace.dependencies.tokio`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/runtime/common/Cargo.toml: `default-features` is ignored for module-prices, since `default-features` was not specified for `workspace.dependencies.module-prices`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/runtime-modules/support/Cargo.toml: `default-features` is ignored for impl-trait-for-tuples, since `default-features` was not specified for `workspace.dependencies.impl-trait-for-tuples`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/clisee/Cargo.toml: `default-features` is ignored for clap, since `default-features` was not specified for `workspace.dependencies.clap`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/clisee/Cargo.toml: `default-features` is ignored for setheum_client, since `default-features` was not specified for `workspace.dependencies.setheum_client`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/clisee/Cargo.toml: `default-features` is ignored for tokio, since `default-features` was not specified for `workspace.dependencies.tokio`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/runtime-modules/xtokens/Cargo.toml: `default-features` is ignored for module-xcm-mock-message-queue, since `default-features` was not specified for `workspace.dependencies.module-xcm-mock-message-queue`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/runtime-modules/traits/Cargo.toml: `default-features` is ignored for impl-trait-for-tuples, since `default-features` was not specified for `workspace.dependencies.impl-trait-for-tuples`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/runtime-modules/traits/Cargo.toml: `default-features` is ignored for paste, since `default-features` was not specified for `workspace.dependencies.paste`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/runtime-modules/transaction-payment/Cargo.toml: `default-features` is ignored for smallvec, since `default-features` was not specified for `workspace.dependencies.smallvec`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/rate-limiter/Cargo.toml: `default-features` is ignored for futures, since `default-features` was not specified for `workspace.dependencies.futures`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/rate-limiter/Cargo.toml: `default-features` is ignored for tokio, since `default-features` was not specified for `workspace.dependencies.tokio`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/finality/rate-limiter/Cargo.toml: `default-features` is ignored for parking_lot, since `default-features` was not specified for `workspace.dependencies.parking_lot`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/primitives/proc-macro/Cargo.toml: `default-features` is ignored for syn, since `default-features` was not specified for `workspace.dependencies.syn`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/primitives/proc-macro/Cargo.toml: `default-features` is ignored for tiny-keccak, since `default-features` was not specified for `workspace.dependencies.tiny-keccak`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/runtime-modules/currencies/Cargo.toml: `default-features` is ignored for hex-literal, since `default-features` was not specified for `workspace.dependencies.hex-literal`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/runtime-modules/bridge/Cargo.toml: `default-features` is ignored for arrayref, since `default-features` was not specified for `workspace.dependencies.arrayref`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/runtime-modules/bridge/Cargo.toml: `default-features` is ignored for funty, since `default-features` was not specified for `workspace.dependencies.funty`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/runtime-modules/bridge/Cargo.toml: `default-features` is ignored for hex-literal, since `default-features` was not specified for `workspace.dependencies.hex-literal`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/runtime-modules/transaction-pause/Cargo.toml: `default-features` is ignored for hex-literal, since `default-features` was not specified for `workspace.dependencies.hex-literal`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/runtime-modules/transaction-pause/Cargo.toml: `default-features` is ignored for smallvec, since `default-features` was not specified for `workspace.dependencies.smallvec`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/runtime-modules/unknown-tokens/Cargo.toml: `default-features` is ignored for hex-literal, since `default-features` was not specified for `workspace.dependencies.hex-literal`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/clique/Cargo.toml: `default-features` is ignored for async-trait, since `default-features` was not specified for `workspace.dependencies.async-trait`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/clique/Cargo.toml: `default-features` is ignored for bytes, since `default-features` was not specified for `workspace.dependencies.bytes`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/clique/Cargo.toml: `default-features` is ignored for derive_more, since `default-features` was not specified for `workspace.dependencies.derive_more`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/clique/Cargo.toml: `default-features` is ignored for env_logger, since `default-features` was not specified for `workspace.dependencies.env_logger`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/clique/Cargo.toml: `default-features` is ignored for futures, since `default-features` was not specified for `workspace.dependencies.futures`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/clique/Cargo.toml: `default-features` is ignored for futures-timer, since `default-features` was not specified for `workspace.dependencies.futures-timer`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/clique/Cargo.toml: `default-features` is ignored for ip_network, since `default-features` was not specified for `workspace.dependencies.ip_network`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/clique/Cargo.toml: `default-features` is ignored for lru, since `default-features` was not specified for `workspace.dependencies.lru`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/clique/Cargo.toml: `default-features` is ignored for substrate-prometheus-endpoint, since `default-features` was not specified for `workspace.dependencies.substrate-prometheus-endpoint`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/clique/Cargo.toml: `default-features` is ignored for tiny-bip39, since `default-features` was not specified for `workspace.dependencies.tiny-bip39`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/clique/Cargo.toml: `default-features` is ignored for set-bft-mock, since `default-features` was not specified for `workspace.dependencies.set-bft-mock`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/clique/Cargo.toml: `default-features` is ignored for set-bft-types, since `default-features` was not specified for `workspace.dependencies.set-bft-types`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/sheyth/crates/contract-extrinsics/Cargo.toml: `default-features` is ignored for futures, since `default-features` was not specified for `workspace.dependencies.futures`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/runtime/Cargo.toml: `default-features` is ignored for hex-literal, since `default-features` was not specified for `workspace.dependencies.hex-literal`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/runtime/Cargo.toml: `default-features` is ignored for module-airdrop, since `default-features` was not specified for `workspace.dependencies.module-airdrop`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/runtime/Cargo.toml: `default-features` is ignored for module-prices, since `default-features` was not specified for `workspace.dependencies.module-prices`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/runtime/Cargo.toml: `default-features` is ignored for module-transaction-pause, since `default-features` was not specified for `workspace.dependencies.module-transaction-pause`, this could become a hard error in the future
+warning: /home/balqaasem/setheum/repos/setheum/runtime/Cargo.toml: `default-features` is ignored for substrate-wasm-builder, since `default-features` was not specified for `workspace.dependencies.substrate-wasm-builder`, this could become a hard error in the future
+    Updating git repository `https://github.com/polkadot-evm/frontier`
+From https://github.com/polkadot-evm/frontier
+   46cf7a43..08f2ff86  master     -> origin/master
+    Updating git repository `https://github.com/paritytech/polkadot-sdk`
+From https://github.com/paritytech/polkadot-sdk
+   8fc23bab48..3785760c37  stable2506 -> origin/stable2506
+    Updating crates.io index
+    Updating git repository `https://github.com/eigerco/bcs.git`
+    Updating git repository `https://github.com/paritytech/polkadot-sdk`
+From https://github.com/paritytech/polkadot-sdk
+   dab785fb63..0d709250ee  stable2512 -> origin/stable2512
+    Updating git repository `https://github.com/rust-ethereum/evm.git`
+     Locking 1780 packages to latest compatible versions
+      Adding array-bytes v6.2.3 (available: v9.3.0)
+      Adding assert2 v0.3.16 (available: v0.4.0)
+      Adding assert2-macros v0.3.16 (available: v0.3.18)
+      Adding bit-vec v0.8.0 (available: v0.9.1)
+      Adding bollard v0.18.1 (available: v0.20.2)
+      Adding bounded-collections v0.1.9 (available: v0.3.2)
+      Adding cargo_metadata v0.18.1 (available: v0.23.1)
+      Adding colored v2.2.0 (available: v3.1.1)
+      Adding convert_case v0.6.0 (available: v0.11.0)
+      Adding crossterm v0.26.1 (available: v0.29.0)
+      Adding curve25519-dalek v3.2.0 (available: v3.2.1)
+      Adding darling v0.20.11 (available: v0.23.0)
+      Adding derive_more v1.0.0 (available: v2.1.1)
+      Adding dialoguer v0.10.4 (available: v0.12.0)
+      Adding duct v0.13.7 (available: v1.1.1)
+      Adding env_logger v0.10.2 (available: v0.11.10)
+      Adding frame-metadata v15.1.0 (available: v15.2.0)
+      Adding frame-metadata v16.0.0 (available: v23.0.1)
+      Adding generic-array v0.14.7 (available: v0.14.9)
+      Adding hex-literal v0.4.1 (available: v1.1.0)
+      Adding impl-serde v0.4.0 (available: v0.5.0)
+      Adding itertools v0.12.1 (available: v0.14.0)
+      Adding jsonrpc-core v15.1.0 (available: v18.0.0)
+      Adding jsonrpc-derive v15.1.0 (available: v18.0.0)
+      Adding jsonrpsee v0.16.3 (available: v0.26.0)
+      Adding jsonschema v0.26.2 (available: v0.45.0)
+      Adding libp2p v0.51.4 (available: v0.56.0)
+      Adding libp2p-swarm-derive v0.35.0 (available: v0.35.1)
+      Adding lru v0.10.1 (available: v0.16.3)
+      Adding nom v7.1.3 (available: v8.0.0)
+      Adding nom-supreme v0.7.0 (available: v0.8.0)
+      Adding num_enum v0.5.11 (available: v0.7.6)
+      Adding pallet-contracts-mock-network v7.0.0 (available: v23.0.0)
+      Adding pallet-contracts-uapi v9.0.0 (available: v14.0.0)
+      Adding primitive-types v0.12.2 (available: v0.14.0)
+      Adding primitive-types v0.13.1 (available: v0.14.0)
+      Adding proc-macro-crate v1.1.3 (available: v1.3.1)
+      Adding rand v0.8.5 (available: v0.10.0)
+      Adding rand_chacha v0.2.2 (available: v0.10.0)
+      Adding rand_pcg v0.3.1 (available: v0.10.1)
+      Adding ratatui v0.21.0 (available: v0.30.0)
+      Adding reqwest v0.11.27 (available: v0.13.2)
+      Adding scale-decode v0.11.1 (available: v0.16.2)
+      Adding scale-encode v0.6.0 (available: v0.10.1)
+      Adding schemars v0.8.22 (available: v1.2.1)
+      Adding secp256k1 v0.28.2 (available: v0.31.1)
+      Adding serial_test v1.0.0 (available: v3.4.0)
+      Adding sha2 v0.10.9 (available: v0.11.0)
+      Adding staging-xcm v7.0.0 (available: v21.0.0)
+      Adding strum v0.26.3 (available: v0.28.0)
+      Adding subxt v0.35.3 (available: v0.50.0)
+      Adding subxt-metadata v0.35.3 (available: v0.50.0)
+      Adding subxt-signer v0.35.3 (available: v0.50.0)
+      Adding syn v1.0.109 (available: v2.0.117)
+      Adding thiserror v1.0.69 (available: v2.0.18)
+      Adding tiny-bip39 v1.0.0 (available: v2.0.0)
+      Adding toml v0.8.23 (available: v1.1.0+spec-1.1.0)
+      Adding unicode-normalization v0.1.22 (available: v0.1.25)
+      Adding wasm-encoder v0.220.1 (available: v0.245.1)
+      Adding wasmparser v0.220.1 (available: v0.245.1)
+      Adding which v6.0.3 (available: v8.0.2)
+      Adding zip v2.4.2 (available: v8.4.0)
+ Downloading crates ...
+  Downloaded terminal_size v0.4.4
+  Downloaded num-conv v0.2.1
+  Downloaded itoa v1.0.18
+  Downloaded substrate-bip39 v0.6.1
+  Downloaded toml_datetime v1.1.0+spec-1.1.0
+  Downloaded ed25519-zebra v4.2.0
+  Downloaded borsh-derive v1.6.1
+  Downloaded toml_parser v1.1.0+spec-1.1.0
+  Downloaded uuid v1.23.0
+  Downloaded proptest v1.11.0
+  Downloaded toml_edit v0.25.8+spec-1.1.0
+  Downloaded rustls-webpki v0.103.10
+  Downloaded zerocopy-derive v0.8.47
+  Downloaded borsh v1.6.1
+  Downloaded unicode-segmentation v1.13.2
+  Downloaded iri-string v0.7.11
+  Downloaded winnow v1.0.0
+  Downloaded moka v0.12.15
+  Downloaded zerocopy v0.8.47
+  Downloaded fixed v1.31.0
+   Compiling winnow v1.0.0
+   Compiling toml_datetime v1.1.0+spec-1.1.0
+    Checking itoa v1.0.18
+   Compiling zerocopy v0.8.47
+   Compiling zerocopy-derive v0.8.47
+   Compiling unicode-segmentation v1.13.2
+    Checking futures-util v0.3.32
+   Compiling convert_case v0.6.0
+    Checking serde_json v1.0.149
+   Compiling derive_more-impl v1.0.0
+   Compiling toml_parser v1.1.0+spec-1.1.0
+    Checking tracing v0.1.44
+    Checking schemars v0.8.22
+    Checking foldhash v0.2.0
+   Compiling toml_edit v0.25.8+spec-1.1.0
+    Checking hashbrown v0.16.1
+   Compiling proc-macro-crate v3.5.0
+    Checking indexmap v2.13.0
+    Checking futures-executor v0.3.32
+    Checking stable_deref_trait v1.2.1
+   Compiling parity-scale-codec-derive v3.7.5
+   Compiling scale-info-derive v2.11.6
+    Checking futures v0.3.32
+    Checking regex-automata v0.4.14
+    Checking yoke v0.8.1
+    Checking zerovec v0.11.5
+    Checking zerotrie v0.2.3
+    Checking parity-scale-codec v3.7.5
+    Checking http v1.4.0
+    Checking tinystr v0.8.2
+    Checking icu_locale_core v2.1.1
+    Checking potential_utf v0.1.4
+    Checking block-buffer v0.9.0
+    Checking regex v1.12.3
+    Checking derive_more v1.0.0
+    Checking icu_collections v2.1.1
+    Checking ppv-lite86 v0.2.21
+    Checking ahash v0.8.12
+    Checking scale-info v2.11.6
+    Checking impl-codec v0.7.1
+    Checking hashbrown v0.13.2
+    Checking rand_chacha v0.3.1
+    Checking icu_provider v2.1.1
+    Checking serde_bytes v0.11.19
+    Checking sha2 v0.9.9
+    Checking rand v0.8.5
+   Compiling ss58-registry v1.51.0
+    Checking icu_properties v2.1.2
+    Checking icu_normalizer v2.1.1
+    Checking num-format v0.4.4
+   Compiling num-conv v0.2.1
+   Compiling time-macros v0.2.27
+    Checking fixed-hash v0.8.0
+    Checking twox-hash v1.6.3
+    Checking getrandom_or_panic v0.0.3
+    Checking schnorrkel v0.11.5
+    Checking libsecp256k1 v0.7.2
+    Checking idna_adapter v1.2.1
+    Checking http-body v1.0.1
+    Checking primitive-types v0.13.1
+    Checking idna v1.1.0
+    Checking http-body-util v0.1.3
+    Checking url v2.5.8
+    Checking ed25519-zebra v4.2.0
+    Checking h2 v0.4.13
+    Checking time v0.3.47
+    Checking tracing-log v0.2.0
+    Checking matchers v0.2.0
+    Checking prometheus v0.13.4
+    Checking schnellru v0.2.4
+    Checking trie-db v0.30.0
+   Compiling syn v1.0.109
+    Checking tracing-subscriber v0.3.23
+    Checking frame-metadata v23.0.1
+    Checking gimli v0.27.3
+    Checking env_logger v0.10.2
+    Checking wasmparser v0.102.0
+    Checking regalloc2 v0.6.1
+    Checking hyper v1.8.1
+    Checking object v0.30.4
+    Checking hyper-util v0.1.20
+    Checking cranelift-codegen v0.95.1
+    Checking wasmtime-types v8.0.1
+    Checking addr2line v0.19.0
+    Checking file-per-thread-logger v0.1.6
+    Checking toml v0.5.11
+    Checking bounded-collections v0.2.4
+    Checking parity-bip39 v2.0.1
+    Checking wasmtime-environ v8.0.1
+    Checking wasmtime-jit-debug v8.0.1
+    Checking wasmtime-cache v8.0.1
+   Compiling sp-debug-derive v14.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+    Checking sp-tracing v17.1.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+   Compiling sp-runtime-interface-proc-macro v19.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+    Checking sp-std v14.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+    Checking substrate-bip39 v0.6.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+    Checking sp-crypto-hashing v0.1.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+    Checking substrate-prometheus-endpoint v0.17.6 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+   Compiling proc-macro-error v1.0.4
+    Checking sp-storage v22.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+    Checking sp-panic-handler v13.0.2 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+    Checking sp-arithmetic v27.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+   Compiling sp-io v41.0.1 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+    Checking sp-externalities v0.30.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+    Checking wasmtime-runtime v8.0.1
+    Checking binary-merkle-tree v16.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+   Compiling sp-version-proc-macro v15.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+   Compiling sp-crypto-hashing-proc-macro v0.1.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+    Checking sp-metadata-ir v0.11.1 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+    Checking sp-weights v32.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+   Compiling sp-api-proc-macro v23.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+    Checking wasmtime-jit v8.0.1
+   Compiling aquamarine v0.5.0
+    Checking uuid v1.23.0
+   Compiling frame-support-procedural-tools-derive v12.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+    Checking bip39 v2.2.2
+   Compiling sp-debug-derive v14.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2512#0d709250)
+    Checking toml_edit v0.22.27
+   Compiling frame-support-procedural-tools v13.0.1 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+    Checking gimli v0.31.1
+   Compiling frame-support-procedural v34.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+   Compiling jam-codec-derive v0.1.1
+    Checking cranelift-frontend v0.95.1
+    Checking cranelift-native v0.95.1
+    Checking cranelift-wasm v0.95.1
+    Checking wasmtime-cranelift-shared v8.0.1
+    Checking toml v0.8.23
+    Checking sp-storage v22.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2512#0d709250)
+    Checking wasmtime-cranelift v8.0.1
+    Checking pulley-interpreter v35.0.0
+    Checking sp-externalities v0.31.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2512#0d709250)
+    Checking jam-codec v0.1.1
+    Checking regalloc2 v0.12.2
+    Checking wasmtime v8.0.1
+    Checking bounded-collections v0.3.2
+    Checking sp-std v14.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2512#0d709250)
+    Checking object v0.36.7
+    Checking substrate-bip39 v0.6.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2512#0d709250)
+    Checking sp-crypto-hashing v0.1.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2512#0d709250)
+    Checking debugid v0.8.0
+    Checking sp-core v39.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2512#0d709250)
+    Checking fxprof-processed-profile v0.6.0
+    Checking ittapi v0.4.0
+    Checking wasmtime-internal-cache v35.0.0
+    Checking addr2line v0.24.2
+    Checking substrate-prometheus-endpoint v0.17.7 (https://github.com/paritytech/polkadot-sdk?branch=stable2512#0d709250)
+    Checking sp-wasm-interface v22.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+    Checking sp-tracing v19.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2512#0d709250)
+   Compiling sp-runtime-interface-proc-macro v20.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2512#0d709250)
+    Checking sp-runtime-interface v30.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+    Checking sp-trie v42.0.1 (https://github.com/paritytech/polkadot-sdk?branch=stable2512#0d709250)
+    Checking sp-core v37.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+    Checking wasmtime-environ v35.0.0
+    Checking wasmtime-internal-jit-debug v35.0.0
+    Checking sp-panic-handler v13.0.2 (https://github.com/paritytech/polkadot-sdk?branch=stable2512#0d709250)
+   Compiling sp-io v44.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2512#0d709250)
+    Checking sp-state-machine v0.49.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2512#0d709250)
+    Checking sp-trie v40.0.1 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+    Checking sp-keystore v0.43.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+    Checking sp-keystore v0.45.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2512#0d709250)
+    Checking cranelift-codegen v0.122.0
+    Checking sp-arithmetic v28.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2512#0d709250)
+    Checking sp-state-machine v0.46.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+    Checking hashbrown v0.14.5
+    Checking sp-weights v33.2.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2512#0d709250)
+    Checking binary-merkle-tree v16.1.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2512#0d709250)
+   Compiling sp-version-proc-macro v15.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2512#0d709250)
+    Checking sp-metadata-ir v0.12.1 (https://github.com/paritytech/polkadot-sdk?branch=stable2512#0d709250)
+   Compiling sp-crypto-hashing-proc-macro v0.1.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2512#0d709250)
+   Compiling sp-api-proc-macro v26.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2512#0d709250)
+   Compiling xcm-procedural v11.0.2 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+    Checking asynchronous-codec v0.6.2
+    Checking unsigned-varint v0.7.2
+    Checking asynchronous-codec v0.7.0
+    Checking unsigned-varint v0.8.0
+    Checking multihash v0.19.3
+    Checking libp2p-identity v0.2.13
+    Checking rand_chacha v0.9.0
+    Checking multiaddr v0.18.2
+    Checking multistream-select v0.13.0
+    Checking rw-stream-sink v0.4.0
+    Checking rand v0.9.2
+    Checking libp2p-core v0.42.0
+    Checking sp-application-crypto v41.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+    Checking sha1 v0.10.6
+    Checking rustls-webpki v0.103.10
+   Compiling enum-as-inner v0.6.1
+    Checking sp-runtime v42.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+   Compiling libp2p-swarm-derive v0.35.0
+   Compiling prost-build v0.13.5
+   Compiling synstructure v0.12.6
+    Checking rustls v0.23.37
+    Checking libp2p-swarm v0.45.1
+   Compiling multihash-derive v0.8.1
+   Compiling darling_core v0.23.0
+   Compiling frame-election-provider-solution-type v16.1.1 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+    Checking x25519-dalek v2.0.1
+   Compiling snow v0.9.6
+    Checking multihash v0.17.0
+    Checking yamux v0.13.10
+    Checking futures-bounded v0.2.4
+    Checking multiaddr v0.17.1
+    Checking ethbloom v0.14.1
+    Checking quick-protobuf-codec v0.3.1
+    Checking libp2p-kad v0.46.2
+    Checking soketto v0.8.1
+    Checking ethereum-types v0.15.1
+    Checking netlink-sys v0.8.8
+   Compiling asn1-rs-derive v0.6.0
+    Checking sp-version v40.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+    Checking sp-inherents v37.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+    Checking sp-staking v39.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+    Checking sp-api v37.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+    Checking polkadot-core-primitives v18.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+    Checking sp-npos-elections v37.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+    Checking sp-genesis-builder v0.18.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+    Checking polkadot-parachain-primitives v17.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+    Checking sp-session v39.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+   Compiling darling_macro v0.23.0
+   Compiling asn1-rs-impl v0.2.0
+    Checking netlink-proto v0.12.0
+    Checking netlink-packet-route v0.28.0
+   Compiling darling v0.23.0
+   Compiling serde_with_macros v3.18.0
+    Checking tokio-rustls v0.26.4
+    Checking asn1-rs v0.7.1
+    Checking hickory-proto v0.24.4
+    Checking frame-support v41.0.1 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)
+    Checking sp-timestamp v37.0.0 (https://github.com/paritytech/polkadot-sdk?branch=stable2506#3785760c)

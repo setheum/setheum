@@ -1,7 +1,0 @@
-[package]
-name = "Token"
-version = "0.0.0"
-
-[dependencies]
-MoveStdlib = { git = "https://github.com/eigerco/move-stdlib", rev = "main" }
-EvmStdlib = { local = "../../../stdlib" }

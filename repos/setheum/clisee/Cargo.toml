@@ -62,11 +62,7 @@ workspace = true
 workspace = true
 features = [ "full_crypto",]
 
-[dependencies.move-core-types]
-workspace = true
 
-[dependencies.move-vm-backend-common]
-workspace = true
 
 
 [dependencies.bcs]

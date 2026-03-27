@@ -100,14 +100,12 @@ where
 	C::Api: substrate_frame_rpc_system::AccountNonceApi<Block, AccountId, Nonce>
 		+ pallet_transaction_payment_rpc::TransactionPaymentRuntimeApi<Block, Balance>
 		+ module_oracle_rpc::OracleRuntimeApi<Block, DataProviderId, CurrencyId, TimeStampedPrice>
-		+ module_move_rpc::MoveRuntimeApi<Block, AccountId>
 		+ EthereumRuntimeRPCApi<Block>
 		+ BlockBuilder<Block>,
 	P: TransactionPool + 'static,
 	SO: SyncOracle + Send + Sync + 'static,
 {
 	use module_oracle_rpc::{Oracle, OracleApiServer};
-	use module_move_rpc::{MoveApiServer, MovePallet};
 	use pallet_transaction_payment_rpc::{TransactionPayment, TransactionPaymentApiServer};
 	use substrate_frame_rpc_system::{System, SystemApiServer};
 
@@ -133,7 +131,6 @@ where
 	module.merge(TransactionPayment::new(client.clone()).into_rpc())?;
 
 	module.merge(Oracle::new(client.clone()).into_rpc())?;
-	module.merge(MovePallet::new(client.clone()).into_rpc())?;
 
 	module.merge(
 		Eth::new(

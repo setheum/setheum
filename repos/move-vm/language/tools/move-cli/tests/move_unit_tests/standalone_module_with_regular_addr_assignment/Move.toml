@@ -1,9 +1,0 @@
-[package]
-name = "StandaloneModule"
-version = "1.0.0"
-
-[addresses]
-A = "0x2"
-
-[dev-dependencies]
-MoveStdlib = { git = "https://github.com/eigerco/move-stdlib", rev = "main" }

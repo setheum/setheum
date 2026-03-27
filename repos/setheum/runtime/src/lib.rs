@@ -1046,20 +1046,6 @@ impl pallet_ethereum::Config for Runtime {
 	type StateRoot = pallet_ethereum::IntermediateStateRoot<Self>;
 }
 
-parameter_types! {
-	pub const MoveMultisigReqExpireTime: frame_support::traits::ConstU32<100> = frame_support::traits::ConstU32<100>;
-	pub const MoveMaxScriptSigners: frame_support::traits::ConstU32<8> = frame_support::traits::ConstU32<8>;
-}
-
-impl module_move::Config for Runtime {
-	type RuntimeEvent = Event;
-	type WeightInfo = module_move::weights::SubstrateWeight<Runtime>;
-	type Currency = Balances;
-	type CurrencyBalance = Balance;
-	type MultisigReqExpireTime = MoveMultisigReqExpireTime;
-	type MaxScriptSigners = MoveMaxScriptSigners;
-}
-
 impl module_evm_bridge::Config for Runtime {
 	type EVM = EVM;
 }
@@ -1584,8 +1570,7 @@ construct_runtime!(
 		// CommitteeManagement: module_committee_management::{Pallet, Call, Storage, Event<T>} = 57,
 		// Operations: module_operations::{Pallet, Call, Storage, Event<T>} = 58,
 		Auction: module_auction::{Pallet, Call, Storage, Event<T>} = 56,
-		Move: module_move::{Pallet, Call, Storage, Event<T>} = 57,
-	}
+
 );
 
 pub struct OnRuntimeUpgrade;
@@ -1956,35 +1941,6 @@ impl_runtime_apis! {
 		fn gas_limit_multiplier_at_20_percent_excess() -> U256 {
 			U256::zero()
 		}
-	impl module_move_runtime_api::MoveApi<Block, AccountId> for Runtime {
-		fn estimate_gas_publish_module(account: AccountId, bytecode: Vec<u8>) -> Result<module_move_runtime_api::MoveApiEstimation, DispatchError> {
-			Move::rpc_estimate_gas_publish_module(&account, bytecode)
-		}
-
-		fn estimate_gas_publish_bundle(account: AccountId, bytecode: Vec<u8>) -> Result<module_move_runtime_api::MoveApiEstimation, DispatchError> {
-			Move::rpc_estimate_gas_publish_bundle(&account, bytecode)
-		}
-
-		fn estimate_gas_execute_script(transaction_bc: Vec<u8>) -> Result<module_move_runtime_api::MoveApiEstimation, DispatchError> {
-			Move::rpc_estimate_gas_execute_script(transaction_bc)
-		}
-
-		fn get_module(account: AccountId, name: alloc::string::String) -> Result<Option<Vec<u8>>, Vec<u8>> {
-			Move::rpc_get_module(account, name)
-		}
-
-		fn get_module_abi(account: AccountId, name: alloc::string::String) -> Result<Option<module_move_runtime_api::ModuleAbi>, Vec<u8>> {
-			Move::rpc_get_module_abi(account, name)
-		}
-
-		fn get_resource(
-			account: AccountId,
-			tag: Vec<u8>,
-		) -> Result<Option<Vec<u8>>, Vec<u8>> {
-			Move::rpc_get_resource(account, tag)
-		}
-	}
-}
 
 	impl fp_rpc::ConvertTransactionRuntimeApi<Block> for Runtime {
 		fn convert_transaction(transaction: pallet_ethereum::Transaction) -> UncheckedExtrinsic {

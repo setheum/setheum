@@ -39,10 +39,6 @@ run = "SKIP_WASM_BUILD=1 cargo test --workspace --features with-ethereum-compati
 description = "Run JS tests"
 run = "bun test"
 
-[tasks."test:move"]
-description = "Run MoveVM backend tests"
-run = "cargo test -p move-vm-backend -p move-vm-backend-common --features build-move-projects-for-test"
-
 [tasks."test:sheyth"]
 description = "Run Sheyth (Ink!) tests"
 run = "cargo test -p ink --all-features"
