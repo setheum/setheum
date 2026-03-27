@@ -1,0 +1,71 @@
+[package]
+name = "setheum-move"
+authors = [ "Setheum Developers",]
+description = "CLI frontend for the Move compiler and VM in Setheum"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+url = "2.5"
+
+[dependencies.hex]
+workspace = true
+
+[dependencies.serde]
+workspace = true
+features = [ "derive",]
+
+[dependencies.serde_json]
+workspace = true
+
+[dependencies.jsonrpsee]
+workspace = true
+features = [ "http-client",]
+
+[dependencies.tokio]
+workspace = true
+features = [ "rt", "time", "net",]
+
+[dependencies.anyhow]
+workspace = true
+
+[dependencies.blake2]
+workspace = true
+
+[dependencies.clap]
+workspace = true
+features = [ "derive",]
+
+[dependencies.bcs]
+workspace = true
+
+[dependencies.move-cli]
+workspace = true
+
+[dependencies.move-stdlib]
+workspace = true
+
+[dependencies.move-core-types]
+workspace = true
+
+[dependencies.move-vm-test-utils]
+workspace = true
+
+[dependencies.move-package]
+workspace = true
+
+[dependencies.move-vm-runtime]
+workspace = true
+
+[dependencies.move-command-line-common]
+workspace = true
+
+[dependencies.move-binary-format]
+workspace = true
+
+[dependencies.move-vm-backend-common]
+workspace = true
+features = [ "gas_schedule", "testing",]
+
+[dependencies.move-vm-support]
+workspace = true
