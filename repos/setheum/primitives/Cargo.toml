@@ -32,6 +32,7 @@ frame-support = { workspace = true, default-features = false }
 module-traits = { workspace = true , default-features = false }
 pallet-session = { workspace = true, default-features = false }
 fp-evm = { workspace = true, default-features = false }
+ethereum = { version = "0.15.0", default-features = false, features = ["with-codec"] }
 
 [dev-dependencies]
 serde_json = { workspace = true, features = ["std"] , default-features = false }
@@ -59,7 +60,7 @@ std = [
 	"pallet-session/std",
 
 	"fp-evm/std",
+	"ethereum/std",
 ]
-# evm-tests removed
 short_session = []
 try-runtime = []

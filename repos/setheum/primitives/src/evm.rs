@@ -24,10 +24,8 @@ use crate::{
 };
 use core::ops::Range;
 use hex_literal::hex;
-pub use fp_evm::{
-	ethereum::{AccessListItem, Log, TransactionAction},
-	ExitReason,
-};
+pub use ethereum::{AccessListItem, Log, TransactionAction};
+pub use fp_evm::ExitReason;
 use parity_scale_codec::{Decode, Encode};
 use scale_info::TypeInfo;
 #[cfg(feature = "std")]
