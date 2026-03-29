@@ -44,7 +44,7 @@
 use frame_support::{pallet_prelude::*, transactional, PalletId};
 use frame_system::pallet_prelude::*;
 use module_support::swap_legacy::{SwapLimit, SwapManager};
-use module_support::{Erc20InfoMapping, ExchangeRate, Incentives, Ratio};
+use module_support::{CurrencyIdMapping, ExchangeRate, Incentives, Ratio};
 use module_traits::{Happened, MultiCurrency, MultiCurrencyExtended};
 use parity_scale_codec::MaxEncodedLen;
 use primitives::{Balance, CurrencyId, TradingPair};
@@ -125,7 +125,7 @@ pub mod module {
 
 		/// Mapping between CurrencyId and ERC20 address so user can use Erc20
 		/// address as LP token.
-		type Erc20InfoMapping: Erc20InfoMapping;
+		type Erc20InfoMapping: CurrencyIdMapping;
 
 		/// Weight information for the extrinsics in this module.
 		type WeightInfo: WeightInfo;

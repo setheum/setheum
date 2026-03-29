@@ -29,17 +29,31 @@ use frame_support::{
 	},
 	RuntimeDebug,
 };
-use frame_system::{limits, EnsureOneOf, EnsureRoot};
-pub use module_support::{ExchangeRate, PrecompileCallerFilter, Price, Rate, Ratio};
+use frame_system::limits;
+pub use frame_support::traits::EnsureOneOf;
+pub use frame_system::EnsureRoot;
+pub use module_support::{ExchangeRate, PrecompileCallerFilter, Price, Rate, Ratio, EVMStateRentTrait};
 use primitives::{
 	Balance, CurrencyId, PRECOMPILE_ADDRESS_START, PREDEPLOY_ADDRESS_START, SYSTEM_CONTRACT_ADDRESS_PREFIX,
+	TokenSymbol::SEU,
 };
-use sp_core::{
-	u32_trait::{_1, _2, _3, _4},
-	H160,
-};
+use sp_core::H160;
 use sp_runtime::{traits::Convert, transaction_validity::TransactionPriority, Perbill};
 use static_assertions::const_assert;
+
+pub mod u32_trait {
+	pub use sp_runtime::traits::Get;
+	pub struct _1;
+	impl Get<u32> for _1 { fn get() -> u32 { 1 } }
+	pub struct _2;
+	impl Get<u32> for _2 { fn get() -> u32 { 2 } }
+	pub struct _3;
+	impl Get<u32> for _3 { fn get() -> u32 { 3 } }
+	pub struct _4;
+	impl Get<u32> for _4 { fn get() -> u32 { 4 } }
+}
+
+pub const WEIGHT_PER_MILLIS: u64 = 1_000_000_000;
 
 pub mod precompile;
 pub use precompile::{
@@ -56,8 +70,8 @@ pub type TimeStampedPrice = module_oracle::TimestampedValue<Price, primitives::M
 parameter_types! {
 // Operational is 3/4 of TransactionPriority::max_value().
 // Ensure Inherent -> Operational tx -> Unsigned tx -> Signed normal tx
-	pub const CdpEngineUnsignedPriority: TransactionPriority = TransactionPriority::max_value() // 2;      / 50%
-	pub const AuctionManagerUnsignedPriority: TransactionPriority = TransactionPriority::max_value() // 5; / 20%
+	pub const CdpEngineUnsignedPriority: TransactionPriority = TransactionPriority::max_value() / 2;      // 50%
+	pub const AuctionManagerUnsignedPriority: TransactionPriority = TransactionPriority::max_value() / 5; // 20%
 }
 
 /// Check if the given `address` is a system contract.
@@ -143,22 +157,22 @@ pub fn dollar(currency_id: CurrencyId) -> Balance {
 }
 
 pub fn cent(currency_id: CurrencyId) -> Balance {
-	dollar(currency_id) // 100
+	dollar(currency_id) / 100
 }
 
 pub fn millicent(currency_id: CurrencyId) -> Balance {
-	cent(currency_id) // 1000
+	cent(currency_id) / 1000
 }
 
 pub fn microcent(currency_id: CurrencyId) -> Balance {
-	millicent(currency_id) // 1000
+	millicent(currency_id) / 1000
 }
 
 // The nanoscent is only for currencies that have at least up to 18 decimals like the SEU
 // 18 decimals = 1 Quintillion nanocents
 // 1 Quintillion NANOCENTS = 1 DOLLAR
 pub fn nanocent(currency_id: CurrencyId) -> Balance {
-	microcent(currency_id) // 1000000
+	microcent(currency_id) / 1000000
 }
 
 pub fn deposit(items: u32, bytes: u32) -> Balance {

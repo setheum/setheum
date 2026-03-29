@@ -185,20 +185,16 @@ path = "../runtime-modules/oracle/rpc"
 path = "../runtime-modules/nft"
 
 [dependencies.fc-rpc]
-git = "https://github.com/polkadot-evm/frontier"
-branch = "master"
+workspace = true
 
 [dependencies.fc-rpc-core]
-git = "https://github.com/polkadot-evm/frontier"
-branch = "master"
+workspace = true
 
 [dependencies.fc-db]
-git = "https://github.com/polkadot-evm/frontier"
-branch = "master"
+workspace = true
 
 [dependencies.fc-mapping-sync]
-git = "https://github.com/polkadot-evm/frontier"
-branch = "master"
+workspace = true
 
 [dependencies.fp-rpc]
 workspace = true

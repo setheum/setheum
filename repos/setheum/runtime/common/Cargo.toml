@@ -6,8 +6,30 @@ authors = [ "Afsall Labs",]
 edition = "2021"
 
 [features]
-default = [ "std",]
-std = [ "num_enum/std", "serde", "codec/std", "ethabi/std", "frame-support/std", "frame-system/std", "pallet-scheduler/std", "pallet-collective/std", "pallet-membership/std", "sp-core/std", "sp-runtime/std", "sp-std/std", "module-oracle/std", "module-traits/std", "pallet-evm/std", "fp-evm/std", "pallet-evm-precompile-simple/std", "module-support/std", "primitives/std",]
+default = ["std"]
+std = [
+	"codec/std",
+	"ethabi/std",
+	"fp-evm/std",
+	"frame-support/std",
+	"frame-system/std",
+	"log/std",
+	"module-oracle/std",
+	"module-support/std",
+	"module-traits/std",
+	"module-transaction-payment/std",
+	"num_enum/std",
+	"pallet-collective/std",
+	"pallet-evm/std",
+	"pallet-evm-precompile-simple/std",
+	"pallet-membership/std",
+	"pallet-scheduler/std",
+	"primitives/std",
+	"serde/std",
+	"sp-core/std",
+	"sp-runtime/std",
+	"sp-std/std",
+]
 with-ethereum-compatibility = []
 
 [dependencies.static_assertions]
@@ -32,21 +54,27 @@ default-features = false
 
 [dependencies.sp-std]
 workspace = true
+default-features = false
 
 [dependencies.sp-core]
 workspace = true
+default-features = false
 
 [dependencies.sp-runtime]
 workspace = true
+default-features = false
 
 [dependencies.frame-support]
 workspace = true
+default-features = false
 
 [dependencies.frame-system]
 workspace = true
+default-features = false
 
 [dependencies.pallet-scheduler]
 workspace = true
+default-features = false
 
 [dependencies.log]
 workspace = true
@@ -54,9 +82,11 @@ default-features = false
 
 [dependencies.pallet-collective]
 workspace = true
+default-features = false
 
 [dependencies.pallet-membership]
 workspace = true
+default-features = false
 
 [dependencies.module-oracle]
 workspace = true
@@ -68,12 +98,15 @@ default-features = false
 
 [dependencies.pallet-evm]
 workspace = true
+default-features = false
 
 [dependencies.fp-evm]
 workspace = true
+default-features = false
 
 [dependencies.pallet-evm-precompile-simple]
 workspace = true
+default-features = false
 
 [dependencies.module-support]
 workspace = true

@@ -32,7 +32,7 @@ frame-support = { workspace = true, default-features = false }
 module-traits = { workspace = true , default-features = false }
 pallet-session = { workspace = true, default-features = false }
 fp-evm = { workspace = true, default-features = false }
-ethereum = { version = "0.15.0", default-features = false, features = ["with-codec"] }
+ethereum = { version = "0.15.0", default-features = false, features = ["with-codec", "with-serde"] }
 
 [dev-dependencies]
 serde_json = { workspace = true, features = ["std"] , default-features = false }
@@ -42,25 +42,24 @@ serde_json = { workspace = true, features = ["std"] , default-features = false }
 default = ["std"]
 std = [
 	"enumflags2/serde",
+	"ethereum/std",
+	"fp-evm/std",
+	"frame-support/std",
+	"log/std",
+	"module-traits/std",
 	"num_enum/std",
+	"pallet-session/std",
 	"parity-scale-codec/std",
 	"scale-info/std",
 	"serde/std",
-
 	"sp-api/std",
+	"sp-application-crypto/std",
+	"sp-consensus-aura/std",
 	"sp-core/std",
 	"sp-io/std",
 	"sp-runtime/std",
+	"sp-staking/std",
 	"sp-std/std",
-        "sp-consensus-aura/std",
-
-	"frame-support/std",
-
-	"module-traits/std",
-	"pallet-session/std",
-
-	"fp-evm/std",
-	"ethereum/std",
 ]
 short_session = []
 try-runtime = []

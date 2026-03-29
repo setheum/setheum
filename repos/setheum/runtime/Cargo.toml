@@ -41,6 +41,10 @@ default-features = false
 workspace = true
 default-features = false
 
+[dependencies.getrandom]
+version = "0.2.10"
+features = ["js"]
+
 [dependencies.hex]
 workspace = true
 optional = true
@@ -211,12 +215,15 @@ default-features = false
 
 [dependencies.pallet-evm]
 workspace = true
+default-features = false
 
 [dependencies.pallet-ethereum]
 workspace = true
+default-features = false
 
 [dependencies.fp-evm]
 workspace = true
+default-features = false
 
 [dependencies.pallet-session]
 workspace = true

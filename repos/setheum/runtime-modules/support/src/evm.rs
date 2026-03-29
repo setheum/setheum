@@ -98,6 +98,17 @@ pub trait CurrencyIdMapping {
 	fn decode_evm_address(address: EvmAddress) -> Option<CurrencyId>;
 }
 
+/// A filter for precompile callers.
+pub trait PrecompileCallerFilter {
+	fn is_allowed(caller: H160) -> bool;
+}
+
+/// A trait for EVM state rent deposit management.
+pub trait EVMStateRentTrait {
+	fn reserve_rent_deposit(who: &H160, metadata: Vec<u8>) -> DispatchResult;
+	fn claim_rent_deposit(who: &H160, metadata: Vec<u8>) -> DispatchResult;
+}
+
 // Erc20InfoMapping removed
 
 // Limits removed

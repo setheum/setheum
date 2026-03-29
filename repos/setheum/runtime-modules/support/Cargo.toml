@@ -9,16 +9,16 @@ repository.workspace = true
 
 [dependencies]
 impl-trait-for-tuples = { workspace = true , default-features = false }
-parity-scale-codec = { workspace = true }
-scale-info = { workspace = true }
+parity-scale-codec = { workspace = true, default-features = false }
+scale-info = { workspace = true, default-features = false }
 serde = { workspace = true, optional = true, features = ["derive"] , default-features = false }
 
-frame-support = { workspace = true }
-frame-system = { workspace = true }
-sp-runtime = { workspace = true }
-sp-std = { workspace = true }
-sp-core = { workspace = true }
-sp-io = { workspace = true }
+frame-support = { workspace = true, default-features = false }
+frame-system = { workspace = true, default-features = false }
+sp-runtime = { workspace = true, default-features = false }
+sp-std = { workspace = true, default-features = false }
+sp-core = { workspace = true, default-features = false }
+sp-io = { workspace = true, default-features = false }
 xcm = { workspace = true , default-features = false }
 
 module-tokens = { workspace = true , default-features = false }

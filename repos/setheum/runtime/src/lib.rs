@@ -977,17 +977,6 @@ pub type OraclePrecompile = runtime_common::OraclePrecompile<
 	module_asset_registry::EvmCurrencyIdMapping<Runtime>,
 	module_prices::RealTimePriceProvider<Runtime>,
 >;
-pub type ScheduleCallPrecompile = runtime_common::ScheduleCallPrecompile<
-	AccountId,
-	EvmAddressMapping<Runtime>,
-	module_asset_registry::EvmCurrencyIdMapping<Runtime>,
-	Scheduler,
-	module_transaction_payment::ChargeTransactionPayment<Runtime>,
-	Call,
-	Origin,
-	OriginCaller,
-	Runtime,
->;
 pub type DexPrecompile =
 	runtime_common::DexPrecompile<AccountId, EvmAddressMapping<Runtime>, EvmCurrencyIdMapping<Runtime>, Dex>;
 
@@ -997,7 +986,6 @@ pub type AllPrecompiles = runtime_common::AllPrecompiles<
 	NFTPrecompile,
 	StateRentPrecompile,
 	OraclePrecompile,
-	ScheduleCallPrecompile,
 	DexPrecompile,
 >;
 

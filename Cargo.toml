@@ -23,6 +23,7 @@ default-features = false
 
 [workspace.dependencies.array-bytes]
 version = "6"
+default-features = false
 
 [workspace.dependencies.array-init]
 version = "2.0"
@@ -30,9 +31,11 @@ default-features = false
 
 [workspace.dependencies.arrayref]
 version = "0.3"
+default-features = false
 
 [workspace.dependencies.async-trait]
 version = "0.1.71"
+default-features = false
 
 [workspace.dependencies.bcs]
 git = "https://github.com/eigerco/bcs.git"
@@ -63,6 +66,7 @@ version = "0.1.2"
 
 [workspace.dependencies.bytes]
 version = "1.5"
+default-features = false
 
 [workspace.dependencies.cargo-contract]
 path = "repos/sheyth/crates/cargo-contract"
@@ -78,6 +82,7 @@ path = "repos/setheum/chain-bootstrapper"
 
 [workspace.dependencies.clap]
 version = "4.0.9"
+default-features = false
 
 [workspace.dependencies.clisee]
 path = "repos/setheum/clisee"
@@ -132,6 +137,7 @@ version = "0.20.10"
 
 [workspace.dependencies.derive_more]
 version = "1.0.0"
+default-features = false
 
 [workspace.dependencies.df-cli]
 
@@ -156,9 +162,11 @@ default-features = false
 
 [workspace.dependencies.enumflags2]
 version = "0.7.7"
+default-features = false
 
 [workspace.dependencies.env_logger]
 version = "0.10.0"
+default-features = false
 
 [workspace.dependencies.ethabi]
 version = "18.0.0"
@@ -178,23 +186,49 @@ default-features = false
 
 [workspace.dependencies.finality-rate-limiter]
 path = "repos/setheum/finality/rate-limiter"
+default-features = false
+
+[workspace.dependencies.rate-limiter]
+package = "finality-rate-limiter"
+path = "repos/setheum/finality/rate-limiter"
+default-features = false
 
 [workspace.dependencies.finality-setbft]
 path = "repos/setheum/finality/finality-setbft"
 
+[workspace.dependencies.fc-db]
+git = "https://github.com/polkadot-evm/frontier"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.fc-mapping-sync]
+git = "https://github.com/polkadot-evm/frontier"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.fc-rpc]
+git = "https://github.com/polkadot-evm/frontier"
+branch = "stable2506"
+default-features = false
+
+[workspace.dependencies.fc-rpc-core]
+git = "https://github.com/polkadot-evm/frontier"
+branch = "stable2506"
+default-features = false
+
 [workspace.dependencies.fp-evm]
 git = "https://github.com/polkadot-evm/frontier"
-branch = "master"
+branch = "stable2506"
 default-features = false
 
 [workspace.dependencies.fp-rpc]
 git = "https://github.com/polkadot-evm/frontier"
-branch = "master"
+branch = "stable2506"
 default-features = false
 
 [workspace.dependencies.fp-self-contained]
 git = "https://github.com/polkadot-evm/frontier"
-branch = "master"
+branch = "stable2506"
 default-features = false
 
 [workspace.dependencies.frame-benchmarking]
@@ -247,12 +281,15 @@ default-features = false
 
 [workspace.dependencies.funty]
 version = "2.0.0"
+default-features = false
 
 [workspace.dependencies.futures]
 version = "0.3.28"
+default-features = false
 
 [workspace.dependencies.futures-timer]
 version = "3.0"
+default-features = false
 
 [workspace.dependencies.halo2_proofs]
 git = "https://github.com/Cardinal-Cryptography/pse-halo2"
@@ -276,6 +313,7 @@ default-features = false
 
 [workspace.dependencies.hex-literal]
 version = "0.4.1"
+default-features = false
 
 [workspace.dependencies.impl-serde]
 version = "0.4.0"
@@ -283,6 +321,7 @@ default-features = false
 
 [workspace.dependencies.impl-trait-for-tuples]
 version = "0.2.3"
+default-features = false
 
 [workspace.dependencies.ink]
 path = "repos/sheyth/crates/ink"
@@ -345,6 +384,7 @@ default-features = false
 
 [workspace.dependencies.ip_network]
 version = "0.4"
+default-features = false
 
 [workspace.dependencies.itertools]
 version = "0.12"
@@ -368,6 +408,7 @@ default-features = false
 
 [workspace.dependencies.libp2p]
 version = "0.51"
+default-features = false
 
 [workspace.dependencies.libsecp256k1]
 version = "0.7"
@@ -382,9 +423,11 @@ default-features = false
 
 [workspace.dependencies.lru]
 version = "0.10"
+default-features = false
 
 [workspace.dependencies.module-airdrop]
 path = "repos/setheum/runtime-modules/airdrop"
+default-features = false
 
 [workspace.dependencies.module-asset-registry]
 path = "repos/setheum/runtime-modules/asset-registry"
@@ -510,6 +553,7 @@ default-features = false
 
 [workspace.dependencies.module-prices]
 path = "repos/setheum/runtime-modules/prices"
+default-features = false
 
 [workspace.dependencies.module-rate-limit]
 path = "repos/setheum/runtime-modules/rate-limit"
@@ -560,6 +604,7 @@ default-features = false
 
 [workspace.dependencies.module-transaction-pause]
 path = "repos/setheum/runtime-modules/transaction-pause"
+default-features = false
 
 [workspace.dependencies.module-transaction-payment]
 path = "repos/setheum/runtime-modules/transaction-payment"
@@ -588,6 +633,7 @@ default-features = false
 
 [workspace.dependencies.module-xcm-mock-message-queue]
 path = "repos/setheum/runtime-modules/xcm-mock-message-queue"
+default-features = false
 
 [workspace.dependencies.module-xcm-support]
 path = "repos/setheum/runtime-modules/xcm-support"
@@ -648,6 +694,7 @@ default-features = false
 
 [workspace.dependencies.network-clique]
 path = "repos/setheum/clique"
+default-features = false
 
 [workspace.dependencies.num]
 version = "0.4"
@@ -716,17 +763,17 @@ default-features = false
 
 [workspace.dependencies.pallet-ethereum]
 git = "https://github.com/polkadot-evm/frontier"
-branch = "master"
+branch = "stable2506"
 default-features = false
 
 [workspace.dependencies.pallet-evm]
 git = "https://github.com/polkadot-evm/frontier"
-branch = "master"
+branch = "stable2506"
 default-features = false
 
 [workspace.dependencies.pallet-evm-precompile-simple]
 git = "https://github.com/polkadot-evm/frontier"
-branch = "master"
+branch = "stable2506"
 default-features = false
 
 [workspace.dependencies.pallet-grandpa]
@@ -885,12 +932,15 @@ default-features = false
 
 [workspace.dependencies.parity-scale-codec-derive]
 version = "3.6.9"
+default-features = false
 
 [workspace.dependencies.parking_lot]
 version = "0.12"
+default-features = false
 
 [workspace.dependencies.paste]
 version = "1.0"
+default-features = false
 
 [workspace.dependencies.payout-stakers]
 path = "repos/setheum/benches/payout-stakers"
@@ -912,6 +962,10 @@ default-features = false
 
 [workspace.dependencies.pretty_assertions]
 version = "1"
+
+[workspace.dependencies.setheum-primitives]
+path = "repos/setheum/primitives"
+default-features = false
 
 [workspace.dependencies.primitives]
 package = "setheum-primitives"
@@ -948,11 +1002,6 @@ default-features = false
 
 [workspace.dependencies.ratatui]
 version = "0.21.0"
-
-[workspace.dependencies.rate-limiter]
-package = "finality-rate-limiter"
-path = "repos/setheum/finality/rate-limiter"
-default-features = false
 
 [workspace.dependencies.read-write-set]
 
@@ -1160,9 +1209,11 @@ default-features = false
 
 [workspace.dependencies.set-bft]
 path = "repos/set-bft/consensus"
+default-features = false
 
 [workspace.dependencies.set-bft-crypto]
 path = "repos/set-bft/crypto"
+default-features = false
 
 [workspace.dependencies.set-bft-examples-blockchain]
 path = "repos/set-bft/examples/blockchain"
@@ -1172,12 +1223,15 @@ path = "repos/set-bft/examples/ordering"
 
 [workspace.dependencies.set-bft-mock]
 path = "repos/set-bft/mock"
+default-features = false
 
 [workspace.dependencies.set-bft-rmc]
 path = "repos/set-bft/rmc"
+default-features = false
 
 [workspace.dependencies.set-bft-types]
 path = "repos/set-bft/types"
+default-features = false
 
 [workspace.dependencies.setheum-e2e-client]
 path = "repos/setheum/e2e-tests"
@@ -1187,15 +1241,13 @@ path = "repos/setheum/e2e-tests"
 [workspace.dependencies.setheum-node]
 path = "repos/setheum/node"
 
-[workspace.dependencies.setheum-primitives]
-path = "repos/setheum/primitives"
-
 [workspace.dependencies.setheum-runtime]
 path = "repos/setheum/runtime"
 default-features = false
 
 [workspace.dependencies.setheum_client]
 path = "repos/setheum/setheum-client"
+default-features = false
 
 [workspace.dependencies.sha2]
 version = "0.10"
@@ -1206,6 +1258,7 @@ default-features = false
 
 [workspace.dependencies.smallvec]
 version = "1.4.1"
+default-features = false
 
 [workspace.dependencies.sp-api]
 git = "https://github.com/paritytech/polkadot-sdk"
@@ -1376,6 +1429,7 @@ default-features = false
 
 [workspace.dependencies.static_assertions]
 version = "1.1.0"
+default-features = false
 
 [workspace.dependencies.substrate-build-script-utils]
 git = "https://github.com/paritytech/polkadot-sdk"
@@ -1388,6 +1442,7 @@ branch = "stable2506"
 [workspace.dependencies.substrate-prometheus-endpoint]
 git = "https://github.com/paritytech/polkadot-sdk"
 branch = "stable2506"
+default-features = false
 
 [workspace.dependencies.substrate-test-client]
 git = "https://github.com/paritytech/polkadot-sdk"
@@ -1407,6 +1462,7 @@ default-features = false
 [workspace.dependencies.substrate-wasm-builder]
 git = "https://github.com/paritytech/polkadot-sdk"
 branch = "stable2506"
+default-features = false
 
 [workspace.dependencies.subxt]
 version = "0.35.3"
@@ -1419,6 +1475,7 @@ version = "0.35.3"
 
 [workspace.dependencies.syn]
 version = "1.0.98"
+default-features = false
 
 [workspace.dependencies.synstructure]
 version = "0.13.1"
@@ -1430,15 +1487,19 @@ path = "repos/setheum/scripts/synthetic-network/synthetic-link"
 
 [workspace.dependencies.thiserror]
 version = "1.0"
+default-features = false
 
 [workspace.dependencies.tiny-bip39]
 version = "1.0"
+default-features = false
 
 [workspace.dependencies.tiny-keccak]
 version = "2.0"
+default-features = false
 
 [workspace.dependencies.tokio]
 version = "1.36"
+default-features = false
 
 [workspace.dependencies.tracing]
 version = "0.1.41"

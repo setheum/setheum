@@ -43,23 +43,16 @@ pub mod input;
 pub mod multicurrency;
 pub mod nft;
 pub mod oracle;
-pub mod schedule_call;
+// pub mod schedule_call;
 pub mod state_rent;
 
 pub use dex::DexPrecompile;
 pub use multicurrency::MultiCurrencyPrecompile;
 pub use nft::NFTPrecompile;
 pub use oracle::OraclePrecompile;
-pub use schedule_call::ScheduleCallPrecompile;
+// pub use schedule_call::ScheduleCallPrecompile;
 pub use state_rent::StateRentPrecompile;
 
-pub struct AllPrecompiles<
-	PrecompileCallerFilter,
-	MultiCurrencyPrecompile,
-	NFTPrecompile,
-	StateRentPrecompile,
-	OraclePrecompile,
-	ScheduleCallPrecompile,
 	DexPrecompile,
 >(
 	PhantomData<(
@@ -68,7 +61,6 @@ pub struct AllPrecompiles<
 		NFTPrecompile,
 		StateRentPrecompile,
 		OraclePrecompile,
-		ScheduleCallPrecompile,
 		DexPrecompile,
 	)>,
 );
@@ -79,7 +71,6 @@ impl<
 		NFTPrecompile,
 		StateRentPrecompile,
 		OraclePrecompile,
-		ScheduleCallPrecompile,
 		DexPrecompile,
 	> PrecompileSet
 	for AllPrecompiles<
@@ -88,7 +79,6 @@ impl<
 		NFTPrecompile,
 		StateRentPrecompile,
 		OraclePrecompile,
-		ScheduleCallPrecompile,
 		DexPrecompile,
 	>
 where
@@ -96,7 +86,7 @@ where
 	NFTPrecompile: Precompile,
 	StateRentPrecompile: Precompile,
 	OraclePrecompile: Precompile,
-	ScheduleCallPrecompile: Precompile,
+	// ScheduleCallPrecompile: Precompile,
 	PrecompileCallerFilter: PrecompileCallerFilterT,
 	DexPrecompile: Precompile,
 {
@@ -135,8 +125,8 @@ where
 			Some(StateRentPrecompile::execute(handle))
 		} else if address == H160::from_low_u64_be(PRECOMPILE_ADDRESS_START + 3) {
 			Some(OraclePrecompile::execute(handle))
-		} else if address == H160::from_low_u64_be(PRECOMPILE_ADDRESS_START + 4) {
-			Some(ScheduleCallPrecompile::execute(handle))
+		// } else if address == H160::from_low_u64_be(PRECOMPILE_ADDRESS_START + 4) {
+		// 	Some(ScheduleCallPrecompile::execute(handle))
 		} else if address == H160::from_low_u64_be(PRECOMPILE_ADDRESS_START + 5) {
 			Some(DexPrecompile::execute(handle))
 		} else {

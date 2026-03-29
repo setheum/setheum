@@ -48,7 +48,11 @@ use sp_runtime::{
 use sp_std::prelude::*;
 
 pub use currency::{CurrencyId, DexShare, TokenSymbol};
-pub use evm::{convert_decimals_from_evm, convert_decimals_to_evm};
+pub use evm::{
+	convert_decimals_from_evm, convert_decimals_to_evm, PRECOMPILE_ADDRESS_START,
+	PREDEPLOY_ADDRESS_START, SYSTEM_CONTRACT_ADDRESS_PREFIX,
+};
+pub use nft::NFTBalance;
 
 #[cfg(test)]
 mod tests;

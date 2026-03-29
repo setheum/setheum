@@ -51,4 +51,12 @@ std = [
     "sp-session/std",
     "sp-inherents/std",
 ]
+try-runtime = [
+    "frame-support/try-runtime",
+    "sp-runtime/try-runtime",
+]
+runtime-benchmarks = [
+    "frame-support/runtime-benchmarks",
+    "sp-runtime/runtime-benchmarks",
+]
 short_session = []
