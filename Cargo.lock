@@ -16206,7 +16206,6 @@ dependencies = [
  "frame-system 41.0.2",
  "frame-system-benchmarking",
  "frame-system-rpc-runtime-api",
- "getrandom 0.2.17",
  "hex",
  "hex-literal",
  "libsecp256k1",

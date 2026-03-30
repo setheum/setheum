@@ -41,10 +41,6 @@ default-features = false
 workspace = true
 default-features = false
 
-[dependencies.getrandom]
-version = "0.2.10"
-features = ["js"]
-
 [dependencies.hex]
 workspace = true
 optional = true
