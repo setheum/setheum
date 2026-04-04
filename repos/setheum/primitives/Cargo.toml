@@ -63,3 +63,5 @@ std = [
 ]
 short_session = []
 try-runtime = []
+# Declared for `#[cfg(feature = "evm-tests")]` in `evm.rs` (check-cfg / rust-analyzer).
+evm-tests = []

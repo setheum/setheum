@@ -41,7 +41,6 @@ use scale_info::TypeInfo;
 use serde::{Deserialize, Serialize};
 use sp_core::U256;
 use sp_runtime::{
-	generic,
 	traits::{BlakeTwo256, IdentifyAccount, Verify, Header as HeaderT},
 	FixedU128, RuntimeDebug,
 };
@@ -110,13 +109,13 @@ pub type AuctionId = u32;
 pub type Share = u128;
 
 /// Header type.
-pub type Header = generic::Header<BlockNumber, BlakeTwo256>;
+pub type Header = sp_runtime::generic::Header<BlockNumber, BlakeTwo256>;
 
 /// Block type.
-pub type Block = generic::Block<Header, UncheckedExtrinsic>;
+pub type Block = sp_runtime::generic::Block<Header, UncheckedExtrinsic>;
 
 /// Block ID.
-pub type BlockId = generic::BlockId<Block>;
+pub type BlockId = sp_runtime::generic::BlockId<Block>;
 
 /// Block Count
 pub type BlockCount = u32;
