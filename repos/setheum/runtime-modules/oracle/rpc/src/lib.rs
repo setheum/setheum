@@ -41,7 +41,7 @@ pub use module_oracle_runtime_api::OracleApi as OracleRuntimeApi;
 use sp_api::ProvideRuntimeApi;
 use sp_blockchain::HeaderBackend;
 use sp_runtime::codec::Codec;
-use sp_runtime::{generic::BlockId, traits::Block as BlockT};
+use sp_runtime::traits::Block as BlockT;
 use std::sync::Arc;
 
 #[rpc(server)]
@@ -90,8 +90,8 @@ where
 		at: Option<Block::Hash>,
 	) -> Result<Option<TimeStampedPrice>> {
 		let api = self.client.runtime_api();
-		let at = BlockId::hash(at.unwrap_or_else(|| self.client.info().best_hash));
-		api.get_value(&at, provider_id, key).map_err(|e| Error {
+		let at = at.unwrap_or_else(|| self.client.info().best_hash);
+		api.get_value(at, provider_id, key).map_err(|e| Error {
 			code: ErrorCode::ServerError(1),
 			message: "Runtime error".into(),
 			data: Some(format!("{:?}", e).into()),
@@ -104,8 +104,8 @@ where
 		at: Option<Block::Hash>,
 	) -> Result<Vec<(CurrencyId, Option<TimeStampedPrice>)>> {
 		let api = self.client.runtime_api();
-		let at = BlockId::hash(at.unwrap_or_else(|| self.client.info().best_hash));
-		api.get_all_values(&at, provider_id).map_err(|e| Error {
+		let at = at.unwrap_or_else(|| self.client.info().best_hash);
+		api.get_all_values(at, provider_id).map_err(|e| Error {
 			code: ErrorCode::ServerError(1),
 			message: "Runtime error".into(),
 			data: Some(format!("{:?}", e).into()),

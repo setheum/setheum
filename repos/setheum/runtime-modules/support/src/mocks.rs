@@ -36,7 +36,7 @@
 // SOFTWARE.
 
 #![allow(clippy::type_complexity)]
-use crate::{AddressMapping, CurrencyId, Erc20InfoMapping, TransactionPayment};
+use crate::{AddressMapping, CurrencyId, CurrencyIdMapping, TransactionPayment};
 use frame_support::pallet_prelude::{DispatchClass, Pays, Weight};
 use parity_scale_codec::Encode;
 use primitives::{
@@ -88,9 +88,9 @@ impl AddressMapping<AccountId32> for MockAddressMapping {
 	}
 }
 
-pub struct MockErc20InfoMapping;
+pub struct MockCurrencyIdMapping;
 
-impl Erc20InfoMapping for MockErc20InfoMapping {
+impl CurrencyIdMapping for MockCurrencyIdMapping {
 	fn name(currency_id: CurrencyId) -> Option<Vec<u8>> {
 		currency_id.name().map(|v| v.as_bytes().to_vec())
 	}

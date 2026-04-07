@@ -41,14 +41,17 @@ use scale_info::TypeInfo;
 use serde::{Deserialize, Serialize};
 use sp_core::U256;
 use sp_runtime::{
-	generic,
 	traits::{BlakeTwo256, IdentifyAccount, Verify, Header as HeaderT},
 	FixedU128, RuntimeDebug,
 };
 use sp_std::prelude::*;
 
 pub use currency::{CurrencyId, DexShare, TokenSymbol};
-pub use evm::{convert_decimals_from_evm, convert_decimals_to_evm};
+pub use evm::{
+	convert_decimals_from_evm, convert_decimals_to_evm, PRECOMPILE_ADDRESS_START,
+	PREDEPLOY_ADDRESS_START, SYSTEM_CONTRACT_ADDRESS_PREFIX,
+};
+pub use nft::NFTBalance;
 
 #[cfg(test)]
 mod tests;
@@ -106,13 +109,13 @@ pub type AuctionId = u32;
 pub type Share = u128;
 
 /// Header type.
-pub type Header = generic::Header<BlockNumber, BlakeTwo256>;
+pub type Header = sp_runtime::generic::Header<BlockNumber, BlakeTwo256>;
 
 /// Block type.
-pub type Block = generic::Block<Header, UncheckedExtrinsic>;
+pub type Block = sp_runtime::generic::Block<Header, UncheckedExtrinsic>;
 
 /// Block ID.
-pub type BlockId = generic::BlockId<Block>;
+pub type BlockId = sp_runtime::generic::BlockId<Block>;
 
 /// Block Count
 pub type BlockCount = u32;
@@ -213,7 +216,6 @@ pub enum ReserveIdentifier {
 	CollatorSelection,
 	EvmStorageDeposit,
 	EvmDeveloperDeposit,
-	,
 	Nft,
 	TransactionPayment,
 	TransactionPaymentDeposit,

@@ -37,7 +37,7 @@ use sp_core::OpaqueMetadata;
 use sp_runtime::{
 	traits::Block as BlockT,
 	transaction_validity::{TransactionSource, TransactionValidity},
-	ApplyExtrinsicResult,
+	ApplyExtrinsicResult, ExtrinsicInclusionMode,
 };
 use sp_std::vec::Vec;
 use sp_version::RuntimeVersion;
@@ -59,7 +59,7 @@ pub mod fake_runtime {
 				unimplemented!()
 			}
 
-			fn initialize_block(_: &<Block as BlockT>::Header) {
+			fn initialize_block(_: &<Block as BlockT>::Header) -> ExtrinsicInclusionMode {
 				unimplemented!()
 			}
 		}

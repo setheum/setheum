@@ -246,19 +246,6 @@ pub mod module {
 						
 						let locked = Pallet::<T>::locked_balance(*currency_id, who);
 						let _ = T::MultiCurrency::set_lock(VESTING_LOCK_ID, *currency_id, who, locked);
-
-						let _ = ensure_valid_vesting_schedule::<T>(*currency_id, &schedule).expect("Invalid vesting schedule");
-						let total = schedule.total_amount().unwrap();
-						assert!(
-							T::MultiCurrency::free_balance(*currency_id, who) >= total,
-							"Account does not have enough balance"
-						);
-
-							panic!("Max vesting schedules exceeded");
-						}
-						
-						let locked = Pallet::<T>::locked_balance(*currency_id, who);
-						let _ = T::MultiCurrency::set_lock(VESTING_LOCK_ID, *currency_id, who, locked);
 					}
 				});
 		}
@@ -391,22 +378,6 @@ impl<T: Config> Pallet<T> {
 				}
 				total
 			})
-				let total = if let Some(schedules) = maybe_schedules.as_mut() {
-					let mut total: BalanceOf<T> = Zero::zero();
-					schedules.retain(|s| {
-						let amount = s.locked_amount(now);
-						total = total.saturating_add(amount);
-						!amount.is_zero()
-					});
-					total
-				} else {
-					Zero::zero()
-				};
-				if total.is_zero() {
-					*maybe_schedules = None;
-				}
-				total
-			})
 		} else {
 			Zero::zero()
 		}
@@ -458,18 +429,6 @@ impl<T: Config> Pallet<T> {
 			);
 
 			T::MultiCurrency::set_lock(VESTING_LOCK_ID, T::GetNativeCurrencyId::get(), who, total_amount)?;
-				.try_into()
-
-			// empty vesting schedules cleanup the storage and unlock the fund
-			if bounded_schedules.len().is_zero() {
-				return Ok(());
-			}
-
-
-			ensure!(
-				Error::<T>::InsufficientBalanceToLock,
-			);
-
 		}
 		Ok(())
 	}

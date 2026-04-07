@@ -59,7 +59,7 @@ where
 	AccountId: Clone + Debug,
 	AddressMapping: AddressMappingT<AccountId>,
 	CurrencyIdMapping: CurrencyIdMappingT,
-	NFT: NFTT<AccountId, Balance = NFTBalance, ClassId = u32, TokenId = u64>,
+	NFT: NFTT<AccountId, u32, u64, Balance = NFTBalance>,
 {
 	fn execute(handle: &mut impl PrecompileHandle) -> result::Result<PrecompileOutput, PrecompileFailure> {
 		let input = Input::<Action, AccountId, AddressMapping, CurrencyIdMapping>::new(handle.input());

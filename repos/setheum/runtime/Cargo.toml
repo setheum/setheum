@@ -211,12 +211,15 @@ default-features = false
 
 [dependencies.pallet-evm]
 workspace = true
+default-features = false
 
 [dependencies.pallet-ethereum]
 workspace = true
+default-features = false
 
 [dependencies.fp-evm]
 workspace = true
+default-features = false
 
 [dependencies.pallet-session]
 workspace = true
