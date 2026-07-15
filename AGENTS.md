@@ -28,10 +28,33 @@ Most operations need `--features with-ethereum-compatibility`:
 | `set-bft/` | Rust | Set-BFT consensus engine |
 | `bridge/` | Rust + Go | Bridge (bridge-core, bridge-relayer) |
 | `setheum-js/` | TS/JS | JS SDK |
-| `sheyth/` | Rust | Smart Contract framework (Ink! fork) |
-| `spinit/` | Rust | Sheyth dev toolbox (drink) |
+| `sheyth/` | Rust | Sheyth smart contract framework (Ink! fork adapted for SheythVM) |
+| `sheyth-vm/` | Rust | **SheythVM** — RISC-V based VM (PolkaVM fork), standalone workspace |
+| `spinit/` | Rust | SheythVM contract testing toolkit (drink fork) |
+
+Plus supporting crates:
+- `sheyth-vm-uapi/` — Host function API types shared between Sheyth framework and SheythVM
 
 Cargo workspace root `Cargo.toml` includes all members. Go workspace (`go.work`) covers bridge-core + bridge-relayer.
+
+## Architecture — Smart Contracts
+
+**SheythVM** (`repos/sheyth-vm/`) is a RISC-V based VM (forked from PolkaVM). Contracts are written in Rust, compiled to `.sheythvm` bytecode.
+
+- **Pallet**: `pallet-sheyth-vm` at `runtime-modules/sheyth-vm/`
+- **Precompiles**: 27 host functions in `pallet-sheyth-vm/src/precompiles.rs`:
+  - *Solidity-compatible*: ecrecover, sha256, ripemd160, identity, modexp, bn128 add/mul/pairing
+  - *Sheyth-native*: token (ERC20 interface), currency, DEX, oracle, NFT, schedule
+- **Predeployed contracts**: at `predeploy-contracts/` — deployed at genesis (SEU, SEUSD, DEX)
+- **Contract framework**: `repos/sheyth/` — adapted Ink! fork, now targets SheythVM via `sheyth-vm-uapi` instead of `pallet-contracts-uapi`
+- **Testing**: `repos/spinit/` — Spinit (drink fork) uses `sheyth_vm::Engine` directly
+
+## Architecture — Consensus
+
+- **Aura** for block production
+- **Set-BFT** (at `repos/set-bft/`) for finality
+- **`finality-setbft/`** — Substrate node integration (wired in `node/src/service.rs`)
+- **`module_setbft/`** — On-chain pallet (SessionManager, OneSessionHandler)
 
 ## Rust Conventions
 
@@ -51,16 +74,17 @@ Cargo workspace root `Cargo.toml` includes all members. Go workspace (`go.work`)
 
 ## Architecture Notes
 
-- **Runtime entry**: `repos/setheum/runtime/src/lib.rs` — `construct_runtime!` with all 53+ pallets.
+- **Runtime entry**: `repos/setheum/runtime/src/lib.rs` — `construct_runtime!` with all pallets.
 - **Custom pallet dir**: `repos/setheum/runtime-modules/<pallet-name>/`.
 - **Node entry**: `repos/setheum/node/src/main.rs` — handles CLI, chain spec, service.
-- **Primitives**: `repos/setheum/primitives/` — shared types used across pallets.
-- **Consensus**: Aura block production + Grandpa finality + custom Set-BFT finality layer.
+- **Primitives**: `repos/setheum/primitives/` — shared types across pallets.
 - **Release build**: Uses `srtool` + `subwasm` for reproducible WASM. Release branches named `release-<chain>-<version>`.
 
 ## Important Constraints
 
 - **Submodules required**: `git submodule update --init --recursive` after clone.
 - **Don't commit** to master; release branches follow `release-setheum-<version>` pattern.
-- The `.agents/rules/setheum-builder.md` file contains general agent role instructions — prefer this file for repo-specific context.
+- The `.agents/rules/setheum-builder.md` file contains general agent role instructions.
 - License headers required on all Rust source files (GPL3 with Classpath exception). Use `mise run headers` to apply.
+- **EVM/Frontier has been removed** — all smart contracts run on SheythVM (RISC-V).
+- **SheythVM is a standalone workspace** (`repos/sheyth-vm/`) — not in root Cargo workspace.
