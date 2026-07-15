@@ -9,9 +9,6 @@ use std::{
 pub use contract_transcode;
 use contract_transcode::ContractMessageTranscoder;
 use error::SessionError;
-use sheyth_vm::{Module, ModuleConfig};
-
-use crate::SheythSandbox;
 use parity_scale_codec::Decode;
 pub use record::{EventBatch, Record};
 
@@ -32,13 +29,10 @@ pub const NO_ARGS: &[String] = &[];
 /// Convenient value for an empty salt.
 pub const NO_SALT: Option<[u8; 32]> = None;
 
-/// Wrapper around `SheythSandbox` that provides a convenient API for interacting with multiple contracts.
+/// Wrapper that provides a convenient API for interacting with SheythVM contracts.
 pub struct Session {
-	sandbox: SheythSandbox,
-
 	actor: [u8; 32],
 	gas_limit: u64,
-
 	transcoders: TranscoderRegistry,
 	record: Record,
 	mocks: Arc<Mutex<MockRegistry>>,
@@ -49,7 +43,6 @@ impl Default for Session {
 		let mocks = Arc::new(Mutex::new(MockRegistry::new()));
 
 		Self {
-			sandbox: SheythSandbox::new(),
 			mocks,
 			actor: [0u8; 32],
 			gas_limit: 500_000_000,
@@ -78,11 +71,6 @@ impl Session {
 	/// Sets a new gas limit and returns updated `self`.
 	pub fn with_gas_limit(self, gas_limit: u64) -> Self {
 		Self { gas_limit, ..self }
-	}
-
-	/// The underlying `SheythSandbox` instance.
-	pub fn sandbox(&mut self) -> &mut SheythSandbox {
-		&mut self.sandbox
 	}
 
 	/// Returns a reference to the record of the session.

@@ -16,7 +16,6 @@ frame-support = { workspace = true }
 frame-system = { workspace = true }
 parity-scale-codec = { workspace = true }
 sp-runtime = { workspace = true }
-sheyth-vm = { path = "../../sheyth-vm/crates/sheyth-vm" }
 sheyth-vm-uapi = { workspace = true }
 
 scale-info = { workspace = true }

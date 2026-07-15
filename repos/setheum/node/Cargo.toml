@@ -184,20 +184,6 @@ path = "../runtime-modules/oracle/rpc"
 [dependencies.module-nft]
 path = "../runtime-modules/nft"
 
-workspace = true
-
-workspace = true
-
-workspace = true
-
-workspace = true
-
-workspace = true
-
-workspace = true
-
-workspace = true
-
 [dependencies.setheum-primitives]
 workspace = true
 
