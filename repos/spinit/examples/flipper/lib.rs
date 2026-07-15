@@ -66,12 +66,12 @@ mod flipper {
 mod tests {
     use std::error::Error;
 
-    use drink::session::{Session, NO_ARGS, NO_ENDOWMENT, NO_SALT};
+    use spinit::session::{Session, NO_ARGS, NO_ENDOWMENT, NO_SALT};
 
-    #[drink::contract_bundle_provider]
+    #[spinit::contract_bundle_provider]
     enum BundleProvider {}
 
-    #[drink::test]
+    #[spinit::test]
     fn initialization(mut session: Session) -> Result<(), Box<dyn Error>> {
         let contract = BundleProvider::local()?;
         let init_value: bool = session
@@ -86,7 +86,7 @@ mod tests {
         Ok(())
     }
 
-    #[drink::test]
+    #[spinit::test]
     fn flipping(mut session: Session) -> Result<(), Box<dyn Error>> {
         let contract = BundleProvider::Flipper.bundle()?;
         let init_value: bool = session

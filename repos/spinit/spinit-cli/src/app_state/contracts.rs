@@ -35,72 +35,66 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#![cfg_attr(not(feature = "std"), no_std, no_main)]
+use std::{path::PathBuf, sync::Arc};
 
-#[ink::contract]
-mod checker {
-    use ink::{
-        env::{
-            call::{build_call, ExecutionInput, Selector},
-            DefaultEnvironment,
-        },
-        H160,
-    };
+use contract_transcode::ContractMessageTranscoder;
+use spinit::pallet_revive::evm::H160;
+use ContractIndex::NoContracts;
 
-    #[ink(storage)]
-    pub struct Checker {
-        contract: H160,
-    }
+use crate::app_state::ContractIndex::CurrentContract;
 
-    impl Checker {
-        #[ink(constructor)]
-        pub fn new(contract: H160) -> Self {
-            Self { contract }
-        }
-
-        #[ink(message)]
-        pub fn check(&self) -> bool {
-            build_call::<DefaultEnvironment>()
-                .call(self.contract)
-                .exec_input(ExecutionInput::new(Selector::new(ink::selector_bytes!(
-                    "get"
-                ))))
-                .returns::<bool>()
-                .invoke()
-        }
-    }
+pub struct Contract {
+    pub name: String,
+    pub address: H160,
+    pub base_path: PathBuf,
+    #[allow(dead_code)]
+    pub transcoder: Arc<ContractMessageTranscoder>,
 }
 
-#[cfg(test)]
-mod tests {
-    use std::error::Error;
+#[derive(Copy, Clone, Eq, PartialEq, Debug, Default)]
+pub enum ContractIndex {
+    #[default]
+    NoContracts,
+    CurrentContract(usize),
+}
 
-    use spinit::session::{Session, NO_ARGS, NO_ENDOWMENT};
+#[derive(Default)]
+pub struct ContractRegistry {
+    contracts: Vec<Contract>,
+    index: ContractIndex,
+}
 
-    #[spinit::contract_bundle_provider]
-    enum BundleProvider {}
+impl ContractRegistry {
+    pub fn add(&mut self, contract: Contract) {
+        self.contracts.push(contract);
+        self.index = CurrentContract(self.contracts.len() - 1);
+    }
 
-    #[spinit::test]
-    fn contracts_work_correctly(mut session: Session) -> Result<(), Box<dyn Error>> {
-        let contract = session.deploy_bundle(
-            BundleProvider::Flipper.bundle()?,
-            "new",
-            &["true"],
-            Some([1; 32]),
-            NO_ENDOWMENT,
-        )?;
+    pub fn current_index(&self) -> ContractIndex {
+        self.index
+    }
 
-        let _checker_contract = session.deploy_bundle(
-            BundleProvider::local()?,
-            "new",
-            &[format!("{:?}", contract)],
-            Some([2; 32]),
-            NO_ENDOWMENT,
-        )?;
+    pub fn current_contract(&self) -> Option<&Contract> {
+        match self.index {
+            NoContracts => None,
+            CurrentContract(idx) => Some(&self.contracts[idx]),
+        }
+    }
 
-        let value: bool = session.call("check", NO_ARGS, NO_ENDOWMENT)??;
-        assert!(value);
+    pub fn get_all(&self) -> &[Contract] {
+        &self.contracts
+    }
 
-        Ok(())
+    pub fn next(&mut self) -> Option<&Contract> {
+        let CurrentContract(old_index) = self.index else {
+            return None;
+        };
+
+        self.index = CurrentContract((old_index + 1) % self.contracts.len());
+        self.current_contract()
+    }
+
+    pub fn count(&self) -> usize {
+        self.contracts.len()
     }
 }

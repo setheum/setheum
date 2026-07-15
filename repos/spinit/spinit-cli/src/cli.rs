@@ -35,72 +35,60 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#![cfg_attr(not(feature = "std"), no_std, no_main)]
+use clap::Parser;
+use spinit::{AccountId32, Ss58Codec};
 
-#[ink::contract]
-mod checker {
-    use ink::{
-        env::{
-            call::{build_call, ExecutionInput, Selector},
-            DefaultEnvironment,
-        },
-        H160,
-    };
+#[derive(Parser)]
+pub enum CliCommand {
+    #[clap(alias = "c")]
+    Clear,
+    #[clap(alias = "cd")]
+    ChangeDir {
+        path: String,
+    },
 
-    #[ink(storage)]
-    pub struct Checker {
-        contract: H160,
-    }
+    #[clap(alias = "nb")]
+    NextBlock {
+        #[clap(default_value = "1")]
+        count: u32,
+    },
+    AddTokens {
+        #[clap(value_parser = AccountId32::from_ss58check)]
+        recipient: AccountId32,
+        value: u128,
+    },
+    SetActor {
+        #[clap(value_parser = AccountId32::from_ss58check)]
+        actor: AccountId32,
+    },
+    SetGasLimit {
+        ref_time: u64,
+        proof_size: u64,
+    },
 
-    impl Checker {
-        #[ink(constructor)]
-        pub fn new(contract: H160) -> Self {
-            Self { contract }
-        }
-
-        #[ink(message)]
-        pub fn check(&self) -> bool {
-            build_call::<DefaultEnvironment>()
-                .call(self.contract)
-                .exec_input(ExecutionInput::new(Selector::new(ink::selector_bytes!(
-                    "get"
-                ))))
-                .returns::<bool>()
-                .invoke()
-        }
-    }
+    #[clap(alias = "b")]
+    Build,
+    #[clap(alias = "d")]
+    Deploy {
+        #[clap(long, default_value = "new")]
+        constructor: String,
+        args: Vec<String>,
+        #[clap(long, default_values_t = Vec::<u8>::new(), value_delimiter = ',')]
+        salt: Vec<u8>,
+    },
+    Call {
+        message: String,
+        args: Vec<String>,
+    },
 }
 
 #[cfg(test)]
 mod tests {
-    use std::error::Error;
+    use super::*;
 
-    use spinit::session::{Session, NO_ARGS, NO_ENDOWMENT};
-
-    #[spinit::contract_bundle_provider]
-    enum BundleProvider {}
-
-    #[spinit::test]
-    fn contracts_work_correctly(mut session: Session) -> Result<(), Box<dyn Error>> {
-        let contract = session.deploy_bundle(
-            BundleProvider::Flipper.bundle()?,
-            "new",
-            &["true"],
-            Some([1; 32]),
-            NO_ENDOWMENT,
-        )?;
-
-        let _checker_contract = session.deploy_bundle(
-            BundleProvider::local()?,
-            "new",
-            &[format!("{:?}", contract)],
-            Some([2; 32]),
-            NO_ENDOWMENT,
-        )?;
-
-        let value: bool = session.call("check", NO_ARGS, NO_ENDOWMENT)??;
-        assert!(value);
-
-        Ok(())
+    #[test]
+    fn verify_cli() {
+        use clap::CommandFactory;
+        CliCommand::command().debug_assert()
     }
 }

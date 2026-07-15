@@ -4,7 +4,7 @@ name = "chain-extension"
 authors = [ "Afsall Labs", "Setheum Foundation",]
 edition = "2021"
 homepage = "https://setheum.com"
-repository = "https://github.com/use-ink/drink"
+repository = "https://github.com/use-ink/spinit"
 version = "0.1.0"
 
 [lib]
@@ -31,7 +31,7 @@ features = [ "derive",]
 default-features = false
 optional = true
 
-[dev-dependencies.drink]
+[dev-dependencies.spinit]
 workspace = true
 
 [dev-dependencies.frame-system]

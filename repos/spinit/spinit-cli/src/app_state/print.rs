@@ -35,72 +35,57 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#![cfg_attr(not(feature = "std"), no_std, no_main)]
+use spinit::pallet_revive::ContractResult;
+use ratatui::{
+    style::{Color, Modifier, Style},
+    text::Span,
+};
 
-#[ink::contract]
-mod checker {
-    use ink::{
-        env::{
-            call::{build_call, ExecutionInput, Selector},
-            DefaultEnvironment,
-        },
-        H160,
-    };
+use crate::app_state::AppState;
 
-    #[ink(storage)]
-    pub struct Checker {
-        contract: H160,
+impl AppState {
+    pub fn print_command(&mut self, command: &str) {
+        self.ui_state.output.push("".into());
+        self.ui_state.output.push(
+            Span::styled(
+                format!("Executing `{command}`"),
+                Style::default()
+                    .fg(Color::Blue)
+                    .add_modifier(Modifier::BOLD)
+                    .add_modifier(Modifier::ITALIC),
+            )
+            .into(),
+        );
     }
 
-    impl Checker {
-        #[ink(constructor)]
-        pub fn new(contract: H160) -> Self {
-            Self { contract }
-        }
+    pub fn print(&mut self, msg: &str) {
+        self.print_sequence(
+            msg.split('\n'),
+            Style::default()
+                .fg(Color::White)
+                .add_modifier(Modifier::BOLD),
+        );
+    }
 
-        #[ink(message)]
-        pub fn check(&self) -> bool {
-            build_call::<DefaultEnvironment>()
-                .call(self.contract)
-                .exec_input(ExecutionInput::new(Selector::new(ink::selector_bytes!(
-                    "get"
-                ))))
-                .returns::<bool>()
-                .invoke()
+    pub fn print_error(&mut self, err: &str) {
+        self.print_sequence(
+            err.split('\n'),
+            Style::default().fg(Color::Red).add_modifier(Modifier::BOLD),
+        );
+    }
+
+    fn print_sequence<'a, I: Iterator<Item = &'a str>>(&mut self, seq: I, style: Style) {
+        for line in seq {
+            self.ui_state
+                .output
+                .push(Span::styled(line.to_string(), style).into());
         }
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use std::error::Error;
-
-    use spinit::session::{Session, NO_ARGS, NO_ENDOWMENT};
-
-    #[spinit::contract_bundle_provider]
-    enum BundleProvider {}
-
-    #[spinit::test]
-    fn contracts_work_correctly(mut session: Session) -> Result<(), Box<dyn Error>> {
-        let contract = session.deploy_bundle(
-            BundleProvider::Flipper.bundle()?,
-            "new",
-            &["true"],
-            Some([1; 32]),
-            NO_ENDOWMENT,
-        )?;
-
-        let _checker_contract = session.deploy_bundle(
-            BundleProvider::local()?,
-            "new",
-            &[format!("{:?}", contract)],
-            Some([2; 32]),
-            NO_ENDOWMENT,
-        )?;
-
-        let value: bool = session.call("check", NO_ARGS, NO_ENDOWMENT)??;
-        assert!(value);
-
-        Ok(())
-    }
+pub fn format_contract_action<R>(result: &ContractResult<R, u128>) -> String {
+    format!(
+        "Gas consumed: {:?}\nGas required: {:?}\n",
+        result.gas_consumed, result.gas_required
+    )
 }

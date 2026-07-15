@@ -79,7 +79,7 @@ mod proxy {
 mod tests {
     use std::error::Error;
 
-    use drink::{
+    use spinit::{
         mock_message,
         session::{mocking_api::MockingApi, Session, NO_ARGS, NO_ENDOWMENT, NO_SALT},
         ContractMock,
@@ -87,10 +87,10 @@ mod tests {
 
     use crate::CALLEE_SELECTOR;
 
-    #[drink::contract_bundle_provider]
+    #[spinit::contract_bundle_provider]
     enum BundleProvider {}
 
-    #[drink::test]
+    #[spinit::test]
     fn call_mocked_message(mut session: Session) -> Result<(), Box<dyn Error>> {
         // Firstly, we create the mocked contract.
         const RETURN_VALUE: (u8, u8) = (4, 1);

@@ -1,0 +1,34 @@
+[package]
+name = "pallet-sheyth-vm"
+version = "0.1.0"
+authors.workspace = true
+edition.workspace = true
+homepage.workspace = true
+repository.workspace = true
+license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
+description = "SheythVM smart contract pallet for Setheum"
+
+[dependencies]
+parity-scale-codec = { workspace = true, default-features = false }
+scale-info = { workspace = true, default-features = false }
+log = { workspace = true, default-features = false }
+
+frame-support = { workspace = true, default-features = false }
+frame-system = { workspace = true, default-features = false }
+sp-runtime = { workspace = true, default-features = false }
+sp-std = { workspace = true, default-features = false }
+
+primitives = { workspace = true, default-features = false }
+
+[features]
+default = ["std"]
+std = [
+	"parity-scale-codec/std",
+	"scale-info/std",
+	"frame-support/std",
+	"frame-system/std",
+	"sp-runtime/std",
+	"sp-std/std",
+	"log/std",
+	"primitives/std",
+]

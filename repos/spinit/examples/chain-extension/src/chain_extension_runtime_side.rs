@@ -36,7 +36,7 @@
 // SOFTWARE.
 
 /*
-use drink::pallet_revive::{
+use spinit::pallet_revive::{
     chain_extension::{ChainExtension, Config as ContractsConfig, Environment, Ext, RetVal},
     wasm::Memory,
 };
@@ -52,7 +52,7 @@ impl<Runtime: ContractsConfig> ChainExtension<Runtime> for StakingExtension {
     fn call<E: Ext<T = Runtime>, M: ?Sized + Memory<E::T>>(
         &mut self,
         env: Environment<E, M>,
-    ) -> drink::pallet_revive::chain_extension::Result<RetVal> {
+    ) -> spinit::pallet_revive::chain_extension::Result<RetVal> {
         // Ensure that the contract called extension method with id `41`.
         assert_eq!(env.func_id(), 41);
 

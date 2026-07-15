@@ -1,7 +1,7 @@
 [package]
 license = "Apache-2.0 OR MIT"
-name = "flipper"
-authors = [ "Afsall Labs", "Setheum Foundation",]
+name = "quick-start-with-spinit"
+authors = [ "Cardinal",]
 edition = "2021"
 homepage = "https://setheum.com"
 repository = "https://github.com/use-ink/spinit"
@@ -17,6 +17,7 @@ ink-as-dependency = []
 
 [dependencies.ink]
 workspace = true
+features = [ "ink-debug",]
 default-features = false
 
 [dev-dependencies.spinit]

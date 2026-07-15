@@ -1,0 +1,32 @@
+[package]
+name = "spinit"
+authors.workspace = true
+edition.workspace = true
+homepage.workspace = true
+license = "Apache-2.0 OR MIT"
+readme.workspace = true
+repository.workspace = true
+version.workspace = true
+description = "SheythVM sandbox for testing smart contracts without a running node"
+
+[dependencies]
+contract-metadata = { workspace = true, optional = true }
+contract-transcode = { workspace = true, optional = true }
+frame-support = { workspace = true }
+frame-system = { workspace = true }
+parity-scale-codec = { workspace = true }
+sp-runtime = { workspace = true }
+sheyth-vm = { path = "../../sheyth-vm/crates/sheyth-vm" }
+sheyth-vm-uapi = { workspace = true }
+
+scale-info = { workspace = true }
+serde_json = { workspace = true, optional = true }
+thiserror = { workspace = true }
+
+spinit-test-macro = { workspace = true }
+
+[features]
+default = ["std", "session", "macros"]
+session = ["contract-metadata", "contract-transcode", "serde_json"]
+macros = ["contract-metadata", "contract-transcode", "serde_json"]
+std = []

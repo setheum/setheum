@@ -184,25 +184,18 @@ path = "../runtime-modules/oracle/rpc"
 [dependencies.module-nft]
 path = "../runtime-modules/nft"
 
-[dependencies.fc-rpc]
 workspace = true
 
-[dependencies.fc-rpc-core]
 workspace = true
 
-[dependencies.fc-db]
 workspace = true
 
-[dependencies.fc-mapping-sync]
 workspace = true
 
-[dependencies.fp-rpc]
 workspace = true
 
-[dependencies.pallet-evm]
 workspace = true
 
-[dependencies.pallet-ethereum]
 workspace = true
 
 [dependencies.setheum-primitives]

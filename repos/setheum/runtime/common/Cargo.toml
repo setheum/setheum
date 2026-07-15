@@ -10,7 +10,6 @@ default = ["std"]
 std = [
 	"codec/std",
 	"ethabi/std",
-	"fp-evm/std",
 	"frame-support/std",
 	"frame-system/std",
 	"log/std",
@@ -20,8 +19,6 @@ std = [
 	"module-transaction-payment/std",
 	"num_enum/std",
 	"pallet-collective/std",
-	"pallet-evm/std",
-	"pallet-evm-precompile-simple/std",
 	"pallet-membership/std",
 	"pallet-scheduler/std",
 	"primitives/std",
@@ -96,15 +93,12 @@ default-features = false
 workspace = true
 default-features = false
 
-[dependencies.pallet-evm]
 workspace = true
 default-features = false
 
-[dependencies.fp-evm]
 workspace = true
 default-features = false
 
-[dependencies.pallet-evm-precompile-simple]
 workspace = true
 default-features = false
 

@@ -35,72 +35,44 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#![cfg_attr(not(feature = "std"), no_std, no_main)]
+//! Module gathering common error and result types.
 
-#[ink::contract]
-mod checker {
-    use ink::{
-        env::{
-            call::{build_call, ExecutionInput, Selector},
-            DefaultEnvironment,
-        },
-        H160,
-    };
+use thiserror::Error;
 
-    #[ink(storage)]
-    pub struct Checker {
-        contract: H160,
-    }
-
-    impl Checker {
-        #[ink(constructor)]
-        pub fn new(contract: H160) -> Self {
-            Self { contract }
-        }
-
-        #[ink(message)]
-        pub fn check(&self) -> bool {
-            build_call::<DefaultEnvironment>()
-                .call(self.contract)
-                .exec_input(ExecutionInput::new(Selector::new(ink::selector_bytes!(
-                    "get"
-                ))))
-                .returns::<bool>()
-                .invoke()
-        }
-    }
+/// Main error type for the spinit crate.
+#[derive(Clone, Error, Debug)]
+pub enum Error {
+    /// Externalities could not be initialized.
+    #[error("Failed to build storage: {0}")]
+    StorageBuilding(String),
+    /// Bundle loading and parsing has failed
+    #[error("Loading the contract bundle has failed: {0}")]
+    BundleLoadFailed(String),
 }
 
-#[cfg(test)]
-mod tests {
-    use std::error::Error;
-
-    use spinit::session::{Session, NO_ARGS, NO_ENDOWMENT};
-
-    #[spinit::contract_bundle_provider]
-    enum BundleProvider {}
-
-    #[spinit::test]
-    fn contracts_work_correctly(mut session: Session) -> Result<(), Box<dyn Error>> {
-        let contract = session.deploy_bundle(
-            BundleProvider::Flipper.bundle()?,
-            "new",
-            &["true"],
-            Some([1; 32]),
-            NO_ENDOWMENT,
-        )?;
-
-        let _checker_contract = session.deploy_bundle(
-            BundleProvider::local()?,
-            "new",
-            &[format!("{:?}", contract)],
-            Some([2; 32]),
-            NO_ENDOWMENT,
-        )?;
-
-        let value: bool = session.call("check", NO_ARGS, NO_ENDOWMENT)??;
-        assert!(value);
-
-        Ok(())
-    }
+/// Every contract message wraps its return value in `Result<T, LangResult>`. This is the error
+/// type.
+///
+/// Copied from ink primitives.
+#[non_exhaustive]
+#[repr(u32)]
+#[derive(
+    Debug,
+    Copy,
+    Clone,
+    PartialEq,
+    Eq,
+    parity_scale_codec::Encode,
+    parity_scale_codec::Decode,
+    scale_info::TypeInfo,
+    Error,
+)]
+pub enum LangError {
+    /// Failed to read execution input for the dispatchable.
+    #[error("Failed to read execution input for the dispatchable.")]
+    CouldNotReadInput = 1u32,
 }
+
+/// The `Result` type for ink! messages.
+pub type MessageResult<T> = Result<T, LangError>;
+
