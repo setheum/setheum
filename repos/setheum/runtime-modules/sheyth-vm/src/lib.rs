@@ -4,6 +4,8 @@ use frame_support::pallet_prelude::*;
 use frame_system::pallet_prelude::*;
 
 pub use pallet::*;
+pub mod precompiles;
+pub mod predeployed;
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -33,4 +35,7 @@ pub mod pallet {
 
 	#[pallet::storage]
 	pub type ContractCode<T: Config> = StorageMap<_, Blake2_128Concat, [u8; 32], Vec<u8>, OptionQuery>;
+
+	#[pallet::storage]
+	pub type ContractNonce<T: Config> = StorageMap<_, Blake2_128Concat, [u8; 32], u64, ValueQuery>;
 }

@@ -6,7 +6,7 @@ edition.workspace = true
 homepage.workspace = true
 repository.workspace = true
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
-description = "SheythVM smart contract pallet for Setheum"
+description = "SheythVM smart contract pallet with Ethereum-compatible and Sheyth-native precompiles"
 
 [dependencies]
 parity-scale-codec = { workspace = true, default-features = false }
@@ -17,6 +17,7 @@ frame-support = { workspace = true, default-features = false }
 frame-system = { workspace = true, default-features = false }
 sp-runtime = { workspace = true, default-features = false }
 sp-std = { workspace = true, default-features = false }
+sp-io = { workspace = true, default-features = false }
 
 primitives = { workspace = true, default-features = false }
 
@@ -29,6 +30,7 @@ std = [
 	"frame-system/std",
 	"sp-runtime/std",
 	"sp-std/std",
+	"sp-io/std",
 	"log/std",
 	"primitives/std",
 ]
