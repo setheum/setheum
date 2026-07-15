@@ -110,8 +110,8 @@ pub enum RmcResponse<H: Hasher, S: Signature, MS: PartialMultisignature> {
 }
 
 /// The component responsible for fork alerts in SetBFT. We refer to the documentation
-/// https://cardinal-cryptography.github.io/SetBFT/how_setbft_does_it.html Section 2.5 and
-/// https://cardinal-cryptography.github.io/SetBFT/reliable_broadcast.html and to the Set
+/// https://setheum.com/docs/setbft/how_setbft_does_it.html Section 2.5 and
+/// https://setheum.com/docs/setbft/reliable_broadcast.html and to the Set
 /// paper https://arxiv.org/abs/1908.05156 Appendix A1 for a discussion.
 pub struct Handler<H: Hasher, D: Data, MK: MultiKeychain> {
     session_id: SessionId,

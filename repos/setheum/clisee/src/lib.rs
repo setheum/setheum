@@ -32,7 +32,7 @@ mod version_upgrade;
 mod vesting;
 mod vk_storage;
 
-pub use commands::{Command, VkStorage, MoveCommand, MoveExecute, MovePublish};
+pub use commands::{Command, VkStorage};
 pub use contracts::{call, code_info, instantiate, instantiate_with_code, remove_code, upload_code};
 pub use finalization::{finalize, set_emergency_finalizer};
 pub use keys::{next_session_keys, prepare_keys, rotate_keys, set_keys};

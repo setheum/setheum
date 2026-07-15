@@ -173,9 +173,9 @@ Unless you explicitly state otherwise, any contribution that you submit to this 
 The implementation in this repository is funded by [Set Zero Foundation][webpage-link].
 
 [//]: ### "badges"
-[dataio-link]: https://cardinal-cryptography.github.io/SetBFT/set_bft_api.html#311-dataio
-[network-link]: https://cardinal-cryptography.github.io/SetBFT/set_bft_api.html#312-network
-[keychain-link]: https://cardinal-cryptography.github.io/SetBFT/set_bft_api.html#313-keychain
+[dataio-link]: https://setheum.com/docs/setbft/set_bft_api.html#311-dataio
+[network-link]: https://setheum.com/docs/setbft/set_bft_api.html#312-network
+[keychain-link]: https://setheum.com/docs/setbft/set_bft_api.html#313-keychain
 [crate-image]: https://img.shields.io/crates/v/set-bft.svg
 [crate-link]: https://crates.io/crates/set-bft
 [docs-image]: https://docs.rs/set-bft/badge.svg
@@ -188,9 +188,9 @@ The implementation in this repository is funded by [Set Zero Foundation][webpage
 [cargo-audit-image]: https://github.com/setheum/set-bft/actions/workflows/cargo-audit.yml/badge.svg
 [cargo-audit-link]: https://github.com/setheum/set-bft/actions/workflows/cargo-audit.yml
 [//]: ### "general links"
-[reference-link]: https://Afsall-Labs.github.io/SetBFT/index.html
-[reference-link-implementation-details]: https://cardinal-cryptography.github.io/SetBFT/differences.html
-[reference-link-api]: https://cardinal-cryptography.github.io/SetBFT/set_bft_api.html
+[reference-link]: https://setheum.com/docs/setbft/index.html
+[reference-link-implementation-details]: https://setheum.com/docs/setbft/differences.html
+[reference-link-api]: https://setheum.com/docs/setbft/set_bft_api.html
 [paper-link]: https://arxiv.org/abs/1908.05156
 [old-paper-link]: https://arxiv.org/abs/1810.05256
 [set-node-link]: https://github.com/Afsall-Labs/set-node

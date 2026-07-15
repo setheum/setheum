@@ -28,13 +28,11 @@ sp-session = { workspace = true }
 sp-inherents = { workspace = true }
 
 primitives = { workspace = true , default-features = false }
-module-setbft-runtime-api = { workspace = true , default-features = false }
 
 [features]
 default = ["std"]
 std = [
     "primitives/std",
-    "module-setbft-runtime-api/std",
     "sp-api/std",
     "sp-core/std",
     "sp-std/std",

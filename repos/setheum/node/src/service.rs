@@ -32,7 +32,6 @@ use finality_setbft::{
 	RedirectingBlockImport, SessionPeriod, SetheumNodeConfig, SubstrateChainStatus, SyncOracle, ValidatorAddressCache,
 };
 use log::warn;
-use module_setbft_runtime_api::SetBftApi;
 use primitives::{Block, DEFAULT_BACKUP_FOLDER, MAX_BLOCK_SIZE};
 use sc_basic_authorship::ProposerFactory;
 use sc_client_api::HeaderBackend;

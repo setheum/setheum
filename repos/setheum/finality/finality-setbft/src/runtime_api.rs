@@ -25,7 +25,7 @@ use std::{
 };
 
 use frame_support::StorageHasher;
-use module_setbft_runtime_api::SetBFTSessionApi;
+use primitives::setbft::SetBFTSessionApi;
 use parity_scale_codec::{Decode, DecodeAll, Encode, Error as DecodeError};
 use sc_client_api::Backend;
 use sc_transaction_pool_api::{LocalTransactionPool, OffchainTransactionPoolFactory};

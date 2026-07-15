@@ -1,0 +1,16 @@
+[package]
+name = "sheyth-vm-uapi"
+version = "0.1.0"
+authors = ["Setheum Developers"]
+edition = "2021"
+license = "Apache-2.0 OR MIT"
+description = "Unified API for SheythVM host functions used by the Sheyth smart contract framework"
+
+[dependencies]
+parity-scale-codec = { version = "3.7", default-features = false, features = ["derive"] }
+scale-info = { version = "2.11", default-features = false, features = ["derive"] }
+bitflags = { version = "2.4", default-features = false }
+
+[features]
+default = ["std"]
+std = ["parity-scale-codec/std", "scale-info/std", "bitflags/std"]

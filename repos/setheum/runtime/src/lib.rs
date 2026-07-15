@@ -421,12 +421,32 @@ impl pallet_aura::Config for Runtime {
 }
 
 // SetBFT pallet replaces Grandpa as the finality gadget
-// impl module_setbft::Config for Runtime {
-// 	type AuthorityId = primitives::AuthorityId;
-// 	type RuntimeEvent = Event;
-// 	type SessionInfoProvider = SessionInfoImpl;
-// 	type SessionManager = pallet_session::historical::NoteHistoricalRoot<Self, Staking>;
-// }
+
+pub struct SessionInfoImpl;
+impl primitives::setbft::SessionInfoProvider<BlockNumber> for SessionInfoImpl {
+	fn current_session() -> primitives::setbft::SessionIndex {
+		pallet_session::Pallet::<Runtime>::current_index()
+	}
+	fn next_session_block_number(current_block: BlockNumber) -> Option<BlockNumber> {
+		let session_period = SessionPeriod::get();
+		let current_session = pallet_session::Pallet::<Runtime>::current_index();
+		let next_session = current_session + 1;
+		let current_session_start = next_session * session_period;
+		if current_block < current_session_start {
+			Some(current_session_start)
+		} else {
+			Some(current_session_start + session_period)
+		}
+	}
+}
+
+impl module_setbft::Config for Runtime {
+	type AuthorityId = primitives::AuthorityId;
+	type RuntimeEvent = Event;
+	type SessionInfoProvider = SessionInfoImpl;
+	type SessionManager = pallet_session::historical::NoteHistoricalRoot<Self, Staking>;
+	type NextSessionAuthorityProvider = module_traits::SessionNextSessionAuthorityProvider<Runtime>;
+}
 
 
 parameter_types! {
@@ -1545,7 +1565,7 @@ construct_runtime!(
 // Consensus - Aura + SetBFT (replacing Babe + Grandpa)
 		Authorship: pallet_authorship::{Pallet, Call, Storage, Inherent} = 47,
 		Aura: pallet_aura::{Pallet, Config, Storage} = 48,
-		// SetBFT: module_setbft::{Pallet, Call, Config<T>, Storage, Event<T>} = 49,
+		SetBFT: module_setbft::{Pallet, Call, Config<T>, Storage, Event<T>} = 49,
 		Staking: pallet_staking::{Pallet, Call, Config<T>, Storage, Event<T>} = 50,
 		Session: pallet_session::{Pallet, Call, Storage, Event, Config<T>} = 51,
 		Historical: pallet_session_historical::{Pallet} = 52,

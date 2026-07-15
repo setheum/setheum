@@ -44,7 +44,7 @@ use ink_storage_traits::{
     StorableHint,
     StorageKey,
 };
-use pallet_contracts_uapi::ReturnErrorCode;
+use sheyth_vm_uapi::ReturnErrorCode;
 use scale::EncodeLike;
 
 use crate::{

@@ -20,7 +20,7 @@
 
 use std::sync::Arc;
 
-use module_setbft_runtime_api::SetBFTSessionApi;
+use primitives::setbft::SetBFTSessionApi;
 use primitives::{AccountId, AuraId, BlockHash, BlockNumber};
 use sc_client_api::Backend;
 use sp_consensus_aura::AuraApi;

@@ -50,7 +50,7 @@ use extender::Extender;
 /// this process checks whether a new round can be finalized and if so, it computes the batch of
 /// units that should be finalized, and uses the finalization handler to report that to the user.
 ///
-/// We refer to the documentation https://cardinal-cryptography.github.io/SetBFT/internals.html
+    /// We refer to the documentation https://setheum.com/docs/setbft/internals.html
 /// Section 5.4 for a discussion of this component.
 pub struct Ordering<MK: MultiKeychain, UFH: UnitFinalizationHandler> {
     extender: Extender<DagUnit<UFH::Hasher, UFH::Data, MK>>,

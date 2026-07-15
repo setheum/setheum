@@ -39,7 +39,7 @@ use derive_more::From;
 
 #[cfg(any(feature = "std", test, doc))]
 use crate::engine::off_chain::OffChainError;
-use pallet_contracts_uapi::ReturnErrorCode;
+use sheyth_vm_uapi::ReturnErrorCode;
 
 /// Errors that can be encountered upon environmental interaction.
 #[derive(Debug, From, PartialEq, Eq)]

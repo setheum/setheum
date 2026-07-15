@@ -24,7 +24,7 @@ use async_trait::async_trait;
 use futures::channel::oneshot;
 use log::{debug, info, trace, warn};
 use network_clique::SpawnHandleExt;
-use module_setbft_runtime_api::SetBFTSessionApi;
+use primitives::setbft::SetBFTSessionApi;
 use sc_keystore::{Keystore, LocalKeystore};
 use sp_application_crypto::RuntimeAppPublic;
 use sp_runtime::traits::{Block as BlockT, Header as HeaderT};

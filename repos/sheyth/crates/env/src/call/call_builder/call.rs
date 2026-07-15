@@ -53,7 +53,7 @@ use crate::{
     Gas,
 };
 use num_traits::Zero;
-use pallet_contracts_uapi::CallFlags;
+use sheyth_vm_uapi::CallFlags;
 
 /// The default call type for cross-contract calls, for calling into the latest `call_v2`
 /// host function. This adds the additional weight limit parameter `proof_size_limit` as

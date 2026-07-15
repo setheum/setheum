@@ -61,7 +61,7 @@ const LOG_TARGET: &str = "SetBFT-rmc";
 /// signatures to form a complete multisignature under the message, [`Service::process_message`]
 /// will return the multisigned hash.
 ///
-/// We refer to the documentation https://cardinal-cryptography.github.io/SetBFT/reliable_broadcast.html
+    /// We refer to the documentation https://setheum.com/docs/setbft/reliable_broadcast.html
 /// for a high-level description of this protocol and how it is used for fork alerts.
 pub struct Service<H, MK, SCH>
 where

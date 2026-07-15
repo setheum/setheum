@@ -211,9 +211,6 @@ workspace = true
 [dependencies.finality-setbft]
 workspace = true
 
-[dependencies.module-setbft-runtime-api]
-workspace = true
-
 [dependencies.setheum-runtime]
 workspace = true
 default-features = false

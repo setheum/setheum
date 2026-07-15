@@ -85,7 +85,7 @@ workspace = true
 [dependencies.sp-weights]
 workspace = true
 
-[dependencies.pallet-contracts-uapi]
+[dependencies.sheyth-vm-uapi]
 workspace = true
 features = [ "scale",]
 
