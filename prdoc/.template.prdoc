@@ -1,0 +1,11 @@
+# Schema: Setheum PRDoc Schema v1.0.0
+# See doc at https://raw.githubusercontent.com/setheum/setheum/master/prdoc/schema_user.json
+
+title: ...
+
+doc:
+  - audience: ...
+    description: |
+      ...
+
+crates: [ ]
