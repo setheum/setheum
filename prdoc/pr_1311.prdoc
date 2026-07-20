@@ -1,0 +1,11 @@
+title: "asymptote - Convert repos/sheyth-vm from submodule to workspace member"
+
+doc:
+  - audience: Runtime Dev
+    description: |
+      Converts repos/sheyth-vm from a git submodule to a regular workspace member.
+      Adds a stub implementation with Linker and Engine types.
+
+crates:
+  - name: sheyth-vm
+    bump: minor
