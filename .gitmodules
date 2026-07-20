@@ -1,0 +1,3 @@
+[submodule repos/sheyth-vm]
+	path = repos/sheyth-vm
+	url = https://github.com/setheum/sheyth-vm.git
