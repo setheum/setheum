@@ -40,19 +40,17 @@ jobs:
             switch (cmd) {
               case 'runtime': {
                 const [runtime, pallet] = args
-                if (!['setheum', 'setheum', 'setheum'].includes(runtime)) throw new Error('Invalid runtime')
-                return `make benchmark-${runtime} options="--quiet --color=never" pallet=${pallet ?? "*"}`
+                if (!['setheum'].includes(runtime)) throw new Error('Invalid runtime')
+                return `cargo run --release --features=runtime-benchmarks,with-ethereum-compatibility -- benchmark --chain=dev --steps=50 --repeat=20 --pallet=${pallet ?? "*"} --extrinsic=* --execution=wasm --wasm-execution=compiled --heap-pages=4096 --template=.maintain/runtime-weight-template.hbs --output=./repos/setheum/runtime/src/weights/`
               }
-              case 'module':
+              case 'module': {
                 const [pallet] = args
-                // pallet folder should be just the name of the pallet, without the leading
-                // "pallet_" or "frame_", then separated with "-"
-                const palletFolder = pallet.split('_').slice(1).join('-').trim()
-                return `make benchmark-module options="--quiet --color=never" pallet=${pallet} pallet_folder=${palletFolder}`
+                return `cargo run --release --features=runtime-benchmarks,with-ethereum-compatibility -- benchmark --chain=dev --steps=50 --repeat=20 --pallet=${pallet} --extrinsic=* --execution=wasm --wasm-execution=compiled --heap-pages=4096 --template=.maintain/runtime-weight-template.hbs --output=./repos/setheum/runtime/src/weights/`
+              }
               case 'evm':
-                return 'make bench-evm'
+                throw new Error('EVM benchmarks not supported - use SheythVM benchmarks instead')
               default:
-                throw new Error('Invalid command')
+                throw new Error('Invalid command. Use: /bench runtime [setheum] [pallet] or /bench module [pallet]')
             }
       - uses: actions/github-script@v7
         name: Post comment
