@@ -1585,3 +1585,5 @@ opt-level = 3
 
 
 
+
+[workspace.dependencies.sheyth-vm]

@@ -1,0 +1,19 @@
+[package]
+name = "sheyth-vm"
+version = "0.1.0"
+authors.workspace = true
+edition.workspace = true
+homepage.workspace = true
+repository.workspace = true
+license = "Apache-2.0 OR MIT"
+description = "SheythVM - RISC-V based smart contract VM for Setheum"
+
+[dependencies]
+parity-scale-codec = { workspace = true }
+scale-info = { workspace = true }
+sp-std = { workspace = true }
+log = { workspace = true }
+
+[features]
+default = ["std"]
+std = ["parity-scale-codec/std", "scale-info/std", "sp-std/std", "log/std"]
