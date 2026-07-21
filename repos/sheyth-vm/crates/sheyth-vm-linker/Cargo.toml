@@ -1,0 +1,27 @@
+[package]
+name = "sheyth-vm-linker"
+version.workspace = true
+authors.workspace = true
+license.workspace = true
+edition.workspace = true
+repository.workspace = true
+description = "SheythVM offline linker"
+
+[dependencies]
+log = { workspace = true }
+object = { workspace = true, features = ["std", "read_core", "elf", "unaligned"] }
+gimli = { workspace = true, features = ["std", "read", "endian-reader"] }
+sheyth-vm-common = { workspace = true, features = ["alloc"] }
+rustc-demangle = { workspace = true }
+hashbrown = { workspace = true, features = ["raw"] }
+regalloc2 = { workspace = true }
+dirs = { workspace = true }
+
+[dev-dependencies]
+diff = { workspace = true }
+env_logger = { workspace = true }
+sheyth-vm = { workspace = true }
+sheyth-vm-disassembler = { workspace = true }
+proptest = { workspace = true }
+yansi = { workspace = true }
+object = { workspace = true, features = ["write"] }

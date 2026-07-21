@@ -1,0 +1,23 @@
+[package]
+name = "sheyth-vm-disassembler"
+version.workspace = true
+authors.workspace = true
+license.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+description = "Disassembler for SheythVM"
+
+[dependencies]
+clap = { workspace = true, features = ["derive"] }
+iced-x86 = { workspace = true, features = ["code_asm"] }
+
+sheyth-vm-common = { workspace = true }
+sheyth-vm-linker = { workspace = true }
+sheyth-vm = { workspace = true }
+
+[dev-dependencies]
+ruzstd = { workspace = true, features = ["std"] }
+
+[lints]
+workspace = true
