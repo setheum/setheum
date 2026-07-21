@@ -68,6 +68,8 @@ pub use scale;
 #[cfg(feature = "std")]
 pub use scale_info;
 pub use xcm;
+pub extern crate sheyth_vm_derive;
+pub use sheyth_vm_derive::*;
 
 pub mod storage {
     pub mod traits {
