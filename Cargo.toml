@@ -506,7 +506,7 @@ path = "repos/setheum/runtime-modules/elections"
 default-features = false
 
 [workspace.dependencies.module-evm-accounts]
-package = "module-unified-accounts"
+package = "pallet-sheyth-vm"
 path = "repos/setheum/runtime-modules/sheyth-vm"
 default-features = false
 
