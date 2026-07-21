@@ -11,7 +11,8 @@ alias = "build"
 description = "Initialize toolchain and dependencies"
 run = [
   "git submodule update --init --recursive",
-  "bun install",
+  "cd repos/setheum-js && yarn install --frozen-lockfile || yarn install",
+  "cd repos/bridge/bridge-docs && yarn install --frozen-lockfile || yarn install",
   "bash repos/setheum/scripts/init.sh",
 ]
 
@@ -37,7 +38,7 @@ run = "SKIP_WASM_BUILD=1 cargo test --workspace --features with-ethereum-compati
 
 [tasks."test:js"]
 description = "Run JS tests"
-run = "bun test"
+run = "cd repos/setheum-js && yarn test"
 
 [tasks."test:sheyth"]
 description = "Run Sheyth (Ink!) tests"
