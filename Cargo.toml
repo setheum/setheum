@@ -168,18 +168,6 @@ default-features = false
 version = "0.10.0"
 default-features = false
 
-[workspace.dependencies.ethabi]
-version = "18.0.0"
-default-features = false
-
-[workspace.dependencies.ethereum-types]
-version = "0.14.0"
-default-features = false
-
-[workspace.dependencies.evm-exec-utils]
-
-[workspace.dependencies.extract-ethereum-abi]
-
 [workspace.dependencies.fake-runtime-api]
 path = "repos/setheum/finality/fake-runtime-api"
 default-features = false
@@ -196,40 +184,7 @@ default-features = false
 [workspace.dependencies.finality-setbft]
 path = "repos/setheum/finality/finality-setbft"
 
-[workspace.dependencies.fc-db]
-git = "https://github.com/polkadot-evm/frontier"
-branch = "stable2506"
-default-features = false
 
-[workspace.dependencies.fc-mapping-sync]
-git = "https://github.com/polkadot-evm/frontier"
-branch = "stable2506"
-default-features = false
-
-[workspace.dependencies.fc-rpc]
-git = "https://github.com/polkadot-evm/frontier"
-branch = "stable2506"
-default-features = false
-
-[workspace.dependencies.fc-rpc-core]
-git = "https://github.com/polkadot-evm/frontier"
-branch = "stable2506"
-default-features = false
-
-[workspace.dependencies.fp-evm]
-git = "https://github.com/polkadot-evm/frontier"
-branch = "stable2506"
-default-features = false
-
-[workspace.dependencies.fp-rpc]
-git = "https://github.com/polkadot-evm/frontier"
-branch = "stable2506"
-default-features = false
-
-[workspace.dependencies.fp-self-contained]
-git = "https://github.com/polkadot-evm/frontier"
-branch = "stable2506"
-default-features = false
 
 [workspace.dependencies.frame-benchmarking]
 git = "https://github.com/paritytech/polkadot-sdk"
@@ -762,21 +717,6 @@ default-features = false
 
 [workspace.dependencies.pallet-elections-phragmen]
 git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
-default-features = false
-
-[workspace.dependencies.pallet-ethereum]
-git = "https://github.com/polkadot-evm/frontier"
-branch = "stable2506"
-default-features = false
-
-[workspace.dependencies.pallet-evm]
-git = "https://github.com/polkadot-evm/frontier"
-branch = "stable2506"
-default-features = false
-
-[workspace.dependencies.pallet-evm-precompile-simple]
-git = "https://github.com/polkadot-evm/frontier"
 branch = "stable2506"
 default-features = false
 

@@ -309,7 +309,6 @@ impl frame_system::Config for Runtime {
 	type OnNewAccount = ();
 /// What to do if an account is fully reaped from the system.
 	type OnKilledAccount = (
-		module_evm::CallKillAccount<Runtime>,
 		module_unified_accounts::CallKillAccount<Runtime>,
 	);
 /// The data to be stored in an account.
@@ -542,7 +541,6 @@ impl module_currencies::Config for Runtime {
 	type SerpTreasury = SerpTreasury;
 	type WeightInfo = weights::module_currencies::WeightInfo<Runtime>;
 	type AddressMapping = EvmAddressMapping<Runtime>;
-	type EVMBridge = EVMBridge;
 	type SweepOrigin = EnsureRootOrOneShuraCouncil;
 	type OnDust = module_currencies::TransferDust<Runtime, TreasuryAccount>;
 }
@@ -736,8 +734,7 @@ where
 			frame_system::CheckNonce::<Runtime>::from(nonce),
 			frame_system::CheckWeight::<Runtime>::new(),
 			module_transaction_payment::ChargeTransactionPayment::<Runtime>::from(tip),
-			module_evm::SetEvmOrigin::<Runtime>::new(),
-		);
+			);
 		let raw_payload = SignedPayload::new(call, extra)
 			.map_err(|e| {
 				log::warn!("Unable to create signed payload: {:?}", e);
@@ -958,9 +955,6 @@ impl module_unified_accounts::Config for Runtime {
 }
 
 
-
-#[cfg(feature = "with-ethereum-compatibility")]
-static ISTANBUL_CONFIG: evm::Config = evm::Config::istanbul();
 
 parameter_types! {
 	pub const ChainId: u64 = 258;
