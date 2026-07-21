@@ -19,7 +19,7 @@ MIT_APACHE_PROJECTS = [
     'repos/setheum/aggregator',
     'repos/setheum/clique',
     'repos/setheum/rate-limiter',
-    'repos/setheum/runtime-modules'
+    'repos/setheum/runtime-modules',
     'repos/setheum/setheum-client',
     'repos/setheum/tests/flooder',
 ]

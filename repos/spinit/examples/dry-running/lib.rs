@@ -65,7 +65,7 @@ mod counter {
 
 #[cfg(test)]
 mod tests {
-    use drink::{
+    use spinit::{
         frame_support::sp_runtime::ModuleError,
         minimal::{MinimalSandbox, RuntimeCall},
         pallet_balances,
@@ -74,10 +74,10 @@ mod tests {
         AccountId32, DispatchError, Sandbox,
     };
 
-    #[drink::contract_bundle_provider]
+    #[spinit::contract_bundle_provider]
     enum BundleProvider {}
 
-    #[drink::test]
+    #[spinit::test]
     fn we_can_dry_run_contract_interactions(
         mut session: Session,
     ) -> Result<(), Box<dyn std::error::Error>> {

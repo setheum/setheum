@@ -2,7 +2,7 @@
 
 // This file is part of Setheum.
 
-// Copyright (C) 2019-Present Setheum Developers.
+// Copyright (C) 2019-Present Afsall Labs.
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
 
 // This program is free software: you can redistribute it and/or modify
@@ -89,23 +89,14 @@ use module_swap_legacy as swap_legacy_module;
 use module_dex_oracle as dex_oracle;
 use module_transaction_payment::{Multiplier, TargetedFeeAdjustment};
 
-// Frontier
-pub use pallet_ethereum::{Call as EthereumCall, Transaction as EthereumTransaction};
-pub use pallet_evm::{
-	Account as EvmAccount, AddressMapping, EnsureAddressTruncated, FeeCalculator, GasWeightMapping, HashedAddressMapping,
-	Runner as EvmRunner,
-};
-pub use fp_evm::GenesisAccount;
-
 // re-exports
 
 pub use pallet_staking::StakerStatus;
 
 pub use authority::AuthorityConfigImpl;
 pub use constants::{fee::*, time::*};
-use primitives::evm::EthereumTransactionMessage;
 pub use primitives::{
-	evm::EstimateResourcesRequest, AccountId, AccountIndex, Amount, AuctionId, AuthoritysOriginId, Balance, BlockNumber, CurrencyId,
+	AccountId, AccountIndex, Amount, AuctionId, AuthoritysOriginId, Balance, BlockNumber, CurrencyId,
 	DataProviderId, EraIndex, Hash, Moment, Nonce, ReserveIdentifier, Share, Signature, TokenSymbol, TradingPair, SerpStableCurrencyId,
 };
 // use module_support::Web3SettersClubAccounts;
@@ -291,8 +282,8 @@ impl frame_system::Config for Runtime {
 /// The aggregated dispatch type that is available for extrinsics.
 	type Call = Call;
 /// The lookup mechanism to get account ID from whatever is passed in dispatchers.
-	type Lookup = (Indices, EvmAccounts);
-/// The index type for storing how many extrinsics an account has signed.
+	type Lookup = (Indices);
+	/// The index type for storing how many extrinsics an account has signed.
 	type Index = Nonce;
 /// The index type for blocks.
 	type BlockNumber = BlockNumber;
@@ -421,13 +412,36 @@ impl pallet_aura::Config for Runtime {
 }
 
 // SetBFT pallet replaces Grandpa as the finality gadget
-// impl module_setbft::Config for Runtime {
-// 	type AuthorityId = primitives::AuthorityId;
-// 	type RuntimeEvent = Event;
-// 	type SessionInfoProvider = SessionInfoImpl;
-// 	type SessionManager = pallet_session::historical::NoteHistoricalRoot<Self, Staking>;
-// }
 
+pub struct SessionInfoImpl;
+impl primitives::setbft::SessionInfoProvider<BlockNumber> for SessionInfoImpl {
+	fn current_session() -> primitives::setbft::SessionIndex {
+		pallet_session::Pallet::<Runtime>::current_index()
+	}
+	fn next_session_block_number(current_block: BlockNumber) -> Option<BlockNumber> {
+		let session_period = SessionPeriod::get();
+		let current_session = pallet_session::Pallet::<Runtime>::current_index();
+		let next_session = current_session + 1;
+		let current_session_start = next_session * session_period;
+		if current_block < current_session_start {
+			Some(current_session_start)
+		} else {
+			Some(current_session_start + session_period)
+		}
+	}
+}
+
+impl module_setbft::Config for Runtime {
+	type AuthorityId = primitives::AuthorityId;
+	type RuntimeEvent = Event;
+	type SessionInfoProvider = SessionInfoImpl;
+	type SessionManager = pallet_session::historical::NoteHistoricalRoot<Self, Staking>;
+	type NextSessionAuthorityProvider = module_traits::SessionNextSessionAuthorityProvider<Runtime>;
+}
+
+impl pallet_sheyth_vm::Config for Runtime {
+	type RuntimeEvent = Event;
+}
 
 parameter_types! {
 	pub const MinimumPeriod: u64 = SLOT_DURATION // 2;
@@ -956,40 +970,7 @@ parameter_types! {
 parameter_types! {
 	pub const NewContractExtraBytes: u32 = 10_000;
 	pub StorageDepositPerByte: Balance = deposit(0, 1);
-	pub DeveloperDeposit: Balance = 7 * dollar(SEU);
-	pub DeploymentFee: Balance = 7 * dollar(SEU);
-}
-
-pub type MultiCurrencyPrecompile = runtime_common::MultiCurrencyPrecompile<
-	AccountId,
-	EvmAddressMapping<Runtime>,
-	module_asset_registry::EvmCurrencyIdMapping<Runtime>,
-	Currencies,
->;
-
-pub type NFTPrecompile =
-	runtime_common::NFTPrecompile<AccountId, EvmAddressMapping<Runtime>, EvmCurrencyIdMapping<Runtime>, NFT>;
-pub type StateRentPrecompile =
-	runtime_common::StateRentPrecompile<AccountId, EvmAddressMapping<Runtime>, EvmCurrencyIdMapping<Runtime>, EVM>;
-pub type OraclePrecompile = runtime_common::OraclePrecompile<
-	AccountId,
-	EvmAddressMapping<Runtime>,
-	module_asset_registry::EvmCurrencyIdMapping<Runtime>,
-	module_prices::RealTimePriceProvider<Runtime>,
->;
-pub type DexPrecompile =
-	runtime_common::DexPrecompile<AccountId, EvmAddressMapping<Runtime>, EvmCurrencyIdMapping<Runtime>, Dex>;
-
-pub type AllPrecompiles = runtime_common::AllPrecompiles<
-	SystemContractsFilter,
-	MultiCurrencyPrecompile,
-	NFTPrecompile,
-	StateRentPrecompile,
-	OraclePrecompile,
-	DexPrecompile,
->;
-
-pub struct PrecompilesValue;
+	pub struct PrecompilesValue;
 impl sp_core::Get<AllPrecompiles> for PrecompilesValue {
 	fn get() -> AllPrecompiles {
 		AllPrecompiles(Default::default())
@@ -1000,42 +981,6 @@ parameter_types! {
 	pub const ChainId: u64 = CHAIN_ID_SETHEUM_MAINNET;
 	pub BlockGasLimit: U256 = U256::from(u32::MAX);
 	pub WeightPerGas: Weight = Weight::from_parts(20_000, 0); // Need to calibrate
-}
-
-pub struct FixedGasWeightMapping;
-impl GasWeightMapping for FixedGasWeightMapping {
-	fn gas_to_weight(gas: u64, _reason: pallet_evm::GasWeightMappingReason) -> Weight {
-		Weight::from_parts(gas.saturating_mul(20_000), 0)
-	}
-	fn weight_to_gas(weight: Weight) -> u64 {
-		weight.ref_time().saturating_div(20_000)
-	}
-}
-
-impl pallet_evm::Config for Runtime {
-	type FeeCalculator = ();
-	type GasWeightMapping = FixedGasWeightMapping;
-	type AddressMapping = module_unified_accounts::EvmAddressMapping<Runtime>;
-	type Currency = Balances;
-	type Event = Event;
-	type Runner = pallet_evm::runner::stack::Runner<Self>;
-	type PrecompilesType = AllPrecompiles;
-	type PrecompilesValue = PrecompilesValue;
-	type ChainId = ChainId;
-	type BlockGasLimit = BlockGasLimit;
-	type OnChargeTransaction = ();
-	type BlockHashMapping = pallet_evm::SubstrateBlockHashMapping<Self>;
-	type FindAuthor = pallet_session::FindAccountFromAuthorIndex<Self, Aura>;
-	type WeightInfo = pallet_evm::weights::SubstrateWeight<Self>;
-}
-
-impl pallet_ethereum::Config for Runtime {
-	type Event = Event;
-	type StateRoot = pallet_ethereum::IntermediateStateRoot<Self>;
-}
-
-impl module_evm_bridge::Config for Runtime {
-	type EVM = EVM;
 }
 
 parameter_types! {
@@ -1538,14 +1483,11 @@ construct_runtime!(
 		Identity: pallet_identity::{Pallet, Call, Storage, Event<T>} = 42,
 
 // Smart contracts
-		EVM: pallet_evm::{Pallet, Config, Storage, Event<T>} = 43,
-		EvmAccounts: module_unified_accounts::{Pallet, Call, Storage, Event<T>} = 44,
-		Ethereum: pallet_ethereum::{Pallet, Storage, Event, Config, Call} = 49,
 
 // Consensus - Aura + SetBFT (replacing Babe + Grandpa)
 		Authorship: pallet_authorship::{Pallet, Call, Storage, Inherent} = 47,
 		Aura: pallet_aura::{Pallet, Config, Storage} = 48,
-		// SetBFT: module_setbft::{Pallet, Call, Config<T>, Storage, Event<T>} = 49,
+		SetBFT: module_setbft::{Pallet, Call, Config<T>, Storage, Event<T>} = 49,
 		Staking: pallet_staking::{Pallet, Call, Config<T>, Storage, Event<T>} = 50,
 		Session: pallet_session::{Pallet, Call, Storage, Event, Config<T>} = 51,
 		Historical: pallet_session_historical::{Pallet} = 52,
@@ -1558,6 +1500,7 @@ construct_runtime!(
 		// CommitteeManagement: module_committee_management::{Pallet, Call, Storage, Event<T>} = 57,
 		// Operations: module_operations::{Pallet, Call, Storage, Event<T>} = 58,
 		Auction: module_auction::{Pallet, Call, Storage, Event<T>} = 56,
+		SheythVM: pallet_sheyth_vm::{Pallet, Config, Storage, Event<T>} = 59,
 
 );
 
@@ -1569,7 +1512,6 @@ impl frame_support::traits::OnRuntimeUpgrade for OnRuntimeUpgrade {
 	}
 }
 
-// ConvertEthereumTx removed. Frontier uses pallet-ethereum and fp-self-contained.
 
 /// The address format for describing accounts.
 pub type Address = sp_runtime::MultiAddress<AccountId, AccountIndex>;
@@ -1801,142 +1743,6 @@ impl_runtime_apis! {
 		}
 	}
 
-	impl fp_rpc::EthereumRuntimeRPCApi<Block> for Runtime {
-		fn chain_id() -> u64 {
-			ChainId::get()
-		}
-
-		fn account_basic(address: H160) -> fp_evm::Account {
-			let (account, _) = EVM::account_basic(&address);
-			account
-		}
-
-		fn gas_price() -> U256 {
-			let (gas_price, _) = <Runtime as pallet_evm::Config>::FeeCalculator::min_gas_price();
-			gas_price
-		}
-
-		fn account_code_at(address: H160) -> Vec<u8> {
-			EVM::account_codes(address)
-		}
-
-		fn author() -> H160 {
-			<pallet_evm::Pallet<Runtime>>::find_author()
-		}
-
-		fn storage_at(address: H160, index: U256) -> H256 {
-			let mut tmp = [0u8; 32];
-			index.to_big_endian(&mut tmp);
-			EVM::account_storages(address, H256::from_slice(&tmp))
-		}
-
-		fn call(
-			from: H160,
-			to: H160,
-			data: Vec<u8>,
-			value: U256,
-			gas_limit: u64,
-			max_fee_per_gas: Option<U256>,
-			max_priority_fee_per_gas: Option<U256>,
-			nonce: Option<U256>,
-			estimate: bool,
-			access_list: Option<Vec<(H160, Vec<H256>)>>,
-		) -> Result<pallet_evm::CallInfo, sp_runtime::DispatchError> {
-			let config = if estimate {
-				let mut config = <Runtime as pallet_evm::Config>::config().clone();
-				config.estimate = true;
-				Some(config)
-			} else {
-				None
-			};
-
-			let is_transactional = false;
-			let validate = true;
-			let evm_config = config.as_ref().unwrap_or(<Runtime as pallet_evm::Config>::config());
-			<Runtime as pallet_evm::Config>::Runner::call(
-				from,
-				to,
-				data,
-				value,
-				gas_limit,
-				max_fee_per_gas,
-				max_priority_fee_per_gas,
-				nonce,
-				access_list.unwrap_or_default(),
-				is_transactional,
-				validate,
-				None,
-				None,
-				evm_config,
-			).map_err(|err| err.error.into())
-		}
-
-		fn create(
-			from: H160,
-			data: Vec<u8>,
-			value: U256,
-			gas_limit: u64,
-			max_fee_per_gas: Option<U256>,
-			max_priority_fee_per_gas: Option<U256>,
-			nonce: Option<U256>,
-			estimate: bool,
-			access_list: Option<Vec<(H160, Vec<H256>)>>,
-		) -> Result<pallet_evm::CreateInfo, sp_runtime::DispatchError> {
-			let config = if estimate {
-				let mut config = <Runtime as pallet_evm::Config>::config().clone();
-				config.estimate = true;
-				Some(config)
-			} else {
-				None
-			};
-
-			let is_transactional = false;
-			let validate = true;
-			let evm_config = config.as_ref().unwrap_or(<Runtime as pallet_evm::Config>::config());
-			<Runtime as pallet_evm::Config>::Runner::create(
-				from,
-				data,
-				value,
-				gas_limit,
-				max_fee_per_gas,
-				max_priority_fee_per_gas,
-				nonce,
-				access_list.unwrap_or_default(),
-				is_transactional,
-				validate,
-				None,
-				None,
-				evm_config,
-			).map_err(|err| err.error.into())
-		}
-
-		fn current_transaction_statuses() -> Option<Vec<fp_rpc::TransactionStatus>> {
-			pallet_ethereum::CurrentTransactionStatuses::<Runtime>::get()
-		}
-
-		fn current_block() -> Option<pallet_ethereum::Block> {
-			pallet_ethereum::CurrentBlock::<Runtime>::get()
-		}
-
-		fn current_receipts() -> Option<Vec<pallet_ethereum::Receipt>> {
-			pallet_ethereum::CurrentReceipts::<Runtime>::get()
-		}
-
-		fn elasticity() -> Option<Permill> {
-			None
-		}
-
-		fn gas_limit_multiplier_at_20_percent_excess() -> U256 {
-			U256::zero()
-		}
-
-	impl fp_rpc::ConvertTransactionRuntimeApi<Block> for Runtime {
-		fn convert_transaction(transaction: pallet_ethereum::Transaction) -> UncheckedExtrinsic {
-			UncheckedExtrinsic::new_unsigned(
-				pallet_ethereum::Call::<Runtime>::transact { transaction }.into(),
-			)
-		}
-	}
 
 	#[cfg(feature = "runtime-benchmarks")]
 	impl frame_benchmarking::Benchmark<Block> for Runtime {
@@ -2039,3 +1845,4 @@ impl_runtime_apis! {
 		}
 	}
 }
+

@@ -45,7 +45,7 @@ use crate::{Data, Hasher, NodeIndex, Round};
 /// needs to be placed inside.
 ///
 /// We refer to the documentation
-/// https://cardinal-cryptography.github.io/SetBFT/set_bft_api.html for a discussion and
+    /// https://setheum.com/docs/setbft/set_bft_api.html for a discussion and
 /// examples of how this trait can be implemented.
 #[async_trait]
 pub trait DataProvider: Sync + Send + 'static {

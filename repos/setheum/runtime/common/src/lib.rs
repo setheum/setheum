@@ -32,12 +32,11 @@ use frame_support::{
 use frame_system::limits;
 pub use frame_support::traits::EnsureOneOf;
 pub use frame_system::EnsureRoot;
-pub use module_support::{ExchangeRate, PrecompileCallerFilter, Price, Rate, Ratio, EVMStateRentTrait};
+pub use module_support::{ExchangeRate, Price, Rate, Ratio};
 use primitives::{
-	Balance, CurrencyId, PRECOMPILE_ADDRESS_START, PREDEPLOY_ADDRESS_START, SYSTEM_CONTRACT_ADDRESS_PREFIX,
+	Balance, CurrencyId,
 	TokenSymbol::SEU,
 };
-use sp_core::H160;
 use sp_runtime::{traits::Convert, transaction_validity::TransactionPriority, Perbill};
 use static_assertions::const_assert;
 
@@ -55,11 +54,6 @@ pub mod u32_trait {
 
 pub const WEIGHT_PER_MILLIS: u64 = 1_000_000_000;
 
-pub mod precompile;
-pub use precompile::{
-	AllPrecompiles, DexPrecompile, MultiCurrencyPrecompile, NFTPrecompile, OraclePrecompile, ScheduleCallPrecompile,
-	StateRentPrecompile,
-};
 pub use primitives::AccountId;
 
 mod gas_to_weight_ratio;
@@ -84,14 +78,6 @@ pub fn is_system_contract(address: H160) -> bool {
 pub fn is_setheum_precompile(address: H160) -> bool {
 	address >= H160::from_low_u64_be(PRECOMPILE_ADDRESS_START)
 		&& address < H160::from_low_u64_be(PREDEPLOY_ADDRESS_START)
-}
-
-/// The call is allowed only if caller is a system contract.
-pub struct SystemContractsFilter;
-impl PrecompileCallerFilter for SystemContractsFilter {
-	fn is_allowed(caller: H160) -> bool {
-		is_system_contract(caller)
-	}
 }
 
 /// Convert gas to weight

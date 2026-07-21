@@ -4,7 +4,7 @@ name = "flipper"
 authors = [ "Afsall Labs", "Setheum Foundation",]
 edition = "2021"
 homepage = "https://setheum.com"
-repository = "https://github.com/use-ink/drink"
+repository = "https://github.com/use-ink/spinit"
 version = "0.1.0"
 
 [lib]
@@ -19,5 +19,5 @@ ink-as-dependency = []
 workspace = true
 default-features = false
 
-[dev-dependencies.drink]
+[dev-dependencies.spinit]
 workspace = true

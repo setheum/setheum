@@ -143,7 +143,7 @@ async fn keep_processing_units_until<U: Unit>(
 /// The currently implemented strategy creates the unit U according to a delay schedule and when enough
 /// candidates for parents are available for all the above constraints to be satisfied.
 ///
-/// We refer to the documentation https://cardinal-cryptography.github.io/SetBFT/internals.html
+    /// We refer to the documentation https://setheum.com/docs/setbft/internals.html
 /// Section 5.1 for a discussion of this component.
 pub async fn run<U: Unit, MK: MultiKeychain, DP: DataProvider>(
     conf: Config,

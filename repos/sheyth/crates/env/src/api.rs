@@ -65,7 +65,7 @@ use crate::{
     Result,
 };
 use ink_storage_traits::Storable;
-use pallet_contracts_uapi::ReturnFlags;
+use sheyth_vm_uapi::ReturnFlags;
 
 /// Returns the address of the caller of the executed contract.
 ///

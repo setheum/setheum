@@ -38,21 +38,17 @@ jobs:
             ~/.cargo/git/db/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       - name: Install toolchain
-        uses: dtolnay/rust-toolchain@nightly
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: llvm-tools-preview
       - name: Setup cmake
         uses: jwlawson/actions-setup-cmake@v1.13
       - name: Run cargo-tarpaulin
         run: |
           wget https://github.com/xd009642/tarpaulin/releases/download/${{ env.TARPAULIN_VERSION }}/cargo-tarpaulin-x86_64-unknown-linux-musl.tar.gz
           tar -zxvf cargo-tarpaulin-x86_64-unknown-linux-musl.tar.gz -C $HOME/.cargo/bin
-          cargo tarpaulin --engine llvm --workspace \
-            -e \
-            setheum setheum-cli setheum-service \
-            setheum-primitives \
-            setheum-rpc \
-            setheum-runtime runtime-common runtime-integration-tests setheum-runtime setheum-runtime \
-            ethjson evm-jsontests \
-            --exclude-files **/mock.rs **/weights.rs **/weights/* --out xml
+          SKIP_WASM_BUILD=1 cargo tarpaulin --engine llvm --workspace --features with-ethereum-compatibility \
+            --exclude-files "**/mock.rs" "**/weights.rs" "**/weights/*" "**/e2e-tests/*" --out xml --skip-clean
       - name: Upload to codecov.io
         uses: codecov/codecov-action@v5
         with:

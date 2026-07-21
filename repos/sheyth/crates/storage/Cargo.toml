@@ -46,7 +46,7 @@ workspace = true
 [dependencies.ink_prelude]
 workspace = true
 
-[dependencies.pallet-contracts-uapi]
+[dependencies.sheyth-vm-uapi]
 workspace = true
 
 [dependencies.scale]

@@ -1,7 +1,7 @@
 [package]
 name = "module-setbft-runtime-api"
 version = "0.1.0"
-license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
+license = "Apache-2.0 OR MIT"
 authors.workspace = true
 edition.workspace = true
 homepage.workspace = true

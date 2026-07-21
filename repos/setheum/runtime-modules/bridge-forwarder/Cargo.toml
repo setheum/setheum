@@ -2,7 +2,7 @@
 name = "module-bridge-forwarder"
 version = "0.3.0"
 edition = "2021"
-license = "LGPL-3.0"
+license = "Apache-2.0 OR MIT"
 
 [features]
 default = [ "std",]

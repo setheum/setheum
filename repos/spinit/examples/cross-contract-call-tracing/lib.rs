@@ -100,13 +100,13 @@ mod contract {
 // mod tests {
 //     use std::{cell::RefCell, error::Error};
 
-//     use drink::{
+//     use spinit::{
 //         pallet_revive_debugging::{TracingExt, TracingExtT},
 //         session::{contract_transcode::Value, Session, NO_ARGS, NO_ENDOWMENT},
 //     };
 //     use ink::{storage::traits::Storable, H160};
 
-//     #[drink::contract_bundle_provider]
+//     #[spinit::contract_bundle_provider]
 //     enum BundleProvider {}
 
 //     thread_local! {
@@ -162,7 +162,7 @@ mod contract {
 //         }
 //     }
 
-//     #[drink::test]
+//     #[spinit::test]
 //     fn test(mut session: Session) -> Result<(), Box<dyn Error>> {
 //         session.set_storage_deposit_limit(1_000_000);
 

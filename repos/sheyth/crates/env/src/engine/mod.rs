@@ -53,7 +53,7 @@ use ink_primitives::{
     LangError,
 };
 
-use pallet_contracts_uapi::ReturnErrorCode;
+use sheyth_vm_uapi::ReturnErrorCode;
 
 /// Convert a slice into an array reference.
 ///

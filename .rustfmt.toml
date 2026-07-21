@@ -1,6 +1,6 @@
 # Unstable features for license template
 unstable_features = true
-license_template_path = "HEADER-GPL3"
+license_template_path = "docs/LICENSES/headers/HEADER-GPL3"
 # Basic
 hard_tabs = true
 max_width = 120

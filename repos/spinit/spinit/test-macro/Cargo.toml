@@ -1,0 +1,23 @@
+[package]
+name = "spinit-test-macro"
+authors.workspace = true
+edition.workspace = true
+homepage.workspace = true
+license = "Apache-2.0 OR MIT"
+readme.workspace = true
+repository.workspace = true
+version.workspace = true
+description = "Procedural macro providing a `#[spinit::test]` attribute for `spinit`-based contract testing"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+cargo_metadata = { workspace = true }
+contract-build = { workspace = true }
+contract-metadata = { workspace = true }
+convert_case = { workspace = true }
+darling = { workspace = true }
+proc-macro2 = { workspace = true }
+syn = { workspace = true, features = ["full"] }
+quote = { workspace = true }

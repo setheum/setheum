@@ -64,7 +64,7 @@ const LOG_TARGET: &str = "SetBFT-consensus";
 /// Starts the consensus algorithm as an async task. It stops establishing consensus for new data items after
 /// reaching the threshold specified in [`Config::max_round`] or upon receiving a stop signal from `exit`.
 /// For a detailed description of the consensus implemented by `run_session` see
-/// [docs for devs](https://cardinal-cryptography.github.io/SetBFT/index.html)
+/// [docs for devs](https://setheum.com/docs/setbft/index.html)
 /// or the [original paper](https://arxiv.org/abs/1908.05156).
 pub async fn run_session<
     DP: DataProvider,

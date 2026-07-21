@@ -49,7 +49,7 @@ use crate::{
         BlockTimestamp,
     },
 };
-pub use pallet_contracts_uapi::ReturnErrorCode as Error;
+pub use sheyth_vm_uapi::ReturnErrorCode as Error;
 use scale::Encode;
 use std::panic::panic_any;
 

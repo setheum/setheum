@@ -75,12 +75,12 @@ mod checker {
 mod tests {
     use std::error::Error;
 
-    use drink::session::{Session, NO_ARGS, NO_ENDOWMENT};
+    use spinit::session::{Session, NO_ARGS, NO_ENDOWMENT};
 
-    #[drink::contract_bundle_provider]
+    #[spinit::contract_bundle_provider]
     enum BundleProvider {}
 
-    #[drink::test]
+    #[spinit::test]
     fn contracts_work_correctly(mut session: Session) -> Result<(), Box<dyn Error>> {
         let contract = session.deploy_bundle(
             BundleProvider::Flipper.bundle()?,

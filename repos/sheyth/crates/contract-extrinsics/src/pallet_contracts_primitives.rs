@@ -35,7 +35,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use pallet_contracts_uapi::ReturnFlags;
+use sheyth_vm_uapi::ReturnFlags;
 use scale::{
     Decode,
     Encode,

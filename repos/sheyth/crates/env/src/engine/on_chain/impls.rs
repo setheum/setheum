@@ -74,7 +74,7 @@ use ink_storage_traits::{
     decode_all,
     Storable,
 };
-use pallet_contracts_uapi::{
+use sheyth_vm_uapi::{
     CallFlags,
     HostFn,
     HostFnImpl as ext,

@@ -1,53 +1,76 @@
-name: PRDoc Check
+name: Check PRdoc
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 on:
   pull_request:
-    branches: [ main, master ]
-    types: [opened, synchronize, reopened, labeled, unlabeled]
+    types: [labeled, opened, synchronize, unlabeled]
+  merge_group:
+
+env:
+  IMAGE: docker.io/paritytech/prdoc:v0.1.1
+  API_BASE: https://api.github.com/repos
+  REPO: ${{ github.repository }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GITHUB_PR: ${{ github.event.pull_request.number }}
+  ENGINE: docker
+  PRDOC_DOC: https://github.com/paritytech/setheum/blob/master/docs/contributor/prdoc.md
 
 jobs:
-  validate:
-    name: Validate PRDocs
+  check-prdoc:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
-
-      - name: Install dependencies
+      - name: Checkout repo
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Check prdoc format
         run: |
-          python3 -m pip install PyYAML
+          echo "Pulling $IMAGE"
+          $ENGINE pull $IMAGE
 
-      - name: Run Validation
-        run: |
-          python3 scripts/prdoc.py validate
+          echo "Checking PRdoc version"
+          $ENGINE run --rm -v $PWD:/repo $IMAGE --version
 
-      - name: Check for PRDoc existence
-        # This step ensures that if the PR touches code, it must include a .prdoc file
-        # unless it has a 'no-changelog' label.
-        if: "!contains(github.event.pull_request.labels.*.name, 'no-changelog')"
+          echo "Check prdoc format"
+          echo "For PRDoc format, please refer to $PRDOC_DOC"
+          $ENGINE run --rm -v $PWD:/repo -e RUST_LOG=info $IMAGE check
+
+      - name: Check if PRdoc is required
+        if: github.event.pull_request.number != ''
+        id: get-labels
         run: |
-          # Get list of changed files
-          CHANGES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
-          
-          # Check if any .prdoc files were added/modified in the prdoc/ directory
-          PRDOC_CHANGES=$(echo "$CHANGES" | grep "^prdoc/.*\.prdoc$" || true)
-          
-          if [ -z "$PRDOC_CHANGES" ]; then
-            # Check if any actual code or config was changed (excluding docs, etc)
-            CODE_CHANGES=$(echo "$CHANGES" | grep -vE "(\.md$|CODEOWNERS|LICENSE|^\.github/)" || true)
-            
-            if [ -n "$CODE_CHANGES" ]; then
-              echo "Error: This PR modifies code but does not include a .prdoc file."
-              echo "Please add a .prdoc file in the 'prdoc/' directory or add the 'no-changelog' label to the PR."
-              echo "Affected code/config files:"
-              echo "$CODE_CHANGES"
-              exit 1
-            fi
+          # Fetch the labels for the PR under test
+          echo "Fetch the labels for $API_BASE/${REPO}/pulls/${GITHUB_PR}"
+          labels=$( curl -H "Authorization: token ${GITHUB_TOKEN}" -s "$API_BASE/${REPO}/pulls/${GITHUB_PR}" | jq '.labels | .[] | .name' | tr "\n" ",")
+          echo "Labels: ${labels}"
+          echo "labels=${labels}" >> "$GITHUB_OUTPUT"
+
+      - name: Get Original PR number
+        if: ${{ github.event.pull_request.number != '' && !contains(steps.get-labels.outputs.labels, 'R0') }}
+        shell: bash
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          . ./.github/scripts/common/lib.sh
+          original_pr_number=''
+
+          echo "Checking PR title: $PR_TITLE"
+
+          if [[ "$PR_TITLE" =~ 'Backport' ]]; then
+            # Extracting the original PR number from the backport's PR title
+            original_pr_number=$(extract_pr_number_from_pr_title "$PR_TITLE")
+            echo "Extracted PR number: $original_pr_number"
+          else
+            original_pr_number=${{ github.event.pull_request.number }}
           fi
-          echo "PRDoc check passed."
+          echo "PR_NUMBER=$original_pr_number" >> $GITHUB_ENV
+
+      - name: Validate prdoc for PR#${{ env.PR_NUMBER }}
+        if: ${{ github.event.pull_request.number != '' && !contains(steps.get-labels.outputs.labels, 'R0') }}
+        run: |
+          echo "Validating PR#${{ env.PR_NUMBER }}"
+          python3 --version
+          python3 -m pip install cargo-workspace==1.2.1
+          python3 .github/scripts/check-prdoc.py Cargo.toml prdoc/pr_${{ env.PR_NUMBER }}.prdoc

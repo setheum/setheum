@@ -97,7 +97,7 @@ impl Debug for DelayConfig {
     }
 }
 
-/// Main configuration of the consensus. We refer to [the documentation](https://cardinal-cryptography.github.io/SetBFT/set_bft_api.html#34-setbft-sessions)
+/// Main configuration of the consensus. We refer to [the documentation](https://setheum.com/docs/setbft/set_bft_api.html#34-setbft-sessions)
 /// Section 3.4 for a discussion of some of these parameters and their significance.
 #[derive(Clone, Debug)]
 pub struct Config {

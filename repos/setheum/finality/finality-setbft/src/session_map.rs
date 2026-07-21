@@ -22,7 +22,7 @@ use std::{cmp::min, collections::HashMap, marker::PhantomData, ops::Deref, sync:
 
 use futures::StreamExt;
 use log::{debug, error, trace};
-use module_setbft_runtime_api::SetBFTSessionApi;
+use primitives::setbft::SetBFTSessionApi;
 use sc_client_api::{Backend, FinalityNotification};
 use sc_utils::mpsc::TracingUnboundedReceiver;
 use sp_consensus_aura::AuraApi;

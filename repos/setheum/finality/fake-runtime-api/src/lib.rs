@@ -24,7 +24,7 @@
 //! the native runtimes.
 
 use frame_support::weights::Weight;
-use module_setbft_runtime_api::*;
+use primitives::setbft::SetBFTSessionApi;
 use pallet_transaction_payment::FeeDetails;
 use pallet_transaction_payment_rpc_runtime_api::RuntimeDispatchInfo;
 use primitives::{

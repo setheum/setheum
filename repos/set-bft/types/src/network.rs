@@ -65,7 +65,7 @@ pub enum Recipient {
 /// the reliability is extremely bad, i.e., drops below 50% (which means there is some significant
 /// issue with the network).
 ///
-/// We refer to the documentation https://cardinal-cryptography.github.io/SetBFT/set_bft_api.html
+    /// We refer to the documentation https://setheum.com/docs/setbft/set_bft_api.html
 /// Section 3.1.2 for a discussion of the required guarantees of this trait's implementation.
 #[async_trait::async_trait]
 pub trait Network<D>: Send + 'static {

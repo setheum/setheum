@@ -37,7 +37,7 @@
 
 #[cfg(test)]
 mod tests {
-    use drink::{
+    use spinit::{
         minimal::{MinimalSandbox, RuntimeCall},
         pallet_balances, pallet_revive,
         sandbox_api::prelude::*,

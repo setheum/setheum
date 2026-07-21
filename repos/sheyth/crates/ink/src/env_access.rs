@@ -56,7 +56,7 @@ use ink_env::{
     Environment,
     Result,
 };
-use pallet_contracts_uapi::ReturnErrorCode;
+use sheyth_vm_uapi::ReturnErrorCode;
 
 /// The API behind the `self.env()` and `Self::env()` syntax in ink!.
 ///
