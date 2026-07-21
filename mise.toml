@@ -52,6 +52,14 @@ run = "cargo test -p bridge-relayer -p bridge-core"
 description = "Run bridge Go tests"
 run = "go test repos/bridge/..."
 
+[tasks."test:setbft"]
+description = "Run Set-BFT tests"
+run = "cargo test -p set-bft -p set-bft-types -p set-bft-crypto -p set-bft-rmc"
+
+[tasks."test:spinit"]
+description = "Run Spinit tests"
+run = "cargo test -p spinit"
+
 [tasks.fmt]
 description = "Format the codebase and apply headers"
 run = ["cargo fmt --all", "python3 scripts/apply_headers.py"]

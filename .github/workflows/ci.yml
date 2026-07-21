@@ -63,3 +63,94 @@ jobs:
 
       - name: Run Tests
         run: mise run test:js
+
+  test-sheyth:
+    name: Sheyth Tests
+    runs-on: ubuntu-latest
+    needs: check-rust
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install mise
+        uses: jdx/mise-action@v2
+
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: Run Sheyth Tests
+        run: mise run test:sheyth
+
+  test-setbft:
+    name: Set-BFT Tests
+    runs-on: ubuntu-latest
+    needs: check-rust
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install mise
+        uses: jdx/mise-action@v2
+
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: Run Set-BFT Tests
+        run: mise run test:setbft
+
+  test-spinit:
+    name: Spinit Tests
+    runs-on: ubuntu-latest
+    needs: check-rust
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install mise
+        uses: jdx/mise-action@v2
+
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: Run Spinit Tests
+        run: mise run test:spinit
+
+  test-bridge-rust:
+    name: Bridge Rust Tests
+    runs-on: ubuntu-latest
+    needs: check-rust
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install mise
+        uses: jdx/mise-action@v2
+
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: Run Bridge Rust Tests
+        run: mise run test:bridge:rust
+
+  test-bridge-go:
+    name: Bridge Go Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install mise
+        uses: jdx/mise-action@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+
+      - name: Run Bridge Go Tests
+        run: mise run test:bridge:go
