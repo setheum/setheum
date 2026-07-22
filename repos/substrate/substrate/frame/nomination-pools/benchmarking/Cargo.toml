@@ -1,0 +1,77 @@
+[package]
+name = "pallet-nomination-pools-benchmarking"
+version = "26.0.0"
+authors.workspace = true
+edition.workspace = true
+license = "Apache-2.0"
+homepage.workspace = true
+repository.workspace = true
+description = "FRAME nomination pools pallet benchmarking"
+readme = "README.md"
+
+[lints]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[dependencies]
+# parity
+codec = { features = ["derive"], workspace = true }
+scale-info = { features = ["derive"], workspace = true }
+
+# FRAME
+frame-benchmarking = { workspace = true }
+frame-election-provider-support = { workspace = true }
+frame-support = { workspace = true }
+frame-system = { workspace = true }
+pallet-bags-list = { workspace = true }
+pallet-delegated-staking = { workspace = true }
+pallet-nomination-pools = { workspace = true }
+pallet-staking-async = { workspace = true }
+
+# Substrate Primitives
+sp-runtime = { workspace = true }
+sp-runtime-interface = { workspace = true }
+sp-staking = { workspace = true }
+
+[dev-dependencies]
+pallet-balances = { workspace = true }
+pallet-staking-async-rc-client = { workspace = true, default-features = true }
+sp-core = { workspace = true, default-features = true }
+sp-io = { workspace = true, default-features = true }
+
+[features]
+default = ["std"]
+std = [
+	"codec/std",
+	"frame-benchmarking/std",
+	"frame-election-provider-support/std",
+	"frame-support/std",
+	"frame-system/std",
+	"pallet-bags-list/std",
+	"pallet-balances/std",
+	"pallet-delegated-staking/std",
+	"pallet-nomination-pools/std",
+	"pallet-staking-async/std",
+	"scale-info/std",
+	"sp-core/std",
+	"sp-io/std",
+	"sp-runtime-interface/std",
+	"sp-runtime/std",
+	"sp-staking/std",
+]
+runtime-benchmarks = [
+	"frame-benchmarking/runtime-benchmarks",
+	"frame-election-provider-support/runtime-benchmarks",
+	"frame-support/runtime-benchmarks",
+	"frame-system/runtime-benchmarks",
+	"pallet-bags-list/runtime-benchmarks",
+	"pallet-balances/runtime-benchmarks",
+	"pallet-delegated-staking/runtime-benchmarks",
+	"pallet-nomination-pools/runtime-benchmarks",
+	"pallet-staking-async-rc-client/runtime-benchmarks",
+	"pallet-staking-async/runtime-benchmarks",
+	"sp-runtime/runtime-benchmarks",
+	"sp-staking/runtime-benchmarks",
+]

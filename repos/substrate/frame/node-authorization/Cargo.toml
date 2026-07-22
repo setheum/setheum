@@ -1,0 +1,33 @@
+[package]
+name = "pallet-node-authorization"
+version = "28.0.0"
+authors.workspace = true
+edition.workspace = true
+license = "Apache-2.0"
+homepage.workspace = true
+repository.workspace = true
+description = "FRAME pallet for node authorization"
+
+[lints]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[dependencies]
+codec = { features = ["derive"], workspace = true }
+frame = { workspace = true, features = ["runtime"] }
+log = { workspace = true }
+scale-info = { features = ["derive"], workspace = true }
+
+[features]
+default = ["std"]
+std = [
+	"codec/std",
+	"frame/std",
+	"log/std",
+	"scale-info/std",
+]
+try-runtime = [
+	"frame/try-runtime",
+]

@@ -1,0 +1,28 @@
+[package]
+name = "substrate-test-runtime-transaction-pool"
+version = "2.0.0"
+authors.workspace = true
+edition.workspace = true
+license = "Apache-2.0"
+homepage.workspace = true
+repository.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[dependencies]
+async-trait = { workspace = true }
+codec = { workspace = true, default-features = true }
+futures = { workspace = true }
+log = { workspace = true }
+parking_lot = { workspace = true, default-features = true }
+sc-transaction-pool = { workspace = true, default-features = true }
+sc-transaction-pool-api = { workspace = true, default-features = true }
+sp-blockchain = { workspace = true, default-features = true }
+sp-runtime = { workspace = true, default-features = true }
+substrate-test-runtime-client = { workspace = true }
+thiserror = { workspace = true }

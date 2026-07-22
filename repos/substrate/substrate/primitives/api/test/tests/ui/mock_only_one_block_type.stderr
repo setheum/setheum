@@ -1,0 +1,11 @@
+error: Block type should be the same between all runtime apis.
+  --> tests/ui/mock_only_one_block_type.rs:37:12
+   |
+37 |     impl Api2<Block2> for MockApi {
+   |               ^^^^^^
+
+error: First block type found here
+  --> tests/ui/mock_only_one_block_type.rs:33:11
+   |
+33 |     impl Api<Block> for MockApi {
+   |              ^^^^^

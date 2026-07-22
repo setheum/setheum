@@ -1,0 +1,81 @@
+[package]
+name = "sc-executor"
+version = "0.32.0"
+authors.workspace = true
+edition.workspace = true
+license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
+homepage.workspace = true
+repository.workspace = true
+description = "A crate that provides means of executing/dispatching calls into the runtime."
+documentation = "https://docs.rs/sc-executor"
+readme = "README.md"
+
+[lints]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[[bench]]
+name = "bench"
+harness = false
+
+[dependencies]
+parking_lot = { workspace = true, default-features = true }
+schnellru = { workspace = true }
+tracing = { workspace = true, default-features = true }
+
+codec = { workspace = true, default-features = true }
+sc-executor-common = { workspace = true, default-features = true }
+sc-executor-polkavm = { workspace = true, default-features = true }
+sc-executor-wasmtime = { workspace = true, default-features = true }
+sp-api = { workspace = true, default-features = true }
+sp-core = { workspace = true, default-features = true }
+sp-externalities = { workspace = true, default-features = true }
+sp-io = { workspace = true, default-features = true }
+sp-panic-handler = { workspace = true, default-features = true }
+sp-runtime-interface = { workspace = true, default-features = true }
+sp-trie = { workspace = true, default-features = true }
+sp-version = { workspace = true, default-features = true }
+sp-wasm-interface = { workspace = true, default-features = true }
+
+[dev-dependencies]
+array-bytes = { workspace = true, default-features = true }
+assert_matches = { workspace = true }
+criterion = { workspace = true, default-features = true }
+num_cpus = { workspace = true }
+paste = { workspace = true, default-features = true }
+sc-runtime-test = { workspace = true }
+sc-tracing = { workspace = true, default-features = true }
+sc-virtualization = { workspace = true, default-features = true }
+sp-crypto-hashing = { workspace = true, default-features = true }
+sp-maybe-compressed-blob = { workspace = true, default-features = true }
+sp-runtime = { workspace = true, default-features = true }
+sp-state-machine = { workspace = true, default-features = true }
+sp-tracing = { workspace = true, default-features = true }
+sp-virtualization = { workspace = true, default-features = true }
+sp-virtualization-test-fixture = { workspace = true }
+substrate-test-runtime = { workspace = true }
+tempfile = { workspace = true }
+tracing-subscriber = { workspace = true }
+wat = { workspace = true }
+
+[features]
+default = ["std"]
+# This crate does not have `no_std` support, we just require this for tests
+std = [
+	"sc-runtime-test/std",
+	"sp-api/std",
+	"sp-core/std",
+	"sp-externalities/std",
+	"sp-io/std",
+	"sp-runtime-interface/std",
+	"sp-runtime/std",
+	"sp-state-machine/std",
+	"sp-tracing/std",
+	"sp-trie/std",
+	"sp-version/std",
+	"sp-wasm-interface/std",
+	"substrate-test-runtime/std",
+]
+wasm-extern-trace = []

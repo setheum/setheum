@@ -1,0 +1,67 @@
+[package]
+name = "pallet-nomination-pools"
+version = "25.0.0"
+authors.workspace = true
+edition.workspace = true
+license = "Apache-2.0"
+homepage.workspace = true
+repository.workspace = true
+description = "FRAME nomination pools pallet"
+
+[lints]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[dependencies]
+# parity
+codec = { features = ["derive"], workspace = true }
+scale-info = { features = ["derive"], workspace = true }
+
+# FRAME
+frame-support = { workspace = true }
+frame-system = { workspace = true }
+log = { workspace = true }
+sp-core = { workspace = true }
+sp-io = { workspace = true }
+sp-runtime = { workspace = true }
+sp-staking = { workspace = true }
+
+# Optional: use for testing and/or fuzzing
+pallet-balances = { optional = true, workspace = true }
+sp-tracing = { optional = true, workspace = true }
+
+[dev-dependencies]
+pallet-balances = { workspace = true, default-features = true }
+sp-tracing = { workspace = true, default-features = true }
+
+[features]
+default = ["std"]
+fuzzing = ["pallet-balances", "sp-tracing"]
+std = [
+	"codec/std",
+	"frame-support/std",
+	"frame-system/std",
+	"log/std",
+	"pallet-balances?/std",
+	"scale-info/std",
+	"sp-core/std",
+	"sp-io/std",
+	"sp-runtime/std",
+	"sp-staking/std",
+	"sp-tracing?/std",
+]
+runtime-benchmarks = [
+	"frame-support/runtime-benchmarks",
+	"frame-system/runtime-benchmarks",
+	"pallet-balances?/runtime-benchmarks",
+	"sp-runtime/runtime-benchmarks",
+	"sp-staking/runtime-benchmarks",
+]
+try-runtime = [
+	"frame-support/try-runtime",
+	"frame-system/try-runtime",
+	"pallet-balances?/try-runtime",
+	"sp-runtime/try-runtime",
+]

@@ -1,0 +1,44 @@
+[package]
+name = "sp-tracing"
+version = "16.0.0"
+license = "Apache-2.0"
+authors.workspace = true
+edition.workspace = true
+homepage.workspace = true
+repository.workspace = true
+description = "Instrumentation primitives and macros for Substrate."
+readme = "README.md"
+
+[lints]
+workspace = true
+
+[package.metadata.docs.rs]
+# let's default to wasm32
+default-target = "wasm32-unknown-unknown"
+# with the tracing enabled
+features = ["with-tracing"]
+# allowing for linux-gnu here, too, allows for `std` to show up as well
+targets = ["wasm32-unknown-unknown", "x86_64-unknown-linux-gnu"]
+
+[dependencies]
+codec = { features = ["derive"], workspace = true }
+regex = { workspace = true, optional = true }
+tracing = { workspace = true }
+tracing-core = { workspace = true }
+tracing-subscriber = { workspace = true, optional = true, features = [
+	"env-filter",
+	"time",
+	"tracing-log",
+] }
+
+[features]
+default = ["std"]
+with-tracing = ["codec/derive", "codec/full"]
+std = [
+	"codec/std",
+	"regex",
+	"tracing-core/std",
+	"tracing-subscriber",
+	"tracing/std",
+	"with-tracing",
+]

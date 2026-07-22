@@ -1,0 +1,397 @@
+// Copyright (C) Parity Technologies (UK) Ltd.
+// This file is part of Polkadot.
+
+// Polkadot is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// Polkadot is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with Polkadot.  If not, see <http://www.gnu.org/licenses/>.
+
+//! Adapters to work with [`frame_support::traits::tokens::nonfungible`] through XCM.
+
+use crate::MintLocation;
+use core::{fmt::Debug, marker::PhantomData};
+use frame_support::{
+	defensive_assert, ensure,
+	traits::{tokens::nonfungible, Get},
+};
+use xcm::latest::prelude::*;
+use xcm_executor::{
+	traits::{ConvertLocation, Error as MatchError, MatchesNonFungible, TransactAsset},
+	AssetsInHolding,
+};
+
+const LOG_TARGET: &str = "xcm::nonfungible_adapter";
+
+/// [`TransactAsset`] implementation that allows the use of a [`nonfungible`] implementation for
+/// handling an asset in the XCM executor.
+/// Only works for transfers.
+pub struct NonFungibleTransferAdapter<NonFungible, Matcher, AccountIdConverter, AccountId>(
+	PhantomData<(NonFungible, Matcher, AccountIdConverter, AccountId)>,
+)
+where
+	NonFungible: nonfungible::Transfer<AccountId>;
+impl<
+		NonFungible: nonfungible::Transfer<AccountId>,
+		Matcher: MatchesNonFungible<NonFungible::ItemId>,
+		AccountIdConverter: ConvertLocation<AccountId>,
+		AccountId: Clone + Debug, // can't get away without it since Currency is generic over it.
+	> TransactAsset for NonFungibleTransferAdapter<NonFungible, Matcher, AccountIdConverter, AccountId>
+where
+	NonFungible::ItemId: Debug,
+{
+	fn transfer_asset(
+		what: &Asset,
+		from: &Location,
+		to: &Location,
+		context: &XcmContext,
+	) -> Result<Asset, XcmError> {
+		tracing::trace!(
+			target: LOG_TARGET,
+			?what,
+			?from,
+			?to,
+			?context,
+			"transfer_asset",
+		);
+		// Check we handle this asset.
+		let instance = Matcher::matches_nonfungible(what).ok_or(MatchError::AssetNotHandled)?;
+		let destination = AccountIdConverter::convert_location(to)
+			.ok_or(MatchError::AccountIdConversionFailed)?;
+		NonFungible::transfer(&instance, &destination).map_err(|e| {
+			tracing::debug!(target: LOG_TARGET, ?e, ?instance, ?destination, "Failed to transfer non-fungible asset");
+			XcmError::FailedToTransactAsset(e.into())
+		})?;
+		Ok(what.clone())
+	}
+}
+
+/// [`TransactAsset`] implementation that allows the use of a [`nonfungible`] implementation for
+/// handling an asset in the XCM executor.
+/// Works for teleport bookkeeping.
+pub struct NonFungibleMutateAdapter<
+	NonFungible,
+	Matcher,
+	AccountIdConverter,
+	AccountId,
+	CheckingAccount,
+>(PhantomData<(NonFungible, Matcher, AccountIdConverter, AccountId, CheckingAccount)>)
+where
+	NonFungible: nonfungible::Mutate<AccountId>,
+	NonFungible::ItemId: Debug;
+
+impl<
+		NonFungible: nonfungible::Mutate<AccountId>,
+		Matcher: MatchesNonFungible<NonFungible::ItemId>,
+		AccountIdConverter: ConvertLocation<AccountId>,
+		AccountId: Clone + Eq + Debug, /* can't get away without it since Currency is generic
+		                                * over it. */
+		CheckingAccount: Get<Option<(AccountId, MintLocation)>>,
+	> NonFungibleMutateAdapter<NonFungible, Matcher, AccountIdConverter, AccountId, CheckingAccount>
+where
+	NonFungible::ItemId: Debug,
+{
+	fn can_accrue_checked(instance: NonFungible::ItemId) -> XcmResult {
+		ensure!(NonFungible::owner(&instance).is_none(), XcmError::NotDepositable);
+		Ok(())
+	}
+	fn can_reduce_checked(checking_account: AccountId, instance: NonFungible::ItemId) -> XcmResult {
+		// This is an asset whose teleports we track.
+		let owner = NonFungible::owner(&instance);
+		ensure!(owner == Some(checking_account), XcmError::NotWithdrawable);
+		ensure!(NonFungible::can_transfer(&instance), XcmError::NotWithdrawable);
+		Ok(())
+	}
+	fn accrue_checked(checking_account: AccountId, instance: NonFungible::ItemId) {
+		let ok = NonFungible::mint_into(&instance, &checking_account).is_ok();
+		debug_assert!(ok, "`mint_into` cannot generally fail; qed");
+	}
+	fn reduce_checked(instance: NonFungible::ItemId) {
+		let ok = NonFungible::burn(&instance, None).is_ok();
+		debug_assert!(ok, "`can_check_in` must have returned `true` immediately prior; qed");
+	}
+}
+
+impl<
+		NonFungible: nonfungible::Mutate<AccountId>,
+		Matcher: MatchesNonFungible<NonFungible::ItemId>,
+		AccountIdConverter: ConvertLocation<AccountId>,
+		AccountId: Clone + Eq + Debug, /* can't get away without it since Currency is generic
+		                                * over it. */
+		CheckingAccount: Get<Option<(AccountId, MintLocation)>>,
+	> TransactAsset
+	for NonFungibleMutateAdapter<NonFungible, Matcher, AccountIdConverter, AccountId, CheckingAccount>
+where
+	NonFungible::ItemId: Debug,
+{
+	fn can_check_in(origin: &Location, what: &Asset, context: &XcmContext) -> XcmResult {
+		tracing::trace!(
+			target: LOG_TARGET,
+			?origin,
+			?what,
+			?context,
+			"can_check_in",
+		);
+		// Check we handle this asset.
+		let instance = Matcher::matches_nonfungible(what).ok_or(MatchError::AssetNotHandled)?;
+		match CheckingAccount::get() {
+			// We track this asset's teleports to ensure no more come in than have gone out.
+			Some((checking_account, MintLocation::Local)) => {
+				Self::can_reduce_checked(checking_account, instance)
+			},
+			// We track this asset's teleports to ensure no more go out than have come in.
+			Some((_, MintLocation::NonLocal)) => Self::can_accrue_checked(instance),
+			_ => Ok(()),
+		}
+	}
+
+	fn check_in(origin: &Location, what: &Asset, context: &XcmContext) {
+		tracing::trace!(
+			target: LOG_TARGET,
+			?origin,
+			?what,
+			?context,
+			"check_in",
+		);
+		if let Some(instance) = Matcher::matches_nonfungible(what) {
+			match CheckingAccount::get() {
+				// We track this asset's teleports to ensure no more come in than have gone out.
+				Some((_, MintLocation::Local)) => Self::reduce_checked(instance),
+				// We track this asset's teleports to ensure no more go out than have come in.
+				Some((checking_account, MintLocation::NonLocal)) => {
+					Self::accrue_checked(checking_account, instance)
+				},
+				_ => (),
+			}
+		}
+	}
+
+	fn can_check_out(dest: &Location, what: &Asset, context: &XcmContext) -> XcmResult {
+		tracing::trace!(
+			target: LOG_TARGET,
+			?dest,
+			?what,
+			?context,
+			"can_check_out",
+		);
+		// Check we handle this asset.
+		let instance = Matcher::matches_nonfungible(what).ok_or(MatchError::AssetNotHandled)?;
+		match CheckingAccount::get() {
+			// We track this asset's teleports to ensure no more come in than have gone out.
+			Some((_, MintLocation::Local)) => Self::can_accrue_checked(instance),
+			// We track this asset's teleports to ensure no more go out than have come in.
+			Some((checking_account, MintLocation::NonLocal)) => {
+				Self::can_reduce_checked(checking_account, instance)
+			},
+			_ => Ok(()),
+		}
+	}
+
+	fn check_out(dest: &Location, what: &Asset, context: &XcmContext) {
+		tracing::trace!(
+			target: LOG_TARGET,
+			?dest,
+			?what,
+			?context,
+			"check_out",
+		);
+		if let Some(instance) = Matcher::matches_nonfungible(what) {
+			match CheckingAccount::get() {
+				// We track this asset's teleports to ensure no more come in than have gone out.
+				Some((checking_account, MintLocation::Local)) => {
+					Self::accrue_checked(checking_account, instance)
+				},
+				// We track this asset's teleports to ensure no more go out than have come in.
+				Some((_, MintLocation::NonLocal)) => Self::reduce_checked(instance),
+				_ => (),
+			}
+		}
+	}
+
+	fn deposit_asset(
+		what: AssetsInHolding,
+		who: &Location,
+		context: Option<&XcmContext>,
+	) -> Result<(), (AssetsInHolding, XcmError)> {
+		tracing::trace!(
+			target: LOG_TARGET,
+			?what,
+			?who,
+			?context,
+			"deposit_asset",
+		);
+		defensive_assert!(what.len() == 1, "Trying to deposit more than one asset!");
+		// Check we handle this asset.
+		let maybe = what
+			.non_fungible_assets_iter()
+			.next()
+			.and_then(|asset| Matcher::matches_nonfungible(&asset));
+		let Some(instance) = maybe else { return Err((what, MatchError::AssetNotHandled.into())) };
+		let Some(who) = AccountIdConverter::convert_location(who) else {
+			return Err((what, MatchError::AccountIdConversionFailed.into()));
+		};
+		NonFungible::mint_into(&instance, &who).map_err(|e| {
+			tracing::debug!(target: LOG_TARGET, ?e, ?instance, ?who, "Failed to mint asset");
+			(what, XcmError::FailedToTransactAsset(e.into()))
+		})
+	}
+
+	fn withdraw_asset(
+		what: &Asset,
+		who: &Location,
+		maybe_context: Option<&XcmContext>,
+	) -> Result<AssetsInHolding, XcmError> {
+		tracing::trace!(
+			target: LOG_TARGET,
+			?what,
+			?who,
+			?maybe_context,
+			"withdraw_asset"
+		);
+		// Check we handle this asset.
+		let who = AccountIdConverter::convert_location(who)
+			.ok_or(MatchError::AccountIdConversionFailed)?;
+		let instance = Matcher::matches_nonfungible(what).ok_or(MatchError::AssetNotHandled)?;
+		let asset_instance = match what.fun {
+			NonFungible(instance) => instance,
+			_ => return Err(MatchError::AssetNotHandled.into()),
+		};
+		NonFungible::burn(&instance, Some(&who)).map_err(|e| {
+			tracing::debug!(target: LOG_TARGET, ?e, ?instance, ?who, "Failed to burn asset");
+			XcmError::FailedToTransactAsset(e.into())
+		})?;
+		Ok(AssetsInHolding::new_from_non_fungible(what.id.clone(), asset_instance))
+	}
+
+	fn mint_asset(what: &Asset, context: &XcmContext) -> Result<AssetsInHolding, XcmError> {
+		tracing::trace!(
+			target: LOG_TARGET,
+			?what, ?context,
+			"mint_asset",
+		);
+		let asset_instance = match what.fun {
+			NonFungible(instance) => instance,
+			_ => return Err(MatchError::AssetNotHandled.into()),
+		};
+		let _instance = Matcher::matches_nonfungible(what).ok_or(MatchError::AssetNotHandled)?;
+		Ok(AssetsInHolding::new_from_non_fungible(what.id.clone(), asset_instance))
+	}
+}
+
+/// [`TransactAsset`] implementation that allows the use of a [`nonfungible`] implementation for
+/// handling an asset in the XCM executor.
+/// Works for everything.
+pub struct NonFungibleAdapter<NonFungible, Matcher, AccountIdConverter, AccountId, CheckingAccount>(
+	PhantomData<(NonFungible, Matcher, AccountIdConverter, AccountId, CheckingAccount)>,
+)
+where
+	NonFungible: nonfungible::Mutate<AccountId> + nonfungible::Transfer<AccountId>,
+	NonFungible::ItemId: Debug;
+impl<
+		NonFungible: nonfungible::Mutate<AccountId> + nonfungible::Transfer<AccountId>,
+		Matcher: MatchesNonFungible<NonFungible::ItemId>,
+		AccountIdConverter: ConvertLocation<AccountId>,
+		AccountId: Clone + Eq + Debug, /* can't get away without it since Currency is generic
+		                                * over it. */
+		CheckingAccount: Get<Option<(AccountId, MintLocation)>>,
+	> TransactAsset
+	for NonFungibleAdapter<NonFungible, Matcher, AccountIdConverter, AccountId, CheckingAccount>
+where
+	NonFungible::ItemId: Debug,
+{
+	fn can_check_in(origin: &Location, what: &Asset, context: &XcmContext) -> XcmResult {
+		NonFungibleMutateAdapter::<
+			NonFungible,
+			Matcher,
+			AccountIdConverter,
+			AccountId,
+			CheckingAccount,
+		>::can_check_in(origin, what, context)
+	}
+
+	fn check_in(origin: &Location, what: &Asset, context: &XcmContext) {
+		NonFungibleMutateAdapter::<
+			NonFungible,
+			Matcher,
+			AccountIdConverter,
+			AccountId,
+			CheckingAccount,
+		>::check_in(origin, what, context)
+	}
+
+	fn can_check_out(dest: &Location, what: &Asset, context: &XcmContext) -> XcmResult {
+		NonFungibleMutateAdapter::<
+			NonFungible,
+			Matcher,
+			AccountIdConverter,
+			AccountId,
+			CheckingAccount,
+		>::can_check_out(dest, what, context)
+	}
+
+	fn check_out(dest: &Location, what: &Asset, context: &XcmContext) {
+		NonFungibleMutateAdapter::<
+			NonFungible,
+			Matcher,
+			AccountIdConverter,
+			AccountId,
+			CheckingAccount,
+		>::check_out(dest, what, context)
+	}
+
+	fn deposit_asset(
+		what: AssetsInHolding,
+		who: &Location,
+		context: Option<&XcmContext>,
+	) -> Result<(), (AssetsInHolding, XcmError)> {
+		NonFungibleMutateAdapter::<
+			NonFungible,
+			Matcher,
+			AccountIdConverter,
+			AccountId,
+			CheckingAccount,
+		>::deposit_asset(what, who, context)
+	}
+
+	fn withdraw_asset(
+		what: &Asset,
+		who: &Location,
+		maybe_context: Option<&XcmContext>,
+	) -> Result<AssetsInHolding, XcmError> {
+		NonFungibleMutateAdapter::<
+			NonFungible,
+			Matcher,
+			AccountIdConverter,
+			AccountId,
+			CheckingAccount,
+		>::withdraw_asset(what, who, maybe_context)
+	}
+
+	fn transfer_asset(
+		what: &Asset,
+		from: &Location,
+		to: &Location,
+		context: &XcmContext,
+	) -> Result<Asset, XcmError> {
+		NonFungibleTransferAdapter::<NonFungible, Matcher, AccountIdConverter, AccountId>::transfer_asset(
+			what, from, to, context,
+		)
+	}
+
+	fn mint_asset(what: &Asset, context: &XcmContext) -> Result<AssetsInHolding, XcmError> {
+		NonFungibleMutateAdapter::<
+			NonFungible,
+			Matcher,
+			AccountIdConverter,
+			AccountId,
+			CheckingAccount,
+		>::mint_asset(what, context)
+	}
+}

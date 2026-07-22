@@ -123,13 +123,11 @@ version = "0.6.0"
 version = "0.26.0"
 
 [workspace.dependencies.cumulus-pallet-xcm]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/../cumulus/pallets/xcm"
 default-features = false
 
 [workspace.dependencies.cumulus-primitives-core]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/../cumulus/primitives/core"
 default-features = false
 
 [workspace.dependencies.darling]
@@ -187,51 +185,42 @@ path = "repos/setheum/finality/finality-setbft"
 
 
 [workspace.dependencies.frame-benchmarking]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/benchmarking"
 default-features = false
 
 [workspace.dependencies.frame-benchmarking-cli]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/benchmarking/cli"
 default-features = false
 
 [workspace.dependencies.frame-election-provider-support]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/election-provider-support"
 default-features = false
 
 [workspace.dependencies.frame-executive]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/executive"
 default-features = false
 
 [workspace.dependencies.frame-metadata]
 version = "16.0.0"
 
 [workspace.dependencies.frame-support]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/support"
 default-features = false
 
 [workspace.dependencies.frame-system]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/system"
 default-features = false
 
 [workspace.dependencies.frame-system-benchmarking]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/system/benchmarking"
 default-features = false
 
 [workspace.dependencies.frame-system-rpc-runtime-api]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/system/rpc/runtime-api"
 default-features = false
 
 [workspace.dependencies.frame-try-runtime]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/try-runtime"
 default-features = false
 
 [workspace.dependencies.funty]
@@ -664,38 +653,31 @@ version = "0.5.1"
 default-features = false
 
 [workspace.dependencies.pallet-aura]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/aura"
 default-features = false
 
 [workspace.dependencies.pallet-authority-discovery]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/authority-discovery"
 default-features = false
 
 [workspace.dependencies.pallet-authorship]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/authorship"
 default-features = false
 
 [workspace.dependencies.pallet-balances]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/balances"
 default-features = false
 
 [workspace.dependencies.pallet-bounties]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/bounties"
 default-features = false
 
 [workspace.dependencies.pallet-collective]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/collective"
 default-features = false
 
 [workspace.dependencies.pallet-contracts]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/contracts"
 default-features = false
 
 [workspace.dependencies.pallet-contracts-mock-network]
@@ -711,163 +693,131 @@ path = "repos/sheyth-vm-uapi"
 default-features = false
 
 [workspace.dependencies.pallet-democracy]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/democracy"
 default-features = false
 
 [workspace.dependencies.pallet-elections-phragmen]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/elections-phragmen"
 default-features = false
 
 [workspace.dependencies.pallet-grandpa]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/grandpa"
 default-features = false
 
 [workspace.dependencies.pallet-identity]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/identity"
 default-features = false
 
 [workspace.dependencies.pallet-im-online]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/im-online"
 default-features = false
 
 [workspace.dependencies.pallet-indices]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/indices"
 default-features = false
 
 [workspace.dependencies.pallet-insecure-randomness-collective-flip]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/insecure-randomness-collective-flip"
 default-features = false
 
 [workspace.dependencies.pallet-membership]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/membership"
 default-features = false
 
 [workspace.dependencies.pallet-message-queue]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/message-queue"
 default-features = false
 
 [workspace.dependencies.pallet-multisig]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/multisig"
 default-features = false
 
 [workspace.dependencies.pallet-nomination-pools]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/nomination-pools"
 default-features = false
 
 [workspace.dependencies.pallet-nomination-pools-runtime-api]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/nomination-pools/runtime-api"
 default-features = false
 
 [workspace.dependencies.pallet-offences]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/offences"
 default-features = false
 
 [workspace.dependencies.pallet-preimage]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/preimage"
 default-features = false
 
 [workspace.dependencies.pallet-proxy]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/proxy"
 default-features = false
 
 [workspace.dependencies.pallet-recovery]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/recovery"
 default-features = false
 
 [workspace.dependencies.pallet-root-testing]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/root-testing"
 default-features = false
 
 [workspace.dependencies.pallet-scheduler]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/scheduler"
 default-features = false
 
 [workspace.dependencies.pallet-session]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/session"
 default-features = false
 
 [workspace.dependencies.pallet-staking]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/staking"
 default-features = false
 
 [workspace.dependencies.pallet-staking-reward-curve]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/staking/reward-curve"
 default-features = false
 
 [workspace.dependencies.pallet-staking-runtime-api]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/staking/runtime-api"
 default-features = false
 
 [workspace.dependencies.pallet-sudo]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/sudo"
 default-features = false
 
 [workspace.dependencies.pallet-timestamp]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/timestamp"
 default-features = false
 
 [workspace.dependencies.pallet-tips]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/tips"
 default-features = false
 
 [workspace.dependencies.pallet-transaction-payment]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/transaction-payment"
 default-features = false
 
 [workspace.dependencies.pallet-transaction-payment-rpc]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/transaction-payment/rpc"
 default-features = false
 
 [workspace.dependencies.pallet-transaction-payment-rpc-runtime-api]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/transaction-payment/rpc/runtime-api"
 default-features = false
 
 [workspace.dependencies.pallet-treasury]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/treasury"
 default-features = false
 
 [workspace.dependencies.pallet-utility]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/frame/utility"
 default-features = false
 
 [workspace.dependencies.pallet-xcm]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/../polkadot/xcm/pallet-xcm"
 default-features = false
 
 [workspace.dependencies.parachains-common]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/../polkadot/parachains/common"
 default-features = false
 
 [workspace.dependencies.parity-scale-codec]
@@ -890,18 +840,15 @@ default-features = false
 path = "repos/setheum/benches/payout-stakers"
 
 [workspace.dependencies.polkadot-parachain-primitives]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/../polkadot/primitives/parachain"
 default-features = false
 
 [workspace.dependencies.polkadot-runtime-common]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/../polkadot/runtime/common"
 default-features = false
 
 [workspace.dependencies.polkadot-runtime-parachains]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/../polkadot/runtime/parachains"
 default-features = false
 
 [workspace.dependencies.pretty_assertions]
@@ -967,153 +914,123 @@ path = "repos/setheum/runtime/common"
 default-features = false
 
 [workspace.dependencies.sc-basic-authorship]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/client/basic-authorship"
 default-features = false
 
 [workspace.dependencies.sc-block-builder]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/client/block-builder"
 default-features = false
 
 [workspace.dependencies.sc-chain-spec]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/client/chain-spec"
 default-features = false
 
 [workspace.dependencies.sc-cli]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/client/cli"
 default-features = false
 
 [workspace.dependencies.sc-client-api]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/client/api"
 default-features = false
 
 [workspace.dependencies.sc-client-db]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/client/db"
 default-features = false
 
 [workspace.dependencies.sc-consensus]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/client/consensus"
 default-features = false
 
 [workspace.dependencies.sc-consensus-aura]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/client/consensus/aura"
 default-features = false
 
 [workspace.dependencies.sc-consensus-epochs]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/client/consensus/epochs"
 default-features = false
 
 [workspace.dependencies.sc-consensus-grandpa]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/client/consensus/grandpa"
 default-features = false
 
 [workspace.dependencies.sc-consensus-grandpa-rpc]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/client/consensus/grandpa/rpc"
 default-features = false
 
 [workspace.dependencies.sc-consensus-manual-seal]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/client/consensus/manual-seal"
 default-features = false
 
 [workspace.dependencies.sc-consensus-slots]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/client/consensus/slots"
 default-features = false
 
 [workspace.dependencies.sc-executor]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/client/executor"
 default-features = false
 
 [workspace.dependencies.sc-keystore]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/client/keystore"
 default-features = false
 
 [workspace.dependencies.sc-network]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/client/network"
 default-features = false
 
 [workspace.dependencies.sc-network-common]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/client/network/common"
 default-features = false
 
 [workspace.dependencies.sc-network-light]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/client/network/light"
 default-features = false
 
 [workspace.dependencies.sc-network-sync]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/client/network/sync"
 default-features = false
 
 [workspace.dependencies.sc-network-transactions]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/client/network/transactions"
 default-features = false
 
 [workspace.dependencies.sc-offchain]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/client/offchain"
 default-features = false
 
 [workspace.dependencies.sc-rpc]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/client/rpc"
 default-features = false
 
 [workspace.dependencies.sc-rpc-api]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/client/rpc-api"
 default-features = false
 
 [workspace.dependencies.sc-rpc-server]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/client/rpc-server"
 default-features = false
 
 [workspace.dependencies.sc-service]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/client/service"
 default-features = false
 
 [workspace.dependencies.sc-telemetry]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/client/telemetry"
 default-features = false
 
 [workspace.dependencies.sc-tracing]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/client/tracing"
 default-features = false
 
 [workspace.dependencies.sc-transaction-pool]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/client/transaction-pool"
 default-features = false
 
 [workspace.dependencies.sc-transaction-pool-api]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/client/transaction-pool/api"
 default-features = false
 
 [workspace.dependencies.sc-utils]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/client/utils"
 default-features = false
 
 [workspace.dependencies.scale]
@@ -1205,168 +1122,135 @@ version = "1.4.1"
 default-features = false
 
 [workspace.dependencies.sp-api]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/primitives/api"
 default-features = false
 
 [workspace.dependencies.sp-application-crypto]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/primitives/application-crypto"
 default-features = false
 
 [workspace.dependencies.sp-arithmetic]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/primitives/arithmetic"
 default-features = false
 
 [workspace.dependencies.sp-authority-discovery]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/primitives/authority-discovery"
 default-features = false
 
 [workspace.dependencies.sp-block-builder]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/primitives/block-builder"
 default-features = false
 
 [workspace.dependencies.sp-blockchain]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/primitives/blockchain"
 default-features = false
 
 [workspace.dependencies.sp-consensus]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/primitives/consensus"
 default-features = false
 
 [workspace.dependencies.sp-consensus-aura]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/primitives/consensus/aura"
 default-features = false
 
 [workspace.dependencies.sp-consensus-babe]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/primitives/consensus/babe"
 default-features = false
 
 [workspace.dependencies.sp-consensus-grandpa]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/primitives/consensus/grandpa"
 default-features = false
 
 [workspace.dependencies.sp-consensus-slots]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/primitives/consensus/slots"
 default-features = false
 
 [workspace.dependencies.sp-core]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/primitives/core"
 default-features = false
 
 [workspace.dependencies.sp-debug-derive]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/primitives/debug-derive"
 default-features = false
 
 [workspace.dependencies.sp-externalities]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/primitives/externalities"
 default-features = false
 
 [workspace.dependencies.sp-inherents]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/primitives/inherents"
 default-features = false
 
 [workspace.dependencies.sp-io]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/primitives/io"
 default-features = false
 
 [workspace.dependencies.sp-keyring]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/primitives/keyring"
 default-features = false
 
 [workspace.dependencies.sp-keystore]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/primitives/keystore"
 default-features = false
 
 [workspace.dependencies.sp-offchain]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/primitives/offchain"
 default-features = false
 
 [workspace.dependencies.sp-runtime]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/primitives/runtime"
 default-features = false
 
 [workspace.dependencies.sp-runtime-interface]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/primitives/runtime-interface"
 default-features = false
 
 [workspace.dependencies.sp-session]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/primitives/session"
 default-features = false
 
 [workspace.dependencies.sp-staking]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/primitives/staking"
 default-features = false
 
 [workspace.dependencies.sp-state-machine]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/primitives/state-machine"
 default-features = false
 
 [workspace.dependencies.sp-std]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/primitives/std"
 default-features = false
 
 [workspace.dependencies.sp-storage]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/primitives/storage"
 default-features = false
 
 [workspace.dependencies.sp-timestamp]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/primitives/timestamp"
 default-features = false
 
 [workspace.dependencies.sp-tracing]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/primitives/tracing"
 default-features = false
 
 [workspace.dependencies.sp-transaction-pool]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/primitives/transaction-pool"
 default-features = false
 
 [workspace.dependencies.sp-trie]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/primitives/trie"
 default-features = false
 
 [workspace.dependencies.sp-version]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/primitives/version"
 default-features = false
 
 [workspace.dependencies.sp-wasm-interface]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/primitives/wasm-interface"
 default-features = false
 
 [workspace.dependencies.sp-weights]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/primitives/weights"
 default-features = false
 
 [workspace.dependencies.spec-flatten]
@@ -1384,18 +1268,15 @@ git = "https://github.com/paritytech/polkadot-sdk"
 branch = "stable2506"
 
 [workspace.dependencies.substrate-prometheus-endpoint]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/utils/prometheus"
 default-features = false
 
 [workspace.dependencies.substrate-test-client]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/client/test-client"
 default-features = false
 
 [workspace.dependencies.substrate-test-runtime]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/test-utils/runtime"
 default-features = false
 
 [workspace.dependencies.substrate-test-runtime-client]
@@ -1404,8 +1285,7 @@ branch = "stable2506"
 default-features = false
 
 [workspace.dependencies.substrate-wasm-builder]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/utils/wasm-builder"
 default-features = false
 
 [workspace.dependencies.subxt]
@@ -1496,8 +1376,7 @@ package = "staging-xcm-executor"
 default-features = false
 
 [workspace.dependencies.xcm-simulator]
-git = "https://github.com/paritytech/polkadot-sdk"
-branch = "stable2506"
+path = "repos/substrate/../polkadot/xcm/xcm-simulator"
 default-features = false
 
 [workspace.dependencies.xxhash-rust]

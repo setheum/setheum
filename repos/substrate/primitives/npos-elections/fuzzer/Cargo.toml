@@ -1,0 +1,40 @@
+[package]
+name = "sp-npos-elections-fuzzer"
+version = "2.0.0-alpha.5"
+authors.workspace = true
+edition.workspace = true
+license = "Apache-2.0"
+homepage.workspace = true
+repository.workspace = true
+description = "Fuzzer for phragmén implementation."
+documentation = "https://docs.rs/sp-npos-elections-fuzzer"
+publish = false
+
+[lints]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[[bin]]
+name = "reduce"
+path = "src/reduce.rs"
+
+[[bin]]
+name = "phragmen_balancing"
+path = "src/phragmen_balancing.rs"
+
+[[bin]]
+name = "phragmms_balancing"
+path = "src/phragmms_balancing.rs"
+
+[[bin]]
+name = "phragmen_pjr"
+path = "src/phragmen_pjr.rs"
+
+[dependencies]
+clap = { features = ["derive"], workspace = true }
+honggfuzz = { workspace = true }
+rand = { features = ["small_rng", "std"], workspace = true, default-features = true }
+sp-npos-elections = { workspace = true, default-features = true }
+sp-runtime = { workspace = true, default-features = true }

@@ -1,0 +1,66 @@
+[package]
+name = "xcm-simulator-fuzzer"
+description = "Examples of xcm-simulator usage."
+version = "1.0.0"
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[[bin]]
+path = "src/fuzz.rs"
+name = "xcm-fuzzer"
+
+[dependencies]
+arbitrary = { workspace = true }
+codec = { workspace = true, default-features = true }
+honggfuzz = { workspace = true }
+scale-info = { features = ["derive"], workspace = true, default-features = true }
+
+frame-executive = { workspace = true, default-features = true }
+frame-support = { workspace = true, default-features = true }
+frame-system = { workspace = true, default-features = true }
+frame-try-runtime = { workspace = true, default-features = true }
+pallet-balances = { workspace = true, default-features = true }
+pallet-message-queue = { workspace = true, default-features = true }
+sp-core = { workspace = true, default-features = true }
+sp-io = { workspace = true, default-features = true }
+sp-runtime = { workspace = true, default-features = true }
+
+pallet-xcm = { workspace = true, default-features = true }
+polkadot-core-primitives = { workspace = true, default-features = true }
+polkadot-parachain-primitives = { workspace = true, default-features = true }
+polkadot-runtime-parachains = { workspace = true, default-features = true }
+xcm = { workspace = true, default-features = true }
+xcm-builder = { workspace = true, default-features = true }
+xcm-executor = { workspace = true, default-features = true }
+xcm-simulator = { workspace = true, default-features = true }
+
+[features]
+try-runtime = [
+	"frame-executive/try-runtime",
+	"frame-support/try-runtime",
+	"frame-system/try-runtime",
+	"frame-try-runtime/try-runtime",
+	"pallet-balances/try-runtime",
+	"pallet-message-queue/try-runtime",
+	"pallet-xcm/try-runtime",
+	"polkadot-runtime-parachains/try-runtime",
+	"sp-runtime/try-runtime",
+]
+runtime-benchmarks = [
+	"frame-support/runtime-benchmarks",
+	"frame-system/runtime-benchmarks",
+	"pallet-balances/runtime-benchmarks",
+	"pallet-message-queue/runtime-benchmarks",
+	"pallet-xcm/runtime-benchmarks",
+	"polkadot-parachain-primitives/runtime-benchmarks",
+	"polkadot-runtime-parachains/runtime-benchmarks",
+	"sp-runtime/runtime-benchmarks",
+	"xcm-builder/runtime-benchmarks",
+	"xcm-executor/runtime-benchmarks",
+	"xcm/runtime-benchmarks",
+]

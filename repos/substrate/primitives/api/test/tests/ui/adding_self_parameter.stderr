@@ -1,0 +1,5 @@
+error: `self` as argument not supported.
+  --> tests/ui/adding_self_parameter.rs:20:11
+   |
+20 |         fn test(&self);
+   |                 ^

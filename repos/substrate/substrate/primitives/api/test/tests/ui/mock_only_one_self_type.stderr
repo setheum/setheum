@@ -1,0 +1,11 @@
+error: Self type should not change between runtime apis
+  --> tests/ui/mock_only_one_self_type.rs:36:23
+   |
+36 |     impl Api2<Block> for MockApi2 {
+   |                          ^^^^^^^^
+
+error: First self type found here
+  --> tests/ui/mock_only_one_self_type.rs:32:22
+   |
+32 |     impl Api<Block> for MockApi {
+   |                         ^^^^^^^

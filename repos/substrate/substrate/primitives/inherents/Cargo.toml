@@ -1,0 +1,38 @@
+[package]
+name = "sp-inherents"
+version = "26.0.0"
+authors.workspace = true
+edition.workspace = true
+license = "Apache-2.0"
+homepage.workspace = true
+repository.workspace = true
+description = "Provides types and traits for creating and checking inherents."
+documentation = "https://docs.rs/sp-inherents"
+readme = "README.md"
+
+[lints]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[dependencies]
+async-trait = { optional = true, workspace = true }
+codec = { features = ["derive"], workspace = true }
+impl-trait-for-tuples = { workspace = true }
+scale-info = { features = ["derive"], workspace = true }
+sp-runtime = { optional = true, workspace = true }
+thiserror = { optional = true, workspace = true }
+
+[dev-dependencies]
+futures = { workspace = true }
+
+[features]
+default = ["std"]
+std = [
+	"async-trait",
+	"codec/std",
+	"scale-info/std",
+	"sp-runtime/std",
+	"thiserror",
+]
