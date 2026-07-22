@@ -60,6 +60,10 @@ run = "cargo test -p set-bft -p set-bft-types -p set-bft-crypto -p set-bft-rmc"
 description = "Run Spinit tests"
 run = "cargo test -p spinit"
 
+[tasks."test:substrate"]
+description = "Run substrate SDK tests"
+run = "SKIP_WASM_BUILD=1 cargo test -p sp-core -p sp-io -p sp-runtime -p sp-std -p sp-arithmetic -p sp-trie -p sp-state-machine -p sp-weights -p sp-storage"
+
 [tasks.fmt]
 description = "Format the codebase and apply headers"
 run = ["cargo fmt --all", "python3 scripts/apply_headers.py"]
