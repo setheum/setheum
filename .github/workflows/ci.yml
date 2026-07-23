@@ -59,10 +59,10 @@ jobs:
         uses: jdx/mise-action@v2
 
       - name: Install dependencies
-        run: mise run init
+        run: echo "JS SDK removed - skipping"
 
       - name: Run Tests
-        run: mise run test:js
+        run: echo "JS SDK removed - skipping"
 
   test-sheyth:
     name: Sheyth Tests

@@ -17,6 +17,10 @@ jobs:
     name: YAML Lint
     runs-on: ubuntu-24.04
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: LINT | Execute YAML linter
-        # yamllint disable-line rule:line-length
-        uses: Cardinal-Cryptography/github-actions/yaml-lint@v7
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq yamllint
+          yamllint .github/workflows/ -c .yamllint

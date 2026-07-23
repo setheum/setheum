@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = [ "repos/setheum/node", "repos/setheum/runtime-modules/airdrop", "repos/setheum/runtime-modules/setbft", "repos/setheum/runtime-modules/asset-registry", "repos/setheum/runtime-modules/committee-management", "repos/setheum/runtime-modules/currencies", "repos/setheum/runtime-modules/loans", "repos/setheum/runtime-modules/seusd-engine", "repos/setheum/runtime-modules/seusd-treasury", "repos/setheum/runtime-modules/swap-legacy", "repos/setheum/runtime-modules/elections", "repos/setheum/runtime-modules/bridge", "repos/setheum/runtime-modules/bridge-access-segregator", "repos/setheum/runtime-modules/bridge-basic-fee-handler", "repos/setheum/runtime-modules/bridge-fee-handler-router", "repos/setheum/runtime-modules/bridge-forwarder", "repos/setheum/runtime-modules/bridge-parachain-info", "repos/setheum/runtime-modules/bridge-percentage-fee-handler", "repos/setheum/runtime-modules/bridge-traits", "repos/setheum/runtime-modules/bridge-xcm", "repos/setheum/runtime-modules/idle-scheduler", "repos/setheum/runtime-modules/incentives", "repos/setheum/runtime-modules/operations", "repos/setheum/runtime-modules/oracle", "repos/setheum/runtime-modules/parameters", "repos/setheum/runtime-modules/prices", "repos/setheum/runtime-modules/rate-limit", "repos/setheum/runtime-modules/rewards", "repos/setheum/runtime-modules/support", "repos/setheum/runtime-modules/tokens", "repos/setheum/runtime-modules/traits", "repos/setheum/runtime-modules/transaction-pause", "repos/setheum/runtime-modules/transaction-payment", "repos/setheum/runtime-modules/sheyth-vm", "repos/setheum/runtime-modules/vesting",    "repos/setheum/runtime-modules/dex-oracle", "repos/setheum/runtime-modules/currencies/runtime-api", "repos/setheum/runtime-modules/oracle/runtime-api", "repos/setheum/runtime-modules/tokens/runtime-api", "repos/setheum/runtime-modules/setbft/runtime-api", "repos/setheum/primitives", "repos/setheum/clisee", "repos/setheum/chain-bootstrapper", "repos/setheum/setheum-client", "repos/setheum/e2e-tests", "repos/setheum/benches/payout-stakers", "repos/setheum/scripts/synthetic-network/synthetic-link", "repos/setheum/finality/aggregator", "repos/setheum/finality/rate-limiter", "repos/setheum/finality/finality-setbft", "repos/setheum/finality/fake-runtime-api", "repos/setheum/runtime", "repos/setheum/runtime/common", "repos/setheum/runtime-modules/authority", "repos/setheum/runtime-modules/payments", "repos/setheum/runtime-modules/unknown-tokens", "repos/setheum/runtime-modules/xcm-support", "repos/setheum/runtime-modules/xcm", "repos/setheum/runtime-modules/xtokens", "repos/setheum/runtime-modules/xcm-mock-message-queue", "repos/setheum/runtime-modules/nft", "repos/setheum/runtime-modules/auction", "repos/setheum/runtime-modules/benchmarking", "repos/setheum/runtime-modules/utilities", "repos/setheum/runtime-modules/oracle/rpc", "repos/setheum/clique", "repos/sheyth/crates/allocator", "repos/sheyth/crates/e2e", "repos/sheyth/crates/e2e/macro", "repos/sheyth/crates/e2e/sandbox", "repos/sheyth/crates/engine", "repos/sheyth/crates/env", "repos/sheyth/crates/ink", "repos/sheyth/crates/ink/codegen", "repos/sheyth/crates/ink/ir", "repos/sheyth/crates/ink/macro", "repos/sheyth/crates/metadata", "repos/sheyth/crates/prelude", "repos/sheyth/crates/primitives", "repos/sheyth/crates/storage", "repos/sheyth/crates/storage/traits", "repos/sheyth/crates/contract-analyze", "repos/sheyth/crates/contract-build", "repos/sheyth/crates/cargo-contract", "repos/sheyth/crates/contract-extrinsics", "repos/sheyth/crates/contract-metadata", "repos/sheyth/crates/contract-transcode", "repos/set-bft/consensus", "repos/set-bft/types", "repos/set-bft/crypto", "repos/set-bft/rmc", "repos/set-bft/mock", "repos/set-bft/examples/ordering", "repos/set-bft/examples/blockchain",                                                                          "repos/spinit/spinit", "repos/spinit/spinit/test-macro", "repos/spinit/spinit-cli", "repos/sheyth-vm", "repos/sheyth-vm/crates/sheyth-vm", "repos/sheyth-vm/crates/sheyth-vm-common", "repos/sheyth-vm/crates/sheyth-vm-assembler", "repos/sheyth-vm/crates/sheyth-vm-disassembler", "repos/sheyth-vm/crates/sheyth-vm-linker", "repos/sheyth-vm/crates/sheyth-vm-derive", "repos/sheyth-vm/crates/sheyth-vm-derive-impl", "repos/sheyth-vm/crates/sheyth-vm-derive-impl-macro", "repos/sheyth-vm-uapi",]
+members = [ "repos/setheum/node", "repos/setheum/runtime-modules/airdrop", "repos/setheum/runtime-modules/setbft", "repos/setheum/runtime-modules/asset-registry", "repos/setheum/runtime-modules/committee-management", "repos/setheum/runtime-modules/currencies", "repos/setheum/runtime-modules/loans", "repos/setheum/runtime-modules/seusd-engine", "repos/setheum/runtime-modules/seusd-treasury", "repos/setheum/runtime-modules/swap-legacy", "repos/setheum/runtime-modules/elections", "repos/setheum/runtime-modules/bridge", "repos/setheum/runtime-modules/bridge-access-segregator", "repos/setheum/runtime-modules/bridge-basic-fee-handler", "repos/setheum/runtime-modules/bridge-fee-handler-router", "repos/setheum/runtime-modules/bridge-forwarder", "repos/setheum/runtime-modules/bridge-parachain-info", "repos/setheum/runtime-modules/bridge-percentage-fee-handler", "repos/setheum/runtime-modules/bridge-traits", "repos/setheum/runtime-modules/bridge-xcm", "repos/setheum/runtime-modules/idle-scheduler", "repos/setheum/runtime-modules/incentives", "repos/setheum/runtime-modules/operations", "repos/setheum/runtime-modules/oracle", "repos/setheum/runtime-modules/parameters", "repos/setheum/runtime-modules/prices", "repos/setheum/runtime-modules/rate-limit", "repos/setheum/runtime-modules/rewards", "repos/setheum/runtime-modules/support", "repos/setheum/runtime-modules/tokens", "repos/setheum/runtime-modules/traits", "repos/setheum/runtime-modules/transaction-pause", "repos/setheum/runtime-modules/transaction-payment", "repos/setheum/runtime-modules/sheyth-vm", "repos/setheum/runtime-modules/vesting",    "repos/setheum/runtime-modules/dex-oracle", "repos/setheum/runtime-modules/currencies/runtime-api", "repos/setheum/runtime-modules/oracle/runtime-api", "repos/setheum/runtime-modules/tokens/runtime-api", "repos/setheum/runtime-modules/setbft/runtime-api", "repos/setheum/primitives", "repos/setheum/clisee", "repos/setheum/chain-bootstrapper", "repos/setheum/setheum-client", "repos/setheum/e2e-tests", "repos/setheum/benches/payout-stakers", "repos/setheum/scripts/synthetic-network/synthetic-link", "repos/setheum/finality/aggregator", "repos/setheum/finality/rate-limiter", "repos/setheum/finality/finality-setbft", "repos/setheum/finality/fake-runtime-api", "repos/setheum/runtime", "repos/setheum/runtime/common", "repos/setheum/runtime-modules/authority", "repos/setheum/runtime-modules/payments", "repos/setheum/runtime-modules/unknown-tokens", "repos/setheum/runtime-modules/xcm-support", "repos/setheum/runtime-modules/xcm", "repos/setheum/runtime-modules/xtokens", "repos/setheum/runtime-modules/xcm-mock-message-queue", "repos/setheum/runtime-modules/nft", "repos/setheum/runtime-modules/auction", "repos/setheum/runtime-modules/benchmarking", "repos/setheum/runtime-modules/utilities", "repos/setheum/runtime-modules/oracle/rpc", "repos/setheum/clique", "repos/sheyth/crates/allocator", "repos/sheyth/crates/e2e", "repos/sheyth/crates/e2e/macro", "repos/sheyth/crates/e2e/sandbox", "repos/sheyth/crates/engine", "repos/sheyth/crates/env", "repos/sheyth/crates/ink", "repos/sheyth/crates/ink/codegen", "repos/sheyth/crates/ink/ir", "repos/sheyth/crates/ink/macro", "repos/sheyth/crates/metadata", "repos/sheyth/crates/prelude", "repos/sheyth/crates/primitives", "repos/sheyth/crates/storage", "repos/sheyth/crates/storage/traits", "repos/sheyth/crates/contract-analyze", "repos/sheyth/crates/contract-build", "repos/sheyth/crates/cargo-contract", "repos/sheyth/crates/contract-extrinsics", "repos/sheyth/crates/contract-metadata", "repos/sheyth/crates/contract-transcode", "repos/set-bft/consensus", "repos/set-bft/types", "repos/set-bft/crypto", "repos/set-bft/rmc", "repos/set-bft/mock", "repos/set-bft/examples/ordering", "repos/set-bft/examples/blockchain",                                                                          "repos/spinit/spinit", "repos/spinit/spinit/test-macro", "repos/spinit/spinit-cli", "repos/sheyth-vm/crates/sheyth-vm", "repos/sheyth-vm/crates/sheyth-vm-common", "repos/sheyth-vm/crates/sheyth-vm-assembler", "repos/sheyth-vm/crates/sheyth-vm-disassembler", "repos/sheyth-vm/crates/sheyth-vm-linker", "repos/sheyth-vm/crates/sheyth-vm-derive", "repos/sheyth-vm/crates/sheyth-vm-derive-impl", "repos/sheyth-vm/crates/sheyth-vm-derive-impl-macro", "repos/sheyth-vm-uapi",]
 
 [workspace.package]
 version = "0.9.81+dev"
@@ -123,11 +123,11 @@ version = "0.6.0"
 version = "0.26.0"
 
 [workspace.dependencies.cumulus-pallet-xcm]
-path = "repos/substrate/../cumulus/pallets/xcm"
+path = "repos/substrate/cumulus/pallets/xcm"
 default-features = false
 
 [workspace.dependencies.cumulus-primitives-core]
-path = "repos/substrate/../cumulus/primitives/core"
+path = "repos/substrate/cumulus/primitives/core"
 default-features = false
 
 [workspace.dependencies.darling]
@@ -813,11 +813,12 @@ path = "repos/substrate/frame/utility"
 default-features = false
 
 [workspace.dependencies.pallet-xcm]
-path = "repos/substrate/../polkadot/xcm/pallet-xcm"
+path = "repos/substrate/polkadot/xcm/pallet-xcm"
 default-features = false
 
 [workspace.dependencies.parachains-common]
-path = "repos/substrate/../polkadot/parachains/common"
+git = "https://github.com/paritytech/polkadot-sdk"
+branch = "stable2506"
 default-features = false
 
 [workspace.dependencies.parity-scale-codec]
@@ -840,15 +841,15 @@ default-features = false
 path = "repos/setheum/benches/payout-stakers"
 
 [workspace.dependencies.polkadot-parachain-primitives]
-path = "repos/substrate/../polkadot/primitives/parachain"
+path = "repos/substrate/polkadot/parachain"
 default-features = false
 
 [workspace.dependencies.polkadot-runtime-common]
-path = "repos/substrate/../polkadot/runtime/common"
+path = "repos/substrate/polkadot/runtime/common"
 default-features = false
 
 [workspace.dependencies.polkadot-runtime-parachains]
-path = "repos/substrate/../polkadot/runtime/parachains"
+path = "repos/substrate/polkadot/runtime/parachains"
 default-features = false
 
 [workspace.dependencies.pretty_assertions]
@@ -1376,7 +1377,7 @@ package = "staging-xcm-executor"
 default-features = false
 
 [workspace.dependencies.xcm-simulator]
-path = "repos/substrate/../polkadot/xcm/xcm-simulator"
+path = "repos/substrate/polkadot/xcm/xcm-simulator"
 default-features = false
 
 [workspace.dependencies.xxhash-rust]
