@@ -11,7 +11,7 @@ alias = "build"
 description = "Initialize toolchain and dependencies"
 run = [
   "git submodule update --init --recursive",
-  "bash repos/setheum/scripts/init.sh",
+  "mise install",
 ]
 
 [tasks.build]
@@ -28,23 +28,15 @@ run = "cargo build -p setheum-node --features runtime-benchmarks,with-ethereum-c
 
 [tasks.test]
 description = "Run all tests"
-depends = ["test:rust"]
+depends = ["test:rust", "test:sheyth", "test:setbft", "test:spinit", "test:bridge:go", "test:substrate"]
 
 [tasks."test:rust"]
 description = "Run Rust tests"
 run = "SKIP_WASM_BUILD=1 cargo test --workspace --features with-ethereum-compatibility"
 
-[tasks."test:js"]
-description = "Run JS tests"
-run = "echo 'JS tests skipped - setheum-js removed from monorepo'"
-
 [tasks."test:sheyth"]
 description = "Run Sheyth (Ink!) tests"
 run = "cargo test -p ink --all-features"
-
-[tasks."test:bridge:rust"]
-description = "Run bridge Rust tests"
-run = "cargo test -p bridge-relayer -p bridge-core 2>/dev/null || echo 'Bridge Rust tests skipped (no Go Rust bindings)'"
 
 [tasks."test:bridge:go"]
 description = "Run bridge Go tests"

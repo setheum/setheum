@@ -49,21 +49,6 @@ jobs:
       - name: Run Tests
         run: mise run test:rust
 
-  test-js:
-    name: JS Tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install mise
-        uses: jdx/mise-action@v2
-
-      - name: Install dependencies
-        run: echo "JS SDK removed - skipping"
-
-      - name: Run Tests
-        run: echo "JS SDK removed - skipping"
-
   test-sheyth:
     name: Sheyth Tests
     runs-on: ubuntu-latest
@@ -117,24 +102,6 @@ jobs:
 
       - name: Run Spinit Tests
         run: mise run test:spinit
-
-  test-bridge-rust:
-    name: Bridge Rust Tests
-    runs-on: ubuntu-latest
-    needs: check-rust
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
-
-      - name: Install mise
-        uses: jdx/mise-action@v2
-
-      - name: Rust Cache
-        uses: Swatinem/rust-cache@v2
-
-      - name: Run Bridge Rust Tests
-        run: mise run test:bridge:rust
 
   test-bridge-go:
     name: Bridge Go Tests
