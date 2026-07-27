@@ -103,17 +103,33 @@ run = [
 description = "Run node in debug mode with GDB"
 run = "cargo build && RUST_LOG=debug RUST_BACKTRACE=1 rust-gdb --args target/debug/setheum-node --dev --tmp -lruntime=debug"
 
-[tasks."prdoc:scaffold"]
-description = "Generate draft PRDocs from git history"
-run = "python3 scripts/prdoc.py scaffold {{args}}"
+[tasks."prdoc:init"]
+description = "Scaffold changelogger configuration"
+run = "changelogger prdoc init"
+
+[tasks."prdoc:generate"]
+description = "Generate a PRDoc for a PR number"
+run = "changelogger prdoc generate --pr {{args}}"
 
 [tasks."prdoc:validate"]
 description = "Validate all .prdoc files"
-run = "python3 scripts/prdoc.py validate"
+run = "changelogger prdoc validate prdoc/*.prdoc"
 
-[tasks."prdoc:generate"]
-description = "Generate CHANGELOG entries from PRDocs"
-run = "python3 scripts/prdoc.py generate"
+[tasks."prdoc:show"]
+description = "Display a PRDoc as JSON"
+run = "changelogger prdoc show {{args}}"
+
+[tasks."changelog:generate"]
+description = "Generate CHANGELOG.md from PRDocs"
+run = "changelogger changelog generate --from {{args}}"
+
+[tasks."changelog:bump"]
+description = "Compute next version bumps"
+run = "changelogger changelog bump --current {{args}}"
+
+[tasks."changelog:verify"]
+description = "Check all commits have prdocs"
+run = "changelogger changelog verify --from {{args}}"
 
 [tasks.all]
 description = "Run complete build pipeline"
