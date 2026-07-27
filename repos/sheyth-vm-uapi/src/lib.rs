@@ -59,6 +59,16 @@ impl parity_scale_codec::Decode for ReturnFlags {
 pub enum ReturnErrorCode {
 	CalleeTrap = 0x01,
 	CalleeReverted = 0x02,
+	KeyNotFound = 0x03,
+	EcdsaRecoveryFailed = 0x04,
+	TransferFailed = 0x05,
+	Sr25519VerifyFailed = 0x06,
+	LoggingDisabled = 0x07,
+	CallRuntimeFailed = 0x08,
+	XcmExecutionFailed = 0x09,
+	XcmSendFailed = 0x0A,
+	CodeNotFound = 0x0B,
+	NotCallable = 0x0C,
 }
 
 impl From<ReturnErrorCode> for u32 {
@@ -69,12 +79,23 @@ impl From<u32> for ReturnErrorCode {
 	fn from(val: u32) -> ReturnErrorCode {
 		match val {
 			0x02 => ReturnErrorCode::CalleeReverted,
+			0x03 => ReturnErrorCode::KeyNotFound,
+			0x04 => ReturnErrorCode::EcdsaRecoveryFailed,
+			0x05 => ReturnErrorCode::TransferFailed,
+			0x06 => ReturnErrorCode::Sr25519VerifyFailed,
+			0x07 => ReturnErrorCode::LoggingDisabled,
+			0x08 => ReturnErrorCode::CallRuntimeFailed,
+			0x09 => ReturnErrorCode::XcmExecutionFailed,
+			0x0A => ReturnErrorCode::XcmSendFailed,
+			0x0B => ReturnErrorCode::CodeNotFound,
+			0x0C => ReturnErrorCode::NotCallable,
 			_ => ReturnErrorCode::CalleeTrap,
 		}
 	}
 }
 
 bitflags::bitflags! {
+	#[derive(Clone, Copy)]
 	pub struct CallFlags: u32 {
 		const CLONE_INPUT = 0x01;
 		const TAIL_CALL = 0x02;
