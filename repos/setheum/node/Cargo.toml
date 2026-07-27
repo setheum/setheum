@@ -10,7 +10,7 @@ homepage = "https:/setheum.com"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 name = "setheum-node"
 repository = "https:/github.com/setheum/setheum"
-version = "1.0.0"
+version = "0.9.81+dev"
 
 [dependencies]
 structopt = "0.3.8"

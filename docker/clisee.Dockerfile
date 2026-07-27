@@ -1,20 +1,11 @@
-FROM ubuntu:jammy-20220531
+FROM rust:1.88-slim-bookworm AS builder
+WORKDIR /app
+RUN apt-get update && apt-get install -y git clang && rm -rf /var/lib/apt/lists/*
+COPY . .
+RUN git submodule update --init --recursive
+RUN SKIP_WASM_BUILD=1 cargo build --release -p clisee && \
+    cp target/release/clisee /usr/local/bin/clisee
 
-RUN apt update && \
-    apt install wget -y && \
-    apt clean
-
-RUN apt update && \
-    apt install ca-certificates -y && \
-    apt clean && \
-    rm -rf /var/lib/apt/lists/*
-
-RUN update-ca-certificates
-
-RUN wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2_amd64.deb
-RUN dpkg -i libssl1.1_1.1.1f-1ubuntu2_amd64.deb
-
-COPY target/release/clisee /usr/local/bin
-RUN chmod +x /usr/local/bin/clisee
-
-ENTRYPOINT ["/usr/local/bin/clisee"]
+FROM gcr.io/distroless/cc-debian12:latest
+COPY --from=builder /usr/local/bin/clisee /usr/local/bin/clisee
+ENTRYPOINT ["clisee"]
