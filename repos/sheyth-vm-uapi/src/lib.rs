@@ -38,9 +38,20 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 bitflags::bitflags! {
-	#[derive(scale_info::TypeInfo, parity_scale_codec::Encode, parity_scale_codec::Decode)]
 	pub struct ReturnFlags: u32 {
 		const REVERT = 0x01;
+	}
+}
+
+impl parity_scale_codec::Encode for ReturnFlags {
+	fn encode_to<W: parity_scale_codec::Output + ?Sized>(&self, dest: &mut W) {
+		self.bits().encode_to(dest)
+	}
+}
+
+impl parity_scale_codec::Decode for ReturnFlags {
+	fn decode<I: parity_scale_codec::Input>(input: &mut I) -> Result<Self, parity_scale_codec::Error> {
+		Ok(Self::from_bits_retain(u32::decode(input)?))
 	}
 }
 
@@ -64,11 +75,22 @@ impl From<u32> for ReturnErrorCode {
 }
 
 bitflags::bitflags! {
-	#[derive(scale_info::TypeInfo, parity_scale_codec::Encode, parity_scale_codec::Decode)]
 	pub struct CallFlags: u32 {
 		const CLONE_INPUT = 0x01;
 		const TAIL_CALL = 0x02;
 		const ALLOW_REENTRY = 0x04;
+	}
+}
+
+impl parity_scale_codec::Encode for CallFlags {
+	fn encode_to<W: parity_scale_codec::Output + ?Sized>(&self, dest: &mut W) {
+		self.bits().encode_to(dest)
+	}
+}
+
+impl parity_scale_codec::Decode for CallFlags {
+	fn decode<I: parity_scale_codec::Input>(input: &mut I) -> Result<Self, parity_scale_codec::Error> {
+		Ok(Self::from_bits_retain(u32::decode(input)?))
 	}
 }
 

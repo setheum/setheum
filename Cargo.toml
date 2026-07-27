@@ -1603,6 +1603,6 @@ opt-level = 3
 
 
 [workspace.dependencies.bitflags]
-version = "2.4"
+version = "2.13"
 default-features = false
 
