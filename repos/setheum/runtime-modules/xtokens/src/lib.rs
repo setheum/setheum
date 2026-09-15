@@ -95,7 +95,9 @@ use module_traits::{
 	GetByKey, RateLimiter, XcmTransfer,
 };
 
+#[cfg(test)]
 mod mock;
+#[cfg(test)]
 mod tests;
 
 enum TransferKind {

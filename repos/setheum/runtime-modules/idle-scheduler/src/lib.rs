@@ -50,7 +50,9 @@ use sp_runtime::{
 };
 use sp_std::{cmp::PartialEq, fmt::Debug, prelude::*};
 
+#[cfg(test)]
 mod mock;
+#[cfg(test)]
 mod tests;
 mod weights;
 pub use module::*;

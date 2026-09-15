@@ -112,7 +112,9 @@ use module_traits::{
 mod benchmarking;
 mod imbalances;
 mod impls;
+#[cfg(test)]
 mod mock;
+#[cfg(test)]
 mod tests;
 mod tests_currency_adapter;
 mod tests_events;

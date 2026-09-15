@@ -47,7 +47,9 @@ use frame_system::pallet_prelude::*;
 use frame_support::traits::EnsureOriginWithArg;
 use module_traits::parameters::{AggregratedKeyValue, Into2, Key, RuntimeParameterStore, TryInto2};
 
+#[cfg(test)]
 mod mock;
+#[cfg(test)]
 mod tests;
 mod weights;
 

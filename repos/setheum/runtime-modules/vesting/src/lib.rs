@@ -60,7 +60,9 @@ use module_traits::{
 };
 use primitives::{ CurrencyId, VestingSchedule };
 
+#[cfg(test)]
 mod mock;
+#[cfg(test)]
 mod tests;
 mod weights;
 

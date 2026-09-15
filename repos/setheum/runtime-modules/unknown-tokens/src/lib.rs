@@ -46,7 +46,9 @@ use module_xcm_support::UnknownAsset;
 
 pub use module::*;
 
+#[cfg(test)]
 mod mock;
+#[cfg(test)]
 mod tests;
 
 #[frame_support::pallet]

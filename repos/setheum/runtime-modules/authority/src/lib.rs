@@ -88,7 +88,9 @@ use frame_support::traits::schedule::v3::Named as ScheduleNamed;
 
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
+#[cfg(test)]
 mod mock;
+#[cfg(test)]
 mod tests;
 mod weights;
 

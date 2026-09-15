@@ -71,7 +71,9 @@ use sp_runtime::{
 use sp_std::vec::Vec;
 
 pub mod benchmarking;
+#[cfg(test)]
 mod mock;
+#[cfg(test)]
 mod tests;
 pub mod weights;
 

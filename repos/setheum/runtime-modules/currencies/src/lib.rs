@@ -71,7 +71,9 @@ use sp_runtime::{
 };
 use sp_std::{fmt::Debug, marker, result, vec::Vec};
 
+#[cfg(test)]
 mod mock;
+#[cfg(test)]
 mod tests;
 pub mod weights;
 

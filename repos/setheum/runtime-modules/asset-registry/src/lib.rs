@@ -64,7 +64,9 @@ use sp_std::{boxed::Box, vec::Vec};
 
 use xcm::{v3::prelude::*, VersionedMultiLocation};
 
+#[cfg(test)]
 mod mock;
+#[cfg(test)]
 mod tests;
 mod weights;
 

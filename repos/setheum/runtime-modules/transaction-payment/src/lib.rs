@@ -71,7 +71,9 @@ use sp_runtime::{
 use sp_std::prelude::*;
 use xcm::v3::prelude::MultiLocation;
 
+#[cfg(test)]
 mod mock;
+#[cfg(test)]
 mod tests;
 pub mod weights;
 

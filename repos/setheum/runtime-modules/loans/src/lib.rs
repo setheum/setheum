@@ -48,7 +48,9 @@ use sp_runtime::{
 	ArithmeticError, DispatchResult,
 };
 
+#[cfg(test)]
 mod mock;
+#[cfg(test)]
 mod tests;
 
 pub use module::*;
