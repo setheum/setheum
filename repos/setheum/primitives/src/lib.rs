@@ -31,6 +31,7 @@ pub mod nft;
 pub mod signature;
 pub mod task;
 pub mod testing;
+pub mod vesting;
 // pub mod unchecked_extrinsic;
 
 pub use testing::*;
@@ -48,6 +49,7 @@ use sp_std::prelude::*;
 
 pub use currency::{CurrencyId, DexShare, TokenSymbol};
 pub use nft::NFTBalance;
+pub use vesting::VestingSchedule;
 
 #[cfg(test)]
 mod tests;

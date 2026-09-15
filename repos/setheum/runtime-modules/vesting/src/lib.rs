@@ -56,7 +56,7 @@ use sp_std::{
 	vec::Vec,
 };
 use module_traits::{
-	LockIdentifier, MultiCurrency, MultiLockableCurrency,
+	MultiCurrency, MultiLockableCurrency,
 };
 use primitives::{ CurrencyId, VestingSchedule };
 
@@ -135,12 +135,8 @@ pub mod module {
 		type GetNativeCurrencyId: Get<CurrencyId>;
 
 		#[pallet::constant]
-
-		#[pallet::constant]
 /// The minimum amount of SEU transferred to call `vested_transfer`.
 		type MinNativeVestedTransfer: Get<BalanceOf<Self>>;
-
-		#[pallet::constant]
 
 /// Required origin for vested transfer.
 		type VestedTransferOrigin: EnsureOrigin<Self::RuntimeOrigin, Success = Self::AccountId>;
@@ -197,16 +193,6 @@ pub mod module {
 		BoundedVec<VestingScheduleOf<T>, T::MaxNativeVestingSchedules>,
 		ValueQuery,
 	>;
-	
-///
-	#[pallet::storage]
-	#[pallet::getter(fn edf_vesting_schedules)]
-		_,
-		Blake2_128Concat,
-		T::AccountId,
-		ValueQuery,
-	>;
-	
 
 	#[pallet::genesis_config]
 	pub struct GenesisConfig<T: Config> {
@@ -262,7 +248,7 @@ pub mod module {
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
 		#[pallet::call_index(0)]
-		#[pallet::weight(T::WeightInfo::claim(<T as Config>::MaxVestingSchedules::get() // 2))]
+		#[pallet::weight(T::WeightInfo::claim(<T as Config>::MaxVestingSchedules::get() / 2))]
 		pub fn claim(origin: OriginFor<T>, currency_id: CurrencyIdOf<T>) -> DispatchResult {
 			let who = ensure_signed(origin)?;
 			let locked_amount = Self::do_claim(currency_id, &who);
@@ -322,7 +308,7 @@ pub mod module {
 		}
 
 		#[pallet::call_index(3)]
-		#[pallet::weight(T::WeightInfo::claim(<T as Config>::MaxVestingSchedules::get() // 2))]
+		#[pallet::weight(T::WeightInfo::claim(<T as Config>::MaxVestingSchedules::get() / 2))]
 		pub fn claim_for(
 			origin: OriginFor<T>,
 			currency_id: CurrencyIdOf<T>,
