@@ -288,7 +288,6 @@ impl CurrencyId {
 	pub fn erc20_address(&self) -> Option<EvmAddress> {
 		match self {
 			CurrencyId::Erc20(address) => Some(*address),
-			CurrencyId::Token(_) => EvmAddress::try_from(*self).ok(),
 			_ => None,
 		}
 	}
