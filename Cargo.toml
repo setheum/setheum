@@ -87,6 +87,7 @@ path = "repos/setheum/chain-bootstrapper"
 [workspace.dependencies.clap]
 version = "4.0.9"
 default-features = false
+features = [ "std",]
 
 [workspace.dependencies.clisee]
 path = "repos/setheum/clisee"
@@ -1452,8 +1453,7 @@ version = "0.35.2"
 version = "0.35.3"
 
 [workspace.dependencies.syn]
-version = "1.0.98"
-default-features = false
+version = "2"
 
 [workspace.dependencies.synstructure]
 version = "0.13.1"

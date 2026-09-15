@@ -25,6 +25,7 @@
 pub mod setbft;
 pub mod bonding;
 pub mod currency;
+pub mod evm;
 pub mod launchpad;
 pub mod nft;
 pub mod signature;

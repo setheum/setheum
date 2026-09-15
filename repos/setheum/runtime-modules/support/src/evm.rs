@@ -35,21 +35,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use parity_scale_codec::{Decode, Encode};
-use primitives::currency::AssetIds;
-use primitives::{
-	evm::{CallInfo, EvmAddress},
-	Balance, CurrencyId,
-};
+use primitives::{currency::CurrencyId, evm::EvmAddress};
 use sp_core::H160;
-use sp_runtime::{
-	traits::{AtLeast32BitUnsigned, MaybeSerializeDeserialize},
-	DispatchError, DispatchResult, RuntimeDebug,
-};
-use sp_std::{
-	cmp::{Eq, PartialEq},
-	prelude::*,
-};
+use sp_runtime::{DispatchError, DispatchResult};
+use sp_std::prelude::*;
 
 // AddressMapping and UnifiedAccountsManager are kept for unified-accounts
 
@@ -101,6 +90,11 @@ pub trait CurrencyIdMapping {
 /// A filter for precompile callers.
 pub trait PrecompileCallerFilter {
 	fn is_allowed(caller: H160) -> bool;
+}
+
+/// A filter for paused precompiles.
+pub trait PrecompilePauseFilter {
+	fn is_paused(address: H160) -> bool;
 }
 
 /// A trait for EVM state rent deposit management.

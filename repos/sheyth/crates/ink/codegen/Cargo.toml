@@ -21,7 +21,7 @@ name = "ink_codegen"
 ink_primitives = { workspace = true }
 ir = { package = "ink_ir", path = "../ir", default-features = false }
 quote = { workspace = true }
-syn = { workspace = true, features = ["parsing", "full", "extra-traits"] }
+syn = { version = "2", features = ["parsing", "full", "extra-traits"] }
 proc-macro2 = { workspace = true }
 derive_more = { workspace = true, features = ["from"] }
 itertools = { workspace = true }
