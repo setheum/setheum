@@ -11,8 +11,24 @@ alias = "build"
 description = "Initialize toolchain and dependencies"
 run = [
   "git submodule update --init --recursive",
+  "bash scripts/bootstrap.sh",
   "mise install",
 ]
+run_windows = [
+  "git submodule update --init --recursive",
+  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts\\bootstrap.ps1",
+  "mise install",
+]
+
+[tasks.bootstrap]
+description = "Detect and install missing system dependencies for this OS"
+run = "bash scripts/bootstrap.sh"
+run_windows = "powershell -NoProfile -ExecutionPolicy Bypass -File scripts\\bootstrap.ps1"
+
+[tasks."bootstrap:check"]
+description = "Report missing system dependencies without installing"
+run = "bash scripts/bootstrap.sh --check"
+run_windows = "powershell -NoProfile -ExecutionPolicy Bypass -File scripts\\bootstrap.ps1 -Check"
 
 [tasks.build]
 description = "Build the project in release mode"
