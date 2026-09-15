@@ -32,20 +32,32 @@ jobs:
         run: cargo install changelogger-cli
 
       - name: Generate PRDoc
+        id: gen
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           PR_NUM=${{ github.event.pull_request.number }}
+          BASE=${{ github.event.pull_request.base.sha }}
+          CHANGED=$(git diff --numstat "$BASE"...HEAD | awk '{a+=$1; d+=$2} END {print a+d+0}')
+          echo "PR #${PR_NUM} changed lines: ${CHANGED}"
+          if [ "${CHANGED:-0}" -gt 20000 ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::warning::PR #${PR_NUM} diff (${CHANGED} lines) exceeds the GitHub API limit (20000); skipping prdoc generation. Split the PR or add prdoc/pr_${PR_NUM}.prdoc manually."
+            exit 0
+          fi
+          echo "skip=false" >> "$GITHUB_OUTPUT"
           if [ ! -f "prdoc/pr_${PR_NUM}.prdoc" ]; then
             changelogger prdoc generate --pr "$PR_NUM" --force
           fi
 
       - name: Validate
+        if: steps.gen.outputs.skip != 'true'
         run: |
           PR_NUM=${{ github.event.pull_request.number }}
           changelogger prdoc validate prdoc/pr_${PR_NUM}.prdoc
 
       - uses: stefanzweifel/git-auto-commit-action@v5
+        if: steps.gen.outputs.skip != 'true'
         with:
           commit_message: "Add prdoc for PR #${{ github.event.pull_request.number }}"
           file_pattern: "prdoc/*.prdoc"

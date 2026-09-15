@@ -22,6 +22,9 @@ jobs:
       - name: Install mise
         uses: jdx/mise-action@v2
 
+      - name: Install native build dependencies
+        run: mise run bootstrap
+
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
 
@@ -43,6 +46,9 @@ jobs:
       - name: Install mise
         uses: jdx/mise-action@v2
 
+      - name: Install native build dependencies
+        run: mise run bootstrap
+
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
 
@@ -60,6 +66,9 @@ jobs:
 
       - name: Install mise
         uses: jdx/mise-action@v2
+
+      - name: Install native build dependencies
+        run: mise run bootstrap
 
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
@@ -79,6 +88,9 @@ jobs:
       - name: Install mise
         uses: jdx/mise-action@v2
 
+      - name: Install native build dependencies
+        run: mise run bootstrap
+
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
 
@@ -96,6 +108,9 @@ jobs:
 
       - name: Install mise
         uses: jdx/mise-action@v2
+
+      - name: Install native build dependencies
+        run: mise run bootstrap
 
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
@@ -117,7 +132,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.22"
+          go-version: "1.26.x"
 
       - name: Run Bridge Go Tests
         run: mise run test:bridge:go
@@ -133,6 +148,9 @@ jobs:
 
       - name: Install mise
         uses: jdx/mise-action@v2
+
+      - name: Install native build dependencies
+        run: mise run bootstrap
 
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
