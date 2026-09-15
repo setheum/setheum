@@ -1,5 +1,5 @@
 [tools]
-rust = "1.81.0"
+rust = "1.88.0"
 bun = "latest"
 python = "latest"
 go = "latest"
@@ -32,7 +32,8 @@ depends = ["test:rust", "test:sheyth", "test:setbft", "test:spinit", "test:bridg
 
 [tasks."test:rust"]
 description = "Run Rust tests"
-run = "SKIP_WASM_BUILD=1 cargo test --workspace --features with-ethereum-compatibility"
+env = { SKIP_WASM_BUILD = "1" }
+run = "cargo test --workspace --features with-ethereum-compatibility"
 
 [tasks."test:sheyth"]
 description = "Run Sheyth (Ink!) tests"
@@ -52,31 +53,43 @@ run = "cargo test -p spinit"
 
 [tasks."test:substrate"]
 description = "Run substrate SDK tests"
-run = "SKIP_WASM_BUILD=1 cargo test -p sp-core -p sp-io -p sp-runtime -p sp-std -p sp-arithmetic -p sp-trie -p sp-state-machine -p sp-weights -p sp-storage"
+env = { SKIP_WASM_BUILD = "1" }
+run = "cargo test -p sp-core -p sp-io -p sp-runtime -p sp-std -p sp-arithmetic -p sp-trie -p sp-state-machine -p sp-weights -p sp-storage"
 
 [tasks.fmt]
 description = "Format the codebase and apply headers"
 run = ["cargo fmt --all", "python3 scripts/apply_headers.py"]
+run_windows = ["cargo fmt --all", "python scripts/apply_headers.py"]
 
 [tasks.headers]
 description = "Apply headers"
 run = "python3 scripts/apply_headers.py"
+run_windows = "python scripts/apply_headers.py"
 
 [tasks.clean]
 description = "Clean build artifacts"
 run = ["cargo clean", "rm -rf target/ target-js/ node_modules/"]
+run_windows = [
+  "cargo clean",
+  "if exist target rmdir /s /q target",
+  "if exist target-js rmdir /s /q target-js",
+  "if exist node_modules rmdir /s /q node_modules",
+]
 
 [tasks.check]
 description = "Run cargo check on workspace"
-run = "SKIP_WASM_BUILD=1 cargo check --workspace"
+env = { SKIP_WASM_BUILD = "1" }
+run = "cargo check --workspace"
 
 [tasks."check:runtime"]
 description = "Run cargo check for runtime"
-run = "SKIP_WASM_BUILD=1 cargo check --features with-ethereum-compatibility --tests --all"
+env = { SKIP_WASM_BUILD = "1" }
+run = "cargo check --features with-ethereum-compatibility --tests --all"
 
 [tasks.clippy]
 description = "Run cargo clippy"
-run = "SKIP_WASM_BUILD=1 cargo clippy --workspace -- -D warnings"
+env = { SKIP_WASM_BUILD = "1" }
+run = "cargo clippy --workspace -- -D warnings"
 
 [tasks."gen:genesis"]
 description = "Generate genesis configurations"
@@ -87,10 +100,19 @@ run = [
   "./target/release/setheum-node build-spec --chain testnet-new --raw > chain-specs/testnet_raw.json",
   "./target/release/setheum-node build-spec --chain mainnet-new --raw > chain-specs/mainnet_raw.json",
 ]
+run_windows = [
+  "mise run build:bench",
+  "if not exist chain-specs mkdir chain-specs",
+  "target\\release\\setheum-node.exe build-spec --chain testnet-new > chain-specs\\testnet.json",
+  "target\\release\\setheum-node.exe build-spec --chain mainnet-new > chain-specs\\mainnet.json",
+  "target\\release\\setheum-node.exe build-spec --chain testnet-new --raw > chain-specs\\testnet_raw.json",
+  "target\\release\\setheum-node.exe build-spec --chain mainnet-new --raw > chain-specs\\mainnet_raw.json",
+]
 
 [tasks."bench:pallets"]
 description = "Run runtime benchmarks for all pallets"
 run = "cargo run --release --features=runtime-benchmarks --features=with-ethereum-compatibility -- benchmark --chain=dev --steps=50 --repeat=20 '--pallet=*' '--extrinsic=*' --execution=wasm --wasm-execution=compiled --heap-pages=4096 --template=.maintain/runtime-weight-template.hbs --output=./runtime/src/weights/"
+run_windows = "cargo run --release --features=runtime-benchmarks --features=with-ethereum-compatibility -- benchmark --chain=dev --steps=50 --repeat=20 --pallet=* --extrinsic=* --execution=wasm --wasm-execution=compiled --heap-pages=4096 --template=.maintain/runtime-weight-template.hbs --output=repos/setheum/runtime/src/weights/"
 
 [tasks."gen:tokens"]
 description = "Generate tokens and predeploy contracts"
@@ -98,10 +120,15 @@ run = [
   "cargo test -p setheum-primitives -- --ignored",
   "cd repos/setheum/predeploy-contracts && bun install && bun run generate-bytecode",
 ]
+run_windows = [
+  "cargo test -p setheum-primitives -- --ignored",
+  "cd /d repos\\setheum\\predeploy-contracts && bun install && bun run generate-bytecode",
+]
 
 [tasks."debug:node"]
 description = "Run node in debug mode with GDB"
 run = "cargo build && RUST_LOG=debug RUST_BACKTRACE=1 rust-gdb --args target/debug/setheum-node --dev --tmp -lruntime=debug"
+run_windows = "cargo build && set RUST_LOG=debug&& set RUST_BACKTRACE=1&& target\\debug\\setheum-node.exe --dev --tmp -lruntime=debug"
 
 [tasks."prdoc:init"]
 description = "Scaffold changelogger configuration"

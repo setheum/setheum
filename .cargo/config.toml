@@ -1,0 +1,4 @@
+# Windows-only linker selection. Ignored on non-Windows targets.
+# Requires LLVM (lld-link) to be installed and on PATH.
+[target.x86_64-pc-windows-msvc]
+linker = "lld-link"
