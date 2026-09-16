@@ -306,9 +306,7 @@ impl frame_system::Config for Runtime {
 /// What to do if a new account is created.
 	type OnNewAccount = ();
 /// What to do if an account is fully reaped from the system.
-	type OnKilledAccount = (
-		module_unified_accounts::CallKillAccount<Runtime>,
-	);
+	type OnKilledAccount = ();
 /// The data to be stored in an account.
 	type AccountData = pallet_balances::AccountData<Balance>;
 /// Weight information for the extrinsics of this pallet.
@@ -944,16 +942,6 @@ impl module_transaction_payment::Config for Runtime {
 	type WeightInfo = weights::module_transaction_payment::WeightInfo<Runtime>;
 }
 
-impl module_unified_accounts::Config for Runtime {
-	type Event = Event;
-	type Currency = Balances;
-	type AddressMapping = EvmAddressMapping<Runtime>;
-	type TransferAll = Currencies;
-	type WeightInfo = weights::module_unified_accounts::WeightInfo<Runtime>;
-}
-
-
-
 parameter_types! {
 	pub NetworkContractSource: H160 = H160::from_low_u64_be(0);
 }
@@ -1044,13 +1032,7 @@ impl InstanceFilter<Call> for ProxyType {
 						| Call::Dex(swap_legacy_module::Call::swap_with_exact_target(..))
 				)
 			}
-			ProxyType::Loan => {
-				matches!(
-					c,
-					Call::Setmint(serp_setmint::Call::adjust_loan(..))
-						| Call::Setmint(serp_setmint::Call::close_loan_has_debit_by_dex(..))
-				)
-			}
+			ProxyType::Loan => false,
 		}
 	}
 	fn is_superset(&self, o: &Self) -> bool {
@@ -1763,7 +1745,6 @@ impl_runtime_apis! {
 			module_list_benchmark!(list, extra, module_transaction_payment, benchmarking::transaction_payment);
 			module_list_benchmark!(list, extra, module_prices, benchmarking::prices);
 // module_list_benchmark!(list, extra, dex_oracle, benchmarking::dex_oracle);
-			module_list_benchmark!(list, extra, module_unified_accounts, benchmarking::unified_accounts);
 			module_list_benchmark!(list, extra, module_currencies, benchmarking::currencies);
 			module_list_benchmark!(list, extra, module_vesting, benchmarking::vesting);
 
@@ -1819,7 +1800,6 @@ impl_runtime_apis! {
 			module_add_benchmark!(params, batches, module_transaction_pause, benchmarking::transaction_pause);
 			module_add_benchmark!(params, batches, module_transaction_payment, benchmarking::transaction_payment);
 // module_add_benchmark!(params, batches, dex_oracle, benchmarking::dex_oracle);
-			module_add_benchmark!(params, batches, module_unified_accounts, benchmarking::unified_accounts);
 			module_add_benchmark!(params, batches, module_currencies, benchmarking::currencies);
 
 			module_add_benchmark!(params, batches, module_tokens, benchmarking::tokens);
