@@ -20,7 +20,8 @@
 
 #![cfg_attr(not(feature = "std"), no_std)]
 
-use codec::{Decode, Encode, MaxEncodedLen};
+use codec::{Decode, DecodeWithMemTracking, Encode, MaxEncodedLen};
+use scale_info::TypeInfo;
 use frame_support::{
 	dispatch::DispatchClass,
 	parameter_types,
@@ -265,7 +266,7 @@ pub type EnsureRootOrThreeFourthsTechnicalCommittee = EitherOfDiverse<
 >;
 
 /// The type used to represent the kinds of proxying allowed.
-#[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Encode, Decode, RuntimeDebug, MaxEncodedLen)]
+#[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Encode, Decode, DecodeWithMemTracking, RuntimeDebug, MaxEncodedLen, TypeInfo)]
 pub enum ProxyType {
 	Any,
 	CancelProxy,

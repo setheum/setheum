@@ -134,7 +134,7 @@ pub use sp_runtime::OpaqueExtrinsic as UncheckedExtrinsic;
 pub type Multiplier = FixedU128;
 
 #[derive(
-	Encode, Decode, Eq, PartialEq, Copy, Clone, RuntimeDebug, PartialOrd, Ord, TypeInfo,
+	Encode, Decode, DecodeWithMemTracking, Eq, PartialEq, Copy, Clone, RuntimeDebug, PartialOrd, Ord, TypeInfo,
 )]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub enum AuthoritysOriginId {
@@ -208,7 +208,7 @@ pub struct Position {
 	pub debit: Balance,
 }
 
-#[derive(Encode, Decode, Eq, PartialEq, Copy, Clone, RuntimeDebug, PartialOrd, Ord, MaxEncodedLen, TypeInfo)]
+#[derive(Encode, Decode, DecodeWithMemTracking, Eq, PartialEq, Copy, Clone, RuntimeDebug, PartialOrd, Ord, MaxEncodedLen, TypeInfo)]
 #[repr(u8)]
 pub enum ReserveIdentifier {
 	CollatorSelection,

@@ -50,8 +50,6 @@ pub use sp_runtime::{
 	Perbill, Percent, Permill, Perquintill,
 };
 use sp_api::impl_runtime_apis;
-use pallet_grandpa::{AuthorityId as GrandpaId, AuthorityList as GrandpaAuthorityList};
-use pallet_grandpa::fg_primitives;
 use frame_election_provider_support::onchain;
 pub use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 pub use sp_authority_discovery::AuthorityId as AuthorityDiscoveryId;
@@ -67,19 +65,22 @@ pub use pallet_timestamp::Call as TimestampCall;
 pub use pallet_balances::Call as BalancesCall;
 use frame_support::pallet_prelude::InvalidTransaction;
 pub use frame_support::{
-	construct_runtime, log, parameter_types,
+	construct_runtime, parameter_types,
 	traits::{
 		Contains, ContainsLengthBound, Currency as PalletCurrency, EnsureOrigin, Everything, Get, Imbalance,
 		InstanceFilter, IsSubType, IsType, KeyOwnerProofSystem, LockIdentifier, Nothing, OnUnbalanced, Randomness,
-		SortedMembers, U128CurrencyToVote, WithdrawReasons,
+		SortedMembers, WithdrawReasons, EitherOfDiverse,
 	},
+	dispatch::DispatchClass,
 	weights::{
-		constants::{BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight, WEIGHT_PER_SECOND},
-		DispatchClass, IdentityFee, Weight,
+		constants::{BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight, WEIGHT_REF_TIME_PER_SECOND},
+		IdentityFee, Weight,
 	},
-	PalletId, RuntimeDebug, StorageValue,
+	PalletId, StorageValue,
 };
-pub use frame_system::{ensure_root, EnsureOneOf, EnsureRoot, RawOrigin};
+use sp_runtime::RuntimeDebug;
+use sp_staking::currency_to_vote::U128CurrencyToVote;
+pub use frame_system::{ensure_root, EnsureRoot, RawOrigin};
 use module_traits::{
 	create_median_value_data_provider, parameter_type_with_key, DataFeeder, DataProviderExtended,
 // MultiCurrency,
@@ -96,13 +97,14 @@ pub use pallet_staking::StakerStatus;
 pub use authority::AuthorityConfigImpl;
 pub use constants::{fee::*, time::*};
 pub use primitives::{
-	AccountId, AccountIndex, Amount, AuctionId, AuthoritysOriginId, Balance, BlockNumber, CurrencyId,
-	DataProviderId, EraIndex, Hash, Moment, Nonce, ReserveIdentifier, Share, Signature, TokenSymbol, TradingPair, SerpStableCurrencyId,
+	AccountId, AccountIndex, Amount, AuthoritysOriginId, Balance, BlockNumber, CurrencyId,
+	DataProviderId, EraIndex, Hash, Moment, Nonce, ReserveIdentifier, Share, Signature, TokenSymbol, TradingPair,
 };
+pub use primitives::currency::{SEU, SEUSD};
 // use module_support::Web3SettersClubAccounts;
 pub use runtime_common::{
 	BlockLength, BlockWeights, GasToWeight, OffchainSolutionWeightLimit,
-	Price, Rate, Ratio, SystemContractsFilter, ExchangeRate, TimeStampedPrice,
+	Price, Rate, Ratio, ExchangeRate, TimeStampedPrice,
 	cent, dollar, microcent, millicent, nanocent, ProxyType,
 
 	EnsureRootOrOneShuraCouncil, EnsureRootOrAllShuraCouncil, EnsureRootOrHalfShuraCouncil,
@@ -117,7 +119,7 @@ pub use runtime_common::{
 	EnsureRootOrOneThirdsTechnicalCommittee, EnsureRootOrTwoThirdsTechnicalCommittee,
 	EnsureRootOrThreeFourthsTechnicalCommittee, TechnicalCommitteeInstance, TechnicalCommitteeMembershipInstance,
 
-	OperatorMembershipInstanceSetheum, SEU, SEUSD,
+	OperatorMembershipInstanceSetheum,
 };
 
 
@@ -279,12 +281,8 @@ impl frame_system::Config for Runtime {
 	type BlockLength = BlockLength;
 /// The identifier used to distinguish between accounts.
 	type AccountId = AccountId;
-/// The aggregated dispatch type that is available for extrinsics.
-	type Call = Call;
 /// The lookup mechanism to get account ID from whatever is passed in dispatchers.
 	type Lookup = (Indices);
-	/// The index type for storing how many extrinsics an account has signed.
-	type Index = Nonce;
 /// The index type for blocks.
 	type BlockNumber = BlockNumber;
 /// The type for hashing blocks and tries.
@@ -443,7 +441,7 @@ impl pallet_sheyth_vm::Config for Runtime {
 }
 
 parameter_types! {
-	pub const MinimumPeriod: u64 = SLOT_DURATION // 2;
+	pub const MinimumPeriod: u64 = SLOT_DURATION / 2;
 }
 
 impl pallet_timestamp::Config for Runtime {
@@ -526,7 +524,7 @@ impl pallet_indices::Config for Runtime {
 
 parameter_types! {
 	pub const GetNativeCurrencyId: CurrencyId = SEU;
-	pub const GetSEUSDId: CurrencyId = SEUSD;
+	pub const GetSetUSDId: CurrencyId = SEUSD;
 	pub StableCurrencyIds: Vec<CurrencyId> = vec![
 		SEUSD,
 	];
@@ -957,19 +955,19 @@ impl module_unified_accounts::Config for Runtime {
 
 
 parameter_types! {
-	pub const ChainId: u64 = 258;
 	pub NetworkContractSource: H160 = H160::from_low_u64_be(0);
 }
 
 parameter_types! {
 	pub const NewContractExtraBytes: u32 = 10_000;
 	pub StorageDepositPerByte: Balance = deposit(0, 1);
-	pub struct PrecompilesValue;
+}
+
+pub struct PrecompilesValue;
 impl sp_core::Get<AllPrecompiles> for PrecompilesValue {
 	fn get() -> AllPrecompiles {
 		AllPrecompiles(Default::default())
 	}
-}
 }
 
 parameter_types! {
@@ -1038,9 +1036,7 @@ impl InstanceFilter<Call> for ProxyType {
 						| Call::Tips(..)
 				)
 			}
-			ProxyType::Auction => {
-				matches!(c, Call::Auction(module_auction::Call::bid(..)))
-			}
+			ProxyType::Auction => false,
 			ProxyType::Swap => {
 				matches!(
 					c,
@@ -1480,7 +1476,7 @@ construct_runtime!(
 // Smart contracts
 
 // Consensus - Aura + SetBFT (replacing Babe + Grandpa)
-		Authorship: pallet_authorship::{Pallet, Call, Storage, Inherent} = 47,
+		Authorship: pallet_authorship::{Pallet, Storage} = 47,
 		Aura: pallet_aura::{Pallet, Config, Storage} = 48,
 		SetBFT: module_setbft::{Pallet, Call, Config<T>, Storage, Event<T>} = 49,
 		Staking: pallet_staking::{Pallet, Call, Config<T>, Storage, Event<T>} = 50,
@@ -1494,8 +1490,7 @@ construct_runtime!(
 		// Elections: module_elections::{Pallet, Call, Storage, Event<T>} = 56,
 		// CommitteeManagement: module_committee_management::{Pallet, Call, Storage, Event<T>} = 57,
 		// Operations: module_operations::{Pallet, Call, Storage, Event<T>} = 58,
-		Auction: module_auction::{Pallet, Call, Storage, Event<T>} = 56,
-		SheythVM: pallet_sheyth_vm::{Pallet, Config, Storage, Event<T>} = 59,
+		SheythVM: pallet_sheyth_vm::{Pallet, Storage, Event<T>} = 59,
 	}
 );
 
@@ -1773,7 +1768,6 @@ impl_runtime_apis! {
 			module_list_benchmark!(list, extra, module_vesting, benchmarking::vesting);
 
 			module_list_benchmark!(list, extra, module_tokens, benchmarking::tokens);
-			module_list_benchmark!(list, extra, module_auction, benchmarking::auction);
 
 			module_list_benchmark!(list, extra, module_authority, benchmarking::authority);
 			module_list_benchmark!(list, extra, module_oracle, benchmarking::oracle);
@@ -1829,7 +1823,6 @@ impl_runtime_apis! {
 			module_add_benchmark!(params, batches, module_currencies, benchmarking::currencies);
 
 			module_add_benchmark!(params, batches, module_tokens, benchmarking::tokens);
-			module_add_benchmark!(params, batches, module_auction, benchmarking::auction);
 			module_add_benchmark!(params, batches, module_vesting, benchmarking::vesting);
 
 			module_add_benchmark!(params, batches, module_authority, benchmarking::authority);
