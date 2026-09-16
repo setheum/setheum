@@ -130,13 +130,13 @@ mod benchmarking;
 
 // Pallet accounts of runtime
 parameter_types! {
-	pub const AirdropPalletId: PalletId = PalletId(*b"set/drop");		/ 5EYCAe5jKgkuY1B3CkWQF41wzN62tTt8ptfmao31qYvMiVRD
-	pub const CDPTreasuryPalletId: PalletId = PalletId(*b"set/cdpt");	/ 5EYCAe5jKgkuXyJQ3G8CXrRfmmqqe54Tye5wJDqim8cvHQi7
-	pub const DEXPalletId: PalletId = PalletId(*b"edf/swap");			/ 5EYCAe5jKgkuYTiXRpXnghiur9sW2zJCp91xQRKKzhwjS2DC
-	pub const LoansPalletId: PalletId = PalletId(*b"set/loan");			/ 5EYCAe5jKgkuYFMt7CDpD9JGyD8eLr9DKZZ9mBNibUbs5xXo
-	pub const NftPalletId: PalletId = PalletId(*b"set/sNFT");			/ 5EYCAe5jKgkuYTZd9to8S5wCPjCUQnDg57tU9BDgakrywBM2
-	pub const SerpTreasuryPalletId: PalletId = PalletId(*b"set/serp");	/ 5EYCAe5jKgkuYTiwwziYLaTt4ZTSEikGfWNVyZ1PUdkBg78Z
-	pub const TreasuryPalletId: PalletId = PalletId(*b"set/trsry");		/ 5EYCAe5jKgkuYVbBxj3Gqkgew54j9TmR4Q8QLuBWHCApVqWn
+	pub const AirdropPalletId: PalletId = PalletId(*b"set/drop");		// 5EYCAe5jKgkuY1B3CkWQF41wzN62tTt8ptfmao31qYvMiVRD
+	pub const CDPTreasuryPalletId: PalletId = PalletId(*b"set/cdpt");	// 5EYCAe5jKgkuXyJQ3G8CXrRfmmqqe54Tye5wJDqim8cvHQi7
+	pub const DEXPalletId: PalletId = PalletId(*b"edf/swap");			// 5EYCAe5jKgkuYTiXRpXnghiur9sW2zJCp91xQRKKzhwjS2DC
+	pub const LoansPalletId: PalletId = PalletId(*b"set/loan");			// 5EYCAe5jKgkuYFMt7CDpD9JGyD8eLr9DKZZ9mBNibUbs5xXo
+	pub const NftPalletId: PalletId = PalletId(*b"set/sNFT");			// 5EYCAe5jKgkuYTZd9to8S5wCPjCUQnDg57tU9BDgakrywBM2
+	pub const SerpTreasuryPalletId: PalletId = PalletId(*b"set/serp");	// 5EYCAe5jKgkuYTiwwziYLaTt4ZTSEikGfWNVyZ1PUdkBg78Z
+	pub const TreasuryPalletId: PalletId = PalletId(*b"set/trsry");		// 5EYCAe5jKgkuYVbBxj3Gqkgew54j9TmR4Q8QLuBWHCApVqWn
 }
 
 pub fn get_all_module_accounts() -> Vec<AccountId> {
@@ -147,17 +147,17 @@ pub fn get_all_module_accounts() -> Vec<AccountId> {
 		LoansPalletId::get().into_account(),
 		SerpTreasuryPalletId::get().into_account(),
 		TreasuryPalletId::get().into_account(),
-		ZeroAccountId::get(),		 	/ ACCOUNT 0
+		ZeroAccountId::get(),		 	// ACCOUNT 0
 	]
 }
 
 parameter_types! {
 	pub Web3SettersClubAccounts: Vec<AccountId> = vec![
-// hex_literal::hex!("608fbd3f7ec6a45fb6d5b2967f54da4713c21d75efcc715544e091fa63c1fd0e").into(),	/ VQho4edpR5upbDZUSt1JP6TR8oQkBrPSHz1XChMFqyHawRab1
-// hex_literal::hex!("3c5dca516188b2ac077e33a886ac1ea2c03d2a157f56b70ca182c9f7fe5f9055").into(),	/ VQgyc63yJgmrhrsDfH73ipq6TfEyiPMNQ3QYK3a82Sskb3mFx
-// hex_literal::hex!("2e70349d7140ec49b7cf1ae03b6ae3405103dab86c5a463ceef77ffb4a769868").into(),	/ VQgfLtTS8oZCreyX3FzHuaAbUovtbcuSFLnUFS3tkRvwWGkbD
-// hex_literal::hex!("22b565e2303579c0d50884a3524c32ed12c8b91a8621dd72270b8fd17d20d009").into(),	/ VQgPxsHbvGdXC7HhUvYvPifu1SyAuRnUhbMw4hAaTm9fwvkkz
-// hex_literal::hex!("78d105e22be9735d200591ebe506fbc0d0be3f18afa5f5b2fbdb370ee4c2fd47").into(),	/ VQiLsC6xs5xSG7jFUbcRCjKPZqnacJmrNANovRHzbtgThHzhy
+// hex_literal::hex!("608fbd3f7ec6a45fb6d5b2967f54da4713c21d75efcc715544e091fa63c1fd0e").into(),	// VQho4edpR5upbDZUSt1JP6TR8oQkBrPSHz1XChMFqyHawRab1
+// hex_literal::hex!("3c5dca516188b2ac077e33a886ac1ea2c03d2a157f56b70ca182c9f7fe5f9055").into(),	// VQgyc63yJgmrhrsDfH73ipq6TfEyiPMNQ3QYK3a82Sskb3mFx
+// hex_literal::hex!("2e70349d7140ec49b7cf1ae03b6ae3405103dab86c5a463ceef77ffb4a769868").into(),	// VQgfLtTS8oZCreyX3FzHuaAbUovtbcuSFLnUFS3tkRvwWGkbD
+// hex_literal::hex!("22b565e2303579c0d50884a3524c32ed12c8b91a8621dd72270b8fd17d20d009").into(),	// VQgPxsHbvGdXC7HhUvYvPifu1SyAuRnUhbMw4hAaTm9fwvkkz
+// hex_literal::hex!("78d105e22be9735d200591ebe506fbc0d0be3f18afa5f5b2fbdb370ee4c2fd47").into(),	// VQiLsC6xs5xSG7jFUbcRCjKPZqnacJmrNANovRHzbtgThHzhy
 		TreasuryPalletId::get().into_account(),
 	];
 }
@@ -718,7 +718,7 @@ where
 // take the biggest period possible.
 		let period = BlockHashCount::get()
 			.checked_next_power_of_two()
-			.map(|c| c // 2)
+			.map(|c| c / 2)
 			.unwrap_or(2) as u64;
 		let current_block = System::block_number()
 			.saturated_into::<u64>()
@@ -810,8 +810,8 @@ parameter_types! {
 // }
 
 parameter_types! {
-	pub const GetExchangeFee: (u32, u32) = (3, 1000);	/ 0.3%
-	pub const GetStableCurrencyExchangeFee: (u32, u32) = (1, 1000);	/ 0.1%
+	pub const GetExchangeFee: (u32, u32) = (3, 1000);	// 0.3%
+	pub const GetStableCurrencyExchangeFee: (u32, u32) = (1, 1000);	// 0.1%
 	pub const TradingPathLimit: u32 = 4;
 	pub EnabledTradingPairs: Vec<TradingPair> = vec![
 		TradingPair::from_currency_ids(SEUSD, SEU).unwrap(),
@@ -969,6 +969,7 @@ impl sp_core::Get<AllPrecompiles> for PrecompilesValue {
 	fn get() -> AllPrecompiles {
 		AllPrecompiles(Default::default())
 	}
+}
 }
 
 parameter_types! {
@@ -1495,7 +1496,7 @@ construct_runtime!(
 		// Operations: module_operations::{Pallet, Call, Storage, Event<T>} = 58,
 		Auction: module_auction::{Pallet, Call, Storage, Event<T>} = 56,
 		SheythVM: pallet_sheyth_vm::{Pallet, Config, Storage, Event<T>} = 59,
-
+	}
 );
 
 pub struct OnRuntimeUpgrade;

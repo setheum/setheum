@@ -25,7 +25,7 @@ pub mod module_auction_manager;
 pub mod module_cdp_engine;
 pub mod module_cdp_treasury;
 pub mod module_currencies;
-pub mod swap_legacy_module;
+pub mod module_dex;
 pub mod emergency_shutdown;
 pub mod module_unified_accounts;
 pub mod serp_setmint;
