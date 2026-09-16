@@ -122,6 +122,13 @@ pub use runtime_common::{
 	OperatorMembershipInstanceSetheum,
 };
 
+/// Milliseconds per block (Set-BFT).
+pub const MILLISECS_PER_BLOCK: u64 = primitives::setbft::MILLISECS_PER_BLOCK;
+/// Slot duration.
+pub const SLOT_DURATION: u64 = MILLISECS_PER_BLOCK;
+/// Session (epoch) duration in slots.
+pub const EPOCH_DURATION_IN_SLOTS: u32 = primitives::setbft::DEFAULT_SESSION_PERIOD;
+
 
 mod weights;
 mod authority;
@@ -283,18 +290,22 @@ impl frame_system::Config for Runtime {
 	type AccountId = AccountId;
 /// The lookup mechanism to get account ID from whatever is passed in dispatchers.
 	type Lookup = (Indices);
-/// The index type for blocks.
-	type BlockNumber = BlockNumber;
+/// The nonce type.
+	type Nonce = Nonce;
+/// The block type.
+	type Block = Block;
 /// The type for hashing blocks and tries.
 	type Hash = Hash;
 /// The hashing algorithm used.
 	type Hashing = BlakeTwo256;
-/// The header type.
-	type Header = generic::Header<BlockNumber, BlakeTwo256>;
 /// The ubiquitous event type.
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 /// The ubiquitous origin type.
-	type Origin = Origin;
+	type RuntimeOrigin = RuntimeOrigin;
+/// The aggregated dispatch type.
+	type RuntimeCall = RuntimeCall;
+/// The aggregated task type.
+	type RuntimeTask = RuntimeTask;
 /// Maximum number of block number to block hash mappings to keep (oldest pruned first).
 	type BlockHashCount = BlockHashCount;
 /// Maximum weight of each block.
@@ -315,6 +326,20 @@ impl frame_system::Config for Runtime {
 	type SS58Prefix = SS58Prefix;
 /// This is a hook that is use when setCode is called - not require unless using cumulus.
 	type OnSetCode = ();
+/// The maximum number of consumers.
+	type MaxConsumers = frame_support::traits::ConstU32<16>;
+/// Single block migrations.
+	type SingleBlockMigrations = ();
+/// Multi block migrator.
+	type MultiBlockMigrator = ();
+/// Hooks before inherents.
+	type PreInherents = ();
+/// Hooks after inherents.
+	type PostInherents = ();
+/// Hooks after transactions.
+	type PostTransactions = ();
+/// Weight information for system extensions.
+	type ExtensionsWeightInfo = ();
 }
 
 
@@ -323,15 +348,15 @@ parameter_types! {
 }
 
 impl pallet_session::Config for Runtime {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type ValidatorId = <Self as frame_system::Config>::AccountId;
-	type ValidatorIdOf = pallet_staking::StashOf<Self>;
+	type ValidatorIdOf = sp_runtime::traits::ConvertInto;
 	type ShouldEndSession = pallet_session::PeriodicSessions<SessionPeriod, Offset>;
 	type NextSessionRotation = pallet_session::PeriodicSessions<SessionPeriod, Offset>;
 	type SessionManager = SetBFT;
 	type SessionHandler = (Aura, SetBFT);
 	type Keys = opaque::SessionKeys;
-	type DisabledValidatorsThreshold = DisabledValidatorsThreshold;
+	type DisablingStrategy = pallet_session::disabling::UpToLimitWithReEnablingDisablingStrategy;
 	type WeightInfo = ();
 }
 
@@ -375,7 +400,7 @@ impl pallet_staking::Config for Runtime {
 	type UnixTime = Timestamp;
 	type CurrencyToVote = U128CurrencyToVote;
 	type RewardRemainder = Treasury;
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type Slash = Treasury; // send the slashed funds to the Setheum treasury.
 	type Reward = (); // rewards are minted from the void
 	type SessionsPerEra = SessionsPerEra;
@@ -462,7 +487,7 @@ impl pallet_authorship::Config for Runtime {
 }
 
 impl pallet_offences::Config for Runtime {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type IdentificationTuple = pallet_session::historical::IdentificationTuple<Self>;
 	type OnOffenceHandler = Staking;
 }
@@ -475,7 +500,7 @@ parameter_types! {
 
 impl pallet_im_online::Config for Runtime {
 	type AuthorityId = ImOnlineId;
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type ValidatorSet = Historical;
 	type NextSessionRotation = pallet_session::PeriodicSessions<SessionPeriod, Offset>;
 	type ReportUnresponsiveness = Offences;
@@ -493,7 +518,7 @@ parameter_types! {
 }
 
 impl pallet_identity::Config for Runtime {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type Currency = Balances;
 	type BasicDeposit = BasicDeposit;
 	type FieldDeposit = FieldDeposit;
@@ -514,7 +539,7 @@ parameter_types! {
 
 impl pallet_indices::Config for Runtime {
 	type AccountIndex = AccountIndex;
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type Currency = Balances;
 	type Deposit = IndexDeposit;
 	type WeightInfo = ();
@@ -529,7 +554,7 @@ parameter_types! {
 }
 
 impl module_currencies::Config for Runtime {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type MultiCurrency = Tokens;
 	type NativeCurrency = BasicCurrencyAdapter<Runtime, Balances, Amount, BlockNumber>;
 	type GetNativeCurrencyId = GetNativeCurrencyId;
@@ -550,7 +575,7 @@ parameter_types! {
 
 type SetheumDataProvider = module_oracle::Instance1;
 impl module_oracle::Config<SetheumDataProvider> for Runtime {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type OnNewData = ();
 	type CombineData = module_oracle::DefaultCombineData<Runtime, MinimumCount, ExpiresIn, SetheumDataProvider>;
 	type Time = Timestamp;
@@ -625,7 +650,7 @@ parameter_types! {
 }
 
 impl module_tokens::Config for Runtime {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type Balance = Balance;
 	type Amount = Amount;
 	type CurrencyId = CurrencyId;
@@ -642,7 +667,7 @@ parameter_types! {
 }
 
 impl module_prices::Config for Runtime {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type Source = AggregatedDataProvider;
 	type GetSetUSDId = GetSetUSDId;
 	type SetterCurrencyId = SetterCurrencyId;
@@ -663,7 +688,7 @@ impl module_prices::Config for Runtime {
 // }
 
 impl module_transaction_pause::Config for Runtime {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type UpdateOrigin = EnsureRootOrThreeFourthsShuraCouncil;
 	type WeightInfo = weights::module_transaction_pause::WeightInfo<Runtime>;
 }
@@ -675,7 +700,7 @@ parameter_types! {
 }
 
 // impl auction_manager::Config for Runtime {
-// 	type Event = Event;
+// 	type RuntimeEvent = RuntimeEvent;
 // 	type Currency = Currencies;
 // 	type Auction = Auction;
 // 	type MinimumIncrementSize = MinimumIncrementSize;
@@ -691,7 +716,7 @@ parameter_types! {
 // }
 
 // impl module_loans::Config for Runtime {
-// 	type Event = Event;
+// 	type RuntimeEvent = RuntimeEvent;
 // 	type Currency = Currencies;
 // 	type RiskManager = CdpEngine;
 // 	type CDPTreasury = CdpTreasury;
@@ -765,7 +790,7 @@ parameter_types! {
 }
 
 // impl cdp_engine::Config for Runtime {
-// 	type Event = Event;
+// 	type RuntimeEvent = RuntimeEvent;
 // 	type PriceSource = module_prices::PriorityLockedPriceProvider<Runtime>;
 // 	type CollateralCurrencyIds = CollateralCurrencyIds;
 // 	type DefaultLiquidationRatio = DefaultLiquidationRatio;
@@ -789,14 +814,14 @@ parameter_types! {
 }
 
 // impl serp_setmint::Config for Runtime {
-// 	type Event = Event;
+// 	type RuntimeEvent = RuntimeEvent;
 // 	type Currency = Balances;
 // 	type DepositPerAuthorization = DepositPerAuthorization;
 // 	type WeightInfo = weights::serp_setmint::WeightInfo<Runtime>;
 // }
 
 // impl emergency_shutdown::Config for Runtime {
-// 	type Event = Event;
+// 	type RuntimeEvent = RuntimeEvent;
 // 	type CollateralCurrencyIds = CollateralCurrencyIds;
 // 	type PriceSource = Prices;
 // 	type CDPTreasury = CdpTreasury;
@@ -815,7 +840,7 @@ parameter_types! {
 }
 
 impl swap_legacy_module::Config for Runtime {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type Currency = Currencies;
 	type StableCurrencyIds = StableCurrencyIds;
 	type GetExchangeFee = GetExchangeFee;
@@ -828,7 +853,7 @@ impl swap_legacy_module::Config for Runtime {
 }
 
 impl dex_oracle::Config for Runtime {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type DEX = swap_legacy_module::Pallet<Runtime>;
 }
 
@@ -837,7 +862,7 @@ impl dex_oracle::Config for Runtime {
 // }
 
 // impl module_airdrop::Config for Runtime {
-// 	type Event = Event;
+// 	type RuntimeEvent = RuntimeEvent;
 // 	type MultiCurrency = Currencies;
 // 	type MaxAirdropListSize = MaxAirdropListSize;
 // 	type FundingOrigin = TreasuryAccount;
@@ -853,7 +878,7 @@ parameter_types! {
 }
 
 // impl serp_treasury::Config for Runtime {
-// 	type Event = Event;
+// 	type RuntimeEvent = RuntimeEvent;
 // 	type Currency = Currencies;
 // 	type StableCurrencyIds = StableCurrencyIds;
 // 	type StableCurrencyInflationPeriod = StableCurrencyInflationPeriod;
@@ -883,7 +908,7 @@ parameter_types! {
 }
 
 // impl cdp_treasury::Config for Runtime {
-// 	type Event = Event;
+// 	type RuntimeEvent = RuntimeEvent;
 // 	type Currency = Currencies;
 // 	type GetSetUSDId = GetSetUSDId;
 // 	type AuctionManagerHandler = AuctionManager;
@@ -971,7 +996,7 @@ parameter_types! {
 }
 
 impl module_nft::Config for Runtime {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type Currency = Balances;
 	type CreateClassDeposit = CreateClassDeposit;
 	type CreateTokenDeposit = CreateTokenDeposit;
@@ -1046,8 +1071,8 @@ impl InstanceFilter<Call> for ProxyType {
 }
 
 impl pallet_proxy::Config for Runtime {
-	type Event = Event;
-	type Call = Call;
+	type RuntimeEvent = RuntimeEvent;
+	type RuntimeCall = RuntimeCall;
 	type Currency = Balances;
 	type ProxyType = ProxyType;
 	type ProxyDepositBase = ProxyDepositBase;
@@ -1070,7 +1095,7 @@ parameter_types! {
 }
 
 impl pallet_balances::Config for Runtime {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type MaxLocks = MaxLocks;
 /// The type for recording an account's balance.
 	type Balance = Balance;
@@ -1089,7 +1114,7 @@ parameter_types! {
 }
 
 impl module_vesting::Config for Runtime {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type MultiCurrency = Currencies;
 	type GetNativeCurrencyId = GetNativeCurrencyId;
 	type GetSetUSDId = GetSetUSDId;
@@ -1107,10 +1132,10 @@ parameter_types! {
 }
 
 impl pallet_scheduler::Config for Runtime {
-	type Event = Event;
-	type Origin = Origin;
+	type RuntimeEvent = RuntimeEvent;
+	type RuntimeOrigin = RuntimeOrigin;
 	type PalletsOrigin = OriginCaller;
-	type Call = Call;
+	type RuntimeCall = RuntimeCall;
 	type MaximumWeight = MaximumSchedulerWeight;
 	type ScheduleOrigin = EnsureRoot<AccountId>;
 	type MaxScheduledPerBlock = MaxScheduledPerBlock;
@@ -1118,10 +1143,10 @@ impl pallet_scheduler::Config for Runtime {
 }
 
 impl module_authority::Config for Runtime {
-	type Event = Event;
-	type Origin = Origin;
+	type RuntimeEvent = RuntimeEvent;
+	type RuntimeOrigin = RuntimeOrigin;
 	type PalletsOrigin = OriginCaller;
-	type Call = Call;
+	type RuntimeCall = RuntimeCall;
 	type Scheduler = Scheduler;
 	type AsOriginId = AuthoritysOriginId;
 	type AuthorityConfig = AuthorityConfigImpl;
@@ -1130,8 +1155,8 @@ impl module_authority::Config for Runtime {
 
 
 impl pallet_sudo::Config for Runtime {
-	type Event = Event;
-	type Call = Call;
+	type RuntimeEvent = RuntimeEvent;
+	type RuntimeCall = RuntimeCall;
 }
 
 parameter_types! {
@@ -1141,9 +1166,9 @@ parameter_types! {
 }
 
 impl pallet_collective::Config<ShuraCouncilInstance> for Runtime {
-	type Origin = Origin;
+	type RuntimeOrigin = RuntimeOrigin;
 	type Proposal = Call;
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type MotionDuration = ShuraCouncilMotionDuration;
 	type MaxProposals = ShuraCouncilMaxProposals;
 	type MaxMembers = ShuraCouncilMaxMembers;
@@ -1152,7 +1177,7 @@ impl pallet_collective::Config<ShuraCouncilInstance> for Runtime {
 }
 
 impl pallet_membership::Config<ShuraCouncilMembershipInstance> for Runtime {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type AddOrigin = EnsureRootOrThreeFourthsShuraCouncil;
 	type RemoveOrigin = EnsureRootOrThreeFourthsShuraCouncil;
 	type SwapOrigin = EnsureRootOrThreeFourthsShuraCouncil;
@@ -1171,9 +1196,9 @@ parameter_types! {
 }
 
 impl pallet_collective::Config<FinancialCouncilInstance> for Runtime {
-	type Origin = Origin;
+	type RuntimeOrigin = RuntimeOrigin;
 	type Proposal = Call;
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type MotionDuration = FinancialCouncilMotionDuration;
 	type MaxProposals = FinancialCouncilMaxProposals;
 	type MaxMembers = FinancialCouncilMaxMembers;
@@ -1182,7 +1207,7 @@ impl pallet_collective::Config<FinancialCouncilInstance> for Runtime {
 }
 
 impl pallet_membership::Config<FinancialCouncilMembershipInstance> for Runtime {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type AddOrigin = EnsureRootOrTwoThirdsShuraCouncil;
 	type RemoveOrigin = EnsureRootOrTwoThirdsShuraCouncil;
 	type SwapOrigin = EnsureRootOrTwoThirdsShuraCouncil;
@@ -1201,9 +1226,9 @@ parameter_types! {
 }
 
 impl pallet_collective::Config<TechnicalCommitteeInstance> for Runtime {
-	type Origin = Origin;
+	type RuntimeOrigin = RuntimeOrigin;
 	type Proposal = Call;
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type MotionDuration = TechnicalCommitteeMotionDuration;
 	type MaxProposals = TechnicalCommitteeMaxProposals;
 	type MaxMembers = TechnicalCouncilMaxMembers;
@@ -1212,7 +1237,7 @@ impl pallet_collective::Config<TechnicalCommitteeInstance> for Runtime {
 }
 
 impl pallet_membership::Config<TechnicalCommitteeMembershipInstance> for Runtime {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type AddOrigin = EnsureRootOrTwoThirdsShuraCouncil;
 	type RemoveOrigin = EnsureRootOrTwoThirdsShuraCouncil;
 	type SwapOrigin = EnsureRootOrTwoThirdsShuraCouncil;
@@ -1229,7 +1254,7 @@ parameter_types! {
 }
 
 impl pallet_membership::Config<OperatorMembershipInstanceSetheum> for Runtime {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type AddOrigin = EnsureRootOrTwoThirdsFinancialCouncil;
 	type RemoveOrigin = EnsureRootOrTwoThirdsFinancialCouncil;
 	type SwapOrigin = EnsureRootOrTwoThirdsFinancialCouncil;
@@ -1242,8 +1267,8 @@ impl pallet_membership::Config<OperatorMembershipInstanceSetheum> for Runtime {
 }
 
 impl pallet_utility::Config for Runtime {
-	type Event = Event;
-	type Call = Call;
+	type RuntimeEvent = RuntimeEvent;
+	type RuntimeCall = RuntimeCall;
 	type WeightInfo = ();
 }
 
@@ -1254,8 +1279,8 @@ parameter_types! {
 }
 
 impl pallet_multisig::Config for Runtime {
-	type Event = Event;
-	type Call = Call;
+	type RuntimeEvent = RuntimeEvent;
+	type RuntimeCall = RuntimeCall;
 	type Currency = Balances;
 	type DepositBase = MultisigDepositBase;
 	type DepositFactor = MultisigDepositFactor;
@@ -1311,7 +1336,7 @@ impl pallet_treasury::Config for Runtime {
 	type Currency = Balances;
 	type ApproveOrigin = EnsureRootOrHalfShuraCouncil;
 	type RejectOrigin = EnsureRootOrHalfShuraCouncil;
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type OnSlash = Treasury;
 	type ProposalBond = ProposalBond;
 	type ProposalBondMinimum = ProposalBondMinimum;
@@ -1324,7 +1349,7 @@ impl pallet_treasury::Config for Runtime {
 }
 
 impl pallet_bounties::Config for Runtime {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type BountyDepositBase = BountyDepositBase;
 	type BountyDepositPayoutDelay = BountyDepositPayoutDelay;
 	type BountyUpdatePeriod = BountyUpdatePeriod;
@@ -1336,7 +1361,7 @@ impl pallet_bounties::Config for Runtime {
 }
 
 impl pallet_tips::Config for Runtime {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type DataDepositPerByte = DataDepositPerByte;
 	type MaximumReasonLength = MaximumReasonLength;
 	type Tippers = ShuraCouncilProvider;
@@ -1354,8 +1379,8 @@ parameter_types! {
 }
 
 impl pallet_recovery::Config for Runtime {
-	type Event = Event;
-	type Call = Call;
+	type RuntimeEvent = RuntimeEvent;
+	type RuntimeCall = RuntimeCall;
 	type Currency = Balances;
 	type ConfigDepositBase = ConfigDepositBase;
 	type FriendDepositFactor = FriendDepositFactor;
@@ -1364,7 +1389,7 @@ impl pallet_recovery::Config for Runtime {
 }
 
 // impl module_auction::Config for Runtime {
-// 	type Event = Event;
+// 	type RuntimeEvent = RuntimeEvent;
 // 	type Balance = Balance;
 // 	type AuctionId = AuctionId;
 // 	type Handler = AuctionManager;
