@@ -728,17 +728,14 @@ parameter_types! {
 
 impl<LocalCall> frame_system::offchain::CreateSignedTransaction<LocalCall> for Runtime
 where
-	Call: From<LocalCall>,
+	RuntimeCall: From<LocalCall>,
 {
-	fn create_transaction<C: frame_system::offchain::AppCrypto<Self::Public, Self::Signature>>(
-		call: Call,
+	fn create_signed_transaction<C: frame_system::offchain::AppCrypto<Self::Public, Self::Signature>>(
+		call: RuntimeCall,
 		public: <Signature as sp_runtime::traits::Verify>::Signer,
 		account: AccountId,
 		nonce: Nonce,
-	) -> Option<(
-		Call,
-		<UncheckedExtrinsic as sp_runtime::traits::Extrinsic>::SignaturePayload,
-	)> {
+	) -> Option<UncheckedExtrinsic> {
 // take the biggest period possible.
 		let period = BlockHashCount::get()
 			.checked_next_power_of_two()
@@ -767,16 +764,25 @@ where
 		let signature = raw_payload.using_encoded(|payload| C::sign(payload, public))?;
 		let address = Indices::unlookup(account);
 		let (call, extra, _) = raw_payload.deconstruct();
-		Some((call, (address, signature, extra)))
+		Some(UncheckedExtrinsic::new_signed(call, address, signature, extra))
 	}
 }
 
-impl<C> frame_system::offchain::SendTransactionTypes<C> for Runtime
+impl<LocalCall> frame_system::offchain::CreateBare<LocalCall> for Runtime
 where
-	Call: From<C>,
+	RuntimeCall: From<LocalCall>,
 {
-	type OverarchingCall = Call;
+	fn create_bare(call: RuntimeCall) -> UncheckedExtrinsic {
+		UncheckedExtrinsic::new_bare(call)
+	}
+}
+
+impl<C> frame_system::offchain::CreateTransactionBase<C> for Runtime
+where
+	RuntimeCall: From<C>,
+{
 	type Extrinsic = UncheckedExtrinsic;
+	type RuntimeCall = RuntimeCall;
 }
 
 parameter_types! {
@@ -1031,8 +1037,8 @@ parameter_types! {
 	pub const MaxPending: u16 = 32;
 }
 
-impl InstanceFilter<Call> for ProxyType {
-	fn filter(&self, c: &Call) -> bool {
+impl InstanceFilter<RuntimeCall> for ProxyType {
+	fn filter(&self, c: &RuntimeCall) -> bool {
 		match self {
 // Always allowed Call::Utility no matter type.
 // Only transactions allowed by Proxy.filter can be executed,
@@ -1170,7 +1176,7 @@ parameter_types! {
 
 impl pallet_collective::Config<ShuraCouncilInstance> for Runtime {
 	type RuntimeOrigin = RuntimeOrigin;
-	type Proposal = Call;
+	type Proposal = RuntimeCall;
 	type RuntimeEvent = RuntimeEvent;
 	type MotionDuration = ShuraCouncilMotionDuration;
 	type MaxProposals = ShuraCouncilMaxProposals;
@@ -1200,7 +1206,7 @@ parameter_types! {
 
 impl pallet_collective::Config<FinancialCouncilInstance> for Runtime {
 	type RuntimeOrigin = RuntimeOrigin;
-	type Proposal = Call;
+	type Proposal = RuntimeCall;
 	type RuntimeEvent = RuntimeEvent;
 	type MotionDuration = FinancialCouncilMotionDuration;
 	type MaxProposals = FinancialCouncilMaxProposals;
@@ -1230,7 +1236,7 @@ parameter_types! {
 
 impl pallet_collective::Config<TechnicalCommitteeInstance> for Runtime {
 	type RuntimeOrigin = RuntimeOrigin;
-	type Proposal = Call;
+	type Proposal = RuntimeCall;
 	type RuntimeEvent = RuntimeEvent;
 	type MotionDuration = TechnicalCommitteeMotionDuration;
 	type MaxProposals = TechnicalCommitteeMaxProposals;
@@ -1534,11 +1540,11 @@ pub type SignedExtra = (
 	module_transaction_payment::ChargeTransactionPayment<Runtime>,
 );
 /// Unchecked extrinsic type as expected by this runtime.
-pub type UncheckedExtrinsic = generic::UncheckedExtrinsic<Address, Call, Signature, SignedExtra>;
+pub type UncheckedExtrinsic = generic::UncheckedExtrinsic<Address, RuntimeCall, Signature, SignedExtra>;
 /// The payload being signed in transactions.
-pub type SignedPayload = generic::SignedPayload<Call, SignedExtra>;
+pub type SignedPayload = generic::SignedPayload<RuntimeCall, SignedExtra>;
 /// Extrinsic type that has already been checked.
-pub type CheckedExtrinsic = generic::CheckedExtrinsic<AccountId, Call, SignedExtra>;
+pub type CheckedExtrinsic = generic::CheckedExtrinsic<AccountId, RuntimeCall, SignedExtra>;
 /// Executive: handles dispatch to the various modules.
 pub type Executive = frame_executive::Executive<
 	Runtime,
