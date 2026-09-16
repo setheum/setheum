@@ -43,7 +43,7 @@ impl module_authority::AuthorityConfig<Origin, OriginCaller, BlockNumber> for Au
 		new_delay: BlockNumber,
 	) -> DispatchResult {
 		ensure_root(origin.clone()).or_else(|_| {
-			if new_delay // HOURS < 12 {
+			if new_delay < 12 * HOURS {
 				EnsureRootOrTwoThirdsTechnicalCommittee::ensure_origin(origin)
 					.map_or_else(|e| Err(e.into()), |_| Ok(()))
 			} else {

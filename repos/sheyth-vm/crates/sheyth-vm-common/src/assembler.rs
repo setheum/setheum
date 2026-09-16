@@ -1,0 +1,1137 @@
+use crate::cast::cast;
+use crate::program::{Instruction, InstructionSetKind, RawReg, Reg};
+use crate::utils::{parse_imm, parse_immediate, parse_reg, parse_slice, ParsedImmediate};
+use alloc::borrow::ToOwned;
+use alloc::collections::BTreeMap;
+use alloc::format;
+use alloc::string::String;
+use alloc::vec::Vec;
+
+fn split<'a>(text: &'a str, separator: &str) -> Option<(&'a str, &'a str)> {
+    let index = text.find(separator)?;
+    Some((text[..index].trim(), text[index + separator.len()..].trim()))
+}
+
+fn parse_reg_or_imm(text: &str) -> Option<RegImm> {
+    if let Some(value) = parse_imm(text) {
+        Some(RegImm::Imm(value))
+    } else {
+        parse_reg(text).map(RegImm::Reg)
+    }
+}
+
+fn parse_absolute_memory_access(text: &str) -> Option<i32> {
+    let text = text.trim().strip_prefix('[')?.strip_suffix(']')?;
+    parse_imm(text)
+}
+
+fn parse_indirect_memory_access(text: &str) -> Option<(Reg, i32)> {
+    let text = text.trim().strip_prefix('[')?.strip_suffix(']')?;
+    if let Some(index) = text.find('+') {
+        let reg = parse_reg(text[..index].trim())?;
+        let offset = parse_imm(&text[index + 1..])?;
+        Some((reg, offset))
+    } else {
+        parse_reg(text).map(|reg| (reg, 0))
+    }
+}
+
+/// Parses the long form of load_imm_and_jump_indirect:
+/// `tmp = {base}, {dst} = {value}, jump [tmp + {offset}]`, where `dest == base` is allowed
+fn parse_load_imm_and_jump_indirect_with_tmp(line: &str) -> Option<(Reg, Reg, i32, i32)> {
+    let line = line.trim().strip_prefix("tmp")?;
+    if !line.starts_with('=') && line.trim_start() == line {
+        return None;
+    }
+    let line = line.trim().strip_prefix('=')?;
+
+    let index = line.find(',')?;
+    let base = parse_reg(line[..index].trim())?;
+    let line = line[index + 1..].trim();
+
+    let index = line.find('=')?;
+    let dst = parse_reg(line[..index].trim())?;
+    let line = line[index + 1..].trim();
+
+    let index = line.find(',')?;
+    let value = parse_imm(line[..index].trim())?;
+    let line = line[index + 1..].trim().strip_prefix("jump")?;
+    let text = line.trim().strip_prefix('[')?.strip_suffix(']')?;
+
+    if let Some(index) = text.find('+') {
+        if text[..index].trim() != "tmp" {
+            return None;
+        }
+        let offset = parse_imm(&text[index + 1..])?;
+        Some((dst, base, value, offset))
+    } else {
+        if text.trim() != "tmp" {
+            return None;
+        }
+        Some((dst, base, value, 0))
+    }
+}
+
+#[derive(Copy, Clone)]
+pub enum OpMarker {
+    I32,
+    NONE,
+}
+
+#[derive(Copy, Clone)]
+pub enum LoadKind {
+    I8,
+    I16,
+    I32,
+    U8,
+    U16,
+    U32,
+    U64,
+}
+
+#[derive(Copy, Clone)]
+pub enum StoreKind {
+    U8,
+    U16,
+    U32,
+    U64,
+}
+
+#[derive(Copy, Clone)]
+enum ConditionKind {
+    Eq,
+    NotEq,
+    LessSigned,
+    LessUnsigned,
+    LessOrEqualSigned,
+    LessOrEqualUnsigned,
+    GreaterSigned,
+    GreaterUnsigned,
+    GreaterOrEqualSigned,
+    GreaterOrEqualUnsigned,
+}
+
+impl ConditionKind {
+    fn reverse_operands(self) -> Self {
+        match self {
+            Self::Eq => Self::Eq,
+            Self::NotEq => Self::NotEq,
+            Self::LessSigned => Self::GreaterSigned,
+            Self::LessUnsigned => Self::GreaterUnsigned,
+            Self::LessOrEqualSigned => Self::GreaterOrEqualSigned,
+            Self::LessOrEqualUnsigned => Self::GreaterOrEqualUnsigned,
+            Self::GreaterSigned => Self::LessSigned,
+            Self::GreaterUnsigned => Self::LessUnsigned,
+            Self::GreaterOrEqualSigned => Self::LessOrEqualSigned,
+            Self::GreaterOrEqualUnsigned => Self::LessOrEqualUnsigned,
+        }
+    }
+}
+
+#[derive(Copy, Clone)]
+enum RegImm {
+    Reg(Reg),
+    Imm(i32),
+}
+
+#[derive(Copy, Clone)]
+struct Condition {
+    kind: ConditionKind,
+    lhs: RegImm,
+    rhs: RegImm,
+}
+
+fn parse_condition(text: &str) -> Option<Condition> {
+    let text = text.trim();
+    let (lhs, text) = split(text, " ")?;
+    let lhs = parse_reg_or_imm(lhs)?;
+    let (kind, text) = split(text, " ")?;
+    let kind = match kind {
+        "<u" => ConditionKind::LessUnsigned,
+        "<s" => ConditionKind::LessSigned,
+        "<=u" => ConditionKind::LessOrEqualUnsigned,
+        "<=s" => ConditionKind::LessOrEqualSigned,
+        ">u" => ConditionKind::GreaterUnsigned,
+        ">s" => ConditionKind::GreaterSigned,
+        ">=u" => ConditionKind::GreaterOrEqualUnsigned,
+        ">=s" => ConditionKind::GreaterOrEqualSigned,
+        "==" => ConditionKind::Eq,
+        "!=" => ConditionKind::NotEq,
+        _ => return None,
+    };
+
+    let rhs = parse_reg_or_imm(text)?;
+    Some(Condition { kind, lhs, rhs })
+}
+
+pub fn assemble(mut isa: Option<InstructionSetKind>, code: &str) -> Result<Vec<u8>, String> {
+    enum MaybeInstruction {
+        Instruction(Instruction),
+        Jump(String),
+        Branch(String, ConditionKind, Reg, Reg),
+        BranchImm(String, ConditionKind, Reg, i32),
+        LoadLabelAddress(Reg, String),
+        LoadImmAndJump(Reg, i32, String),
+    }
+
+    impl MaybeInstruction {
+        fn starts_new_basic_block(&self) -> bool {
+            match self {
+                MaybeInstruction::Instruction(instruction) => instruction.starts_new_basic_block(),
+                MaybeInstruction::Jump(..)
+                | MaybeInstruction::Branch(..)
+                | MaybeInstruction::BranchImm(..)
+                | MaybeInstruction::LoadImmAndJump(..) => true,
+                MaybeInstruction::LoadLabelAddress(..) => false,
+            }
+        }
+    }
+
+    impl From<Instruction> for MaybeInstruction {
+        fn from(inst: Instruction) -> Self {
+            MaybeInstruction::Instruction(inst)
+        }
+    }
+
+    enum Export {
+        ByBlock(u32),
+        ByInstruction(u32),
+    }
+
+    let mut instructions: Vec<MaybeInstruction> = Vec::new();
+    let mut label_to_index = BTreeMap::new();
+    let mut at_block_start = true;
+    let mut current_basic_block = 0;
+    let mut exports = BTreeMap::new();
+    let mut ro_data = Vec::new();
+    let mut rw_data = Vec::new();
+    let mut ro_data_size = 0;
+    let mut rw_data_size = 0;
+    let mut stack_size = 0;
+
+    macro_rules! emit_and_continue {
+        ($instruction:expr) => {{
+            let instruction: MaybeInstruction = $instruction.into();
+            at_block_start = instruction.starts_new_basic_block();
+            if at_block_start {
+                current_basic_block += 1;
+            }
+
+            instructions.push(instruction);
+            continue;
+        }};
+    }
+
+    for (nth_line, line) in code.lines().enumerate() {
+        let nth_line = nth_line + 1; // Line counter for error messages starts as 1.
+        let line = line.trim();
+        let original_line = line;
+
+        if line.is_empty() || line.starts_with("//") {
+            continue;
+        }
+
+        if let Some(line) = line.strip_prefix("%ro_data_size = ") {
+            let line = line.trim();
+            let Ok(size) = line.parse::<u32>() else {
+                return Err(format!("cannot parse line {nth_line}"));
+            };
+            ro_data_size = size;
+            continue;
+        }
+
+        if let Some(line) = line.strip_prefix("%rw_data_size = ") {
+            let line = line.trim();
+            let Ok(size) = line.parse::<u32>() else {
+                return Err(format!("cannot parse line {nth_line}"));
+            };
+            rw_data_size = size;
+            continue;
+        }
+
+        if let Some(line) = line.strip_prefix("%stack_size = ") {
+            let line = line.trim();
+            let Ok(size) = line.parse::<u32>() else {
+                return Err(format!("cannot parse line {nth_line}"));
+            };
+            stack_size = size;
+            continue;
+        }
+
+        if let Some(line) = line.strip_prefix("%ro_data = ") {
+            let Some(value) = parse_slice(line) else {
+                return Err(format!("cannot parse line {nth_line}"));
+            };
+
+            ro_data = value;
+            continue;
+        }
+
+        if let Some(line) = line.strip_prefix("%rw_data = ") {
+            let Some(value) = parse_slice(line) else {
+                return Err(format!("cannot parse line {nth_line}"));
+            };
+
+            rw_data = value;
+            continue;
+        }
+
+        if let Some(line) = line.strip_prefix("%isa = ") {
+            isa = Some(match line.trim() {
+                "revive_v1" => InstructionSetKind::ReviveV1,
+                "jam_v1" => InstructionSetKind::JamV1,
+                "latest32" => InstructionSetKind::Latest32,
+                "latest64" => InstructionSetKind::Latest64,
+                _ => return Err(format!("cannot parse line {nth_line}")),
+            });
+            continue;
+        }
+
+        if let Some((is_export, mut line)) = line
+            .strip_prefix("pub @")
+            .map(|line| (true, line))
+            .or_else(|| line.strip_prefix('@').map(|line| (false, line)))
+        {
+            let mut no_fallthrough = false;
+            if let Some(line_no_fallthrough) = line.strip_suffix("%no_fallthrough") {
+                no_fallthrough = true;
+                line = line_no_fallthrough.trim();
+            }
+
+            if let Some(label) = line.strip_suffix(':') {
+                if !at_block_start && !no_fallthrough {
+                    instructions.push(Instruction::fallthrough.into());
+                    at_block_start = true;
+                    current_basic_block += 1;
+                }
+
+                if label_to_index.insert(label, current_basic_block).is_some() {
+                    return Err(format!("duplicate label \"{label}\" on line {nth_line}"));
+                }
+
+                if is_export {
+                    if at_block_start {
+                        exports.insert(label, Export::ByBlock(current_basic_block));
+                    } else {
+                        exports.insert(label, Export::ByInstruction(instructions.len() as u32));
+                    }
+                }
+
+                continue;
+            }
+        }
+
+        if line == "trap" {
+            emit_and_continue!(Instruction::trap);
+        }
+
+        if line == "fallthrough" {
+            emit_and_continue!(Instruction::fallthrough);
+        }
+
+        if line == "unlikely" {
+            emit_and_continue!(Instruction::unlikely);
+        }
+
+        if line == "ret" {
+            emit_and_continue!(Instruction::jump_indirect(Reg::RA.into(), 0));
+        }
+
+        if line == "nop" {
+            emit_and_continue!(Instruction::move_reg(Reg::RA.into(), Reg::RA.into()));
+        }
+
+        if let Some(line) = line.strip_prefix("ecalli ") {
+            let line = line.trim();
+            if let Ok(index) = line.parse::<u32>() {
+                emit_and_continue!(Instruction::ecalli(cast(index).bitwise_as_i32()));
+            }
+        }
+
+        if let Some(line) = line.strip_prefix("jump ") {
+            let line = line.trim();
+            if let Some(line) = line.strip_prefix('@') {
+                if let Some(index) = line.find(' ') {
+                    let label = &line[..index];
+                    let line = &line[index + 1..].trim();
+                    let Some(line) = line.strip_prefix("if ") else {
+                        return Err(format!("cannot parse line {nth_line}: \"{original_line}\""));
+                    };
+
+                    let line = line.trim();
+                    let Some(condition) = parse_condition(line) else {
+                        return Err(format!("cannot parse line {nth_line}: invalid condition"));
+                    };
+
+                    let (kind, lhs, rhs) = match (condition.lhs, condition.rhs) {
+                        (RegImm::Reg(lhs), RegImm::Reg(rhs)) => {
+                            emit_and_continue!(MaybeInstruction::Branch(label.to_owned(), condition.kind, lhs, rhs));
+                        }
+                        (RegImm::Reg(lhs), RegImm::Imm(rhs)) => (condition.kind, lhs, rhs),
+                        (RegImm::Imm(lhs), RegImm::Reg(rhs)) => (condition.kind.reverse_operands(), rhs, lhs),
+                        (RegImm::Imm(_), RegImm::Imm(_)) => {
+                            return Err(format!("cannot parse line {nth_line}: both arguments cannot be immediates"));
+                        }
+                    };
+
+                    emit_and_continue!(MaybeInstruction::BranchImm(label.to_owned(), kind, lhs, rhs));
+                }
+
+                emit_and_continue!(MaybeInstruction::Jump(line.to_owned()));
+            }
+
+            if let Some((base, offset)) = parse_indirect_memory_access(line) {
+                emit_and_continue!(Instruction::jump_indirect(base.into(), offset));
+            }
+        }
+
+        if let Some((dst, base, value, offset)) = parse_load_imm_and_jump_indirect_with_tmp(line) {
+            emit_and_continue!(Instruction::load_imm_and_jump_indirect(dst.into(), base.into(), value, offset));
+        }
+
+        if let Some(index) = line.find('=') {
+            let lhs = line[..index].trim();
+            let rhs = line[index + 1..].trim();
+
+            let (op_marker, lhs) = if let Some(lhs) = lhs.strip_prefix("i32 ") {
+                (OpMarker::I32, lhs)
+            } else {
+                (OpMarker::NONE, lhs)
+            };
+
+            if let Some(dst) = parse_reg(lhs) {
+                if let Some(index) = rhs.find(',') {
+                    if let Some(value) = parse_immediate(&rhs[..index]).and_then(|value| value.try_into().ok()) {
+                        if let Some(line) = rhs[index + 1..].trim().strip_prefix("jump") {
+                            if let Some(label) = line.trim().strip_prefix('@') {
+                                emit_and_continue!(MaybeInstruction::LoadImmAndJump(dst, value, label.to_owned()));
+                            }
+                            if let Some((base, offset)) = parse_indirect_memory_access(line) {
+                                let instruction = Instruction::load_imm_and_jump_indirect(dst.into(), base.into(), value, offset);
+
+                                if dst == base {
+                                    return Err(format!("cannot parse line {nth_line}, expected: \"{instruction}\""));
+                                }
+
+                                emit_and_continue!(instruction);
+                            }
+                        }
+                    }
+                }
+
+                if let Some(index) = rhs.find("if ") {
+                    if let Some(src) = parse_reg_or_imm(&rhs[..index]) {
+                        if let Some(condition) = parse_condition(&rhs[index + 3..]) {
+                            if let (RegImm::Reg(cond), RegImm::Imm(0)) = (condition.lhs, condition.rhs) {
+                                let inst = match (src, condition.kind) {
+                                    (RegImm::Reg(src), ConditionKind::Eq) => {
+                                        Some(Instruction::cmov_if_zero(dst.into(), src.into(), cond.into()))
+                                    }
+                                    (RegImm::Reg(src), ConditionKind::NotEq) => {
+                                        Some(Instruction::cmov_if_zero(dst.into(), src.into(), cond.into()))
+                                    }
+                                    (RegImm::Imm(src), ConditionKind::Eq) => {
+                                        Some(Instruction::cmov_if_zero_imm(dst.into(), cond.into(), src))
+                                    }
+                                    (RegImm::Imm(src), ConditionKind::NotEq) => {
+                                        Some(Instruction::cmov_if_zero_imm(dst.into(), cond.into(), src))
+                                    }
+                                    _ => None,
+                                };
+
+                                if let Some(inst) = inst {
+                                    emit_and_continue!(inst);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if let Some((name, rhs)) = split(rhs, " ") {
+                    if let Some(src) = parse_reg(rhs) {
+                        type F = fn(RawReg, RawReg) -> Instruction;
+                        let ctor = match (name, op_marker) {
+                            ("cpop", OpMarker::I32) => Some(Instruction::count_set_bits_32 as F),
+                            ("cpop", OpMarker::NONE) => Some(Instruction::count_set_bits_64 as F),
+                            ("clz", OpMarker::I32) => Some(Instruction::count_leading_zero_bits_32 as F),
+                            ("clz", OpMarker::NONE) => Some(Instruction::count_leading_zero_bits_64 as F),
+                            ("ctz", OpMarker::I32) => Some(Instruction::count_trailing_zero_bits_32 as F),
+                            ("ctz", OpMarker::NONE) => Some(Instruction::count_trailing_zero_bits_64 as F),
+                            ("sext8", _) => Some(Instruction::sign_extend_8 as F),
+                            ("sext16", _) => Some(Instruction::sign_extend_16 as F),
+                            ("zext16", _) => Some(Instruction::zero_extend_16 as F),
+                            ("reverse", _) => Some(Instruction::reverse_byte as F),
+                            _ => None,
+                        };
+
+                        if let Some(ctor) = ctor {
+                            emit_and_continue!(ctor(dst.into(), src.into()));
+                        }
+                    }
+                }
+
+                if let Some(src) = parse_reg(rhs) {
+                    emit_and_continue!(Instruction::move_reg(dst.into(), src.into()));
+                }
+
+                if let Some(instr) = parse_immediate(rhs) {
+                    match instr {
+                        ParsedImmediate::I32(value) => {
+                            emit_and_continue!(Instruction::load_imm(dst.into(), value));
+                        }
+                        ParsedImmediate::U64(value) => {
+                            emit_and_continue!(Instruction::load_imm64(dst.into(), value));
+                        }
+                    }
+                }
+
+                if let Some(label) = rhs.strip_prefix('@') {
+                    emit_and_continue!(MaybeInstruction::LoadLabelAddress(dst, label.to_owned()));
+                }
+
+                if let Some(rhs) = rhs.strip_prefix("~(") {
+                    if let Some(rhs) = rhs.strip_suffix(')') {
+                        if let Some((src1, src2)) = split(rhs.trim(), "^") {
+                            if let Some(src1) = parse_reg(src1) {
+                                if let Some(src2) = parse_reg(src2) {
+                                    let dst = dst.into();
+                                    let src1 = src1.into();
+                                    let src2 = src2.into();
+                                    emit_and_continue!(Instruction::xnor(dst, src1, src2));
+                                }
+                            }
+                        }
+                    }
+                }
+
+                enum Op {
+                    Add,
+                    Sub,
+                    And,
+                    Xor,
+                    Or,
+                    Mul,
+                    DivUnsigned,
+                    DivSigned,
+                    RemUnsigned,
+                    RemSigned,
+                    LessUnsigned,
+                    LessSigned,
+                    GreaterUnsigned,
+                    GreaterSigned,
+                    ShiftLeft,
+                    ShiftRight,
+                    ShiftArithmeticRight,
+                    RotateLeft,
+                    RotateRight,
+                    AndInverted,
+                    OrInverted,
+                }
+
+                #[allow(clippy::manual_map)]
+                let operation = if let Some(index) = rhs.find('+') {
+                    Some((index, 1, Op::Add))
+                } else if let Some(index) = rhs.find("& ~") {
+                    Some((index, 3, Op::AndInverted))
+                } else if let Some(index) = rhs.find('&') {
+                    Some((index, 1, Op::And))
+                } else if let Some(index) = rhs.find("| ~") {
+                    Some((index, 3, Op::OrInverted))
+                } else if let Some(index) = rhs.find('|') {
+                    Some((index, 1, Op::Or))
+                } else if let Some(index) = rhs.find('^') {
+                    Some((index, 1, Op::Xor))
+                } else if let Some(index) = rhs.find('*') {
+                    Some((index, 1, Op::Mul))
+                } else if let Some(index) = rhs.find("/u") {
+                    Some((index, 2, Op::DivUnsigned))
+                } else if let Some(index) = rhs.find("/s") {
+                    Some((index, 2, Op::DivSigned))
+                } else if let Some(index) = rhs.find("%u") {
+                    Some((index, 2, Op::RemUnsigned))
+                } else if let Some(index) = rhs.find("%s") {
+                    Some((index, 2, Op::RemSigned))
+                } else if let Some(index) = rhs.find(">>a") {
+                    Some((index, 3, Op::ShiftArithmeticRight))
+                } else if let Some(index) = rhs.find(">>r") {
+                    Some((index, 3, Op::RotateRight))
+                } else if let Some(index) = rhs.find("<<r") {
+                    Some((index, 3, Op::RotateLeft))
+                } else if let Some(index) = rhs.find("<<") {
+                    Some((index, 2, Op::ShiftLeft))
+                } else if let Some(index) = rhs.find(">>") {
+                    Some((index, 2, Op::ShiftRight))
+                } else if let Some(index) = rhs.find("<u") {
+                    Some((index, 2, Op::LessUnsigned))
+                } else if let Some(index) = rhs.find("<s") {
+                    Some((index, 2, Op::LessSigned))
+                } else if let Some(index) = rhs.find(">u") {
+                    Some((index, 2, Op::GreaterUnsigned))
+                } else if let Some(index) = rhs.find(">s") {
+                    Some((index, 2, Op::GreaterSigned))
+                } else if let Some(index) = rhs.find('-') {
+                    // Needs to be last.
+                    Some((index, 1, Op::Sub))
+                } else {
+                    None
+                };
+
+                if let Some((index, op_len, op)) = operation {
+                    let src1 = rhs[..index].trim();
+                    let src2 = rhs[index + op_len..].trim();
+
+                    if let Some(src1) = parse_reg(src1) {
+                        if let Some(src2) = parse_reg(src2) {
+                            let dst = dst.into();
+                            let src1 = src1.into();
+                            let src2 = src2.into();
+                            match op_marker {
+                                OpMarker::I32 => {
+                                    emit_and_continue!(match op {
+                                        Op::Add => Instruction::add_32(dst, src1, src2),
+                                        Op::Sub => Instruction::sub_32(dst, src1, src2),
+                                        Op::And => {
+                                            return Err(format!("cannot parse line {nth_line}: i32 not supported for operation"));
+                                        }
+                                        Op::Xor => {
+                                            return Err(format!("cannot parse line {nth_line}: i32 not supported for operation"));
+                                        }
+                                        Op::Or => {
+                                            return Err(format!("cannot parse line {nth_line}: i32 not supported for operation"));
+                                        }
+                                        Op::Mul => Instruction::mul_32(dst, src1, src2),
+                                        Op::DivUnsigned => Instruction::div_unsigned_32(dst, src1, src2),
+                                        Op::DivSigned => Instruction::div_signed_32(dst, src1, src2),
+                                        Op::RemUnsigned => Instruction::rem_unsigned_32(dst, src1, src2),
+                                        Op::RemSigned => Instruction::rem_signed_32(dst, src1, src2),
+                                        Op::LessUnsigned => {
+                                            return Err(format!("cannot parse line {nth_line}: i32 not supported for operation"));
+                                        }
+                                        Op::LessSigned => {
+                                            return Err(format!("cannot parse line {nth_line}: i32 not supported for operation"));
+                                        }
+                                        Op::GreaterUnsigned => {
+                                            return Err(format!("cannot parse line {nth_line}: i32 not supported for operation"));
+                                        }
+                                        Op::GreaterSigned => {
+                                            return Err(format!("cannot parse line {nth_line}: i32 not supported for operation"));
+                                        }
+                                        Op::ShiftLeft => Instruction::shift_logical_left_32(dst, src1, src2),
+                                        Op::ShiftRight => Instruction::shift_logical_right_32(dst, src1, src2),
+                                        Op::ShiftArithmeticRight => Instruction::shift_arithmetic_right_32(dst, src1, src2),
+                                        Op::RotateLeft => Instruction::rotate_left_32(dst, src1, src2),
+                                        Op::RotateRight => Instruction::rotate_right_32(dst, src1, src2),
+                                        Op::AndInverted => {
+                                            return Err(format!("cannot parse line {nth_line}: i32 not supported for operation"));
+                                        }
+                                        Op::OrInverted => {
+                                            return Err(format!("cannot parse line {nth_line}: i32 not supported for operation"));
+                                        }
+                                    });
+                                }
+                                OpMarker::NONE => {
+                                    emit_and_continue!(match op {
+                                        Op::Add => Instruction::add_64(dst, src1, src2),
+                                        Op::Sub => Instruction::sub_64(dst, src1, src2),
+                                        Op::And => Instruction::and(dst, src1, src2),
+                                        Op::Xor => Instruction::xor(dst, src1, src2),
+                                        Op::Or => Instruction::or(dst, src1, src2),
+                                        Op::Mul => Instruction::mul_64(dst, src1, src2),
+                                        Op::DivUnsigned => Instruction::div_unsigned_64(dst, src1, src2),
+                                        Op::DivSigned => Instruction::div_signed_64(dst, src1, src2),
+                                        Op::RemUnsigned => Instruction::rem_unsigned_64(dst, src1, src2),
+                                        Op::RemSigned => Instruction::rem_signed_64(dst, src1, src2),
+                                        Op::LessUnsigned => Instruction::set_less_than_unsigned(dst, src1, src2),
+                                        Op::LessSigned => Instruction::set_less_than_signed(dst, src1, src2),
+                                        Op::GreaterUnsigned => Instruction::set_less_than_unsigned(dst, src2, src1),
+                                        Op::GreaterSigned => Instruction::set_less_than_signed(dst, src2, src1),
+                                        Op::ShiftLeft => Instruction::shift_logical_left_64(dst, src1, src2),
+                                        Op::ShiftRight => Instruction::shift_logical_right_64(dst, src1, src2),
+                                        Op::ShiftArithmeticRight => Instruction::shift_arithmetic_right_64(dst, src1, src2),
+                                        Op::RotateLeft => Instruction::rotate_left_64(dst, src1, src2),
+                                        Op::RotateRight => Instruction::rotate_right_64(dst, src1, src2),
+                                        Op::AndInverted => Instruction::and_inverted(dst, src1, src2),
+                                        Op::OrInverted => Instruction::or_inverted(dst, src1, src2),
+                                    });
+                                }
+                            }
+                        } else if let Some(src2) = parse_immediate(src2).and_then(|value| value.try_into().ok()) {
+                            let dst = dst.into();
+                            let src1 = src1.into();
+                            match op_marker {
+                                OpMarker::I32 => {
+                                    emit_and_continue!(match op {
+                                        Op::Add => Instruction::add_imm_32(dst, src1, src2),
+                                        Op::Sub => Instruction::add_imm_32(dst, src1, -src2),
+                                        Op::And => {
+                                            return Err(format!("cannot parse line {nth_line}: i32 not supported for operation"));
+                                        }
+                                        Op::Xor => {
+                                            return Err(format!("cannot parse line {nth_line}: i32 not supported for operation"));
+                                        }
+                                        Op::Or => {
+                                            return Err(format!("cannot parse line {nth_line}: i32 not supported for operation"));
+                                        }
+                                        Op::Mul => Instruction::mul_imm_32(dst, src1, src2),
+                                        Op::DivUnsigned | Op::DivSigned => {
+                                            return Err(format!(
+                                                "cannot parse line {nth_line}: i32 and division is not supported for immediates"
+                                            ));
+                                        }
+                                        Op::RemUnsigned | Op::RemSigned => {
+                                            return Err(format!(
+                                                "cannot parse line {nth_line}: i32 and modulo is not supported for immediates"
+                                            ));
+                                        }
+                                        Op::LessUnsigned => {
+                                            return Err(format!("cannot parse line {nth_line}: i32 not supported for operation"));
+                                        }
+                                        Op::LessSigned => {
+                                            return Err(format!("cannot parse line {nth_line}: i32 not supported for operation"));
+                                        }
+                                        Op::GreaterUnsigned => {
+                                            return Err(format!("cannot parse line {nth_line}: i32 not supported for operation"));
+                                        }
+                                        Op::GreaterSigned => {
+                                            return Err(format!("cannot parse line {nth_line}: i32 not supported for operation"));
+                                        }
+                                        Op::ShiftLeft => Instruction::shift_logical_left_imm_32(dst, src1, src2),
+                                        Op::ShiftRight => Instruction::shift_logical_right_imm_32(dst, src1, src2),
+                                        Op::ShiftArithmeticRight => Instruction::shift_arithmetic_right_imm_32(dst, src1, src2),
+                                        Op::RotateLeft => {
+                                            return Err(format!("cannot parse line {nth_line}: i32 not supported for operation"));
+                                        }
+                                        Op::RotateRight => Instruction::rotate_right_imm_32(dst, src1, src2),
+                                        Op::AndInverted => {
+                                            return Err(format!(
+                                                "cannot parse line {nth_line}: i32 and and_inverted not supported for immediates"
+                                            ));
+                                        }
+                                        Op::OrInverted => {
+                                            return Err(format!(
+                                                "cannot parse line {nth_line}: i32 and or_inverted not supported for immediates"
+                                            ));
+                                        }
+                                    });
+                                }
+                                OpMarker::NONE => {
+                                    emit_and_continue!(match op {
+                                        Op::Add => Instruction::add_imm_64(dst, src1, src2),
+                                        Op::Sub => Instruction::add_imm_64(dst, src1, -src2),
+                                        Op::And => Instruction::and_imm(dst, src1, src2),
+                                        Op::Xor => Instruction::xor_imm(dst, src1, src2),
+                                        Op::Or => Instruction::or_imm(dst, src1, src2),
+                                        Op::Mul => Instruction::mul_imm_64(dst, src1, src2),
+                                        Op::DivUnsigned | Op::DivSigned => {
+                                            return Err(format!("cannot parse line {nth_line}: division is not supported for immediates"));
+                                        }
+                                        Op::RemUnsigned | Op::RemSigned => {
+                                            return Err(format!("cannot parse line {nth_line}: modulo is not supported for immediates"));
+                                        }
+                                        Op::LessUnsigned => Instruction::set_less_than_unsigned_imm(dst, src1, src2),
+                                        Op::LessSigned => Instruction::set_less_than_signed_imm(dst, src1, src2),
+                                        Op::GreaterUnsigned => Instruction::set_greater_than_unsigned_imm(dst, src1, src2),
+                                        Op::GreaterSigned => Instruction::set_greater_than_signed_imm(dst, src1, src2),
+                                        Op::ShiftLeft => Instruction::shift_logical_left_imm_64(dst, src1, src2),
+                                        Op::ShiftRight => Instruction::shift_logical_right_imm_64(dst, src1, src2),
+                                        Op::ShiftArithmeticRight => Instruction::shift_arithmetic_right_imm_64(dst, src1, src2),
+                                        Op::RotateLeft => {
+                                            return Err(format!("cannot parse line {nth_line}: rotate_left not supported for immediates"));
+                                        }
+                                        Op::RotateRight => Instruction::rotate_right_imm_64(dst, src1, src2),
+                                        Op::AndInverted => {
+                                            return Err(format!("cannot parse line {nth_line}: and_inverted not supported for immediates"));
+                                        }
+                                        Op::OrInverted => {
+                                            return Err(format!("cannot parse line {nth_line}: or_inverted not supported for immediates"));
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    } else if let Some(src1) = parse_immediate(src1).and_then(|value| value.try_into().ok()) {
+                        if let Some(src2) = parse_reg(src2) {
+                            let dst = dst.into();
+                            let src2 = src2.into();
+                            match op_marker {
+                                OpMarker::I32 => {
+                                    emit_and_continue!(match op {
+                                        Op::Add => Instruction::add_imm_32(dst, src2, src1),
+                                        Op::Sub => Instruction::negate_and_add_imm_32(dst, src2, src1),
+                                        Op::And => {
+                                            return Err(format!("cannot parse line {nth_line}: i32 not supported for operation"));
+                                        }
+                                        Op::Xor => {
+                                            return Err(format!("cannot parse line {nth_line}: i32 not supported for operation"));
+                                        }
+                                        Op::Or => {
+                                            return Err(format!("cannot parse line {nth_line}: i32 not supported for operation"));
+                                        }
+                                        Op::Mul => Instruction::mul_imm_32(dst, src2, src1),
+                                        Op::DivUnsigned | Op::DivSigned => {
+                                            return Err(format!(
+                                                "cannot parse line {nth_line}: i32 and division is not supported for immediates"
+                                            ));
+                                        }
+                                        Op::RemUnsigned | Op::RemSigned => {
+                                            return Err(format!(
+                                                "cannot parse line {nth_line}: i32 and modulo is not supported for immediates"
+                                            ));
+                                        }
+                                        Op::LessUnsigned => {
+                                            return Err(format!("cannot parse line {nth_line}: i32 not supported for operation"));
+                                        }
+                                        Op::LessSigned => {
+                                            return Err(format!("cannot parse line {nth_line}: i32 not supported for operation"));
+                                        }
+                                        Op::GreaterUnsigned => {
+                                            return Err(format!("cannot parse line {nth_line}: i32 not supported for operation"));
+                                        }
+                                        Op::GreaterSigned => {
+                                            return Err(format!("cannot parse line {nth_line}: i32 not supported for operation"));
+                                        }
+                                        Op::ShiftLeft => Instruction::shift_logical_left_imm_alt_32(dst, src2, src1),
+                                        Op::ShiftRight => Instruction::shift_logical_right_imm_alt_32(dst, src2, src1),
+                                        Op::ShiftArithmeticRight => Instruction::shift_arithmetic_right_imm_alt_32(dst, src2, src1),
+                                        Op::RotateLeft => {
+                                            return Err(format!(
+                                                "cannot parse line {nth_line}: i32 and rotate_left is not supported for immediates"
+                                            ));
+                                        }
+                                        Op::RotateRight => Instruction::rotate_right_imm_alt_32(dst, src2, src1),
+                                        Op::AndInverted => {
+                                            return Err(format!(
+                                                "cannot parse line {nth_line}: i32 and and_inverted not supported for operation"
+                                            ));
+                                        }
+                                        Op::OrInverted => {
+                                            return Err(format!(
+                                                "cannot parse line {nth_line}: i32 and or_inverted not supported for operation"
+                                            ));
+                                        }
+                                    });
+                                }
+                                OpMarker::NONE => {
+                                    emit_and_continue!(match op {
+                                        Op::Add => Instruction::add_imm_64(dst, src2, src1),
+                                        Op::Sub => Instruction::negate_and_add_imm_64(dst, src2, src1),
+                                        Op::And => Instruction::and_imm(dst, src2, src1),
+                                        Op::Xor => Instruction::xor_imm(dst, src2, src1),
+                                        Op::Or => Instruction::or_imm(dst, src2, src1),
+                                        Op::Mul => Instruction::mul_imm_64(dst, src2, src1),
+                                        Op::DivUnsigned | Op::DivSigned => {
+                                            return Err(format!("cannot parse line {nth_line}: division is not supported for immediates"));
+                                        }
+                                        Op::RemUnsigned | Op::RemSigned => {
+                                            return Err(format!("cannot parse line {nth_line}: modulo is not supported for immediates"));
+                                        }
+                                        Op::LessUnsigned => Instruction::set_greater_than_unsigned_imm(dst, src2, src1),
+                                        Op::LessSigned => Instruction::set_greater_than_signed_imm(dst, src2, src1),
+                                        Op::GreaterUnsigned => Instruction::set_less_than_unsigned_imm(dst, src2, src1),
+                                        Op::GreaterSigned => Instruction::set_less_than_signed_imm(dst, src2, src1),
+                                        Op::ShiftLeft => Instruction::shift_logical_left_imm_alt_64(dst, src2, src1),
+                                        Op::ShiftRight => Instruction::shift_logical_right_imm_alt_64(dst, src2, src1),
+                                        Op::ShiftArithmeticRight => Instruction::shift_arithmetic_right_imm_alt_64(dst, src2, src1),
+                                        Op::RotateLeft => {
+                                            return Err(format!("cannot parse line {nth_line}: i64 not supported for operation"));
+                                        }
+                                        Op::RotateRight => Instruction::rotate_right_imm_alt_64(dst, src2, src1),
+                                        Op::AndInverted => {
+                                            return Err(format!("cannot parse line {nth_line}: and_inverted not supported for immediates"));
+                                        }
+                                        Op::OrInverted => {
+                                            return Err(format!("cannot parse line {nth_line}: or_inverted not supported for immediates"));
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if let Some(rhs) = rhs.strip_suffix(')') {
+                    let rhs = rhs.trim();
+                    if let Some((name, rhs)) = split(rhs, "(") {
+                        type F = fn(RawReg, RawReg, RawReg) -> Instruction;
+                        let ctor = match name {
+                            "maxs" => Some(Instruction::maximum as F),
+                            "maxu" => Some(Instruction::maximum_unsigned as F),
+                            "mins" => Some(Instruction::minimum as F),
+                            "minu" => Some(Instruction::minimum_unsigned as F),
+                            _ => None,
+                        };
+
+                        if let Some(ctor) = ctor {
+                            if let Some((src1, src2)) = split(rhs, ",") {
+                                if let Some(src1) = parse_reg(src1) {
+                                    if let Some(src2) = parse_reg(src2) {
+                                        emit_and_continue!(ctor(dst.into(), src1.into(), src2.into()));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                #[allow(clippy::manual_map)]
+                let load_kind = if let Some(rhs) = rhs.strip_prefix("u8") {
+                    Some((LoadKind::U8, rhs))
+                } else if let Some(rhs) = rhs.strip_prefix("u16") {
+                    Some((LoadKind::U16, rhs))
+                } else if let Some(rhs) = rhs.strip_prefix("u32") {
+                    Some((LoadKind::U32, rhs))
+                } else if let Some(rhs) = rhs.strip_prefix("u64") {
+                    Some((LoadKind::U64, rhs))
+                } else if let Some(rhs) = rhs.strip_prefix("i8") {
+                    Some((LoadKind::I8, rhs))
+                } else if let Some(rhs) = rhs.strip_prefix("i16") {
+                    Some((LoadKind::I16, rhs))
+                } else if let Some(rhs) = rhs.strip_prefix("i32") {
+                    Some((LoadKind::I32, rhs))
+                } else {
+                    None
+                };
+
+                if let Some((kind, rhs)) = load_kind {
+                    if let Some((base, offset)) = parse_indirect_memory_access(rhs) {
+                        let dst = dst.into();
+                        let base = base.into();
+                        emit_and_continue!(match kind {
+                            LoadKind::I8 => Instruction::load_indirect_i8(dst, base, offset),
+                            LoadKind::I16 => Instruction::load_indirect_i16(dst, base, offset),
+                            LoadKind::I32 => Instruction::load_indirect_i32(dst, base, offset),
+                            LoadKind::U8 => Instruction::load_indirect_u8(dst, base, offset),
+                            LoadKind::U16 => Instruction::load_indirect_u16(dst, base, offset),
+                            LoadKind::U32 => Instruction::load_indirect_u32(dst, base, offset),
+                            LoadKind::U64 => Instruction::load_indirect_u64(dst, base, offset),
+                        });
+                    } else if let Some(offset) = parse_absolute_memory_access(rhs) {
+                        let dst = dst.into();
+                        emit_and_continue!(match kind {
+                            LoadKind::I8 => Instruction::load_i8(dst, offset),
+                            LoadKind::I16 => Instruction::load_i16(dst, offset),
+                            LoadKind::I32 => Instruction::load_i32(dst, offset),
+                            LoadKind::U8 => Instruction::load_u8(dst, offset),
+                            LoadKind::U16 => Instruction::load_u16(dst, offset),
+                            LoadKind::U32 => Instruction::load_u32(dst, offset),
+                            LoadKind::U64 => Instruction::load_u64(dst, offset),
+                        });
+                    }
+                }
+            }
+
+            #[allow(clippy::manual_map)]
+            let store_kind = if let Some(lhs) = lhs.strip_prefix("u8") {
+                Some((StoreKind::U8, lhs))
+            } else if let Some(lhs) = lhs.strip_prefix("u16") {
+                Some((StoreKind::U16, lhs))
+            } else if let Some(lhs) = lhs.strip_prefix("u32") {
+                Some((StoreKind::U32, lhs))
+            } else if let Some(lhs) = lhs.strip_prefix("u64") {
+                Some((StoreKind::U64, lhs))
+            } else {
+                None
+            };
+
+            if let Some((kind, lhs)) = store_kind {
+                if let Some(offset) = parse_absolute_memory_access(lhs) {
+                    if let Some(rhs) = parse_reg(rhs) {
+                        let rhs = rhs.into();
+                        emit_and_continue!(match kind {
+                            StoreKind::U8 => Instruction::store_u8(rhs, offset),
+                            StoreKind::U16 => Instruction::store_u16(rhs, offset),
+                            StoreKind::U32 => Instruction::store_u32(rhs, offset),
+                            StoreKind::U64 => Instruction::store_u64(rhs, offset),
+                        });
+                    } else if let Some(rhs) = parse_immediate(rhs).and_then(|value| value.try_into().ok()) {
+                        emit_and_continue!(match kind {
+                            StoreKind::U8 => match u8::try_from(rhs) {
+                                Ok(_) => Instruction::store_imm_u8(offset, rhs),
+                                Err(_) => return Err(format!("cannot parse line {nth_line}: immediate larger than u8")),
+                            },
+                            StoreKind::U16 => match u16::try_from(rhs) {
+                                Ok(_) => Instruction::store_imm_u16(offset, rhs),
+                                Err(_) => return Err(format!("cannot parse line {nth_line}: immediate larger than u16")),
+                            },
+                            StoreKind::U32 => Instruction::store_imm_u32(offset, rhs),
+                            StoreKind::U64 => Instruction::store_imm_u64(offset, rhs),
+                        });
+                    }
+                } else if let Some((base, offset)) = parse_indirect_memory_access(lhs) {
+                    let base = base.into();
+                    if let Some(rhs) = parse_reg(rhs) {
+                        let rhs = rhs.into();
+                        emit_and_continue!(match kind {
+                            StoreKind::U8 => Instruction::store_indirect_u8(rhs, base, offset),
+                            StoreKind::U16 => Instruction::store_indirect_u16(rhs, base, offset),
+                            StoreKind::U32 => Instruction::store_indirect_u32(rhs, base, offset),
+                            StoreKind::U64 => Instruction::store_indirect_u64(rhs, base, offset),
+                        });
+                    } else if let Some(rhs) = parse_immediate(rhs).and_then(|value| value.try_into().ok()) {
+                        emit_and_continue!(match kind {
+                            StoreKind::U8 => match u8::try_from(rhs) {
+                                Ok(_) => Instruction::store_imm_indirect_u8(base, offset, rhs),
+                                Err(_) => return Err(format!("cannot parse line {nth_line}: immediate larger than u8")),
+                            },
+                            StoreKind::U16 => match u16::try_from(rhs) {
+                                Ok(_) => Instruction::store_imm_indirect_u16(base, offset, rhs),
+                                Err(_) => return Err(format!("cannot parse line {nth_line}: immediate larger than u16")),
+                            },
+                            StoreKind::U32 => Instruction::store_imm_indirect_u32(base, offset, rhs),
+                            StoreKind::U64 => Instruction::store_imm_indirect_u64(base, offset, rhs),
+                        });
+                    }
+                }
+            }
+        }
+
+        return Err(format!("cannot parse line {nth_line}: \"{original_line}\""));
+    }
+
+    let mut code = Vec::new();
+    let mut jump_table = Vec::new();
+    for instruction in instructions {
+        match instruction {
+            MaybeInstruction::Instruction(instruction) => {
+                code.push(instruction);
+            }
+            MaybeInstruction::LoadLabelAddress(dst, label) => {
+                let Some(&target_index) = label_to_index.get(&*label) else {
+                    return Err(format!("label is not defined: \"{label}\""));
+                };
+
+                jump_table.push(target_index);
+                code.push(Instruction::load_imm(
+                    dst.into(),
+                    cast(jump_table.len()).to_i32_or_panic() * cast(crate::abi::VM_CODE_ADDRESS_ALIGNMENT).to_i32_or_panic(),
+                ));
+            }
+            MaybeInstruction::LoadImmAndJump(dst, value, label) => {
+                let Some(&target_index) = label_to_index.get(&*label) else {
+                    return Err(format!("label is not defined: \"{label}\""));
+                };
+
+                code.push(Instruction::load_imm_and_jump(dst.into(), value, target_index));
+            }
+            MaybeInstruction::Jump(label) => {
+                let Some(&target_index) = label_to_index.get(&*label) else {
+                    return Err(format!("label is not defined: \"{label}\""));
+                };
+                code.push(Instruction::jump(target_index));
+            }
+            MaybeInstruction::Branch(label, kind, lhs, rhs) => {
+                let Some(&target_index) = label_to_index.get(&*label) else {
+                    return Err(format!("label is not defined: \"{label}\""));
+                };
+
+                let lhs = lhs.into();
+                let rhs = rhs.into();
+                let instruction = match kind {
+                    ConditionKind::Eq => Instruction::branch_eq(lhs, rhs, target_index),
+                    ConditionKind::NotEq => Instruction::branch_not_eq(lhs, rhs, target_index),
+                    ConditionKind::LessSigned => Instruction::branch_less_signed(lhs, rhs, target_index),
+                    ConditionKind::LessUnsigned => Instruction::branch_less_unsigned(lhs, rhs, target_index),
+                    ConditionKind::GreaterOrEqualSigned => Instruction::branch_greater_or_equal_signed(lhs, rhs, target_index),
+                    ConditionKind::GreaterOrEqualUnsigned => Instruction::branch_greater_or_equal_unsigned(lhs, rhs, target_index),
+
+                    ConditionKind::LessOrEqualSigned => Instruction::branch_greater_or_equal_signed(rhs, lhs, target_index),
+                    ConditionKind::LessOrEqualUnsigned => Instruction::branch_greater_or_equal_unsigned(rhs, lhs, target_index),
+                    ConditionKind::GreaterSigned => Instruction::branch_less_signed(rhs, lhs, target_index),
+                    ConditionKind::GreaterUnsigned => Instruction::branch_less_unsigned(rhs, lhs, target_index),
+                };
+                code.push(instruction);
+            }
+            MaybeInstruction::BranchImm(label, kind, lhs, rhs) => {
+                let Some(&target_index) = label_to_index.get(&*label) else {
+                    return Err(format!("label is not defined: \"{label}\""));
+                };
+
+                let lhs = lhs.into();
+                let instruction = match kind {
+                    ConditionKind::Eq => Instruction::branch_eq_imm(lhs, rhs, target_index),
+                    ConditionKind::NotEq => Instruction::branch_not_eq_imm(lhs, rhs, target_index),
+                    ConditionKind::LessSigned => Instruction::branch_less_signed_imm(lhs, rhs, target_index),
+                    ConditionKind::LessUnsigned => Instruction::branch_less_unsigned_imm(lhs, rhs, target_index),
+                    ConditionKind::GreaterOrEqualSigned => Instruction::branch_greater_or_equal_signed_imm(lhs, rhs, target_index),
+                    ConditionKind::GreaterOrEqualUnsigned => Instruction::branch_greater_or_equal_unsigned_imm(lhs, rhs, target_index),
+                    ConditionKind::LessOrEqualSigned => Instruction::branch_less_or_equal_signed_imm(lhs, rhs, target_index),
+                    ConditionKind::LessOrEqualUnsigned => Instruction::branch_less_or_equal_unsigned_imm(lhs, rhs, target_index),
+                    ConditionKind::GreaterSigned => Instruction::branch_greater_signed_imm(lhs, rhs, target_index),
+                    ConditionKind::GreaterUnsigned => Instruction::branch_greater_unsigned_imm(lhs, rhs, target_index),
+                };
+                code.push(instruction);
+            }
+        };
+    }
+
+    let Some(isa) = isa else {
+        return Err("no ISA was declared in the program".into());
+    };
+
+    let mut builder = crate::writer::ProgramBlobBuilder::new(isa);
+    builder.set_ro_data(ro_data);
+    builder.set_ro_data_size(ro_data_size);
+    builder.set_rw_data(rw_data);
+    builder.set_rw_data_size(rw_data_size);
+    builder.set_stack_size(stack_size);
+    builder.set_code(&code, &jump_table);
+    for (label, export) in exports {
+        match export {
+            Export::ByBlock(target_index) => builder.add_export_by_basic_block(target_index, label.as_bytes()),
+            Export::ByInstruction(target_index) => builder.add_export_by_instruction(target_index, label.as_bytes()),
+        }
+    }
+
+    builder.to_vec()
+}
+
+#[cfg(test)]
+#[track_caller]
+fn assert_assembler(input: &str, expected_output: &str) {
+    use crate::program::InstructionFormat;
+    use alloc::string::ToString;
+
+    let expected_output_clean: Vec<_> = expected_output.trim().split('\n').map(|line| line.trim()).collect();
+    let expected_output_clean = expected_output_clean.join("\n");
+
+    let blob = assemble(Some(InstructionSetKind::Latest64), input).expect("failed to assemble");
+    let program = crate::program::ProgramBlob::parse(blob.into()).unwrap();
+    let output: Vec<_> = program
+        .instructions()
+        .take_while(|inst| (inst.offset.0 as usize) < program.code().len())
+        .map(|inst| inst.kind.display(&InstructionFormat::default()).to_string())
+        .collect();
+    let output = output.join("\n");
+    assert_eq!(output, expected_output_clean);
+}
+
+#[test]
+fn test_assembler_basics() {
+    assert_assembler(
+        "
+        // This is a comment.
+        a0 = a1 + a2
+        a3 = a4 + a5
+        // This is another comment.
+    ",
+        "
+        a0 = a1 + a2
+        a3 = a4 + a5
+    ",
+    );
+
+    assert_assembler(
+        "
+        jump @label
+        a0 = 1
+        @label:
+        a0 = 2
+    ",
+        "
+        jump 6
+        a0 = 0x1
+        fallthrough
+        a0 = 0x2
+    ",
+    );
+}

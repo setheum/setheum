@@ -83,7 +83,9 @@ pub use crate::default_combine_data::DefaultCombineData;
 mod benchmarking;
 
 mod default_combine_data;
+#[cfg(test)]
 mod mock;
+#[cfg(test)]
 mod tests;
 mod weights;
 

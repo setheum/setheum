@@ -22,6 +22,9 @@ jobs:
       - name: Install mise
         uses: jdx/mise-action@v2
 
+      - name: Install native build dependencies
+        run: mise run bootstrap
+
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
 
@@ -43,26 +46,14 @@ jobs:
       - name: Install mise
         uses: jdx/mise-action@v2
 
+      - name: Install native build dependencies
+        run: mise run bootstrap
+
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
 
       - name: Run Tests
         run: mise run test:rust
-
-  test-js:
-    name: JS Tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install mise
-        uses: jdx/mise-action@v2
-
-      - name: Install dependencies
-        run: mise run init
-
-      - name: Run Tests
-        run: mise run test:js
 
   test-sheyth:
     name: Sheyth Tests
@@ -75,6 +66,9 @@ jobs:
 
       - name: Install mise
         uses: jdx/mise-action@v2
+
+      - name: Install native build dependencies
+        run: mise run bootstrap
 
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
@@ -94,6 +88,9 @@ jobs:
       - name: Install mise
         uses: jdx/mise-action@v2
 
+      - name: Install native build dependencies
+        run: mise run bootstrap
+
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
 
@@ -112,29 +109,14 @@ jobs:
       - name: Install mise
         uses: jdx/mise-action@v2
 
+      - name: Install native build dependencies
+        run: mise run bootstrap
+
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
 
       - name: Run Spinit Tests
         run: mise run test:spinit
-
-  test-bridge-rust:
-    name: Bridge Rust Tests
-    runs-on: ubuntu-latest
-    needs: check-rust
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
-
-      - name: Install mise
-        uses: jdx/mise-action@v2
-
-      - name: Rust Cache
-        uses: Swatinem/rust-cache@v2
-
-      - name: Run Bridge Rust Tests
-        run: mise run test:bridge:rust
 
   test-bridge-go:
     name: Bridge Go Tests
@@ -150,7 +132,28 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.22"
+          go-version: "1.26.x"
 
       - name: Run Bridge Go Tests
         run: mise run test:bridge:go
+
+  test-substrate:
+    name: Substrate SDK Tests
+    runs-on: ubuntu-latest
+    needs: check-rust
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install mise
+        uses: jdx/mise-action@v2
+
+      - name: Install native build dependencies
+        run: mise run bootstrap
+
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: Run Substrate SDK Tests
+        run: mise run test:substrate

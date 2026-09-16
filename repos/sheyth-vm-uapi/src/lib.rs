@@ -38,9 +38,20 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 bitflags::bitflags! {
-	#[derive(scale_info::TypeInfo, parity_scale_codec::Encode, parity_scale_codec::Decode)]
 	pub struct ReturnFlags: u32 {
 		const REVERT = 0x01;
+	}
+}
+
+impl parity_scale_codec::Encode for ReturnFlags {
+	fn encode_to<W: parity_scale_codec::Output + ?Sized>(&self, dest: &mut W) {
+		self.bits().encode_to(dest)
+	}
+}
+
+impl parity_scale_codec::Decode for ReturnFlags {
+	fn decode<I: parity_scale_codec::Input>(input: &mut I) -> Result<Self, parity_scale_codec::Error> {
+		Ok(Self::from_bits_retain(u32::decode(input)?))
 	}
 }
 
@@ -48,6 +59,16 @@ bitflags::bitflags! {
 pub enum ReturnErrorCode {
 	CalleeTrap = 0x01,
 	CalleeReverted = 0x02,
+	KeyNotFound = 0x03,
+	EcdsaRecoveryFailed = 0x04,
+	TransferFailed = 0x05,
+	Sr25519VerifyFailed = 0x06,
+	LoggingDisabled = 0x07,
+	CallRuntimeFailed = 0x08,
+	XcmExecutionFailed = 0x09,
+	XcmSendFailed = 0x0A,
+	CodeNotFound = 0x0B,
+	NotCallable = 0x0C,
 }
 
 impl From<ReturnErrorCode> for u32 {
@@ -58,17 +79,39 @@ impl From<u32> for ReturnErrorCode {
 	fn from(val: u32) -> ReturnErrorCode {
 		match val {
 			0x02 => ReturnErrorCode::CalleeReverted,
+			0x03 => ReturnErrorCode::KeyNotFound,
+			0x04 => ReturnErrorCode::EcdsaRecoveryFailed,
+			0x05 => ReturnErrorCode::TransferFailed,
+			0x06 => ReturnErrorCode::Sr25519VerifyFailed,
+			0x07 => ReturnErrorCode::LoggingDisabled,
+			0x08 => ReturnErrorCode::CallRuntimeFailed,
+			0x09 => ReturnErrorCode::XcmExecutionFailed,
+			0x0A => ReturnErrorCode::XcmSendFailed,
+			0x0B => ReturnErrorCode::CodeNotFound,
+			0x0C => ReturnErrorCode::NotCallable,
 			_ => ReturnErrorCode::CalleeTrap,
 		}
 	}
 }
 
 bitflags::bitflags! {
-	#[derive(scale_info::TypeInfo, parity_scale_codec::Encode, parity_scale_codec::Decode)]
+	#[derive(Clone, Copy)]
 	pub struct CallFlags: u32 {
 		const CLONE_INPUT = 0x01;
 		const TAIL_CALL = 0x02;
 		const ALLOW_REENTRY = 0x04;
+	}
+}
+
+impl parity_scale_codec::Encode for CallFlags {
+	fn encode_to<W: parity_scale_codec::Output + ?Sized>(&self, dest: &mut W) {
+		self.bits().encode_to(dest)
+	}
+}
+
+impl parity_scale_codec::Decode for CallFlags {
+	fn decode<I: parity_scale_codec::Input>(input: &mut I) -> Result<Self, parity_scale_codec::Error> {
+		Ok(Self::from_bits_retain(u32::decode(input)?))
 	}
 }
 

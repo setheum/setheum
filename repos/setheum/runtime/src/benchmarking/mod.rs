@@ -25,24 +25,17 @@ use sp_runtime::traits::AccountIdConversion;
 pub mod utils;
 
 // module benchmarking
-pub mod auction_manager;
-pub mod cdp_engine;
-pub mod cdp_treasury;
 pub mod currencies;
 pub mod dex;
 // pub mod dex_oracle;
 // pub mod emergency_shutdown;
 // pub mod evm;
-pub mod unified_accounts;
-pub mod serp_setmint;
-pub mod serp_treasury;
 pub mod prices;
 pub mod transaction_pause;
 pub mod transaction_payment;
 pub mod vesting;
 
 // module benchmarking
-pub mod auction;
 pub mod authority;
 pub mod oracle;
 pub mod tokens;

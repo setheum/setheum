@@ -72,7 +72,7 @@ pub mod pallet {
 	use sp_std::marker::PhantomData;
 
 	use super::*;
-	use module_traits::NextSessionAuthorityProvider;
+	use primitives::module_traits::NextSessionAuthorityProvider;
 
 	#[pallet::config]
 	pub trait Config: frame_system::Config {

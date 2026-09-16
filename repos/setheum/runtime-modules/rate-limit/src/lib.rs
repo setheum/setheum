@@ -64,7 +64,9 @@ use sp_std::{prelude::*, vec::Vec};
 pub use module::*;
 pub use weights::WeightInfo;
 
+#[cfg(test)]
 mod mock;
+#[cfg(test)]
 mod tests;
 pub mod weights;
 

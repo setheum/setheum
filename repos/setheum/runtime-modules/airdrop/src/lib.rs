@@ -54,7 +54,9 @@ use sp_runtime::traits::AccountIdConversion;
 use sp_std::collections::btree_set::BTreeSet;
 use sp_std::vec::Vec;
 
+#[cfg(test)]
 mod mock;
+#[cfg(test)]
 mod tests;
 
 pub use module::*;

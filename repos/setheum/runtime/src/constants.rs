@@ -23,7 +23,7 @@ pub mod time {
 // use runtime_common::{dollar, millicent, SEU};
 
 // These time units are defined in number of blocks.
-	pub const MINUTES: BlockNumber = 60 // (MILLISECS_PER_BLOCK as BlockNumber);
+	pub const MINUTES: BlockNumber = 60 * 1000 / (MILLISECS_PER_BLOCK as BlockNumber);
 	pub const HOURS: BlockNumber = MINUTES * 60;
 	pub const DAYS: BlockNumber = HOURS * 24;
 

@@ -54,7 +54,9 @@ use sp_std::{
 };
 use sp_runtime::{traits::{AccountIdConversion, Zero}, DispatchResult};
 
+#[cfg(test)]
 mod mock;
+#[cfg(test)]
 mod tests;
 pub mod weights;
 

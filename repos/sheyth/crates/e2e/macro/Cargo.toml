@@ -57,7 +57,8 @@ features = [ "env-filter",]
 workspace = true
 
 [dependencies.syn]
-workspace = true
+version = "2"
+features = [ "full", "extra-traits",]
 
 [dependencies.proc-macro2]
 workspace = true

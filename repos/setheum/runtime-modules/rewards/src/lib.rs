@@ -39,7 +39,9 @@
 #![allow(clippy::unused_unit)]
 #![allow(clippy::too_many_arguments)]
 
+#[cfg(test)]
 mod mock;
+#[cfg(test)]
 mod tests;
 
 use frame_support::pallet_prelude::*;

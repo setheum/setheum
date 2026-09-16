@@ -54,7 +54,6 @@ use frame_support::{
 	transactional,
 };
 use frame_system::pallet_prelude::*;
-use module_support::{evm::limits::erc20, AddressMapping, EVMBridge, InvokeContext};
 use module_traits::{
 	arithmetic::{Signed, SimpleArithmetic},
 	currency::{OnDust, TransferAll},
@@ -63,15 +62,16 @@ use module_traits::{
 	NamedBasicReservableCurrency, NamedMultiReservableCurrency,
 };
 use parity_scale_codec::{Codec, Decode, Encode};
-use primitives::{evm::EvmAddress, CurrencyId};
-use sp_io::hashing::blake2_256;
+use primitives::CurrencyId;
 use sp_runtime::{
-	traits::{CheckedAdd, CheckedSub, Convert, MaybeSerializeDeserialize, Saturating, StaticLookup, Zero},
+	traits::{CheckedAdd, CheckedSub, MaybeSerializeDeserialize, Saturating, StaticLookup, Zero},
 	DispatchError, DispatchResult,
 };
 use sp_std::{fmt::Debug, marker, result, vec::Vec};
 
+#[cfg(test)]
 mod mock;
+#[cfg(test)]
 mod tests;
 pub mod weights;
 
@@ -118,21 +118,8 @@ pub mod module {
 		#[pallet::constant]
 		type GetNativeCurrencyId: Get<CurrencyId>;
 
-		/// Used as temporary account for ERC20 token `withdraw` and `deposit`.
-		// TODO: See how to update this when we include the SialBridge;
-		#[pallet::constant]
-		type Erc20HoldingAccount: Get<EvmAddress>;
-
 		/// Weight information for extrinsics in this module.
 		type WeightInfo: WeightInfo;
-
-		/// Mapping from address to account id.
-		type AddressMapping: AddressMapping<Self::AccountId>;
-
-		type EVMBridge: EVMBridge<Self::AccountId, BalanceOf<Self>>;
-
-		/// Convert gas to weight.
-		type GasToWeight: Convert<u64, Weight>;
 
 		/// The AccountId that can perform a sweep dust.
 		type SweepOrigin: EnsureOrigin<Self::RuntimeOrigin>;
@@ -183,9 +170,7 @@ pub mod module {
 		/// The dispatch origin for this call must be `Signed` by the
 		/// transactor.
 		#[pallet::call_index(0)]
-		#[pallet::weight(T::WeightInfo::transfer_non_native_currency()
-			.saturating_add(if currency_id.is_erc20_currency_id() { T::GasToWeight::convert(erc20::TRANSFER.gas) } else { Weight::zero() })
-		)]
+		#[pallet::weight(T::WeightInfo::transfer_non_native_currency())]
 		pub fn transfer(
 			origin: OriginFor<T>,
 			dest: <T::Lookup as StaticLookup>::Source,
@@ -298,13 +283,6 @@ pub mod module {
 	}
 }
 
-// TODO: See how to update this when we include the SialBridge;
-impl<T: Config> Pallet<T> {
-	fn get_evm_origin() -> Result<EvmAddress, DispatchError> {
-		let origin = T::EVMBridge::get_real_or_xcm_origin().ok_or(Error::<T>::RealOriginNotFound)?;
-		Ok(T::AddressMapping::get_or_create_evm_address(&origin))
-	}
-}
 
 impl<T: Config> MultiCurrency<T::AccountId> for Pallet<T> {
 	type CurrencyId = CurrencyId;
@@ -320,12 +298,7 @@ impl<T: Config> MultiCurrency<T::AccountId> for Pallet<T> {
 
 	fn total_issuance(currency_id: Self::CurrencyId) -> Self::Balance {
 		match currency_id {
-			CurrencyId::Erc20(contract) => T::EVMBridge::total_supply(InvokeContext {
-				contract,
-				sender: Default::default(),
-				origin: Default::default(),
-			})
-			.unwrap_or_default(),
+			CurrencyId::Erc20(_) => Zero::zero(),
 			id if id == T::GetNativeCurrencyId::get() => <T::NativeCurrency as BasicCurrency<_>>::total_issuance(),
 			_ => <T::MultiCurrency as MultiCurrency<_>>::total_issuance(currency_id),
 		}
@@ -345,13 +318,7 @@ impl<T: Config> MultiCurrency<T::AccountId> for Pallet<T> {
 
 	fn free_balance(currency_id: Self::CurrencyId, who: &T::AccountId) -> Self::Balance {
 		match currency_id {
-			CurrencyId::Erc20(contract) => {
-				if let Some(address) = T::AddressMapping::get_evm_address(who) {
-					let context = InvokeContext { contract, sender: Default::default(), origin: Default::default() };
-					return T::EVMBridge::balance_of(context, address).unwrap_or_default();
-				}
-				Default::default()
-			},
+			CurrencyId::Erc20(_) => Zero::zero(),
 			id if id == T::GetNativeCurrencyId::get() => <T::NativeCurrency as BasicCurrency<_>>::free_balance(who),
 			_ => <T::MultiCurrency as MultiCurrency<_>>::free_balance(currency_id, who),
 		}
@@ -359,20 +326,7 @@ impl<T: Config> MultiCurrency<T::AccountId> for Pallet<T> {
 
 	fn ensure_can_withdraw(currency_id: Self::CurrencyId, who: &T::AccountId, amount: Self::Balance) -> DispatchResult {
 		match currency_id {
-			CurrencyId::Erc20(contract) => {
-				if amount.is_zero() {
-					return Ok(());
-				}
-
-				let address = T::AddressMapping::get_evm_address(who).ok_or(Error::<T>::EvmAccountNotFound)?;
-				let free_balance = T::EVMBridge::balance_of(
-					InvokeContext { contract, sender: Default::default(), origin: Default::default() },
-					address,
-				)
-				.unwrap_or_default();
-				ensure!(free_balance >= amount, Error::<T>::BalanceTooLow);
-				Ok(())
-			},
+			CurrencyId::Erc20(_) => return Err(Error::<T>::Erc20InvalidOperation.into()),
 			id if id == T::GetNativeCurrencyId::get() => {
 				<T::NativeCurrency as BasicCurrency<_>>::ensure_can_withdraw(who, amount)
 			},
@@ -392,15 +346,7 @@ impl<T: Config> MultiCurrency<T::AccountId> for Pallet<T> {
 		}
 
 		match currency_id {
-			CurrencyId::Erc20(contract) => {
-				let sender = T::AddressMapping::get_evm_address(from).ok_or(Error::<T>::EvmAccountNotFound)?;
-				let address = T::AddressMapping::get_or_create_evm_address(to);
-				T::EVMBridge::transfer(
-					InvokeContext { contract, sender, origin: Self::get_evm_origin()? },
-					address,
-					amount,
-				)?;
-			},
+			CurrencyId::Erc20(_) => return Err(Error::<T>::Erc20InvalidOperation.into()),
 			id if id == T::GetNativeCurrencyId::get() => {
 				<T::NativeCurrency as BasicCurrency<_>>::transfer(from, to, amount, ExistenceRequirement::AllowDeath)?
 			},
@@ -423,24 +369,7 @@ impl<T: Config> MultiCurrency<T::AccountId> for Pallet<T> {
 		}
 
 		match currency_id {
-			CurrencyId::Erc20(contract) => {
-				// TODO: See how to update this when we include the SialBridge;
-				// deposit from erc20 holding account to receiver(who). in xcm case which receive erc20 from another chain,
-				// we choose other chain's sovereign account to charge storage fee. we must make sure
-				// another chain sovereign account has enough native token to charge storage fee.
-				let sender = T::Erc20HoldingAccount::get();
-				let from = T::AddressMapping::get_account_id(&sender);
-				ensure!(!Self::free_balance(currency_id, &from).is_zero(), Error::<T>::DepositFailed);
-				let receiver = T::AddressMapping::get_or_create_evm_address(who);
-				T::EVMBridge::transfer(
-					InvokeContext { contract, sender, origin: Self::get_evm_origin().unwrap_or(receiver) },
-					receiver,
-					amount,
-				)?;
-				Self::deposit_event(Event::Withdrawn { currency_id, who: from, amount });
-				Self::deposit_event(Event::Deposited { currency_id, who: who.clone(), amount });
-				Ok(())
-			},
+			CurrencyId::Erc20(_) => return Err(Error::<T>::Erc20InvalidOperation.into()),
 			id if id == T::GetNativeCurrencyId::get() => <T::NativeCurrency as BasicCurrency<_>>::deposit(who, amount),
 			_ => <T::MultiCurrency as MultiCurrency<_>>::deposit(currency_id, who, amount),
 		}
@@ -457,26 +386,7 @@ impl<T: Config> MultiCurrency<T::AccountId> for Pallet<T> {
 		}
 
 		match currency_id {
-			CurrencyId::Erc20(contract) => {
-				// TODO: See how to update this when we include the SialBridge;
-				// withdraw from sender(who) to erc20 holding account. in xcm case which receive erc20 from another chain,
-				// sender is other chain's sovereign account. As the origin here is used to charge storage fee,
-				// we must make sure the other chain's sovereign account has enough native token to charge storage fee.
-				let receiver = T::Erc20HoldingAccount::get();
-				let sender = T::AddressMapping::get_evm_address(who).ok_or(Error::<T>::EvmAccountNotFound)?;
-				T::EVMBridge::transfer(
-					InvokeContext { contract, sender, origin: Self::get_evm_origin().unwrap_or(sender) },
-					receiver,
-					amount,
-				)?;
-				Self::deposit_event(Event::Withdrawn { currency_id, who: who.clone(), amount });
-				Self::deposit_event(Event::Deposited {
-					currency_id,
-					who: T::AddressMapping::get_account_id(&receiver),
-					amount,
-				});
-				Ok(())
-			},
+			CurrencyId::Erc20(_) => return Err(Error::<T>::Erc20InvalidOperation.into()),
 			id if id == T::GetNativeCurrencyId::get() => {
 				<T::NativeCurrency as BasicCurrency<_>>::withdraw(who, amount, ExistenceRequirement::AllowDeath)
 			},
@@ -595,16 +505,7 @@ impl<T: Config> MultiReservableCurrency<T::AccountId> for Pallet<T> {
 
 	fn reserved_balance(currency_id: Self::CurrencyId, who: &T::AccountId) -> Self::Balance {
 		match currency_id {
-			CurrencyId::Erc20(contract) => {
-				if let Some(address) = T::AddressMapping::get_evm_address(who) {
-					return T::EVMBridge::balance_of(
-						InvokeContext { contract, sender: Default::default(), origin: Default::default() },
-						reserve_address(address),
-					)
-					.unwrap_or_default();
-				}
-				Default::default()
-			},
+			CurrencyId::Erc20(_) => Zero::zero(),
 			id if id == T::GetNativeCurrencyId::get() => {
 				<T::NativeCurrency as BasicReservableCurrency<_>>::reserved_balance(who)
 			},
@@ -614,17 +515,7 @@ impl<T: Config> MultiReservableCurrency<T::AccountId> for Pallet<T> {
 
 	fn reserve(currency_id: Self::CurrencyId, who: &T::AccountId, value: Self::Balance) -> DispatchResult {
 		match currency_id {
-			CurrencyId::Erc20(contract) => {
-				if value.is_zero() {
-					return Ok(());
-				}
-				let address = T::AddressMapping::get_evm_address(who).ok_or(Error::<T>::EvmAccountNotFound)?;
-				T::EVMBridge::transfer(
-					InvokeContext { contract, sender: address, origin: Self::get_evm_origin().unwrap_or(address) },
-					reserve_address(address),
-					value,
-				)
-			},
+			CurrencyId::Erc20(_) => return Err(Error::<T>::Erc20InvalidOperation.into()),
 			id if id == T::GetNativeCurrencyId::get() => {
 				<T::NativeCurrency as BasicReservableCurrency<_>>::reserve(who, value)
 			},
@@ -634,30 +525,7 @@ impl<T: Config> MultiReservableCurrency<T::AccountId> for Pallet<T> {
 
 	fn unreserve(currency_id: Self::CurrencyId, who: &T::AccountId, value: Self::Balance) -> Self::Balance {
 		match currency_id {
-			CurrencyId::Erc20(contract) => {
-				if value.is_zero() {
-					return value;
-				}
-				if let Some(address) = T::AddressMapping::get_evm_address(who) {
-					let sender = reserve_address(address);
-					let reserved_balance = T::EVMBridge::balance_of(
-						InvokeContext { contract, sender: Default::default(), origin: Default::default() },
-						sender,
-					)
-					.unwrap_or_default();
-					let actual = reserved_balance.min(value);
-					match T::EVMBridge::transfer(
-						InvokeContext { contract, sender, origin: Self::get_evm_origin().unwrap_or(address) },
-						address,
-						actual,
-					) {
-						Ok(_) => value - actual,
-						Err(_) => value,
-					}
-				} else {
-					value
-				}
-			},
+			CurrencyId::Erc20(_) => value,
 			id if id == T::GetNativeCurrencyId::get() => {
 				<T::NativeCurrency as BasicReservableCurrency<_>>::unreserve(who, value)
 			},
@@ -673,54 +541,7 @@ impl<T: Config> MultiReservableCurrency<T::AccountId> for Pallet<T> {
 		status: BalanceStatus,
 	) -> result::Result<Self::Balance, DispatchError> {
 		match currency_id {
-			CurrencyId::Erc20(contract) => {
-				if value.is_zero() {
-					return Ok(value);
-				}
-				if slashed == beneficiary {
-					return match status {
-						BalanceStatus::Free => Ok(Self::unreserve(currency_id, slashed, value)),
-						BalanceStatus::Reserved => {
-							Ok(value.saturating_sub(Self::reserved_balance(currency_id, slashed)))
-						},
-					};
-				}
-
-				let slashed_address =
-					T::AddressMapping::get_evm_address(slashed).ok_or(Error::<T>::EvmAccountNotFound)?;
-				let beneficiary_address = T::AddressMapping::get_or_create_evm_address(beneficiary);
-
-				let slashed_reserve_address = reserve_address(slashed_address);
-				let beneficiary_reserve_address = reserve_address(beneficiary_address);
-
-				let slashed_reserved_balance = T::EVMBridge::balance_of(
-					InvokeContext { contract, sender: Default::default(), origin: Default::default() },
-					slashed_reserve_address,
-				)
-				.unwrap_or_default();
-				let actual = slashed_reserved_balance.min(value);
-				match status {
-					BalanceStatus::Free => T::EVMBridge::transfer(
-						InvokeContext {
-							contract,
-							sender: slashed_reserve_address,
-							origin: Self::get_evm_origin().unwrap_or(slashed_address),
-						},
-						beneficiary_address,
-						actual,
-					),
-					BalanceStatus::Reserved => T::EVMBridge::transfer(
-						InvokeContext {
-							contract,
-							sender: slashed_reserve_address,
-							origin: Self::get_evm_origin().unwrap_or(slashed_address),
-						},
-						beneficiary_reserve_address,
-						actual,
-					),
-				}?;
-				Ok(value - actual)
-			},
+			CurrencyId::Erc20(_) => return Err(Error::<T>::Erc20InvalidOperation.into()),
 			id if id == T::GetNativeCurrencyId::get() => {
 				<T::NativeCurrency as BasicReservableCurrency<_>>::repatriate_reserved(
 					slashed,
@@ -914,10 +735,7 @@ impl<T: Config> fungibles::Inspect<T::AccountId> for Pallet<T> {
 
 	fn asset_exists(asset_id: Self::AssetId) -> bool {
 		match asset_id {
-			CurrencyId::Erc20(contract) => {
-				T::EVMBridge::symbol(InvokeContext { contract, sender: Default::default(), origin: Default::default() })
-					.is_ok()
-			},
+			CurrencyId::Erc20(_) => false,
 			id if id == T::GetNativeCurrencyId::get() => true,
 			_ => <T::MultiCurrency as fungibles::Inspect<_>>::asset_exists(asset_id),
 		}
@@ -1940,11 +1758,6 @@ impl<T: Config> TransferAll<T::AccountId> for Pallet<T> {
 			ExistenceRequirement::AllowDeath,
 		)
 	}
-}
-
-fn reserve_address(address: EvmAddress) -> EvmAddress {
-	let payload = (b"erc20:", address);
-	EvmAddress::from_slice(&payload.using_encoded(blake2_256)[0..20])
 }
 
 pub struct TransferDust<T, GetAccountId>(marker::PhantomData<(T, GetAccountId)>);

@@ -61,6 +61,7 @@ pub use currency_adapter::{DepositToAlternative, MultiCurrencyAdapter, OnDeposit
 
 mod currency_adapter;
 
+#[cfg(test)]
 mod tests;
 
 /// A `MatchesFungible` implementation. It matches concrete fungible assets

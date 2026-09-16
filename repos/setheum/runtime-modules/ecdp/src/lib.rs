@@ -49,7 +49,9 @@ use sp_runtime::{
 };
 use sp_std::prelude::*;
 
+#[cfg(test)]
 mod mock;
+#[cfg(test)]
 mod tests;
 pub mod weights;
 
