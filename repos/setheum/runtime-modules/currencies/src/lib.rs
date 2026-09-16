@@ -54,7 +54,6 @@ use frame_support::{
 	transactional,
 };
 use frame_system::pallet_prelude::*;
-use module_support::AddressMapping;
 use module_traits::{
 	arithmetic::{Signed, SimpleArithmetic},
 	currency::{OnDust, TransferAll},
@@ -121,9 +120,6 @@ pub mod module {
 
 		/// Weight information for extrinsics in this module.
 		type WeightInfo: WeightInfo;
-
-		/// Mapping from address to account id.
-		type AddressMapping: AddressMapping<Self::AccountId>;
 
 		/// The AccountId that can perform a sweep dust.
 		type SweepOrigin: EnsureOrigin<Self::RuntimeOrigin>;

@@ -40,7 +40,7 @@
 
 use frame_support::pallet_prelude::*;
 use frame_system::pallet_prelude::*;
-use module_support::{ExchangeRateProvider, LockablePrice, Price, PriceProvider, Rate, SwapManager};
+use module_support::{swap_legacy::SwapManager, ExchangeRateProvider, LockablePrice, Price, PriceProvider, Rate};
 use module_traits::{DataFeeder, DataProvider, GetByKey, MultiCurrency};
 use primitives::{currency::TokenInfo, Balance, CurrencyId};
 use sp_core::U256;

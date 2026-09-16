@@ -561,10 +561,7 @@ impl module_currencies::Config for Runtime {
 	type MultiCurrency = Tokens;
 	type NativeCurrency = BasicCurrencyAdapter<Runtime, Balances, Amount, BlockNumber>;
 	type GetNativeCurrencyId = GetNativeCurrencyId;
-	type StableCurrencyIds = StableCurrencyIds;
-	type SerpTreasury = SerpTreasury;
 	type WeightInfo = weights::module_currencies::WeightInfo<Runtime>;
-	type AddressMapping = EvmAddressMapping<Runtime>;
 	type SweepOrigin = EnsureRootOrOneShuraCouncil;
 	type OnDust = module_currencies::TransferDust<Runtime, TreasuryAccount>;
 }
@@ -672,15 +669,22 @@ parameter_types! {
 impl module_prices::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type Source = AggregatedDataProvider;
-	type GetSetUSDId = GetSetUSDId;
-	type SetterCurrencyId = SetterCurrencyId;
-	type SetUSDFixedPrice = SetUSDFixedPrice;
-	type SetterFixedPrice = SetterFixedPrice;
+	type SEUSDFixedPrice = SetUSDFixedPrice;
+	type GetSEUSDCurrencyId = GetSetUSDId;
+	type GetSEECurrencyId = GetNativeCurrencyId;
 	type LockOrigin = EnsureRootOrTwoThirdsFinancialCouncil;
-	type DEX = Dex;
+	type SwapManager = Dex;
 	type Currency = Currencies;
-	type CurrencyIdMapping = module_asset_registry::EvmCurrencyIdMapping<Runtime>;
+	type PricingPegged = PricingPegged;
 	type WeightInfo = weights::module_prices::WeightInfo<Runtime>;
+}
+
+/// No currency is pegged to another for pricing.
+pub struct PricingPegged;
+impl module_traits::GetByKey<CurrencyId, Option<CurrencyId>> for PricingPegged {
+	fn get(_key: &CurrencyId) -> Option<CurrencyId> {
+		None
+	}
 }
 
 // impl dex_oracle::Config for Runtime {
@@ -1040,30 +1044,30 @@ parameter_types! {
 impl InstanceFilter<RuntimeCall> for ProxyType {
 	fn filter(&self, c: &RuntimeCall) -> bool {
 		match self {
-// Always allowed Call::Utility no matter type.
+// Always allowed RuntimeCall::Utility no matter type.
 // Only transactions allowed by Proxy.filter can be executed,
-// otherwise `BadOrigin` will be returned in Call::Utility.
-			_ if matches!(c, Call::Utility(..)) => true,
+// otherwise `BadOrigin` will be returned in RuntimeCall::Utility.
+			_ if matches!(c, RuntimeCall::Utility(..)) => true,
 			ProxyType::Any => true,
-			ProxyType::CancelProxy => matches!(c, Call::Proxy(pallet_proxy::Call::reject_announcement(..))),
+			ProxyType::CancelProxy => matches!(c, RuntimeCall::Proxy(pallet_proxy::Call::reject_announcement(..))),
 			ProxyType::Governance => {
 				matches!(
 					c,
-					Call::Authority(..)
-						| Call::ShuraCouncil(..)
-						| Call::FinancialCouncil(..)
-						| Call::TechnicalCommittee(..)
-						| Call::Treasury(..)
-						| Call::Bounties(..)
-						| Call::Tips(..)
+					RuntimeCall::Authority(..)
+						| RuntimeCall::ShuraCouncil(..)
+						| RuntimeCall::FinancialCouncil(..)
+						| RuntimeCall::TechnicalCommittee(..)
+						| RuntimeCall::Treasury(..)
+						| RuntimeCall::Bounties(..)
+						| RuntimeCall::Tips(..)
 				)
 			}
 			ProxyType::Auction => false,
 			ProxyType::Swap => {
 				matches!(
 					c,
-					Call::Dex(swap_legacy_module::Call::swap_with_exact_supply(..))
-						| Call::Dex(swap_legacy_module::Call::swap_with_exact_target(..))
+					RuntimeCall::Dex(swap_legacy_module::Call::swap_with_exact_supply(..))
+						| RuntimeCall::Dex(swap_legacy_module::Call::swap_with_exact_target(..))
 				)
 			}
 			ProxyType::Loan => false,
