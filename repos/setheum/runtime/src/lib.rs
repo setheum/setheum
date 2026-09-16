@@ -369,6 +369,7 @@ parameter_types! {
 }
 
 impl pallet_session::historical::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
 	type FullIdentification = pallet_staking::Exposure<AccountId, Balance>;
 	type FullIdentificationOf = pallet_staking::ExposureOf<Runtime>;
 }
@@ -429,6 +430,8 @@ impl pallet_aura::Config for Runtime {
 	type MaxAuthorities = MaxAuthorities;
 	type AuthorityId = AuraId;
 	type DisabledValidators = ();
+	type AllowMultipleBlocksPerSlot = frame_support::traits::ConstBool<false>;
+	type SlotDuration = frame_support::traits::ConstU64<SLOT_DURATION>;
 }
 
 // SetBFT pallet replaces Grandpa as the finality gadget
@@ -453,14 +456,14 @@ impl primitives::setbft::SessionInfoProvider<BlockNumber> for SessionInfoImpl {
 
 impl module_setbft::Config for Runtime {
 	type AuthorityId = primitives::AuthorityId;
-	type RuntimeEvent = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type SessionInfoProvider = SessionInfoImpl;
 	type SessionManager = pallet_session::historical::NoteHistoricalRoot<Self, Staking>;
 	type NextSessionAuthorityProvider = module_traits::SessionNextSessionAuthorityProvider<Runtime>;
 }
 
 impl pallet_sheyth_vm::Config for Runtime {
-	type RuntimeEvent = Event;
+	type RuntimeEvent = RuntimeEvent;
 }
 
 parameter_types! {
@@ -481,8 +484,6 @@ parameter_types! {
 
 impl pallet_authorship::Config for Runtime {
 	type FindAuthor = pallet_session::FindAccountFromAuthorIndex<Self, Aura>;
-	type UncleGenerations = UncleGenerations;
-	type FilterUncle = ();
 	type EventHandler = (Staking, ImOnline);
 }
 
@@ -492,7 +493,9 @@ impl pallet_offences::Config for Runtime {
 	type OnOffenceHandler = Staking;
 }
 
-impl pallet_authority_discovery::Config for Runtime {}
+impl pallet_authority_discovery::Config for Runtime {
+	type MaxAuthorities = MaxAuthorities;
+}
 
 parameter_types! {
 	pub const ImOnlineUnsignedPriority: TransactionPriority = TransactionPriority::max_value();
