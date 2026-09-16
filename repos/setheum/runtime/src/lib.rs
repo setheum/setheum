@@ -855,14 +855,46 @@ parameter_types! {
 impl swap_legacy_module::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type Currency = Currencies;
-	type StableCurrencyIds = StableCurrencyIds;
 	type GetExchangeFee = GetExchangeFee;
-	type GetStableCurrencyExchangeFee = GetStableCurrencyExchangeFee;
 	type TradingPathLimit = TradingPathLimit;
 	type PalletId = DEXPalletId;
-	type CurrencyIdMapping = EvmCurrencyIdMapping<Runtime>;
+	type Erc20InfoMapping = CurrencyIdMappingImpl;
 	type WeightInfo = weights::module_dex::WeightInfo<Runtime>;
+	type Incentives = ();
 	type ListingOrigin = EnsureRootOrHalfFinancialCouncil;
+	type ExtendedProvisioningBlocks = ExtendedProvisioningBlocks;
+	type OnLiquidityPoolUpdated = ();
+}
+
+parameter_types! {
+	pub const ExtendedProvisioningBlocks: BlockNumber = 0;
+}
+
+/// CurrencyId metadata mapping. EVM address encoding is unsupported (EVM removed).
+pub struct CurrencyIdMappingImpl;
+impl module_support::CurrencyIdMapping for CurrencyIdMappingImpl {
+	fn name(currency_id: CurrencyId) -> Option<Vec<u8>> {
+		use primitives::currency::TokenInfo;
+		currency_id.name().map(|v| v.as_bytes().to_vec())
+	}
+
+	fn symbol(currency_id: CurrencyId) -> Option<Vec<u8>> {
+		use primitives::currency::TokenInfo;
+		currency_id.symbol().map(|v| v.as_bytes().to_vec())
+	}
+
+	fn decimals(currency_id: CurrencyId) -> Option<u8> {
+		use primitives::currency::TokenInfo;
+		currency_id.decimals()
+	}
+
+	fn encode_evm_address(_currency_id: CurrencyId) -> Option<primitives::currency::EvmAddress> {
+		None
+	}
+
+	fn decode_evm_address(_address: primitives::currency::EvmAddress) -> Option<CurrencyId> {
+		None
+	}
 }
 
 impl dex_oracle::Config for Runtime {
@@ -1019,8 +1051,6 @@ impl module_nft::Config for Runtime {
 	type WeightInfo = weights::module_nft::WeightInfo<Runtime>;
 	type ClassId = u32;
 	type TokenId = u64;
-	type ClassData = module_nft::ClassData<Balance>;
-	type TokenData = module_nft::TokenData<Balance>;
 	type MaxClassMetadata = MaxClassMetadata;
 	type MaxTokenMetadata = MaxTokenMetadata;
 }
