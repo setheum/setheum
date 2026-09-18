@@ -52,7 +52,7 @@ use frame_support::{
 	BoundedVec, PalletId,
 };
 use frame_system::pallet_prelude::*;
-use module_support::{BuyWeightRate, PriceProvider, Ratio, Swap, SwapLimit, TransactionPayment};
+use module_support::{swap_legacy::{Swap, SwapLimit}, BuyWeightRate, PriceProvider, Ratio, TransactionPayment};
 use module_traits::MultiCurrency;
 use pallet_transaction_payment_rpc_runtime_api::RuntimeDispatchInfo;
 use pallet_transaction_payment_rpc_runtime_api::{FeeDetails, InclusionFee};

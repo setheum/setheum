@@ -38,4 +38,14 @@ impl<T: frame_system::Config> module_transaction_pause::WeightInfo for WeightInf
 			.saturating_add(T::DbWeight::get().reads(1 as Weight))
 			.saturating_add(T::DbWeight::get().writes(1 as Weight))
 	}
+	fn pause_evm_precompile() -> Weight {
+		(24_000_000 as Weight)
+			.saturating_add(T::DbWeight::get().reads(1 as Weight))
+			.saturating_add(T::DbWeight::get().writes(1 as Weight))
+	}
+	fn unpause_evm_precompile() -> Weight {
+		(25_000_000 as Weight)
+			.saturating_add(T::DbWeight::get().reads(1 as Weight))
+			.saturating_add(T::DbWeight::get().writes(1 as Weight))
+	}
 }

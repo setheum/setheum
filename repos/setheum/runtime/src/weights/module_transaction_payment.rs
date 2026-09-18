@@ -37,4 +37,24 @@ impl<T: frame_system::Config> module_transaction_payment::WeightInfo for WeightI
 			.saturating_add(T::DbWeight::get().reads(2 as Weight))
 			.saturating_add(T::DbWeight::get().writes(1 as Weight))
 	}
+	fn enable_charge_fee_pool() -> Weight {
+		(15_000_000 as Weight)
+			.saturating_add(T::DbWeight::get().writes(1 as Weight))
+	}
+	fn disable_charge_fee_pool() -> Weight {
+		(15_000_000 as Weight)
+			.saturating_add(T::DbWeight::get().writes(1 as Weight))
+	}
+	fn with_fee_path() -> Weight {
+		(15_000_000 as Weight)
+			.saturating_add(T::DbWeight::get().writes(1 as Weight))
+	}
+	fn with_fee_aggregated_path() -> Weight {
+		(15_000_000 as Weight)
+			.saturating_add(T::DbWeight::get().writes(1 as Weight))
+	}
+	fn with_fee_currency() -> Weight {
+		(15_000_000 as Weight)
+			.saturating_add(T::DbWeight::get().writes(1 as Weight))
+	}
 }

@@ -24,6 +24,7 @@
 
 use frame_support::{traits::Get, weights::Weight};
 use sp_std::marker::PhantomData;
+use module_swap_legacy as swap_legacy_module;
 
 /// Weight functions for swap_legacy_module.
 pub struct WeightInfo<T>(PhantomData<T>);

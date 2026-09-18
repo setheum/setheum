@@ -39,8 +39,8 @@ pub mod fee {
 		constants::ExtrinsicBaseWeight,
 		WeightToFeeCoefficient, WeightToFeeCoefficients, WeightToFeePolynomial,
 	};
-	use primitives::Balance;
-	use runtime_common::{cent, SEU};
+	use primitives::{currency::SEU, Balance};
+	use runtime_common::cent;
 	use smallvec::smallvec;
 	use sp_runtime::Perbill;
 

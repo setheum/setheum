@@ -41,7 +41,7 @@
 
 use frame_support::{pallet_prelude::*, traits::Time};
 use frame_system::pallet_prelude::*;
-use module_support::{SwapManager, SwapPriceProvider, ExchangeRate};
+use module_support::{swap_legacy::SwapManager, SwapPriceProvider, ExchangeRate};
 use module_traits::Happened;
 use primitives::{Balance, CurrencyId, TradingPair};
 use sp_core::U256;
