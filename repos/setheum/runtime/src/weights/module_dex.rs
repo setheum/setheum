@@ -102,4 +102,14 @@ impl<T: frame_system::Config> swap_legacy_module::WeightInfo for WeightInfo<T> {
 			.saturating_add(T::DbWeight::get().writes(2 as Weight))
 			.saturating_add(T::DbWeight::get().writes((1 as Weight).saturating_mul(u as Weight)))
 	}
+	fn refund_provision() -> Weight {
+		(80_000_000 as Weight)
+			.saturating_add(T::DbWeight::get().reads(5 as Weight))
+			.saturating_add(T::DbWeight::get().writes(5 as Weight))
+	}
+	fn abort_provisioning() -> Weight {
+		(80_000_000 as Weight)
+			.saturating_add(T::DbWeight::get().reads(5 as Weight))
+			.saturating_add(T::DbWeight::get().writes(5 as Weight))
+	}
 }

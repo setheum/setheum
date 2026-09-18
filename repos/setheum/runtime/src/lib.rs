@@ -90,6 +90,7 @@ use module_currencies::BasicCurrencyAdapter;
 use module_swap_legacy as swap_legacy_module;
 use module_dex_oracle as dex_oracle;
 use module_transaction_payment::TargetedFeeAdjustment;
+pub use module_transaction_payment::Multiplier;
 
 // re-exports
 
@@ -147,6 +148,7 @@ parameter_types! {
 	pub const NftPalletId: PalletId = PalletId(*b"set/sNFT");			// 5EYCAe5jKgkuYTZd9to8S5wCPjCUQnDg57tU9BDgakrywBM2
 	pub const SerpTreasuryPalletId: PalletId = PalletId(*b"set/serp");	// 5EYCAe5jKgkuYTiwwziYLaTt4ZTSEikGfWNVyZ1PUdkBg78Z
 	pub const TreasuryPalletId: PalletId = PalletId(*b"set/trsry");		// 5EYCAe5jKgkuYVbBxj3Gqkgew54j9TmR4Q8QLuBWHCApVqWn
+	pub const TransactionPaymentPalletId: PalletId = PalletId(*b"set/txfp");
 }
 
 pub fn get_all_module_accounts() -> Vec<AccountId> {
@@ -189,8 +191,8 @@ impl EnsureOrigin<RuntimeOrigin> for EnsureWeb3SettersClub {
 		})
 	}
 
-	fn try_successful_origin() -> Result<RuntimeOrigin, ()> {
-		Ok(RuntimeOrigin::signed(Default::default()))
+	fn successful_origin() -> Option<RuntimeOrigin> {
+		Some(RuntimeOrigin::signed(Default::default()))
 	}
 }
 
@@ -369,7 +371,6 @@ parameter_types! {
 }
 
 impl pallet_session::historical::Config for Runtime {
-	type RuntimeEvent = RuntimeEvent;
 	type FullIdentification = pallet_staking::Exposure<AccountId, Balance>;
 	type FullIdentificationOf = pallet_staking::ExposureOf<Runtime>;
 }
@@ -389,8 +390,8 @@ pallet_staking_reward_curve::build! {
 
 parameter_types! {
 	pub const SessionsPerEra: sp_staking::SessionIndex = 2; // 2 hours (20 mins in test)
-	pub const BondingDuration: pallet_staking::EraIndex = 4; // 8 hours (80 mins in test)
-	pub const SlashDeferDuration: pallet_staking::EraIndex = 2; // 4 hours (40 mins in test)
+	pub const BondingDuration: primitives::EraIndex = 4; // 8 hours (80 mins in test)
+	pub const SlashDeferDuration: primitives::EraIndex = 2; // 4 hours (40 mins in test)
 	pub const RewardCurve: &'static PiecewiseLinear<'static> = &REWARD_CURVE;
 	pub const MaxNominatorRewardedPerValidator: u32 = 64;
 	pub const HistoryDepth: u32 = 84;
@@ -407,8 +408,8 @@ parameter_types! {
 	pub const MaxElectingVotersSolution: u32 = 1000;
 	pub ElectionBoundsOnChain: frame_election_provider_support::bounds::ElectionBounds =
 		frame_election_provider_support::bounds::ElectionBoundsBuilder::default()
-			.voters_count(frame_election_provider_support::bounds::BoundQuery::Bounded(500))
-			.targets_count(frame_election_provider_support::bounds::BoundQuery::Bounded(200))
+			.voters_count(frame_election_provider_support::bounds::CountBound(500))
+			.targets_count(frame_election_provider_support::bounds::CountBound(200))
 			.build();
 }
 
@@ -447,7 +448,7 @@ impl pallet_staking::Config for Runtime {
 	type MaxExposurePageSize = frame_support::traits::ConstU32<256>;
 	type ElectionProvider = OnChainSeqPhragmen;
 	type GenesisElectionProvider = OnChainSeqPhragmen;
-	type VoterList = pallet_staking::UseNominatorsMap<Self>;
+	type VoterList = pallet_staking::UseNominatorsAndValidatorsMap<Self>;
 	type TargetList = pallet_staking::UseValidatorsMap<Self>;
 	type NominationsQuota = pallet_staking::FixedNominationsQuota<16>;
 	type MaxUnlockingChunks = frame_support::traits::ConstU32<32>;
@@ -698,7 +699,7 @@ parameter_types! {
 }
 
 pub struct CurrencyHooks<T>(sp_std::marker::PhantomData<T>);
-impl<T: module_tokens::Config> module_traits::MutationHooks<T::AccountId, T::CurrencyId, T::Balance> for CurrencyHooks<T>
+impl<T: module_tokens::Config> module_traits::currency::MutationHooks<T::AccountId, T::CurrencyId, T::Balance> for CurrencyHooks<T>
 where
 	T::AccountId: From<AccountId>,
 {
@@ -721,7 +722,7 @@ impl module_tokens::Config for Runtime {
 	type CurrencyHooks = CurrencyHooks<Runtime>;
 	type MaxLocks = MaxLocks;
 	type MaxReserves = frame_support::traits::ConstU32<50>;
-	type ReserveIdentifier = [u8; 8];
+	type ReserveIdentifier = ReserveIdentifier;
 	type DustRemovalWhitelist = DustRemovalWhitelist;
 }
 
@@ -1248,7 +1249,6 @@ impl pallet_scheduler::Config for Runtime {
 }
 
 impl module_authority::Config for Runtime {
-	type RuntimeEvent = RuntimeEvent;
 	type RuntimeOrigin = RuntimeOrigin;
 	type PalletsOrigin = OriginCaller;
 	type RuntimeCall = RuntimeCall;
@@ -1578,7 +1578,7 @@ construct_runtime!(
 		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>} = 36,
 		Currencies: module_currencies::{Pallet, Call, Event<T>} = 37,
 		Tokens: module_tokens::{Pallet, Storage, Event<T>, Config<T>} = 38,
-		TransactionPayment: module_transaction_payment::{Pallet, Call, Storage} = 39,
+		TransactionPayment: module_transaction_payment::{Pallet, Call, Storage, Event<T>} = 39,
 		TransactionPause: module_transaction_pause::{Pallet, Call, Storage, Event<T>} = 40,
 		Vesting: module_vesting::{Pallet, Storage, Call, Event<T>, Config<T>} = 41,
 
@@ -1591,7 +1591,7 @@ construct_runtime!(
 		Authorship: pallet_authorship::{Pallet, Storage} = 47,
 		Aura: pallet_aura::{Pallet, Config<T>, Storage} = 48,
 		SetBFT: module_setbft::{Pallet, Call, Config<T>, Storage, Event<T>} = 49,
-		Staking: pallet_staking::{Pallet, Call, Config<T>, Storage, Event<T>} = 50,
+		Staking: pallet_staking::{Pallet, Call, Config<T>, Storage, Event<T>, HoldReason} = 50,
 		Session: pallet_session::{Pallet, Call, Storage, Event<T>, Config<T>} = 51,
 		Historical: pallet_session_historical::{Pallet} = 52,
 		Offences: pallet_offences::{Pallet, Storage, Event} = 53,
