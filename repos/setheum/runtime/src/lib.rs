@@ -1235,6 +1235,7 @@ impl module_vesting::Config for Runtime {
 parameter_types! {
 	pub MaximumSchedulerWeight: Weight = Perbill::from_percent(10) * BlockWeights::get().max_block;
 	pub const MaxScheduledPerBlock: u32 = 50;
+	pub MaxProposalWeight: Weight = Perbill::from_percent(50) * BlockWeights::get().max_block;
 }
 
 impl pallet_scheduler::Config for Runtime {
@@ -1246,6 +1247,9 @@ impl pallet_scheduler::Config for Runtime {
 	type ScheduleOrigin = EnsureRoot<AccountId>;
 	type MaxScheduledPerBlock = MaxScheduledPerBlock;
 	type WeightInfo = ();
+	type OriginPrivilegeCmp = frame_support::traits::EqualPrivilegeOnly;
+	type Preimages = ();
+	type BlockNumberProvider = frame_system::Pallet<Runtime>;
 }
 
 impl module_authority::Config for Runtime {
@@ -1279,6 +1283,11 @@ impl pallet_collective::Config<ShuraCouncilInstance> for Runtime {
 	type MaxMembers = ShuraCouncilMaxMembers;
 	type DefaultVote = pallet_collective::PrimeDefaultVote;
 	type WeightInfo = ();
+	type SetMembersOrigin = EnsureRoot<AccountId>;
+	type MaxProposalWeight = MaxProposalWeight;
+	type DisapproveOrigin = EnsureRootOrThreeFourthsShuraCouncil;
+	type KillOrigin = EnsureRootOrThreeFourthsShuraCouncil;
+	type Consideration = ();
 }
 
 impl pallet_membership::Config<ShuraCouncilMembershipInstance> for Runtime {
@@ -1309,6 +1318,11 @@ impl pallet_collective::Config<FinancialCouncilInstance> for Runtime {
 	type MaxMembers = FinancialCouncilMaxMembers;
 	type DefaultVote = pallet_collective::PrimeDefaultVote;
 	type WeightInfo = ();
+	type SetMembersOrigin = EnsureRoot<AccountId>;
+	type MaxProposalWeight = MaxProposalWeight;
+	type DisapproveOrigin = EnsureRootOrTwoThirdsShuraCouncil;
+	type KillOrigin = EnsureRootOrTwoThirdsShuraCouncil;
+	type Consideration = ();
 }
 
 impl pallet_membership::Config<FinancialCouncilMembershipInstance> for Runtime {
@@ -1339,6 +1353,11 @@ impl pallet_collective::Config<TechnicalCommitteeInstance> for Runtime {
 	type MaxMembers = TechnicalCouncilMaxMembers;
 	type DefaultVote = pallet_collective::PrimeDefaultVote;
 	type WeightInfo = ();
+	type SetMembersOrigin = EnsureRoot<AccountId>;
+	type MaxProposalWeight = MaxProposalWeight;
+	type DisapproveOrigin = EnsureRootOrTwoThirdsShuraCouncil;
+	type KillOrigin = EnsureRootOrTwoThirdsShuraCouncil;
+	type Consideration = ();
 }
 
 impl pallet_membership::Config<TechnicalCommitteeMembershipInstance> for Runtime {
