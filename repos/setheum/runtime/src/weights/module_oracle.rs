@@ -30,15 +30,15 @@ use super::Weight;
 pub struct WeightInfo<T>(PhantomData<T>);
 impl<T: frame_system::Config> module_oracle::WeightInfo for WeightInfo<T> {
 	fn feed_values(c: u32, ) -> Weight {
-		(37_520_000 as Weight)
+		Weight::from_parts(37_520_000, 0)
 // Standard Error: 38_000
-			.saturating_add((7_208_000 as Weight).saturating_mul(c as Weight))
-			.saturating_add(T::DbWeight::get().reads(3 as Weight))
-			.saturating_add(T::DbWeight::get().writes(1 as Weight))
-			.saturating_add(T::DbWeight::get().writes((2 as Weight).saturating_mul(c as Weight)))
+			.saturating_add(Weight::from_parts(7_208_000, 0).saturating_mul(c.into()))
+			.saturating_add(T::DbWeight::get().reads(3))
+			.saturating_add(T::DbWeight::get().writes(1))
+			.saturating_add(T::DbWeight::get().writes(2 * c as u64))
 	}
 	fn on_finalize() -> Weight {
-		(7_307_000 as Weight)
-			.saturating_add(T::DbWeight::get().writes(1 as Weight))
+		Weight::from_parts(7_307_000, 0)
+			.saturating_add(T::DbWeight::get().writes(1))
 	}
 }
