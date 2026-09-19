@@ -20,8 +20,6 @@
 
 #![allow(clippy::unnecessary_cast)]
 
-pub type Weight = u64;
-
 // pub mod dex_oracle;
 pub mod module_currencies;
 pub mod module_dex;
