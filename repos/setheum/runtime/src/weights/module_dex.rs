@@ -22,9 +22,10 @@
 #![allow(unused_parens)]
 #![allow(unused_imports)]
 
-use frame_support::{traits::Get, weights::Weight};
+use frame_support::{traits::Get, weights::Weight as _};
 use sp_std::marker::PhantomData;
 use module_swap_legacy as swap_legacy_module;
+use super::Weight;
 
 /// Weight functions for swap_legacy_module.
 pub struct WeightInfo<T>(PhantomData<T>);

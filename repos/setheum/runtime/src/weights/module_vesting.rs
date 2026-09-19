@@ -41,8 +41,9 @@
 #![allow(unused_parens)]
 #![allow(unused_imports)]
 
-use frame_support::{traits::Get, weights::Weight};
+use frame_support::{traits::Get, weights::Weight as _};
 use sp_std::marker::PhantomData;
+use super::Weight;
 
 /// Weight functions for module_vesting.
 pub struct WeightInfo<T>(PhantomData<T>);
