@@ -146,8 +146,8 @@ pub trait ExchangeRateProvider {
 }
 
 pub trait TransactionPayment<AccountId, Balance, NegativeImbalance> {
-	fn reserve_fee(who: &AccountId, fee: Balance, named: Option<ReserveIdentifier>) -> Result<Balance, DispatchError>;
-	fn unreserve_fee(who: &AccountId, fee: Balance, named: Option<ReserveIdentifier>) -> Balance;
+	fn reserve_fee(who: &AccountId, fee: Balance, named: Option<[u8; 8]>) -> Result<Balance, DispatchError>;
+	fn unreserve_fee(who: &AccountId, fee: Balance, named: Option<[u8; 8]>) -> Balance;
 	fn unreserve_and_charge_fee(
 		who: &AccountId,
 		weight: Weight,

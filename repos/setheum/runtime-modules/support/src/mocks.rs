@@ -120,12 +120,12 @@ impl<AccountId, Balance: Default + Copy, NegativeImbalance: Imbalance<Balance>>
 	fn reserve_fee(
 		_who: &AccountId,
 		_fee: Balance,
-		_named: Option<ReserveIdentifier>,
+		_named: Option<[u8; 8]>,
 	) -> Result<Balance, DispatchError> {
 		Ok(Default::default())
 	}
 
-	fn unreserve_fee(_who: &AccountId, _fee: Balance, _named: Option<ReserveIdentifier>) -> Balance {
+	fn unreserve_fee(_who: &AccountId, _fee: Balance, _named: Option<[u8; 8]>) -> Balance {
 		Default::default()
 	}
 
@@ -174,17 +174,17 @@ impl<
 		NegativeImbalance: Imbalance<Balance>,
 		Currency: frame_support::traits::NamedReservableCurrency<
 			AccountId,
-			ReserveIdentifier = ReserveIdentifier,
+			ReserveIdentifier = [u8; 8],
 			Balance = Balance,
 		>,
 	> TransactionPayment<AccountId, Balance, NegativeImbalance> for MockReservedTransactionPayment<Currency>
 {
-	fn reserve_fee(who: &AccountId, fee: Balance, named: Option<ReserveIdentifier>) -> Result<Balance, DispatchError> {
+	fn reserve_fee(who: &AccountId, fee: Balance, named: Option<[u8; 8]>) -> Result<Balance, DispatchError> {
 		Currency::reserve_named(&named.unwrap(), who, fee)?;
 		Ok(fee)
 	}
 
-	fn unreserve_fee(who: &AccountId, fee: Balance, named: Option<ReserveIdentifier>) -> Balance {
+	fn unreserve_fee(who: &AccountId, fee: Balance, named: Option<[u8; 8]>) -> Balance {
 		Currency::unreserve_named(&named.unwrap(), who, fee)
 	}
 
