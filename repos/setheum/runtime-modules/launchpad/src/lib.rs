@@ -310,7 +310,7 @@ pub mod module {
 				}
 // If the campaign is active, check if to end it
 				if campaign_info.is_active && !campaign_info.is_ended {
-// If campaign is successfull, call on successful campaign
+// If campaign is successful, call on successful campaign
 					if campaign_info.raised >= campaign_info.goal {
 						Self::on_successful_campaign(now, id).unwrap();
 						count += 1;

@@ -239,7 +239,7 @@ pub mod module {
 			Ok(())
 		}
 
-		/// Claim all avalible multi currencies rewards for specific PoolId.
+		/// Claim all available multi currencies rewards for specific PoolId.
 		///
 		/// The dispatch origin of this call must be `Signed` by the transactor.
 		///

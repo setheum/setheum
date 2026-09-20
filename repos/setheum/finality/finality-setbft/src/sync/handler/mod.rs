@@ -551,7 +551,7 @@ where
     ) {
         let mut equivocation_proofs = vec![];
         let mut new_highest = false;
-        // Lets us import descendands of importable blocks, useful for favourite blocks.
+        // Lets us import descendants of importable blocks, useful for favourite blocks.
         let mut last_imported: Option<BlockId> = None;
         for item in response_items {
             match item {
@@ -2811,7 +2811,7 @@ mod tests {
         let state_h2 = h2.state().unwrap();
         let action = h1.handle_chain_extension_request(state_h2).unwrap();
 
-        // The response should contian the two blocks.
+        // The response should contain the two blocks.
         use SimplifiedItem::B;
         let items = match action {
             Action::Response(items) => {

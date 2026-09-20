@@ -180,13 +180,13 @@ pub mod pallet {
 		InvalidAction,
 /// Payment is in review state and cannot be modified
 		PaymentNeedsReview,
-/// Unexpeted math error
+/// Unexpected math error
 		MathError,
 /// Payment request has not been created
 		RefundNotRequested,
 /// Dispute period has not passed
 		DisputePeriodNotPassed,
-/// The automatic cancelation queue cannot accept
+/// The automatic cancellation queue cannot accept
 		RefundQueueFull,
 	}
 
@@ -373,7 +373,7 @@ pub mod pallet {
 		}
 
 /// Allow the creator of a payment to initiate a refund that will return
-/// the funds after a configured amount of time that the reveiver has to
+/// the funds after a configured amount of time that the receiver has to
 /// react and oppose the request
 		#[pallet::call_index(4)]
 		#[pallet::weight(T::WeightInfo::request_refund())]

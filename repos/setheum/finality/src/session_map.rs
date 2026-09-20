@@ -740,7 +740,7 @@ mod tests {
             assert_eq!(
                 session_map.get(SessionId(i)).await,
                 None,
-                "Session {i:?} should not be avalable yet"
+                "Session {i:?} should not be available yet"
             );
         }
 
@@ -762,7 +762,7 @@ mod tests {
             assert_eq!(
                 session_map.get(SessionId(i)).await,
                 Some(authority_data_for_session(i)),
-                "Session {i:?} should be avalable"
+                "Session {i:?} should be available"
             );
         }
     }
