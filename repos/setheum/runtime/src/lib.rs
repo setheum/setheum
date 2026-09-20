@@ -148,7 +148,7 @@ parameter_types! {
 	pub const NftPalletId: PalletId = PalletId(*b"set/sNFT");			// 5EYCAe5jKgkuYTZd9to8S5wCPjCUQnDg57tU9BDgakrywBM2
 	pub const SerpTreasuryPalletId: PalletId = PalletId(*b"set/serp");	// 5EYCAe5jKgkuYTiwwziYLaTt4ZTSEikGfWNVyZ1PUdkBg78Z
 	pub const TreasuryPalletId: PalletId = PalletId(*b"set/trsry");		// 5EYCAe5jKgkuYVbBxj3Gqkgew54j9TmR4Q8QLuBWHCApVqWn
-	pub const TransactionPaymentPalletId: PalletId = PalletId(*b"set/tx\0\0");
+	pub const TransactionPaymentPalletId: PalletId = PalletId(*b"set/txpa");
 }
 
 pub fn get_all_module_accounts() -> Vec<AccountId> {
