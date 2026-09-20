@@ -56,7 +56,7 @@ use module_support::{swap_legacy::{Swap, SwapLimit}, BuyWeightRate, PriceProvide
 use module_traits::MultiCurrency;
 use pallet_transaction_payment_rpc_runtime_api::RuntimeDispatchInfo;
 use pallet_transaction_payment_rpc_runtime_api::{FeeDetails, InclusionFee};
-use primitives::{Balance, CurrencyId, Multiplier, ReserveIdentifier};
+use primitives::{Balance, CurrencyId, Multiplier};
 use scale_info::TypeInfo;
 use sp_runtime::{
 	traits::{
@@ -277,8 +277,8 @@ const MULTIPLIER_DEFAULT_VALUE: Multiplier = Multiplier::from_u32(1);
 pub mod module {
 	use super::*;
 
-	pub const RESERVE_ID: ReserveIdentifier = ReserveIdentifier::TransactionPayment;
-	pub const DEPOSIT_ID: ReserveIdentifier = ReserveIdentifier::TransactionPaymentDeposit;
+	pub const RESERVE_ID: [u8; 8] = *b"set/txfr";
+	pub const DEPOSIT_ID: [u8; 8] = *b"set/txfd";
 
 	#[pallet::config]
 	pub trait Config: frame_system::Config {
@@ -299,7 +299,7 @@ pub mod module {
 		/// The currency type in which fees will be paid.
 		type Currency: NamedReservableCurrency<
 			Self::AccountId,
-			ReserveIdentifier = ReserveIdentifier,
+			ReserveIdentifier = [u8; 8],
 			Balance = Balance,
 		>;
 

@@ -76,7 +76,8 @@ impl module_authority::AsOriginId<RuntimeOrigin, OriginCaller> for AuthoritysOri
 	fn into_origin(self) -> OriginCaller {
 		match self {
 			AuthoritysOriginId::Root => RuntimeOrigin::root().caller().clone(),
-			AuthoritysOriginId::Treasury => RuntimeOrigin::signed(TreasuryPalletId::get().into_account()).caller().clone(),
+			AuthoritysOriginId::Treasury => RuntimeOrigin::signed(TreasuryPalletId::get().into_account_truncating()).caller().clone(),
+			_ => unimplemented!("AuthoritysOriginId variant not supported"),
 		}
 	}
 
@@ -95,6 +96,7 @@ impl module_authority::AsOriginId<RuntimeOrigin, OriginCaller> for AuthoritysOri
 				>>::ensure_origin(origin)
 				.map_or_else(|_| Err(BadOrigin.into()), |_| Ok(()))
 			}
+			_ => Err(BadOrigin.into()),
 		})
 	}
 }

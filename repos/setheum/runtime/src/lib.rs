@@ -90,7 +90,7 @@ use module_currencies::BasicCurrencyAdapter;
 use module_swap_legacy as swap_legacy_module;
 use module_dex_oracle as dex_oracle;
 use module_transaction_payment::TargetedFeeAdjustment;
-pub use module_transaction_payment::Multiplier;
+pub use sp_runtime::Multiplier;
 
 // re-exports
 
@@ -191,8 +191,8 @@ impl EnsureOrigin<RuntimeOrigin> for EnsureWeb3SettersClub {
 		})
 	}
 
-	fn successful_origin() -> Option<RuntimeOrigin> {
-		Some(RuntimeOrigin::signed(Default::default()))
+	fn successful_origin() -> RuntimeOrigin {
+		RuntimeOrigin::signed(Default::default())
 	}
 }
 
@@ -259,6 +259,7 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 	impl_version: 1,
 	apis: RUNTIME_API_VERSIONS,
 	transaction_version: 1,
+	system_version: 0,
 };
 
 /// The version information used to identify this runtime when compiled natively.
@@ -371,6 +372,7 @@ parameter_types! {
 }
 
 impl pallet_session::historical::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
 	type FullIdentification = pallet_staking::Exposure<AccountId, Balance>;
 	type FullIdentificationOf = pallet_staking::ExposureOf<Runtime>;
 }
@@ -688,6 +690,7 @@ parameter_type_with_key! {
 				}
 			},
 			CurrencyId::Erc20(_) => Balance::max_value(), // not handled by module-tokens
+			CurrencyId::ForeignAsset(_) => Balance::max_value(), // not handled by module-tokens
 		}
 	};
 }
@@ -1189,6 +1192,7 @@ impl pallet_proxy::Config for Runtime {
 	type CallHasher = BlakeTwo256;
 	type AnnouncementDepositBase = AnnouncementDepositBase;
 	type AnnouncementDepositFactor = AnnouncementDepositFactor;
+	type BlockNumberProvider = frame_system::Pallet<Runtime>;
 }
 
 parameter_types! {
@@ -1201,16 +1205,19 @@ parameter_types! {
 }
 
 impl pallet_balances::Config for Runtime {
-	type RuntimeEvent = RuntimeEvent;
+	type RuntimeHoldReason = RuntimeHoldReason;
 	type MaxLocks = MaxLocks;
-/// The type for recording an account's balance.
+	type MaxReserves = MaxReserves;
+	type ReserveIdentifier = [u8; 8];
 	type Balance = Balance;
-	type DustRemoval = (); // burn
+	type DustRemoval = ();
+	type RuntimeEvent = RuntimeEvent;
 	type ExistentialDeposit = NativeTokenExistentialDeposit;
 	type AccountStore = frame_system::Pallet<Runtime>;
 	type WeightInfo = ();
-	type MaxReserves = MaxReserves;
-	type ReserveIdentifier = ReserveIdentifier;
+	type FreezeIdentifier = ();
+	type MaxFreezes = frame_support::traits::ConstU32<0>;
+	type DoneSlashHandler = ();
 }
 
 parameter_types! {
@@ -1415,7 +1422,7 @@ impl pallet_multisig::Config for Runtime {
 pub struct ShuraCouncilProvider;
 impl SortedMembers<AccountId> for ShuraCouncilProvider {
 	fn sorted_members() -> Vec<AccountId> {
-		ShuraCouncil::members()
+		pallet_collective::Members::<Runtime, ShuraCouncilInstance>::get()
 	}
 
 	#[cfg(feature = "runtime-benchmarks")]
@@ -1439,6 +1446,7 @@ parameter_types! {
 	pub const SpendPeriod: BlockNumber = 40 * DAYS;
 	pub const Burn: Permill = Permill::from_perthousand(0); // 0.0%
 	pub const MaxApprovals: u32 = 100;
+	pub const SpendPayoutPeriod: BlockNumber = 7 * DAYS;
 
 	pub const TipCountdown: BlockNumber = DAYS;
 	pub const TipFindersFee: Percent = Percent::from_percent(10);
@@ -1450,6 +1458,9 @@ parameter_types! {
 	pub const BountyDepositPayoutDelay: BlockNumber = DAYS;
 	pub const BountyUpdatePeriod: BlockNumber = 21 * DAYS;
 	pub const BountyCuratorDeposit: Permill = Permill::from_percent(50);
+	pub CuratorDepositMultiplier: Permill = Permill::from_percent(50);
+	pub CuratorDepositMin: Option<Balance> = Some(1 * dollar(SEU));
+	pub CuratorDepositMax: Option<Balance> = Some(100 * dollar(SEU));
 	pub BountyValueMinimum: Balance = 1 * dollar(SEU); // 1 SEU
 	pub DataDepositPerByte: Balance = deposit(0, 1);
 	pub const MaximumReasonLength: u32 = 16384;
@@ -1458,18 +1469,24 @@ parameter_types! {
 impl pallet_treasury::Config for Runtime {
 	type PalletId = TreasuryPalletId;
 	type Currency = Balances;
-	type ApproveOrigin = EnsureRootOrHalfShuraCouncil;
 	type RejectOrigin = EnsureRootOrHalfShuraCouncil;
 	type RuntimeEvent = RuntimeEvent;
-	type OnSlash = Treasury;
-	type ProposalBond = ProposalBond;
-	type ProposalBondMinimum = ProposalBondMinimum;
 	type SpendPeriod = SpendPeriod;
 	type Burn = Burn;
 	type BurnDestination = ();
 	type SpendFunds = Bounties;
 	type WeightInfo = ();
 	type MaxApprovals = MaxApprovals;
+	type SpendOrigin = EnsureRootOrHalfShuraCouncil;
+	type AssetKind = ();
+	type Beneficiary = AccountId;
+	type BeneficiaryLookup = Indices;
+	type Paymaster = frame_support::traits::tokens::pay::PayFromAccount<Balances, TreasuryAccount>;
+	type BalanceConverter = frame_support::traits::tokens::UnityAssetBalanceConversion;
+	type PayoutPeriod = SpendPayoutPeriod;
+	type BlockNumberProvider = frame_system::Pallet<Runtime>;
+	#[cfg(feature = "runtime-benchmarks")]
+	type BenchmarkHelper = ();
 }
 
 impl pallet_bounties::Config for Runtime {
@@ -1477,11 +1494,15 @@ impl pallet_bounties::Config for Runtime {
 	type BountyDepositBase = BountyDepositBase;
 	type BountyDepositPayoutDelay = BountyDepositPayoutDelay;
 	type BountyUpdatePeriod = BountyUpdatePeriod;
-	type BountyCuratorDeposit = BountyCuratorDeposit;
+	type CuratorDepositMultiplier = CuratorDepositMultiplier;
+	type CuratorDepositMin = CuratorDepositMin;
+	type CuratorDepositMax = CuratorDepositMax;
 	type BountyValueMinimum = BountyValueMinimum;
 	type DataDepositPerByte = DataDepositPerByte;
 	type MaximumReasonLength = MaximumReasonLength;
 	type WeightInfo = ();
+	type ChildBountyManager = ();
+	type OnSlash = Treasury;
 }
 
 impl pallet_tips::Config for Runtime {
@@ -1492,7 +1513,9 @@ impl pallet_tips::Config for Runtime {
 	type TipCountdown = TipCountdown;
 	type TipFindersFee = TipFindersFee;
 	type TipReportDepositBase = TipReportDepositBase;
+	type MaxTipAmount = frame_support::traits::ConstU128<{ 500 * 1_000_000_000_000_000_000 }>;
 	type WeightInfo = ();
+	type OnSlash = Treasury;
 }
 
 parameter_types! {
@@ -1510,6 +1533,8 @@ impl pallet_recovery::Config for Runtime {
 	type FriendDepositFactor = FriendDepositFactor;
 	type MaxFriends = MaxFriends;
 	type RecoveryDeposit = RecoveryDeposit;
+	type BlockNumberProvider = frame_system::Pallet<Runtime>;
+	type WeightInfo = ();
 }
 
 // impl module_auction::Config for Runtime {
@@ -1612,7 +1637,7 @@ construct_runtime!(
 		SetBFT: module_setbft::{Pallet, Call, Config<T>, Storage, Event<T>} = 49,
 		Staking: pallet_staking::{Pallet, Call, Config<T>, Storage, Event<T>, HoldReason} = 50,
 		Session: pallet_session::{Pallet, Call, Storage, Event<T>, Config<T>} = 51,
-		Historical: pallet_session_historical::{Pallet} = 52,
+		Historical: pallet_session_historical::{Pallet, Event<T>} = 52,
 		Offences: pallet_offences::{Pallet, Storage, Event} = 53,
 		ImOnline: pallet_im_online::{Pallet, Call, Storage, Event<T>, ValidateUnsigned, Config<T>} = 54,
 		AuthorityDiscovery: pallet_authority_discovery::{Pallet, Config<T>} = 55,
@@ -1652,7 +1677,9 @@ pub type SignedExtra = (
 	frame_system::CheckEra<Runtime>,
 	frame_system::CheckNonce<Runtime>,
 	frame_system::CheckWeight<Runtime>,
-	module_transaction_payment::ChargeTransactionPayment<Runtime>,
+	sp_runtime::traits::transaction_extension::AsTransactionExtension(
+		module_transaction_payment::ChargeTransactionPayment<Runtime>
+	),
 );
 /// Unchecked extrinsic type as expected by this runtime.
 pub type UncheckedExtrinsic = generic::UncheckedExtrinsic<Address, RuntimeCall, Signature, SignedExtra>;
@@ -1747,7 +1774,7 @@ impl_runtime_apis! {
 		}
 
 		fn authorities() -> Vec<AuraId> {
-			Aura::authorities().to_vec()
+			pallet_aura::Authorities::<Runtime>::get().to_vec()
 		}
 	}
 
