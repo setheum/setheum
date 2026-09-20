@@ -57,6 +57,8 @@ use module_traits::MultiCurrency;
 use pallet_transaction_payment_rpc_runtime_api::RuntimeDispatchInfo;
 use pallet_transaction_payment_rpc_runtime_api::{FeeDetails, InclusionFee};
 use primitives::{Balance, CurrencyId, Multiplier};
+
+type ReserveIdentifier = [u8; 8];
 use scale_info::TypeInfo;
 use sp_runtime::{
 	traits::{
