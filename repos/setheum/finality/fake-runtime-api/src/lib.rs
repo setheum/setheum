@@ -161,12 +161,8 @@ pub mod fake_runtime {
 			}
 		}
 
-		 impl crate::SetBFTSessionApi<Block> for Runtime {
+		impl primitives::setbft::SetBFTSessionApi<Block> for Runtime {
 			fn millisecs_per_block() -> u64 {
-				unimplemented!()
-			}
-
-			fn score_submission_period() -> u32 {
 				unimplemented!()
 			}
 
@@ -209,18 +205,6 @@ pub mod fake_runtime {
 			}
 
 			fn key_owner(_key: SetBFTId) -> Option<AccountId> {
-				unimplemented!()
-			}
-
-			fn yearly_inflation() -> Perbill {
-				unimplemented!()
-			}
-
-			fn current_era_payout() -> (Balance, Balance) {
-				unimplemented!()
-			}
-
-			fn submit_sbft_score(_score: Score, _signature: SignatureSet<AuthoritySignature>) -> Option<()>{
 				unimplemented!()
 			}
 		}
