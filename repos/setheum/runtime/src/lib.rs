@@ -90,7 +90,7 @@ use module_currencies::BasicCurrencyAdapter;
 use module_swap_legacy as swap_legacy_module;
 use module_dex_oracle as dex_oracle;
 use module_transaction_payment::TargetedFeeAdjustment;
-pub use sp_runtime::Multiplier;
+pub use primitives::Multiplier;
 
 // re-exports
 
@@ -153,12 +153,12 @@ parameter_types! {
 
 pub fn get_all_module_accounts() -> Vec<AccountId> {
 	vec![
-		AirdropPalletId::get().into_account(),
-		CDPTreasuryPalletId::get().into_account(),
-		DEXPalletId::get().into_account(),
-		LoansPalletId::get().into_account(),
-		SerpTreasuryPalletId::get().into_account(),
-		TreasuryPalletId::get().into_account(),
+		AirdropPalletId::get().into_account_truncating(),
+		CDPTreasuryPalletId::get().into_account_truncating(),
+		DEXPalletId::get().into_account_truncating(),
+		LoansPalletId::get().into_account_truncating(),
+		SerpTreasuryPalletId::get().into_account_truncating(),
+		TreasuryPalletId::get().into_account_truncating(),
 		ZeroAccountId::get(),		 	// ACCOUNT 0
 	]
 }
@@ -170,7 +170,7 @@ parameter_types! {
 // hex_literal::hex!("2e70349d7140ec49b7cf1ae03b6ae3405103dab86c5a463ceef77ffb4a769868").into(),	// VQgfLtTS8oZCreyX3FzHuaAbUovtbcuSFLnUFS3tkRvwWGkbD
 // hex_literal::hex!("22b565e2303579c0d50884a3524c32ed12c8b91a8621dd72270b8fd17d20d009").into(),	// VQgPxsHbvGdXC7HhUvYvPifu1SyAuRnUhbMw4hAaTm9fwvkkz
 // hex_literal::hex!("78d105e22be9735d200591ebe506fbc0d0be3f18afa5f5b2fbdb370ee4c2fd47").into(),	// VQiLsC6xs5xSG7jFUbcRCjKPZqnacJmrNANovRHzbtgThHzhy
-		TreasuryPalletId::get().into_account(),
+		TreasuryPalletId::get().into_account_truncating(),
 	];
 }
 
@@ -179,7 +179,7 @@ impl EnsureOrigin<RuntimeOrigin> for EnsureWeb3SettersClub {
 	type Success = AccountId;
 
 	fn try_origin(o: RuntimeOrigin) -> Result<Self::Success, RuntimeOrigin> {
-		o.into().and_then(|o| match o {
+		Into::<Result<RawOrigin<AccountId>, RuntimeOrigin>>::into(o).and_then(|o| match o {
 			RawOrigin::Signed(caller) => {
 				if Web3SettersClubAccounts::get().contains(&caller) {
 					Ok(caller)
@@ -191,8 +191,9 @@ impl EnsureOrigin<RuntimeOrigin> for EnsureWeb3SettersClub {
 		})
 	}
 
-	fn successful_origin() -> RuntimeOrigin {
-		RuntimeOrigin::signed(Default::default())
+	#[cfg(feature = "runtime-benchmarks")]
+	fn try_successful_origin() -> Result<RuntimeOrigin, ()> {
+		Ok(RuntimeOrigin::signed(AccountId::new([0u8; 32])))
 	}
 }
 
@@ -696,9 +697,9 @@ parameter_type_with_key! {
 }
 
 parameter_types! {
-	pub TreasuryAccount: AccountId = TreasuryPalletId::get().into_account();
-	pub CDPTreasuryAccount: AccountId = CDPTreasuryPalletId::get().into_account();
-// pub SerpTreasuryAccount: AccountId = SerpTreasuryPalletId::get().into_account();
+	pub TreasuryAccount: AccountId = TreasuryPalletId::get().into_account_truncating();
+	pub CDPTreasuryAccount: AccountId = CDPTreasuryPalletId::get().into_account_truncating();
+// pub SerpTreasuryAccount: AccountId = SerpTreasuryPalletId::get().into_account_truncating();
 }
 
 pub struct CurrencyHooks<T>(sp_std::marker::PhantomData<T>);
@@ -826,7 +827,9 @@ where
 			frame_system::CheckEra::<Runtime>::from(generic::Era::mortal(period, current_block)),
 			frame_system::CheckNonce::<Runtime>::from(nonce),
 			frame_system::CheckWeight::<Runtime>::new(),
-			module_transaction_payment::ChargeTransactionPayment::<Runtime>::from(tip),
+			sp_runtime::traits::transaction_extension::AsTransactionExtension(
+				module_transaction_payment::ChargeTransactionPayment::<Runtime>::from(tip)
+			),
 			);
 		let raw_payload = SignedPayload::new(call, extra)
 			.map_err(|e| {
@@ -1145,7 +1148,7 @@ impl InstanceFilter<RuntimeCall> for ProxyType {
 // otherwise `BadOrigin` will be returned in RuntimeCall::Utility.
 			_ if matches!(c, RuntimeCall::Utility(..)) => true,
 			ProxyType::Any => true,
-			ProxyType::CancelProxy => matches!(c, RuntimeCall::Proxy(pallet_proxy::Call::reject_announcement(..))),
+			ProxyType::CancelProxy => matches!(c, RuntimeCall::Proxy(pallet_proxy::Call::reject_announcement { .. })),
 			ProxyType::Governance => {
 				matches!(
 					c,
@@ -1162,8 +1165,8 @@ impl InstanceFilter<RuntimeCall> for ProxyType {
 			ProxyType::Swap => {
 				matches!(
 					c,
-					RuntimeCall::Dex(swap_legacy_module::Call::swap_with_exact_supply(..))
-						| RuntimeCall::Dex(swap_legacy_module::Call::swap_with_exact_target(..))
+					RuntimeCall::Dex(swap_legacy_module::Call::swap_with_exact_supply { .. })
+						| RuntimeCall::Dex(swap_legacy_module::Call::swap_with_exact_target { .. })
 				)
 			}
 			ProxyType::Loan => false,
@@ -1206,9 +1209,10 @@ parameter_types! {
 
 impl pallet_balances::Config for Runtime {
 	type RuntimeHoldReason = RuntimeHoldReason;
+	type RuntimeFreezeReason = ();
 	type MaxLocks = MaxLocks;
 	type MaxReserves = MaxReserves;
-	type ReserveIdentifier = [u8; 8];
+	type ReserveIdentifier = ReserveIdentifier;
 	type Balance = Balance;
 	type DustRemoval = ();
 	type RuntimeEvent = RuntimeEvent;
@@ -1273,6 +1277,7 @@ impl module_authority::Config for Runtime {
 impl pallet_sudo::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type RuntimeCall = RuntimeCall;
+	type WeightInfo = ();
 }
 
 parameter_types! {
@@ -1400,6 +1405,7 @@ impl pallet_membership::Config<OperatorMembershipInstanceSetheum> for Runtime {
 impl pallet_utility::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type RuntimeCall = RuntimeCall;
+	type PalletsOrigin = OriginCaller;
 	type WeightInfo = ();
 }
 
@@ -1417,6 +1423,7 @@ impl pallet_multisig::Config for Runtime {
 	type DepositFactor = MultisigDepositFactor;
 	type MaxSignatories = MaxSignatories;
 	type WeightInfo = ();
+	type BlockNumberProvider = frame_system::Pallet<Runtime>;
 }
 
 pub struct ShuraCouncilProvider;
@@ -1446,6 +1453,7 @@ parameter_types! {
 	pub const SpendPeriod: BlockNumber = 40 * DAYS;
 	pub const Burn: Permill = Permill::from_perthousand(0); // 0.0%
 	pub const MaxApprovals: u32 = 100;
+	pub MaxBalance: Balance = Balance::max_value();
 	pub const SpendPayoutPeriod: BlockNumber = 7 * DAYS;
 
 	pub const TipCountdown: BlockNumber = DAYS;
@@ -1477,7 +1485,7 @@ impl pallet_treasury::Config for Runtime {
 	type SpendFunds = Bounties;
 	type WeightInfo = ();
 	type MaxApprovals = MaxApprovals;
-	type SpendOrigin = EnsureRootOrHalfShuraCouncil;
+	type SpendOrigin = frame_system::EnsureWithSuccess<EnsureRootOrHalfShuraCouncil, AccountId, MaxBalance>;
 	type AssetKind = ();
 	type Beneficiary = AccountId;
 	type BeneficiaryLookup = Indices;
@@ -1677,9 +1685,9 @@ pub type SignedExtra = (
 	frame_system::CheckEra<Runtime>,
 	frame_system::CheckNonce<Runtime>,
 	frame_system::CheckWeight<Runtime>,
-	sp_runtime::traits::transaction_extension::AsTransactionExtension(
+	sp_runtime::traits::transaction_extension::AsTransactionExtension<
 		module_transaction_payment::ChargeTransactionPayment<Runtime>
-	),
+	>,
 );
 /// Unchecked extrinsic type as expected by this runtime.
 pub type UncheckedExtrinsic = generic::UncheckedExtrinsic<Address, RuntimeCall, Signature, SignedExtra>;

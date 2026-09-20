@@ -69,7 +69,7 @@ pub mod fee {
 // in Setheum, extrinsic base weight (smallest non-zero weight) is mapped to 1/10
 // CENT:
 			let p = base_tx_in_setm(); // 10_000_000_000_000_000;
-			let q = Balance::from(ExtrinsicBaseWeight::get()); // 125_000_000
+			let q = Balance::from(ExtrinsicBaseWeight::get().ref_time()); // 125_000_000
 			smallvec![WeightToFeeCoefficient {
 				degree: 1,
 				negative: false,
