@@ -17,6 +17,7 @@ schnellru = { workspace = true, optional = true }
 
 [target.'cfg(all(not(miri), target_arch = "x86_64", target_os = "linux"))'.dependencies]
 libc = { workspace = true }
+sheyth_vm_linux_raw = { package = "polkavm-linux-raw", version = "0.24.0" }
 
 [dev-dependencies]
 env_logger = { workspace = true }
