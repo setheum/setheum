@@ -58,9 +58,9 @@ impl<T: frame_system::Config> module_currencies::WeightInfo for WeightInfo<T> {
 // Standard Error: 111_000
 			.saturating_add(Weight::from_parts(25_100_000, 0).saturating_mul(c.into()))
 			.saturating_add(T::DbWeight::get().reads(1))
-			.saturating_add(T::DbWeight::get().reads(2 * c.into()))
+			.saturating_add(T::DbWeight::get().reads(2_u64.saturating_mul(c.into())))
 			.saturating_add(T::DbWeight::get().writes(1))
-			.saturating_add(T::DbWeight::get().writes(2 * c.into()))
+			.saturating_add(T::DbWeight::get().writes(2_u64.saturating_mul(c.into())))
 	}
 	fn force_set_lock() -> Weight {
 		Weight::from_parts(67_290_000, 0)
