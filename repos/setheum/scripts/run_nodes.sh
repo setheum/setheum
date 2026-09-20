@@ -219,7 +219,7 @@ if [[ $(( VALIDATORS + RPC_NODES )) -gt 10 ]]; then
 fi
 if [[ -z "${DONT_BOOTSTRAP}" && "${DONT_DELETE_DB}" == "true" ]]; then
   error "--dont-delete-db is set and --dont-bootstrap is not set
-        When bootstraping chain, db must be deleted!
+        When bootstrapping chain, db must be deleted!
         Or if you want just to remove database, pass --dont-bootstrap to this script."
 fi
 if [[ "${DONT_BOOTSTRAP}" == "true" && ! -f "${BASE_PATH}/chainspec.json" ]]; then
@@ -298,7 +298,7 @@ if [[ -z "${DONT_BOOTSTRAP}" ]]; then
     if [[ -n "${non_empty_backups}" ]]; then
       warning "Found following non-empty ABFT backups in base path:"
       warning "${non_empty_backups}"
-      warning "In 99% you want them to be removed when bootstraping chain"
+      warning "In 99% you want them to be removed when bootstrapping chain"
       warning "Re-run this script without flag --dont-remove-abtf-backups if you want them to be removed."
     fi
   fi

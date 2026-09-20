@@ -47,7 +47,7 @@ use crate::{
     utility::BlocksApi, AccountId, Connection, SetBFTConfig,
 };
 
-/// Represents details about the block contianing the event.
+/// Represents details about the block containing the event.
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct BlockDetails {
     /// the block number

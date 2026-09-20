@@ -1561,7 +1561,7 @@ impl pallet_insecure_randomness_collective_flip::Config for Runtime {}
 use pallet_session::historical as pallet_session_historical;
 
 // TODO: Implementation of `From` is preferred since it gives you `Into<_>` for free where the reverse isn't true.
-// After this TODO will be resolved, remove the suppresion of `from-over-into` warnings in the Makefile.
+// After this TODO will be resolved, remove the suppression of `from-over-into` warnings in the Makefile.
 construct_runtime!(
 	pub enum Runtime where
 		Block = Block,

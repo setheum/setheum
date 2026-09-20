@@ -148,7 +148,7 @@ impl<T: Config> Pallet<T> {
 				completed_tasks.push((id, result));
 			}
 
-			// If remaining weight falls below the minimmum, break from the loop.
+			// If remaining weight falls below the minimum, break from the loop.
 			if weight_remaining.all_lte(T::MinimumWeightRemainInBlock::get()) {
 				break;
 			}

@@ -85,10 +85,10 @@ def find_block_hash_with_imbalance(chain_connection, start_block_hash, end_block
     and some value Y in parent(B), and X > Y. There might be many such blocks in chain [start_block_hash; end_block_hash]
     and this method returns the first one.
 
-    Method uses bisection algorithm. It computes mid-range block hash by computing
+    Method uses bisection algorithmm. It computes mid-range block hash by computing
       mid_block_number = floor((end_block_number - start_block_number) / 2)
     and then calculating total_issuance imbalance in mid_block_number to start and end range total_issuance imbalance,
-    adjusting interval ends accordingly to bisection algorith.
+    adjusting interval ends accordingly to bisection algorithm.
 
     :param chain_connection: WS handler
     :param start_block_hash: first block hash in range to check

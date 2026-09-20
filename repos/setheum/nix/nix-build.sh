@@ -10,7 +10,7 @@ CARGO_HOME=${CARGO_HOME:-"$(realpath ~/.cargo)"}
 PATH_TO_FIX=${PATH_TO_FIX:-""}
 
 # we need to download all dependencies
-echo checking depedencies...
+echo checking dependencies...
 
 set +e
 nix-shell --show-trace --pure --run "CARGO_HOME=$CARGO_HOME cargo fetch --locked --offline 2>/dev/null"

@@ -329,7 +329,7 @@ pub mod module {
 			})
 		}
 
-		/// Resett whitelist filter rule.
+		/// Reset whitelist filter rule.
 		///
 		/// Requires `GovernanceOrigin`
 		///
