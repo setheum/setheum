@@ -57,7 +57,7 @@ run = "cargo test -p ink --all-features"
 
 [tasks."test:bridge:go"]
 description = "Run bridge Go tests"
-run = "go test ./repos/bridge/..."
+run = "go test ./repos/bridge/bridge-core/... ./repos/bridge/bridge-relayer/..."
 
 [tasks."test:setbft"]
 description = "Run Set-BFT tests"
