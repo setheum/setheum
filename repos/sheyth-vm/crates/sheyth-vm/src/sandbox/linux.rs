@@ -3029,7 +3029,6 @@ impl Sandbox {
                             abort();
                         }
                     }
-                    unreachable!()
                 }
             }
             Fork::Host(child) => child,
