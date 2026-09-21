@@ -126,11 +126,15 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Install mise
-        uses: jdx/mise-action@v2
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+          cache: false
 
       - name: Run Bridge Go Tests
-        run: mise run test:bridge:go
+        run: |
+          go test ./repos/bridge/bridge-core/... ./repos/bridge/bridge-relayer/...
 
   test-substrate:
     name: Substrate SDK Tests
