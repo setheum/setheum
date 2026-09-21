@@ -134,6 +134,9 @@ jobs:
 
       - name: Run Bridge Go Tests
         run: |
+          cd repos/bridge/bridge-core && go mod tidy
+          cd ../bridge-relayer && go mod tidy
+          cd ../../..
           go test ./repos/bridge/bridge-core/... ./repos/bridge/bridge-relayer/...
 
   test-substrate:
