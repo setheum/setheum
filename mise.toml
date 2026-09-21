@@ -2,7 +2,7 @@
 rust = "1.88.0"
 bun = "latest"
 python = "latest"
-go = "1.25.7"
+go = "1.22"
 
 [tasks.default]
 alias = "build"
