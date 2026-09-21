@@ -126,13 +126,10 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Install mise
-        uses: jdx/mise-action@v2
-
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.21"
+          go-version: "1.25.7"
 
       - name: Run Bridge Go Tests
         run: |

@@ -1,6 +1,6 @@
 module github.com/sygmaprotocol/sygma-core
 
-go 1.20
+go 1.25.7
 
 require (
 	github.com/centrifuge/go-substrate-rpc-client/v4 v4.1.0
