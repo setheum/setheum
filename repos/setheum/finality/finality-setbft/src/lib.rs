@@ -50,7 +50,6 @@ use crate::{
     sbft::{
         Keychain, NetworkData, NodeCount, NodeIndex, Recipient, SignatureSet, SpawnHandle, VERSION,
     },
-    aggregation::RmcNetworkData,
     block::UnverifiedHeader,
     network::data::split::Split,
     session::{SessionBoundaries, SessionBoundaryInfo, SessionId},

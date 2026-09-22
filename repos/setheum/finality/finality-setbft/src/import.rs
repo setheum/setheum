@@ -89,14 +89,14 @@ where
     type Error = I::Error;
 
     async fn check_block(
-        &mut self,
+        &self,
         block: BlockCheckParams<Block>,
     ) -> Result<ImportResult, Self::Error> {
         self.inner.check_block(block).await
     }
 
     async fn import_block(
-        &mut self,
+        &self,
         mut block: BlockImportParams<Block>,
     ) -> Result<ImportResult, Self::Error> {
         if let Ok(best) = self.select_chain.best_chain().await {
@@ -183,14 +183,14 @@ where
     type Error = I::Error;
 
     async fn check_block(
-        &mut self,
+        &self,
         block: BlockCheckParams<Block>,
     ) -> Result<ImportResult, Self::Error> {
         self.inner.check_block(block).await
     }
 
     async fn import_block(
-        &mut self,
+        &self,
         mut block: BlockImportParams<Block>,
     ) -> Result<ImportResult, Self::Error> {
         let number = *block.header.number();
@@ -310,7 +310,7 @@ where
     type Error = RedirectingImportError<I::Error>;
 
     async fn check_block(
-        &mut self,
+        &self,
         block: BlockCheckParams<Block>,
     ) -> Result<ImportResult, Self::Error> {
         self.inner
@@ -320,7 +320,7 @@ where
     }
 
     async fn import_block(
-        &mut self,
+        &self,
         block: BlockImportParams<Block>,
     ) -> Result<ImportResult, Self::Error> {
         let header = block.post_header();

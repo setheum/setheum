@@ -128,12 +128,21 @@ impl SpawnHandleT for SpawnHandle {
         self.0.spawn(name, None, task)
     }
 
+    /// `SpawnTaskHandle` no longer provides `spawn_essential`, so we emulate it: the returned
+    /// handle resolves once the task finishes (or with `Err` if it is dropped/panics).
     fn spawn_essential(
         &self,
         name: &'static str,
         task: impl Future<Output = ()> + Send + 'static,
     ) -> Pin<Box<dyn Future<Output = Result<(), ()>> + Send>> {
-        self.0.spawn_essential(name, None, task)
+        let (tx, rx) = oneshot::channel();
+        let wrapped_task = async move {
+            task.await;
+            let _ = tx.send(());
+        };
+        self.0.spawn(name, None, wrapped_task);
+
+        Box::pin(async move { rx.await.map_err(|_| ()) })
     }
 }
 

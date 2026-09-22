@@ -46,7 +46,7 @@ use crate::{
         backup::SBFTBackup,
         manager::{Task, TaskCommon},
     },
-    CurrentNetworkData, Hasher, Keychain, NodeIndex, SessionId, SignatureSet, UnitCreationDelay,
+    NetworkData, Hasher, Keychain, NodeIndex, SessionId, SignatureSet, UnitCreationDelay,
 };
 
 type WrappedNetwork<H, ADN> = NetworkWrapper<
