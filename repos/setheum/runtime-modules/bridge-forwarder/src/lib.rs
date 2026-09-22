@@ -74,7 +74,7 @@ pub mod pallet {
 	impl<T: Config> TransactorForwarder for Pallet<T> {
 		fn xcm_transactor_forwarder(origin: [u8; 32], what: Asset, dest: Location) -> DispatchResult {
 			let cap_weight: Weight = Weight::from_all(u64::MAX);
-			T::XCMBridge::transfer(origin, what.clone(), dest, Some(cap_weight))?;
+			T::XCMBridge::transfer(origin, what.clone(), dest.clone(), Some(cap_weight))?;
 
 			let origin_location: Location = Junction::AccountId32 { network: None, id: origin }.into();
 
@@ -84,7 +84,7 @@ pub mod pallet {
 		}
 
 		fn other_world_transactor_forwarder(origin: [u8; 32], what: Asset, dest: Location) -> DispatchResult {
-			T::Bridge::transfer(origin, what.clone(), dest, None)?;
+			T::Bridge::transfer(origin, what.clone(), dest.clone(), None)?;
 
 			let origin_location: Location = Junction::AccountId32 { network: None, id: origin }.into();
 
