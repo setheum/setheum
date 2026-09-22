@@ -43,7 +43,7 @@ package = "aggregator"
 path = "../aggregator"
 default-features = false
 
-[dependencies.finality-rate-limiter]
+[dependencies.rate-limiter]
 workspace = true
 default-features = false
 
