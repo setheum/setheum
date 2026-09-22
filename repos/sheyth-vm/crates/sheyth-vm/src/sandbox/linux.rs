@@ -1080,7 +1080,7 @@ struct ChildFds {
 
 unsafe fn child_main(uid_map: &str, gid_map: &str, fds: ChildFds, sandboxing_enabled: bool) -> Result<(), Error> {
     // Change the name of the process.
-    linux_raw::sys_prctl_set_name(b"sheyth_vm-sandbox\0")?;
+    linux_raw::sys_prctl_set_name(b"sheyth-sandbox\0\0")?;
 
     if sandboxing_enabled {
         // Overwrite the hostname and domainname.

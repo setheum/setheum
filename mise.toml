@@ -103,9 +103,9 @@ env = { SKIP_WASM_BUILD = "1" }
 run = "cargo check --features with-ethereum-compatibility --tests --workspace --exclude setheum_client --exclude clisee --exclude setheum-e2e-client --exclude payout-stakers"
 
 [tasks.clippy]
-description = "Run cargo clippy (temporarily excludes the stale setheum_client and its dependents)"
+description = "Run cargo clippy (excludes the stale setheum_client/clisee and the vendored SheythVM fork)"
 env = { SKIP_WASM_BUILD = "1" }
-run = "cargo clippy --workspace --exclude setheum_client --exclude clisee --exclude setheum-e2e-client --exclude payout-stakers -- -D warnings"
+run = "cargo clippy --workspace --exclude setheum_client --exclude clisee --exclude setheum-e2e-client --exclude payout-stakers --exclude sheyth-vm --exclude spinit -- -D warnings"
 
 [tasks."gen:genesis"]
 description = "Generate genesis configurations"
