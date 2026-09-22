@@ -48,8 +48,7 @@ use tokio::time::Duration;
 
 use crate::{
     sbft::{
-        CurrentNetworkData, Keychain, LegacyNetworkData, NodeCount, NodeIndex, Recipient,
-        SignatureSet, SpawnHandle, CURRENT_VERSION, LEGACY_VERSION,
+        Keychain, NetworkData, NodeCount, NodeIndex, Recipient, SignatureSet, SpawnHandle, VERSION,
     },
     aggregation::RmcNetworkData,
     block::UnverifiedHeader,
@@ -80,10 +79,12 @@ mod sync_oracle;
 pub mod testing;
 
 pub use crate::{
+    aggregation::RmcNetworkData,
     block::{
         substrate::{BlockImporter, Justification, JustificationTranslator, SubstrateChainStatus},
         BlockId,
     },
+    compatibility::{Version, Versioned},
     import::{get_setbft_block_import, SetBFTBlockImport, RedirectingBlockImport},
     justification::SetBFTJustification,
     network::{
@@ -93,6 +94,7 @@ pub use crate::{
     },
     nodes::run_validator_node,
     session::SessionPeriod,
+    sync::VersionedNetworkData,
     sync::FavouriteSelectChainProvider,
     sync_oracle::SyncOracle,
 };

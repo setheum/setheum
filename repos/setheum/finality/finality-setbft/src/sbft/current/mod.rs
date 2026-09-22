@@ -22,7 +22,7 @@ use std::time::Duration;
 
 use set_bft::{create_config, default_delay_config, Config, LocalIO, Terminator};
 use log::debug;
-use network_clique::SpawnHandleExt;
+use network_clique::SpawnHandleT;
 
 mod network;
 mod performance;

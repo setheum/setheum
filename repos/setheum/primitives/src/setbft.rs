@@ -61,6 +61,49 @@ pub type AuthoritySignature = app::Signature;
 /// Authority ID
 pub type AuthorityId = app::Public;
 
+/// Key type id of the Aura session key.
+pub const AURA_KEY_TYPE: KeyTypeId = KeyTypeId(*b"aura");
+/// Key type id of the im-online session key.
+pub const IM_ONLINE_KEY_TYPE: KeyTypeId = KeyTypeId(*b"imon");
+/// Key type id of the authority-discovery session key.
+pub const AUTHORITY_DISCOVERY_KEY_TYPE: KeyTypeId = KeyTypeId(*b"audi");
+
+/// The session keys of a Setheum node.
+///
+/// This mirrors the layout (and therefore the SCALE encoding) of the runtime's `SessionKeys`,
+/// so that `Session::QueuedKeys` can be decoded outside of the runtime (e.g. by the finality
+/// integration). All session keys are fixed-size 32-byte public keys.
+#[derive(Clone, Encode, Decode, PartialEq, Eq, TypeInfo)]
+pub struct SetBFTNodeSessionKeys {
+    pub aura: [u8; 32],
+    pub setbft: [u8; 32],
+    pub im_online: [u8; 32],
+    pub authority_discovery: [u8; 32],
+}
+
+impl OpaqueKeys for SetBFTNodeSessionKeys {
+    type KeyTypeIdProviders = ();
+
+    fn key_ids() -> &'static [KeyTypeId] {
+        &[
+            AURA_KEY_TYPE,
+            KEY_TYPE,
+            IM_ONLINE_KEY_TYPE,
+            AUTHORITY_DISCOVERY_KEY_TYPE,
+        ]
+    }
+
+    fn get_raw(&self, i: KeyTypeId) -> &[u8] {
+        match i {
+            AURA_KEY_TYPE => &self.aura,
+            KEY_TYPE => &self.setbft,
+            IM_ONLINE_KEY_TYPE => &self.im_online,
+            AUTHORITY_DISCOVERY_KEY_TYPE => &self.authority_discovery,
+            _ => panic!("unknown session key type id"),
+        }
+    }
+}
+
 // Default number of heap pages that gives limit of 256MB for a runtime instance since each page is 64KB
 pub const HEAP_PAGES: u64 = 4096;
 

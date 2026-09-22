@@ -23,7 +23,7 @@ use std::{collections::HashSet, marker::PhantomData, sync::Arc};
 use async_trait::async_trait;
 use futures::channel::oneshot;
 use log::{debug, info, trace, warn};
-use network_clique::SpawnHandleExt;
+use network_clique::SpawnHandleT;
 use primitives::setbft::SetBFTSessionApi;
 use sc_keystore::{Keystore, LocalKeystore};
 use sp_application_crypto::RuntimeAppPublic;
@@ -31,8 +31,7 @@ use sp_runtime::traits::{Block as BlockT, Header as HeaderT};
 
 use crate::{
     sbft::{
-        current_create_setbft_config, legacy_create_setbft_config, run_current_member,
-        run_legacy_member, CurrentPerformanceService, CurrentPerformanceServiceIO, SpawnHandle,
+        create_setbft_config, run_member, PerformanceService, PerformanceServiceIO, SpawnHandle,
     },
     setbft_primitives::{
         crypto::SignatureSet, AuthoritySignature, BlockHash, BlockNumber, Hash, KEY_TYPE,
@@ -53,14 +52,12 @@ use crate::{
         session::{SessionManager, SessionSender},
     },
     party::{
-        backup::SBFTBackup, manager::aggregator::AggregatorVersion, traits::NodeSessionManager,
-        LOG_TARGET,
+        backup::SBFTBackup, traits::NodeSessionManager, LOG_TARGET,
     },
     runtime_api::RuntimeApi,
     sync::JustificationSubmissions,
-    AuthorityId, BlockId, CurrentRmcNetworkData, Keychain, LegacyRmcNetworkData, NodeIndex,
-    ProvideRuntimeApi, SessionBoundaries, SessionBoundaryInfo, SessionId, SessionPeriod,
-    UnitCreationDelay, VersionedNetworkData,
+    AuthorityId, BlockId, Keychain, NodeIndex, ProvideRuntimeApi, RmcNetworkData, SessionBoundaries,
+    SessionBoundaryInfo, SessionId, SessionPeriod, UnitCreationDelay, VersionedNetworkData,
 };
 
 mod aggregator;
@@ -71,23 +68,15 @@ pub use authority::{Subtasks, Task as AuthorityTask};
 pub use task::{Handle, NoopRunnable, Runnable, Task, TaskCommon};
 
 use crate::{
-    sbft::{CURRENT_VERSION, LEGACY_VERSION},
+    sbft::VERSION,
     block::{BlockchainEvents, HeaderBackend},
     sync::RequestBlocks,
 };
 
-#[cfg(feature = "only_legacy")]
-const ONLY_LEGACY_ENV: &str = "ONLY_LEGACY_PROTOCOL";
-
-type LegacyNetworkType = SimpleNetwork<
-    LegacyRmcNetworkData,
-    mpsc::UnboundedReceiver<LegacyRmcNetworkData>,
-    SessionSender<LegacyRmcNetworkData>,
->;
 type CurrentNetworkType = SimpleNetwork<
-    CurrentRmcNetworkData,
-    mpsc::UnboundedReceiver<CurrentRmcNetworkData>,
-    SessionSender<CurrentRmcNetworkData>,
+    RmcNetworkData,
+    mpsc::UnboundedReceiver<RmcNetworkData>,
+    SessionSender<RmcNetworkData>,
 >;
 
 struct SubtasksParams<H, HB, N, JS>
@@ -202,83 +191,6 @@ where
         }
     }
 
-    fn legacy_subtasks<N: Network<VersionedNetworkData<B::UnverifiedHeader>> + 'static>(
-        &self,
-        params: SubtasksParams<H, HB, N, JS>,
-    ) -> Subtasks {
-        let SubtasksParams {
-            n_members,
-            node_id,
-            session_id,
-            data_network,
-            session_boundaries,
-            subtask_common,
-            blocks_for_aggregator,
-            chain_info,
-            aggregator_io,
-            multikeychain,
-            exit_rx,
-            backup,
-            ..
-        } = params;
-        let (chain_tracker, data_provider) = ChainTracker::new(
-            self.best_block_selection_strategy.clone(),
-            self.header_backend.clone(),
-            session_boundaries.clone(),
-            Default::default(),
-            self.metrics.clone(),
-        );
-        let ordered_data_interpreter = OrderedDataInterpreter::new(
-            blocks_for_aggregator,
-            chain_info,
-            self.verifier.clone(),
-            session_boundaries.clone(),
-        );
-        let consensus_config =
-            legacy_create_setbft_config(n_members, node_id, session_id, self.unit_creation_delay);
-        let data_network = data_network.map();
-
-        let (unfiltered_setbft_network, rmc_network) =
-            split(data_network, "setbft_network", "rmc_network");
-        let (data_store, setbft_network) = DataStore::new(
-            session_boundaries.clone(),
-            self.header_backend.clone(),
-            self.client.clone(),
-            self.verifier.clone(),
-            self.block_requester.clone(),
-            Default::default(),
-            unfiltered_setbft_network,
-        );
-        Subtasks::new(
-            exit_rx,
-            run_legacy_member(
-                subtask_common.clone(),
-                multikeychain.clone(),
-                consensus_config,
-                setbft_network.into(),
-                data_provider,
-                ordered_data_interpreter,
-                backup,
-            ),
-            task::task(
-                subtask_common.clone(),
-                NoopRunnable,
-                "noop sbft performance",
-            ),
-            aggregator::task(
-                subtask_common.clone(),
-                self.header_backend.clone(),
-                aggregator_io,
-                session_boundaries,
-                self.metrics.clone(),
-                multikeychain,
-                AggregatorVersion::<CurrentNetworkType, _>::Legacy(rmc_network),
-            ),
-            task::task(subtask_common.clone(), chain_tracker, "chain tracker"),
-            task::task(subtask_common, data_store, "data store"),
-        )
-    }
-
     fn current_subtasks<N: Network<VersionedNetworkData<B::UnverifiedHeader>> + 'static>(
         &self,
         params: SubtasksParams<H, HB, N, JS>,
@@ -314,13 +226,13 @@ where
             self.verifier.clone(),
             session_boundaries.clone(),
         );
-        let (sbft_performance, sbft_batch_handler) = CurrentPerformanceService::new(
+        let (sbft_performance, sbft_batch_handler) = PerformanceService::new(
             node_id.into(),
             n_members,
             session_id,
             score_submission_period,
             ordered_data_interpreter,
-            CurrentPerformanceServiceIO {
+            PerformanceServiceIO {
                 hashes_for_aggregator: performance_for_aggregator,
                 signatures_from_aggregator: signed_performance_from_aggregator,
             },
@@ -328,7 +240,7 @@ where
             self.score_metrics.clone(),
         );
         let consensus_config =
-            current_create_setbft_config(n_members, node_id, session_id, self.unit_creation_delay);
+            create_setbft_config(n_members, node_id, session_id, self.unit_creation_delay);
         let data_network = data_network.map();
 
         let (unfiltered_setbft_network, rmc_network) =
@@ -344,7 +256,7 @@ where
         );
         Subtasks::new(
             exit_rx,
-            run_current_member(
+            run_member(
                 subtask_common.clone(),
                 multikeychain.clone(),
                 consensus_config,
@@ -361,7 +273,7 @@ where
                 session_boundaries,
                 self.metrics.clone(),
                 multikeychain,
-                AggregatorVersion::<_, LegacyNetworkType>::Current(rmc_network),
+                rmc_network,
             ),
             task::task(subtask_common.clone(), chain_tracker, "chain tracker"),
             task::task(subtask_common, data_store, "data store"),
@@ -446,43 +358,26 @@ where
             .runtime_api()
             .next_session_finality_version(last_block_of_previous_session_hash)
         {
-            #[cfg(feature = "only_legacy")]
-            _ if self.only_legacy() => {
-                info!(target: LOG_TARGET, "Running session with legacy-only SetBFT version.");
-                self.legacy_subtasks(params)
-            }
             // The `as`es here should be removed, but this would require a pallet migration and I
             // am lazy.
-            Ok(version) if version == CURRENT_VERSION as u32 => {
+            Ok(version) if version == VERSION as u32 => {
                 info!(target: LOG_TARGET, "Running session with SetBFT version {}, which is current.", version);
                 self.current_subtasks(params)
             }
-            Ok(version) if version == LEGACY_VERSION as u32 => {
-                info!(target: LOG_TARGET, "Running session with SetBFT version {}, which is legacy.", version);
-                self.legacy_subtasks(params)
-            }
-            Ok(version) if version > CURRENT_VERSION as u32 => {
+            Ok(version) if version > VERSION as u32 => {
                 panic!(
-                    "Too new version {version}. Supported versions: {LEGACY_VERSION} or {CURRENT_VERSION}. Probably outdated node."
+                    "Too new version {version}. Supported version: {VERSION}. Probably outdated node."
                 )
             }
             Ok(version) => {
                 info!(target: LOG_TARGET, "Attempting to run session with too old version {}, likely because we are synchronizing old sessions for which we have keys. This will not work, but it doesn't matter.", version);
-                info!(target: LOG_TARGET, "Running session with SetBFT version {}, which is legacy.", LEGACY_VERSION);
-                self.legacy_subtasks(params)
+                self.current_subtasks(params)
             }
             _ => {
-                // this might happen when there was no runtime upgrade yet. Fallback to legacy version
-                self.legacy_subtasks(params)
+                // this might happen when there was no runtime upgrade yet. Fallback to the current version
+                self.current_subtasks(params)
             }
         }
-    }
-
-    #[cfg(feature = "only_legacy")]
-    fn only_legacy(&self) -> bool {
-        std::env::var(ONLY_LEGACY_ENV)
-            .map(|legacy| !legacy.is_empty())
-            .unwrap_or(false)
     }
 }
 

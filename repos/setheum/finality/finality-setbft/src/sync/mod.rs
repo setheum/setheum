@@ -40,7 +40,7 @@ mod task_queue;
 mod tasks;
 mod ticker;
 
-pub use data::MAX_MESSAGE_SIZE;
+pub use data::{VersionedNetworkData, MAX_MESSAGE_SIZE};
 pub use handler::DatabaseIO;
 pub use select_chain::FavouriteSelectChainProvider;
 pub use service::{Service, IO};
