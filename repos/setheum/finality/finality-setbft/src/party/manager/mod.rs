@@ -73,12 +73,6 @@ use crate::{
     sync::RequestBlocks,
 };
 
-type CurrentNetworkType = SimpleNetwork<
-    RmcNetworkData,
-    mpsc::UnboundedReceiver<RmcNetworkData>,
-    SessionSender<RmcNetworkData>,
->;
-
 struct SubtasksParams<H, HB, N, JS>
 where
     H: Header,

@@ -46,7 +46,7 @@ use crate::{
         backup::SBFTBackup,
         manager::{Task, TaskCommon},
     },
-    NetworkData, Hasher, Keychain, NodeIndex, SessionId, SignatureSet, UnitCreationDelay,
+    Hasher, Keychain, NodeIndex, SessionId, SignatureSet, UnitCreationDelay,
 };
 
 type WrappedNetwork<H, ADN> = NetworkWrapper<
@@ -68,7 +68,7 @@ pub fn run_member<UH, ADN>(
 ) -> Task
 where
     UH: UnverifiedHeader,
-    ADN: Network<CurrentNetworkData<UH>> + 'static,
+    ADN: Network<NetworkData<UH>> + 'static,
 {
     let TaskCommon {
         spawn_handle,

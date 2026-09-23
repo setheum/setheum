@@ -93,7 +93,7 @@ pub use crate::{
     },
     nodes::run_validator_node,
     session::SessionPeriod,
-    sync::VersionedNetworkData,
+    sync::VersionedNetworkData as SyncNetworkData,
     sync::FavouriteSelectChainProvider,
     sync_oracle::SyncOracle,
 };
@@ -108,6 +108,7 @@ pub struct MillisecsPerBlock(pub u64);
 pub struct UnitCreationDelay(pub u64);
 
 pub type SplitData<UH> = Split<NetworkData<UH>, RmcNetworkData>;
+pub type VersionedNetworkData<UH> = SplitData<UH>;
 
 pub trait ClientForSetBFT<B, BE>:
     LockImportRun<B, BE>
