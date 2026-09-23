@@ -73,7 +73,7 @@ pub const AUTHORITY_DISCOVERY_KEY_TYPE: KeyTypeId = KeyTypeId(*b"audi");
 /// This mirrors the layout (and therefore the SCALE encoding) of the runtime's `SessionKeys`,
 /// so that `Session::QueuedKeys` can be decoded outside of the runtime (e.g. by the finality
 /// integration). All session keys are fixed-size 32-byte public keys.
-#[derive(Clone, Encode, Decode, PartialEq, Eq, TypeInfo)]
+#[derive(Clone, Encode, Decode, DecodeWithMemTracking, PartialEq, Eq, TypeInfo)]
 pub struct SetBFTNodeSessionKeys {
     pub aura: [u8; 32],
     pub setbft: [u8; 32],
@@ -149,6 +149,9 @@ pub const LEGACY_FINALITY_VERSION: u16 = 2;
 pub const LENIENT_THRESHOLD: Perquintill = Perquintill::from_percent(90);
 
 pub const DEFAULT_MAX_NON_FINALIZED_BLOCKS: u32 = 20;
+
+/// The number of SBFT batches between score submissions.
+pub const SCORE_SUBMISSION_PERIOD: u32 = 10;
 
 /// Hold set of validators that produce blocks and set of validators that participate in finality
 /// during session.
@@ -354,6 +357,8 @@ sp_api::decl_runtime_apis! {
         fn millisecs_per_block() -> u64;
         fn finality_version() -> Version;
         fn next_session_finality_version() -> Version;
+        /// The number of SBFT batches between score submissions.
+        fn score_submission_period() -> u32;
 /// Predict finality committee and block producers for the given session. `session` must be
 /// within the current era (current, in the staking context).
 ///
@@ -369,6 +374,8 @@ sp_api::decl_runtime_apis! {
 /// also as `setbft_key` - consensus engine's part of session keys) in the current session
 /// of SetBFT (finalisation committee).
         fn key_owner(key: AuthorityId) -> Option<AccountId>;
+        /// Submits score for a nonce in a session of performance of finality committee members.
+        fn submit_sbft_score(score: Score, signature: crypto::SignatureSet<AuthoritySignature>) -> Option<()>;
     }
 }
 
@@ -502,7 +509,7 @@ where
 pub type ScoreNonce = u32;
 pub type RawScore = sp_std::vec::Vec<u16>;
 
-#[derive(PartialEq, parity_scale_codec::Decode, parity_scale_codec::Encode, scale_info::TypeInfo, Debug, Clone)]
+#[derive(PartialEq, parity_scale_codec::Decode, DecodeWithMemTracking, parity_scale_codec::Encode, scale_info::TypeInfo, Debug, Clone)]
 pub struct Score {
     pub session_id: SessionIndex,
     pub nonce: ScoreNonce,
@@ -512,20 +519,20 @@ pub struct Score {
 pub mod crypto {
     use core::marker::PhantomData;
 
-    use parity_scale_codec::{Decode, Encode};
+    use parity_scale_codec::{Decode, DecodeWithMemTracking, Encode};
     use scale_info::TypeInfo;
     use sp_runtime::RuntimeAppPublic;
     use sp_std::vec::Vec;
 
     use super::AuthoritySignature;
 
-    #[derive(PartialEq, Decode, Encode, TypeInfo, Debug, Clone)]
+    #[derive(PartialEq, Decode, DecodeWithMemTracking, Encode, TypeInfo, Debug, Clone)]
     pub struct IndexedSignature<S> {
         pub index: u64,
         pub signature: S,
     }
 
-    #[derive(PartialEq, Decode, Encode, TypeInfo, Debug, Clone)]
+    #[derive(PartialEq, Decode, DecodeWithMemTracking, Encode, TypeInfo, Debug, Clone)]
     pub struct SignatureSet<S>(pub Vec<IndexedSignature<S>>);
 
     #[cfg_attr(feature = "std", derive(Hash))]

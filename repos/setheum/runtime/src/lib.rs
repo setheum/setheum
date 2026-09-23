@@ -1863,6 +1863,19 @@ impl_runtime_apis! {
 		fn key_owner(key: primitives::setbft::AuthorityId) -> Option<AccountId> {
 			Session::key_owner(primitives::setbft::KEY_TYPE, key.as_ref())
 		}
+
+		fn score_submission_period() -> u32 {
+			primitives::setbft::SCORE_SUBMISSION_PERIOD
+		}
+
+		fn submit_sbft_score(
+			score: primitives::setbft::Score,
+			signature: primitives::setbft::crypto::SignatureSet<primitives::AuthoritySignature>,
+		) -> Option<()> {
+			let call = RuntimeCall::SetBFT(module_setbft::Call::submit_sbft_score { score, signature });
+			let xt = UncheckedExtrinsic::new_bare(call);
+			sp_io::offchain::submit_transaction(xt.encode()).ok()
+		}
 	}
 
 	impl module_oracle_rpc_runtime_api::OracleApi<

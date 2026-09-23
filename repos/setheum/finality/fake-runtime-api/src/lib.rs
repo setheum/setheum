@@ -207,6 +207,17 @@ pub mod fake_runtime {
 			fn key_owner(_key: SetBFTId) -> Option<AccountId> {
 				unimplemented!()
 			}
+
+			fn score_submission_period() -> u32 {
+				unimplemented!()
+			}
+
+			fn submit_sbft_score(
+				_score: Score,
+				_signature: SignatureSet<AuthoritySignature>,
+			) -> Option<()> {
+				unimplemented!()
+			}
 		}
 
 		/// There’s an important remark on how this fake runtime must be implemented - it does not need to
