@@ -30,14 +30,11 @@ pub use sp_runtime::{
     BoundedVec, ConsensusEngineId, OpaqueExtrinsic as UncheckedExtrinsic, Perbill,
     traits::OpaqueKeys,
 };
-use sp_runtime::{
-    traits::{IdentifyAccount, Verify},
-    MultiSignature, Perquintill,
-};
+use sp_runtime::Perquintill;
 pub use sp_staking::{EraIndex, SessionIndex};
 use sp_std::vec::Vec;
 
-use crate::{AccountId, Balance, BlockNumber, SessionCount, Version};
+use crate::{AccountId, Balance, SessionCount, Version};
 
 pub const KEY_TYPE: KeyTypeId = KeyTypeId(*b"seth");
 
@@ -475,7 +472,7 @@ pub mod staking {
      * );
      * ```
      *
-     * @var		mixed	#[macro_export]
+     * @var mixed #[macro_export]
      */
     #[macro_export]
     macro_rules! wrap_methods {

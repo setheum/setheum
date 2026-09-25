@@ -19,6 +19,7 @@ sp-runtime = { workspace = true }
 sp-std = { workspace = true }
 
 module-traits = { workspace = true , default-features = false }
+module-utilities = { workspace = true , default-features = false }
 
 [dev-dependencies]
 sp-core = { workspace = true, features = ["std"] }
@@ -31,6 +32,7 @@ std = [
 	"frame-support/std",
 	"frame-system/std",
 	"module-traits/std",
+	"module-utilities/std",
 	"parity-scale-codec/std",
 	"scale-info/std",
 	"serde",

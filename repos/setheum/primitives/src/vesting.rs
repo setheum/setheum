@@ -21,7 +21,7 @@
 use parity_scale_codec::{Decode, DecodeWithMemTracking, Encode, HasCompact, MaxEncodedLen};
 use scale_info::TypeInfo;
 use sp_runtime::{
-	traits::{AtLeast32Bit, CheckedAdd, CheckedDiv, CheckedMul, Saturating, UniqueSaturatedInto},
+	traits::AtLeast32Bit,
 	RuntimeDebug,
 };
 
@@ -29,6 +29,7 @@ use sp_runtime::{
 ///
 /// Benefits would be granted gradually, `per_period` amount every `period`
 /// of blocks after `start`.
+#[allow(clippy::multiple_bound_locations)]
 #[derive(Clone, Encode, Decode, DecodeWithMemTracking, PartialEq, Eq, RuntimeDebug, MaxEncodedLen, TypeInfo)]
 pub struct VestingSchedule<BlockNumber, Balance: MaxEncodedLen + HasCompact> {
 	/// Vesting starting block
@@ -42,7 +43,7 @@ pub struct VestingSchedule<BlockNumber, Balance: MaxEncodedLen + HasCompact> {
 	pub per_period: Balance,
 }
 
-impl<BlockNumber: AtLeast32Bit + Copy, Balance: AtLeast32Bit + MaxEncodedLen + Copy>
+impl<BlockNumber: AtLeast32Bit + Copy, Balance: AtLeast32Bit + MaxEncodedLen + HasCompact + Copy>
 	VestingSchedule<BlockNumber, Balance>
 {
 	/// Returns the end of all periods, `None` if calculation overflows.

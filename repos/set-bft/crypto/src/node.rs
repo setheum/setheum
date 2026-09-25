@@ -306,7 +306,7 @@ impl Decode for NodeSubset {
         let bytes = Vec::decode(input)?;
         let mut bv = bit_vec::BitVec::from_bytes(&bytes);
         // Length should be capacity rounded up to the closest multiple of 8
-        if bv.len() != 8 * ((capacity + 7) / 8) {
+        if bv.len() != 8 * capacity.div_ceil(8) {
             return Err(Error::from(
                 "Length of bitvector inconsistent with encoded capacity.",
             ));
@@ -335,7 +335,7 @@ impl fmt::Display for NodeSubset {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let mut v: Vec<usize> = self.elements().map(|n| n.into()).collect();
         v.sort();
-        write!(f, "{:?}", v)
+        write!(f, "{v:?}")
     }
 }
 
