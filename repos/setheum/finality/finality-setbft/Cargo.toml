@@ -205,6 +205,12 @@ workspace = true
 workspace = true
 default-features = false
 
+[dev-dependencies.substrate-test-runtime]
+workspace = true
+
+[dev-dependencies.substrate-test-runtime-client]
+workspace = true
+
 [dev-dependencies.sc-block-builder]
 workspace = true
 
