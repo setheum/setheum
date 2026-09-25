@@ -238,7 +238,7 @@ parameter_types! {
 	pub const MiddSwapThreshold: Balance = 5000;
 	pub const HigerSwapThreshold: Balance = 9500;
 	pub const TransactionPaymentPalletId: PalletId = PalletId(*b"set/fees");
-	pub const TreasuryPalletId: PalletId = PalletId(*b"set/trsry");
+	pub const TreasuryPalletId: PalletId = PalletId(*b"set/trsy");
 	pub TreasuryAccount: AccountId = TreasuryPalletId::get().into_account_truncating();
 	pub AlternativeSwapPathJointList: Vec<Vec<CurrencyId>> = vec![
 	];

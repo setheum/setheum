@@ -113,8 +113,8 @@ ord_parameter_types! {
 parameter_types! {
 	pub const GetSEUSDCurrencyId: CurrencyId = SEUSD;
 	pub const MaxAuctionsCount: u32 = 10_000;
-	pub const UssdTreasuryPalletId: PalletId = PalletId(*b"set/seusdtrsymod");
-	pub TreasuryAccount: AccountId = PalletId(*b"set/seusdtrsyacc").into_account_truncating();
+	pub const UssdTreasuryPalletId: PalletId = PalletId(*b"set/seum");
+	pub TreasuryAccount: AccountId = PalletId(*b"set/seua").into_account_truncating();
 	pub AlternativeSwapPathJointList: Vec<Vec<CurrencyId>> = vec![
 	];
 }
