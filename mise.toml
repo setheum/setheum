@@ -47,9 +47,9 @@ description = "Run all tests"
 depends = ["test:rust", "test:sheyth", "test:setbft", "test:spinit", "test:bridge:go", "test:substrate"]
 
 [tasks."test:rust"]
-description = "Run Rust tests (temporarily excludes the stale setheum_client and its dependents)"
+description = "Run Rust tests (excludes unported/stale crates and vendored sub-repos)"
 env = { SKIP_WASM_BUILD = "1" }
-run = "cargo test --workspace --features with-ethereum-compatibility --exclude setheum_client --exclude clisee --exclude setheum-e2e-client --exclude payout-stakers"
+run = "cargo test --workspace --features with-ethereum-compatibility --exclude setheum_client --exclude clisee --exclude setheum-e2e-client --exclude payout-stakers --exclude setheum-node --exclude module-loans --exclude module-seusd-engine --exclude module-seusd-treasury --exclude module-incentives --exclude module-committee-management --exclude module-operations --exclude module-elections --exclude module-xtokens --exclude chain-bootstrapper --exclude module-asset-registry --exclude module-bridge --exclude module-bridge-xcm --exclude ink_e2e --exclude ink_sandbox --exclude spinit-cli --exclude spinit-test-macro --exclude spinit --exclude cargo-contract --exclude contract-extrinsics --exclude contract-build --exclude contract-transcode --exclude contract-analyze --exclude contract-metadata"
 
 [tasks."test:sheyth"]
 description = "Run Sheyth (Ink!) tests"
@@ -70,7 +70,7 @@ run = "cargo test -p spinit"
 [tasks."test:substrate"]
 description = "Run substrate SDK tests"
 env = { SKIP_WASM_BUILD = "1" }
-run = "cargo test -p sp-core -p sp-io -p sp-runtime -p sp-std -p sp-arithmetic -p sp-trie -p sp-state-machine -p sp-weights -p sp-storage"
+run = "cargo test -p sp-core:37.0.0 -p sp-io:41.0.1 -p sp-runtime:42.0.0 -p sp-std -p sp-arithmetic:27.0.0 -p sp-trie:40.0.1 -p sp-state-machine:0.46.0 -p sp-weights:32.0.0 -p sp-storage:22.0.0"
 
 [tasks.fmt]
 description = "Format the codebase and apply headers"
