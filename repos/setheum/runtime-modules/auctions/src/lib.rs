@@ -36,6 +36,10 @@
 // SOFTWARE.
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(deprecated)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
 #![allow(clippy::unused_unit)]
 #![allow(clippy::upper_case_acronyms)]
 #![allow(clippy::unnecessary_unwrap)]

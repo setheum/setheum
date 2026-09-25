@@ -1,3 +1,4 @@
+#![allow(warnings)]
 use std::{collections::HashMap, io::Write};
 
 use sheyth_vm::CostModelKind;

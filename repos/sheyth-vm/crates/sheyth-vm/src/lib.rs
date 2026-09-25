@@ -1,3 +1,4 @@
+#![allow(warnings)]
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(feature = "interpreter-musttail-dispatch", feature(explicit_tail_calls))]
 #![cfg_attr(feature = "interpreter-musttail-dispatch", allow(incomplete_features))]

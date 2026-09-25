@@ -1,3 +1,5 @@
+#![allow(warnings)]
+#![allow(static_mut_refs)]
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 

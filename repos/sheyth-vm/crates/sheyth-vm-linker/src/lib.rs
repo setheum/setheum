@@ -1,3 +1,4 @@
+#![allow(warnings)]
 #![doc = include_str!("../README.md")]
 #![deny(unused_must_use)]
 

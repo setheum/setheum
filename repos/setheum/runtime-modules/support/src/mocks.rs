@@ -46,7 +46,7 @@ use primitives::{
 };
 use sp_core::{crypto::AccountId32, H160};
 use sp_io::hashing::blake2_256;
-use sp_runtime::{transaction_validity::TransactionValidityError, DispatchError, DispatchResult};
+use sp_runtime::{transaction_validity::TransactionValidityError, DispatchError};
 use sp_std::{marker::PhantomData, vec::Vec};
 
 #[cfg(feature = "std")]

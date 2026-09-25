@@ -36,6 +36,9 @@
 // SOFTWARE.
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(unused_variables)]
+#![allow(deprecated)]
 #![allow(clippy::unused_unit)]
 #![allow(clippy::boxed_local)]
 #![allow(clippy::type_complexity)]
@@ -69,7 +72,6 @@ use sp_runtime::{
 	FixedPointNumber, FixedPointOperand, Percent, Perquintill,
 };
 use sp_std::prelude::*;
-use xcm::v3::prelude::MultiLocation;
 
 #[cfg(test)]
 mod mock;

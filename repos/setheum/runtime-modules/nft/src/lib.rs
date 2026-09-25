@@ -36,15 +36,23 @@
 // SOFTWARE.
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(deprecated)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
 #![allow(clippy::unnecessary_cast)]
 #![allow(clippy::unused_unit)]
 #![allow(clippy::upper_case_acronyms)]
+#![allow(clippy::let_unit_value)]
+#![allow(deprecated)]
+#![allow(clippy::useless_conversion)]
+#![allow(unused_imports)]
 
 use frame_support::{
 	pallet_prelude::*,
 	require_transactional,
 	traits::{
-		tokens::nonfungibles::{Inspect, Mutate, Transfer},
+		tokens::nonfungibles::{Inspect, Transfer},
 		Currency,
 		ExistenceRequirement::{AllowDeath, KeepAlive},
 		Get, NamedReservableCurrency,
@@ -55,7 +63,7 @@ use frame_system::pallet_prelude::*;
 use module_traits::InspectExtended;
 use parity_scale_codec::{Decode, DecodeWithMemTracking, Encode, MaxEncodedLen};
 use primitives::{
-	nft::{Attributes, ClassProperty, NFTBalance, Properties, CID},
+	nft::{Attributes, ClassProperty, Properties, CID},
 	ReserveIdentifier,
 };
 use scale_info::TypeInfo;
@@ -63,7 +71,7 @@ use scale_info::TypeInfo;
 use serde::{Deserialize, Serialize};
 use sp_runtime::{
 	traits::{
-		AccountIdConversion, AtLeast32BitUnsigned, CheckedAdd, CheckedSub, Hash, MaybeSerializeDeserialize, Member,
+		AccountIdConversion, AtLeast32BitUnsigned, CheckedAdd, CheckedSub, Hash, Member,
 		One, Saturating, StaticLookup, Zero,
 	},
 	ArithmeticError, DispatchResult, RuntimeDebug,

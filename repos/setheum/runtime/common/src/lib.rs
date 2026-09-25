@@ -19,6 +19,10 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(deprecated)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
 
 use codec::{Decode, DecodeWithMemTracking, Encode, MaxEncodedLen};
 use scale_info::TypeInfo;
@@ -72,8 +76,8 @@ pub type TimeStampedPrice = module_oracle::TimestampedValue<Price, primitives::M
 parameter_types! {
 // Operational is 3/4 of TransactionPriority::max_value().
 // Ensure Inherent -> Operational tx -> Unsigned tx -> Signed normal tx
-	pub const CdpEngineUnsignedPriority: TransactionPriority = TransactionPriority::max_value() / 2;      // 50%
-	pub const AuctionManagerUnsignedPriority: TransactionPriority = TransactionPriority::max_value() / 5; // 20%
+	pub const CdpEngineUnsignedPriority: TransactionPriority = TransactionPriority::MAX / 2;      // 50%
+	pub const AuctionManagerUnsignedPriority: TransactionPriority = TransactionPriority::MAX / 5; // 20%
 }
 
 /// Check if the given `address` is a system contract.

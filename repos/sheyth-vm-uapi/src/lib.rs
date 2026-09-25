@@ -36,6 +36,10 @@
 // SOFTWARE.
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(unused_imports)]
+#![allow(unused_macros)]
+#![allow(dead_code)]
 
 bitflags::bitflags! {
 	pub struct ReturnFlags: u32 {

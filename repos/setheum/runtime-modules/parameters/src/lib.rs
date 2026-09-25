@@ -39,6 +39,10 @@
 //! Offer a central place to store and configure parameters.
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(deprecated)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
 #![allow(clippy::unused_unit)]
 
 use frame_support::pallet_prelude::*;

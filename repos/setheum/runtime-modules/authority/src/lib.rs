@@ -57,6 +57,10 @@
 //! Otherwise the proof size estimation may not be accurate.
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(deprecated)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
 // Disable the following three lints since they originate from an external macro
 #![allow(clippy::string_lit_as_bytes)]
 #![allow(clippy::boxed_local)]
