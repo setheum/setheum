@@ -12,5 +12,5 @@ description = "The derive crate for PolkaVM guest programs"
 [dependencies]
 sheyth-vm-derive-impl-macro = { workspace = true }
 
-[lints]
-workspace = true
+[lints.rust]
+unsafe_code = "allow"

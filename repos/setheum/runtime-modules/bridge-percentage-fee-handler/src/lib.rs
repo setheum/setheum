@@ -156,10 +156,11 @@ pub mod pallet {
 
 	impl<T: Config> FeeHandler for Pallet<T> {
 		fn get_fee(domain: DomainID, asset: Asset) -> Option<u128> {
-			match (asset.fun, asset.id) {
+			let asset_id = asset.id;
+			match (asset.fun, asset_id) {
 				(Fungible(amount), _) => {
 					let (fee_rate_basis_point, fee_lower_bound, fee_upper_bound) =
-						AssetFeeRate::<T>::get((domain, asset.id))?;
+						AssetFeeRate::<T>::get((domain, asset_id))?;
 					let fee_amount = amount.saturating_mul(fee_rate_basis_point as u128).saturating_div(10000);
 
 					if fee_amount > fee_upper_bound {

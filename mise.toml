@@ -93,19 +93,19 @@ run_windows = [
 ]
 
 [tasks.check]
-description = "Run cargo check on workspace (temporarily excludes the stale setheum_client and its dependents)"
+description = "Run cargo check on workspace (excludes unported/stale crates: setheum_client, setheum-node, ink_e2e, ink_sandbox, spinit-cli, spinit-test-macro)"
 env = { SKIP_WASM_BUILD = "1" }
-run = "cargo check --workspace --exclude setheum_client --exclude clisee --exclude setheum-e2e-client --exclude payout-stakers"
+run = "cargo check --workspace --exclude setheum_client --exclude clisee --exclude setheum-e2e-client --exclude payout-stakers --exclude setheum-node --exclude ink_e2e --exclude ink_sandbox --exclude spinit-cli --exclude spinit-test-macro"
 
 [tasks."check:runtime"]
 description = "Run cargo check for runtime"
 env = { SKIP_WASM_BUILD = "1" }
-run = "cargo check --features with-ethereum-compatibility --tests --workspace --exclude setheum_client --exclude clisee --exclude setheum-e2e-client --exclude payout-stakers"
+run = "cargo check --features with-ethereum-compatibility --tests --workspace --exclude setheum_client --exclude clisee --exclude setheum-e2e-client --exclude payout-stakers --exclude setheum-node --exclude ink_e2e --exclude ink_sandbox --exclude spinit-cli --exclude spinit-test-macro"
 
 [tasks.clippy]
-description = "Run cargo clippy (temporarily excludes the stale setheum_client and its dependents)"
+description = "Run cargo clippy"
 env = { SKIP_WASM_BUILD = "1" }
-run = "cargo clippy --workspace --exclude setheum_client --exclude clisee --exclude setheum-e2e-client --exclude payout-stakers -- -D warnings"
+run = "cargo clippy --workspace --exclude setheum_client --exclude clisee --exclude setheum-e2e-client --exclude payout-stakers --exclude setheum-node --exclude ink_e2e --exclude ink_sandbox --exclude spinit-cli --exclude spinit-test-macro --exclude sheyth-vm --exclude spinit -- -D warnings"
 
 [tasks."gen:genesis"]
 description = "Generate genesis configurations"

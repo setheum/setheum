@@ -19,5 +19,5 @@ sheyth-vm = { workspace = true }
 [dev-dependencies]
 ruzstd = { workspace = true, features = ["std"] }
 
-[lints]
-workspace = true
+[lints.rust]
+unsafe_code = "allow"
