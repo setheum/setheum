@@ -70,7 +70,7 @@ run = "cargo test -p spinit"
 [tasks."test:substrate"]
 description = "Run substrate SDK tests"
 env = { SKIP_WASM_BUILD = "1" }
-run = "cargo test -p sp-core:37.0.0 -p sp-io:41.0.1 -p sp-runtime:42.0.0 -p sp-std -p sp-arithmetic:27.0.0 -p sp-trie:40.0.1 -p sp-state-machine:0.46.0 -p sp-weights:32.0.0 -p sp-storage:22.0.0"
+run = "cargo test -p sp-core:37.0.0 -p sp-io:41.0.1 -p sp-runtime:42.0.0 -p sp-arithmetic:27.0.0 -p sp-trie:40.0.1 -p sp-state-machine:0.46.0 -p sp-weights:32.0.0 -p sp-storage:22.0.0"
 
 [tasks.fmt]
 description = "Format the codebase and apply headers"
