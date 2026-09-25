@@ -152,7 +152,7 @@ where
     }
 
     fn send_justification(
-        &mut self,
+        &self,
         block_id: BlockId,
         justification: SubstrateJustification,
     ) -> Result<(), SendJustificationError<TranslateError>> {
@@ -178,7 +178,7 @@ where
 #[async_trait::async_trait]
 impl<I> BlockImport<Block> for SetBFTBlockImport<I>
 where
-    I: BlockImport<Block> + Clone + Send,
+    I: BlockImport<Block> + Clone + Send + Sync,
 {
     type Error = I::Error;
 
@@ -305,7 +305,7 @@ impl<E: Display + Debug> Error for RedirectingImportError<E> {}
 #[async_trait::async_trait]
 impl<I> BlockImport<Block> for RedirectingBlockImport<I>
 where
-    I: BlockImport<Block> + Clone + Send,
+    I: BlockImport<Block> + Clone + Send + Sync,
 {
     type Error = RedirectingImportError<I::Error>;
 
