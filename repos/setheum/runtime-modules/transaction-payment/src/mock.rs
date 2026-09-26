@@ -48,6 +48,7 @@ use frame_support::{
 use frame_system::EnsureSignedBy;
 use module_support::{mocks::MockAddressMapping, Price, SpecificJointsSwap};
 use module_traits::parameter_type_with_key;
+use module_swap_legacy as swap_legacy_module;
 use primitives::{Amount, ReserveIdentifier, TokenSymbol, TradingPair};
 use smallvec::smallvec;
 use sp_core::{crypto::AccountId32, H160};

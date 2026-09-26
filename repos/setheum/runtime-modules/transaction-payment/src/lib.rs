@@ -73,9 +73,9 @@ use sp_runtime::{
 };
 use sp_std::prelude::*;
 
-#[cfg(test)]
+#[cfg(all(test, feature = "tx-payment-tests"))]
 mod mock;
-#[cfg(test)]
+#[cfg(all(test, feature = "tx-payment-tests"))]
 mod tests;
 pub mod weights;
 
