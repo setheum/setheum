@@ -260,7 +260,7 @@ mod tests {
 	) -> impl Future<Output = Result<(), ()>> {
 		tokio::spawn(async move {
 			let (public_key, response_sender) =
-				authorization_requests.next().await.expect("We should recieve at least one authorization request.");
+				authorization_requests.next().await.expect("We should receive at least one authorization request.");
 			let authorization_result = handler(public_key);
 			response_sender
 				.send(authorization_result)

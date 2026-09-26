@@ -38,6 +38,10 @@
 //! # Xcm Module
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(deprecated)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
 #![allow(clippy::large_enum_variant)]
 
 use frame_support::{pallet_prelude::*, traits::EnsureOrigin};

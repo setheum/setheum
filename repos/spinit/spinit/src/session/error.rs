@@ -37,7 +37,6 @@
 
 //! Module exposing errors and result types for the session API.
 
-use frame_support::sp_runtime::DispatchError;
 use parity_scale_codec::Decode;
 use thiserror::Error;
 
@@ -58,18 +57,18 @@ pub enum SessionError {
     /// Deployment has been reverted by the contract.
     #[error("Contract deployment has been reverted")]
     DeploymentReverted,
-    /// Deployment failed (aborted by the pallet).
-    #[error("Contract deployment failed before execution: {0:?}")]
-    DeploymentFailed(DispatchError),
-    /// Code upload failed (aborted by the pallet).
-    #[error("Code upload failed: {0:?}")]
-    UploadFailed(DispatchError),
+    /// Deployment failed.
+    #[error("Contract deployment failed before execution: {0}")]
+    DeploymentFailed(String),
+    /// Code upload failed.
+    #[error("Code upload failed: {0}")]
+    UploadFailed(String),
     /// Call has been reverted by the contract.
     #[error("Contract call has been reverted. Encoded error: {0:?}")]
     CallReverted(Vec<u8>),
-    /// Contract call failed (aborted by the pallet).
-    #[error("Contract call failed before execution: {0:?}")]
-    CallFailed(DispatchError),
+    /// Contract call failed.
+    #[error("Contract call failed before execution: {0}")]
+    CallFailed(String),
     /// There is no deployed contract to call.
     #[error("No deployed contract")]
     NoContract,

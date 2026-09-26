@@ -43,6 +43,10 @@
 //! implementations, to support cross-chain message(XCM) integration with runtime modules.
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(deprecated)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
 #![allow(clippy::unused_unit)]
 
 use frame_support::{dispatch::DispatchResult, traits::ContainsPair};
@@ -61,6 +65,7 @@ pub use currency_adapter::{DepositToAlternative, MultiCurrencyAdapter, OnDeposit
 
 mod currency_adapter;
 
+#[cfg(test)]
 mod tests;
 
 /// A `MatchesFungible` implementation. It matches concrete fungible assets

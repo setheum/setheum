@@ -120,7 +120,7 @@ fn try_node_name_into_ip_address(node_name: String) -> anyhow::Result<Ipv4Addr> 
 	let node_name = node_name + ":22";
 	for addr in node_name
 		.to_socket_addrs()
-		.context(format!("Failed to convert node's name ({}) into IPv4 addrress.", node_name))?
+		.context(format!("Failed to convert node's name ({}) into IPv4 address.", node_name))?
 	{
 		if let std::net::SocketAddr::V4(socket_address) = addr {
 			return Ok(*socket_address.ip());

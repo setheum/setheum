@@ -99,7 +99,7 @@ parameter_type_with_key! {
 }
 
 parameter_types! {
-	pub DustAccount: AccountId = PalletId(*b"module/dst").into_account_truncating();
+	pub DustAccount: AccountId = PalletId(*b"mod/dst0").into_account_truncating();
 }
 
 pub struct CurrencyHooks<T>(marker::PhantomData<T>);

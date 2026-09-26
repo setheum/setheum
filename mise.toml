@@ -1,8 +1,8 @@
 [tools]
-rust = "1.81.0"
+rust = "1.88.0"
 bun = "latest"
 python = "latest"
-go = "latest"
+go = "1.26"
 
 [tasks.default]
 alias = "build"
@@ -11,10 +11,24 @@ alias = "build"
 description = "Initialize toolchain and dependencies"
 run = [
   "git submodule update --init --recursive",
-  "cd repos/setheum-js && yarn install --frozen-lockfile || yarn install",
-  "cd repos/bridge/bridge-docs && yarn install --frozen-lockfile || yarn install",
-  "bash repos/setheum/scripts/init.sh",
+  "bash scripts/bootstrap.sh",
+  "mise install",
 ]
+run_windows = [
+  "git submodule update --init --recursive",
+  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts\\bootstrap.ps1",
+  "mise install",
+]
+
+[tasks.bootstrap]
+description = "Detect and install missing system dependencies for this OS"
+run = "bash scripts/bootstrap.sh"
+run_windows = "powershell -NoProfile -ExecutionPolicy Bypass -File scripts\\bootstrap.ps1"
+
+[tasks."bootstrap:check"]
+description = "Report missing system dependencies without installing"
+run = "bash scripts/bootstrap.sh --check"
+run_windows = "powershell -NoProfile -ExecutionPolicy Bypass -File scripts\\bootstrap.ps1 -Check"
 
 [tasks.build]
 description = "Build the project in release mode"
@@ -29,28 +43,21 @@ description = "Build with runtime benchmarks"
 run = "cargo build -p setheum-node --features runtime-benchmarks,with-ethereum-compatibility --release"
 
 [tasks.test]
-description = "Run all tests (Rust and JS)"
-depends = ["test:rust", "test:js"]
+description = "Run all tests"
+depends = ["test:rust", "test:sheyth", "test:setbft", "test:spinit", "test:bridge:go", "test:substrate"]
 
 [tasks."test:rust"]
-description = "Run Rust tests"
-run = "SKIP_WASM_BUILD=1 cargo test --workspace --features with-ethereum-compatibility"
-
-[tasks."test:js"]
-description = "Run JS tests"
-run = "cd repos/setheum-js && yarn test"
+description = "Run Rust tests (excludes unported/stale crates and vendored sub-repos)"
+env = { SKIP_WASM_BUILD = "1" }
+run = "cargo test --workspace --features with-ethereum-compatibility --exclude setheum_client --exclude clisee --exclude setheum-e2e-client --exclude payout-stakers --exclude setheum-node --exclude module-loans --exclude module-seusd-engine --exclude module-seusd-treasury --exclude module-incentives --exclude module-committee-management --exclude module-operations --exclude module-elections --exclude module-xtokens --exclude chain-bootstrapper --exclude module-asset-registry --exclude module-bridge --exclude module-bridge-xcm --exclude module-bridge-forwarder --exclude module-bridge-basic-fee-handler --exclude module-bridge-percentage-fee-handler --exclude module-bridge-fee-handler-router --exclude module-bridge-parachain-info --exclude module-bridge-access-segregator --exclude ink_e2e --exclude ink_e2e_macro --exclude ink_sandbox --exclude spinit-cli --exclude spinit-test-macro --exclude spinit --exclude cargo-contract --exclude contract-extrinsics --exclude contract-build --exclude contract-transcode --exclude contract-analyze --exclude contract-metadata --exclude sheyth-vm --exclude sheyth-vm-assembler --exclude sheyth-vm-common --exclude sheyth-vm-derive --exclude sheyth-vm-derive-impl --exclude sheyth-vm-derive-impl-macro --exclude sheyth-vm-disassembler --exclude sheyth-vm-linker"
 
 [tasks."test:sheyth"]
 description = "Run Sheyth (Ink!) tests"
 run = "cargo test -p ink --all-features"
 
-[tasks."test:bridge:rust"]
-description = "Run bridge Rust tests"
-run = "cargo test -p bridge-relayer -p bridge-core"
-
 [tasks."test:bridge:go"]
 description = "Run bridge Go tests"
-run = "go test repos/bridge/..."
+run = "go test ./repos/bridge/bridge-core/... ./repos/bridge/bridge-relayer/..."
 
 [tasks."test:setbft"]
 description = "Run Set-BFT tests"
@@ -60,29 +67,45 @@ run = "cargo test -p set-bft -p set-bft-types -p set-bft-crypto -p set-bft-rmc"
 description = "Run Spinit tests"
 run = "cargo test -p spinit"
 
+[tasks."test:substrate"]
+description = "Run substrate SDK tests (reserved; upstream SDK crates are git deps, not workspace members)"
+env = { SKIP_WASM_BUILD = "1" }
+run = "cargo test -p set-bft-types -p set-bft-crypto"
+
 [tasks.fmt]
 description = "Format the codebase and apply headers"
 run = ["cargo fmt --all", "python3 scripts/apply_headers.py"]
+run_windows = ["cargo fmt --all", "python scripts/apply_headers.py"]
 
 [tasks.headers]
 description = "Apply headers"
 run = "python3 scripts/apply_headers.py"
+run_windows = "python scripts/apply_headers.py"
 
 [tasks.clean]
 description = "Clean build artifacts"
 run = ["cargo clean", "rm -rf target/ target-js/ node_modules/"]
+run_windows = [
+  "cargo clean",
+  "if exist target rmdir /s /q target",
+  "if exist target-js rmdir /s /q target-js",
+  "if exist node_modules rmdir /s /q node_modules",
+]
 
 [tasks.check]
-description = "Run cargo check on workspace"
-run = "SKIP_WASM_BUILD=1 cargo check --workspace"
+description = "Run cargo check on workspace (excludes unported/stale crates and vendored tooling)"
+env = { SKIP_WASM_BUILD = "1" }
+run = "cargo check --workspace --exclude setheum_client --exclude clisee --exclude setheum-e2e-client --exclude payout-stakers --exclude setheum-node --exclude module-loans --exclude module-seusd-engine --exclude module-seusd-treasury --exclude module-incentives --exclude module-committee-management --exclude module-operations --exclude module-elections --exclude module-xtokens --exclude chain-bootstrapper --exclude module-asset-registry --exclude module-bridge --exclude module-bridge-xcm --exclude ink_e2e --exclude ink_e2e_macro --exclude ink_sandbox --exclude spinit-cli --exclude spinit-test-macro --exclude spinit --exclude cargo-contract --exclude contract-extrinsics --exclude contract-build --exclude contract-transcode --exclude contract-analyze --exclude contract-metadata"
 
 [tasks."check:runtime"]
 description = "Run cargo check for runtime"
-run = "SKIP_WASM_BUILD= cargo check --features with-ethereum-compatibility --tests --all"
+env = { SKIP_WASM_BUILD = "1" }
+run = "cargo check --features with-ethereum-compatibility --tests --workspace --exclude setheum_client --exclude clisee --exclude setheum-e2e-client --exclude payout-stakers --exclude setheum-node --exclude module-loans --exclude module-seusd-engine --exclude module-seusd-treasury --exclude module-incentives --exclude module-committee-management --exclude module-operations --exclude module-elections --exclude module-xtokens --exclude chain-bootstrapper --exclude module-asset-registry --exclude module-bridge --exclude module-bridge-xcm --exclude ink_e2e --exclude ink_e2e_macro --exclude ink_sandbox --exclude spinit-cli --exclude spinit-test-macro --exclude spinit --exclude cargo-contract --exclude contract-extrinsics --exclude contract-build --exclude contract-transcode --exclude contract-analyze --exclude contract-metadata"
 
 [tasks.clippy]
 description = "Run cargo clippy"
-run = "SKIP_WASM_BUILD=1 cargo clippy --workspace -- -D warnings"
+env = { SKIP_WASM_BUILD = "1" }
+run = "cargo clippy --workspace --exclude setheum_client --exclude clisee --exclude setheum-e2e-client --exclude payout-stakers --exclude setheum-node --exclude module-loans --exclude module-seusd-engine --exclude module-seusd-treasury --exclude module-incentives --exclude module-committee-management --exclude module-operations --exclude module-elections --exclude module-xtokens --exclude chain-bootstrapper --exclude module-asset-registry --exclude module-bridge --exclude module-bridge-xcm --exclude ink_e2e --exclude ink_e2e_macro --exclude ink_sandbox --exclude spinit-cli --exclude spinit-test-macro --exclude spinit --exclude cargo-contract --exclude contract-extrinsics --exclude contract-build --exclude contract-transcode --exclude contract-analyze --exclude contract-metadata --exclude sheyth-vm --exclude sheyth-vm-assembler --exclude sheyth-vm-common --exclude sheyth-vm-derive --exclude sheyth-vm-derive-impl --exclude sheyth-vm-derive-impl-macro --exclude sheyth-vm-disassembler --exclude sheyth-vm-linker -- -D warnings"
 
 [tasks."gen:genesis"]
 description = "Generate genesis configurations"
@@ -93,10 +116,19 @@ run = [
   "./target/release/setheum-node build-spec --chain testnet-new --raw > chain-specs/testnet_raw.json",
   "./target/release/setheum-node build-spec --chain mainnet-new --raw > chain-specs/mainnet_raw.json",
 ]
+run_windows = [
+  "mise run build:bench",
+  "if not exist chain-specs mkdir chain-specs",
+  "target\\release\\setheum-node.exe build-spec --chain testnet-new > chain-specs\\testnet.json",
+  "target\\release\\setheum-node.exe build-spec --chain mainnet-new > chain-specs\\mainnet.json",
+  "target\\release\\setheum-node.exe build-spec --chain testnet-new --raw > chain-specs\\testnet_raw.json",
+  "target\\release\\setheum-node.exe build-spec --chain mainnet-new --raw > chain-specs\\mainnet_raw.json",
+]
 
 [tasks."bench:pallets"]
 description = "Run runtime benchmarks for all pallets"
 run = "cargo run --release --features=runtime-benchmarks --features=with-ethereum-compatibility -- benchmark --chain=dev --steps=50 --repeat=20 '--pallet=*' '--extrinsic=*' --execution=wasm --wasm-execution=compiled --heap-pages=4096 --template=.maintain/runtime-weight-template.hbs --output=./runtime/src/weights/"
+run_windows = "cargo run --release --features=runtime-benchmarks --features=with-ethereum-compatibility -- benchmark --chain=dev --steps=50 --repeat=20 --pallet=* --extrinsic=* --execution=wasm --wasm-execution=compiled --heap-pages=4096 --template=.maintain/runtime-weight-template.hbs --output=repos/setheum/runtime/src/weights/"
 
 [tasks."gen:tokens"]
 description = "Generate tokens and predeploy contracts"
@@ -104,22 +136,43 @@ run = [
   "cargo test -p setheum-primitives -- --ignored",
   "cd repos/setheum/predeploy-contracts && bun install && bun run generate-bytecode",
 ]
+run_windows = [
+  "cargo test -p setheum-primitives -- --ignored",
+  "cd /d repos\\setheum\\predeploy-contracts && bun install && bun run generate-bytecode",
+]
 
 [tasks."debug:node"]
 description = "Run node in debug mode with GDB"
 run = "cargo build && RUST_LOG=debug RUST_BACKTRACE=1 rust-gdb --args target/debug/setheum-node --dev --tmp -lruntime=debug"
+run_windows = "cargo build && set RUST_LOG=debug&& set RUST_BACKTRACE=1&& target\\debug\\setheum-node.exe --dev --tmp -lruntime=debug"
 
-[tasks."prdoc:scaffold"]
-description = "Generate draft PRDocs from git history"
-run = "python3 scripts/prdoc.py scaffold {{args}}"
+[tasks."prdoc:init"]
+description = "Scaffold changelogger configuration"
+run = "changelogger prdoc init"
+
+[tasks."prdoc:generate"]
+description = "Generate a PRDoc for a PR number"
+run = "changelogger prdoc generate --pr {{args}}"
 
 [tasks."prdoc:validate"]
 description = "Validate all .prdoc files"
-run = "python3 scripts/prdoc.py validate"
+run = "changelogger prdoc validate prdoc/*.prdoc"
 
-[tasks."prdoc:generate"]
-description = "Generate CHANGELOG entries from PRDocs"
-run = "python3 scripts/prdoc.py generate"
+[tasks."prdoc:show"]
+description = "Display a PRDoc as JSON"
+run = "changelogger prdoc show {{args}}"
+
+[tasks."changelog:generate"]
+description = "Generate CHANGELOG.md from PRDocs"
+run = "changelogger changelog generate --from {{args}}"
+
+[tasks."changelog:bump"]
+description = "Compute next version bumps"
+run = "changelogger changelog bump --current {{args}}"
+
+[tasks."changelog:verify"]
+description = "Check all commits have prdocs"
+run = "changelogger changelog verify --from {{args}}"
 
 [tasks.all]
 description = "Run complete build pipeline"

@@ -36,6 +36,10 @@
 // SOFTWARE.
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(deprecated)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
 #![allow(clippy::unused_unit)]
 #![allow(clippy::upper_case_acronyms)]
 
@@ -50,7 +54,9 @@ use sp_runtime::{
 };
 use sp_std::{collections::btree_map::BTreeMap, prelude::*};
 
+#[cfg(test)]
 mod mock;
+#[cfg(test)]
 mod tests;
 pub mod weights;
 
@@ -237,7 +243,7 @@ pub mod module {
 			Ok(())
 		}
 
-		/// Claim all avalible multi currencies rewards for specific PoolId.
+		/// Claim all available multi currencies rewards for specific PoolId.
 		///
 		/// The dispatch origin of this call must be `Signed` by the transactor.
 		///

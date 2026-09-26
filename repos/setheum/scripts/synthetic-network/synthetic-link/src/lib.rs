@@ -139,7 +139,7 @@ impl Default for StrengthParam {
 }
 
 impl StrengthParam {
-	/// Creates an instance of the `StrengthParam` type. Bails if provided value is not withing 0..=1 range.
+	/// Creates an instance of the `StrengthParam` type. Bails if provided value is not within 0..=1 range.
 	pub fn new(value: f64) -> anyhow::Result<Self> {
 		if value > 1.0 {
 			bail!("value shouldn't be larger than 1");

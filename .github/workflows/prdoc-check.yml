@@ -1,4 +1,4 @@
-name: Check PRdoc
+name: PRDoc
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -6,71 +6,58 @@ concurrency:
 
 on:
   pull_request:
-    types: [labeled, opened, synchronize, unlabeled]
+    types: [opened, synchronize, reopened]
   merge_group:
 
-env:
-  IMAGE: docker.io/paritytech/prdoc:v0.1.1
-  API_BASE: https://api.github.com/repos
-  REPO: ${{ github.repository }}
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  GITHUB_PR: ${{ github.event.pull_request.number }}
-  ENGINE: docker
-  PRDOC_DOC: https://github.com/paritytech/setheum/blob/master/docs/contributor/prdoc.md
+permissions:
+  contents: write
 
 jobs:
-  check-prdoc:
+  prdoc:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - name: Check prdoc format
-        run: |
-          echo "Pulling $IMAGE"
-          $ENGINE pull $IMAGE
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.head_ref }}
 
-          echo "Checking PRdoc version"
-          $ENGINE run --rm -v $PWD:/repo $IMAGE --version
+      - uses: dtolnay/rust-toolchain@v1
+        with:
+          toolchain: stable
 
-          echo "Check prdoc format"
-          echo "For PRDoc format, please refer to $PRDOC_DOC"
-          $ENGINE run --rm -v $PWD:/repo -e RUST_LOG=info $IMAGE check
+      - uses: Swatinem/rust-cache@v2
 
-      - name: Check if PRdoc is required
-        if: github.event.pull_request.number != ''
-        id: get-labels
-        run: |
-          # Fetch the labels for the PR under test
-          echo "Fetch the labels for $API_BASE/${REPO}/pulls/${GITHUB_PR}"
-          labels=$( curl -H "Authorization: token ${GITHUB_TOKEN}" -s "$API_BASE/${REPO}/pulls/${GITHUB_PR}" | jq '.labels | .[] | .name' | tr "\n" ",")
-          echo "Labels: ${labels}"
-          echo "labels=${labels}" >> "$GITHUB_OUTPUT"
+      - name: Install changelogger
+        run: cargo install changelogger-cli
 
-      - name: Get Original PR number
-        if: ${{ github.event.pull_request.number != '' && !contains(steps.get-labels.outputs.labels, 'R0') }}
-        shell: bash
+      - name: Generate PRDoc
+        id: gen
         env:
-          PR_TITLE: ${{ github.event.pull_request.title }}
+          GH_TOKEN: ${{ github.token }}
         run: |
-          . ./.github/scripts/common/lib.sh
-          original_pr_number=''
-
-          echo "Checking PR title: $PR_TITLE"
-
-          if [[ "$PR_TITLE" =~ 'Backport' ]]; then
-            # Extracting the original PR number from the backport's PR title
-            original_pr_number=$(extract_pr_number_from_pr_title "$PR_TITLE")
-            echo "Extracted PR number: $original_pr_number"
-          else
-            original_pr_number=${{ github.event.pull_request.number }}
+          PR_NUM=${{ github.event.pull_request.number }}
+          BASE=${{ github.event.pull_request.base.sha }}
+          CHANGED=$(git diff --numstat "$BASE"...HEAD | awk '{a+=$1; d+=$2} END {print a+d+0}')
+          echo "PR #${PR_NUM} changed lines: ${CHANGED}"
+          if [ "${CHANGED:-0}" -gt 20000 ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::warning::PR #${PR_NUM} diff (${CHANGED} lines) exceeds the GitHub API limit (20000); skipping prdoc generation. Split the PR or add prdoc/pr_${PR_NUM}.prdoc manually."
+            exit 0
           fi
-          echo "PR_NUMBER=$original_pr_number" >> $GITHUB_ENV
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+          if [ ! -f "prdoc/pr_${PR_NUM}.prdoc" ]; then
+            changelogger prdoc generate --pr "$PR_NUM" --force
+          fi
 
-      - name: Validate prdoc for PR#${{ env.PR_NUMBER }}
-        if: ${{ github.event.pull_request.number != '' && !contains(steps.get-labels.outputs.labels, 'R0') }}
+      - name: Validate
+        if: steps.gen.outputs.skip != 'true'
         run: |
-          echo "Validating PR#${{ env.PR_NUMBER }}"
-          python3 --version
-          python3 -m pip install cargo-workspace==1.2.1
-          python3 .github/scripts/check-prdoc.py Cargo.toml prdoc/pr_${{ env.PR_NUMBER }}.prdoc
+          PR_NUM=${{ github.event.pull_request.number }}
+          changelogger prdoc validate prdoc/pr_${PR_NUM}.prdoc
+
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        if: steps.gen.outputs.skip != 'true'
+        with:
+          commit_message: "Add prdoc for PR #${{ github.event.pull_request.number }}"
+          file_pattern: "prdoc/*.prdoc"

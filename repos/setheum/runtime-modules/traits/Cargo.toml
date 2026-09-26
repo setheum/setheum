@@ -28,6 +28,8 @@ pallet-session = { workspace = true, default-features = false }
 pallet-staking = { workspace = true, default-features = false }
 pallet-contracts = { workspace = true, default-features = false }
 
+sp-core = { workspace = true, default-features = false }
+
 [dev-dependencies]
 sp-core = { workspace = true, features = ["std"] }
 sp-io = { workspace = true, features = ["std"] }
@@ -48,6 +50,7 @@ std = [
 	"pallet-session/std",
 	"pallet-staking/std",
 	"pallet-contracts/std",
+	"sp-core/std",
 	"num-traits/std",
 	"log/std",
 ]

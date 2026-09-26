@@ -1,0 +1,19 @@
+[package]
+name = "sheyth-vm-derive-impl"
+version.workspace = true
+authors.workspace = true
+license.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+documentation = "https://docs.rs/sheyth-vm-derive-impl"
+description = "The derive crate for PolkaVM guest programs (implementation)"
+
+[dependencies]
+sheyth-vm-common = { workspace = true, features = ["alloc"] }
+syn = { workspace = true, features = ["full", "extra-traits"] }
+quote = { workspace = true }
+proc-macro2 = { workspace = true }
+
+[lints.rust]
+unsafe_code = "allow"

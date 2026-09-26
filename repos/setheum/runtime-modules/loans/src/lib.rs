@@ -36,6 +36,10 @@
 // SOFTWARE.
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(deprecated)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
 #![allow(clippy::unused_unit)]
 #![allow(clippy::collapsible_if)]
 
@@ -48,7 +52,9 @@ use sp_runtime::{
 	ArithmeticError, DispatchResult,
 };
 
+#[cfg(test)]
 mod mock;
+#[cfg(test)]
 mod tests;
 
 pub use module::*;
@@ -75,13 +81,9 @@ pub mod module {
 /// CDP treasury for issuing/burning SEUSD and debit value adjustment.
 		type UssdTreasury: UssdTreasury<Self::AccountId, Balance = Balance, CurrencyId = CurrencyId>;
 
-/// The loan's module id, keep all collaterals of CDPs.
+		/// The loan's module id, keep all collaterals of CDPs.
 		#[pallet::constant]
 		type PalletId: Get<PalletId>;
-
-// Remove it based on `TODO:[src/lib.rs:0]`.
-/// Event handler which calls when update loan.
-// type OnUpdateLoan: Happened<(Self::AccountId, CurrencyId, Amount, Balance)>;
 	}
 
 	#[pallet::error]

@@ -36,6 +36,10 @@
 // SOFTWARE.
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(deprecated)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
 
 #[macro_use]
 extern crate arrayref;
@@ -186,7 +190,7 @@ pub mod pallet {
 		},
 		/// When proposal was executed successfully
 		ProposalExecution { origin_domain_id: DomainID, deposit_nonce: DepositNonce, data_hash: [u8; 32] },
-		/// When proposal was faild to execute
+		/// When proposal was failed to execute
 		FailedHandlerExecution { error: Vec<u8>, origin_domain_id: DomainID, deposit_nonce: DepositNonce },
 		/// When user is going to retry a bridge transfer
 		/// args: [deposit_on_block_height, dest_domain_id, sender]

@@ -175,13 +175,13 @@ pub mod test {
     impl TestTransactionPoolSetup {
         pub fn new(client: Arc<TestClient>) -> Self {
             let spawner = sp_core::testing::TaskExecutor::new();
-            let pool = BasicPool::new_full(
+            let pool = Arc::new(BasicPool::new_full(
                 Default::default(),
                 true.into(),
                 None,
                 spawner.clone(),
                 client.clone(),
-            );
+            ));
 
             let proposer_factory =
                 ProposerFactory::new(spawner, client.clone(), pool.clone(), None, None);

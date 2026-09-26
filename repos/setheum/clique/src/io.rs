@@ -48,7 +48,7 @@ use crate::Data;
 // We allow sending up to 16MiB, that should be enough forever.
 pub const MAX_DATA_SIZE: u32 = 16 * 1024 * 1024;
 
-/// A general error when sending or receving data.
+/// A general error when sending or receiving data.
 #[derive(Debug)]
 pub enum Error {
 	ConnectionClosed(IoError),

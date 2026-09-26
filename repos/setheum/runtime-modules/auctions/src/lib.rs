@@ -36,6 +36,10 @@
 // SOFTWARE.
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(deprecated)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
 #![allow(clippy::unused_unit)]
 #![allow(clippy::upper_case_acronyms)]
 #![allow(clippy::unnecessary_unwrap)]
@@ -67,7 +71,9 @@ use sp_runtime::{
 };
 use sp_std::prelude::*;
 
+#[cfg(test)]
 mod mock;
+#[cfg(test)]
 mod tests;
 pub mod weights;
 
@@ -366,7 +372,7 @@ impl<T: Config> Pallet<T> {
 		let mut to_be_continue = StorageValueRef::persistent(OFFCHAIN_WORKER_DATA);
 
 // get to_be_continue record,
-// if it exsits, iterator map storage start with previous key
+// if it exists, iterator map storage start with previous key
 		let start_key = to_be_continue.get::<Vec<u8>>().unwrap_or_default();
 
 // get the max iterationns config

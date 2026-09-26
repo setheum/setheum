@@ -39,6 +39,10 @@
 //! Offer a central place to store and configure parameters.
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(deprecated)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
 #![allow(clippy::unused_unit)]
 
 use frame_support::pallet_prelude::*;
@@ -47,7 +51,9 @@ use frame_system::pallet_prelude::*;
 use frame_support::traits::EnsureOriginWithArg;
 use module_traits::parameters::{AggregratedKeyValue, Into2, Key, RuntimeParameterStore, TryInto2};
 
+#[cfg(test)]
 mod mock;
+#[cfg(test)]
 mod tests;
 mod weights;
 

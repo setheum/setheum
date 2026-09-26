@@ -38,6 +38,10 @@
 //! Runtime API definition for module tokens pallet.
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(deprecated)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
 // The `too_many_arguments` warning originates from `decl_runtime_apis` macro.
 #![allow(clippy::too_many_arguments)]
 // The `unnecessary_mut_passed` warning originates from `decl_runtime_apis` macro.

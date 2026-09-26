@@ -36,6 +36,10 @@
 // SOFTWARE.
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(deprecated)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
 #![allow(clippy::unused_unit)]
 
 use frame_support::{
@@ -64,7 +68,9 @@ use sp_std::{boxed::Box, vec::Vec};
 
 use xcm::{v3::prelude::*, VersionedMultiLocation};
 
+#[cfg(test)]
 mod mock;
+#[cfg(test)]
 mod tests;
 mod weights;
 

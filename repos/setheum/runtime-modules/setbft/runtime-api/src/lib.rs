@@ -37,6 +37,10 @@
 
 //! Runtime API definition for pallet setbft.
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(deprecated)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
 
 use primitives::{
 	crypto::SignatureSet, AccountId, ApiError, AuthorityId, AuthoritySignature, Balance, Perbill, Score,

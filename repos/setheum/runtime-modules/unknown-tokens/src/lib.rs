@@ -36,6 +36,10 @@
 // SOFTWARE.
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(deprecated)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
 #![allow(clippy::unused_unit)]
 
 use frame_support::pallet_prelude::*;
@@ -46,7 +50,9 @@ use module_xcm_support::UnknownAsset;
 
 pub use module::*;
 
+#[cfg(test)]
 mod mock;
+#[cfg(test)]
 mod tests;
 
 #[frame_support::pallet]

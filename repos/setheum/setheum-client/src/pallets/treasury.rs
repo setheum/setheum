@@ -89,7 +89,7 @@ pub trait TreasuryUserApi {
     async fn reject(&self, proposal_id: u32, status: TxStatus) -> anyhow::Result<TxInfo>;
 }
 
-/// Pallet treasury funcionality that is not directly related to any pallet call.
+/// Pallet treasury functionality that is not directly related to any pallet call.
 #[async_trait::async_trait]
 pub trait TreasureApiExt {
     /// When `staking.payout_stakers` is done, what amount of SEU is transferred to.

@@ -56,7 +56,7 @@ pub struct DirectedPeers<PK: PublicKey, A: Data> {
 
 /// Whether we should call the remote or the other way around. We xor the peer ids and based on the
 /// parity of the sum of bits of the result decide whether the caller should be the smaller or
-/// greated lexicographically. They are never equal, because cryptography.
+/// greater lexicographically. They are never equal, because cryptography.
 fn should_we_call(own_id: &[u8], remote_id: &[u8]) -> bool {
 	let xor_sum_parity =
 		(own_id.iter().fold(0u8, BitXor::bitxor) ^ remote_id.iter().fold(0u8, BitXor::bitxor)).count_ones() % 2;

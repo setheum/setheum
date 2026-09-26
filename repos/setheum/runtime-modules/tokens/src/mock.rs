@@ -384,7 +384,7 @@ impl<T: Config> PostTransfer<T> {
 }
 
 parameter_types! {
-	pub DustReceiver: AccountId = PalletId(*b"module/dst").into_account_truncating();
+	pub DustReceiver: AccountId = PalletId(*b"mod/dst0").into_account_truncating();
 }
 
 pub struct CurrencyHooks<T>(marker::PhantomData<T>);

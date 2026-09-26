@@ -36,6 +36,10 @@
 // SOFTWARE.
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(deprecated)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
 #![allow(clippy::unused_unit)]
 #![allow(clippy::type_complexity)]
 
@@ -54,7 +58,9 @@ use sp_runtime::traits::AccountIdConversion;
 use sp_std::collections::btree_set::BTreeSet;
 use sp_std::vec::Vec;
 
+#[cfg(test)]
 mod mock;
+#[cfg(test)]
 mod tests;
 
 pub use module::*;

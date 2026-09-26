@@ -48,22 +48,22 @@ use sp_std::marker::PhantomData;
 pub struct WeightInfo<T>(PhantomData<T>);
 impl<T: frame_system::Config> module_vesting::WeightInfo for WeightInfo<T> {
 	fn vested_transfer() -> Weight {
-		(72_000_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(4 as Weight))
-			.saturating_add(T::DbWeight::get().writes(4 as Weight))
+		Weight::from_parts(72_000_000, 0)
+			.saturating_add(T::DbWeight::get().reads(4))
+			.saturating_add(T::DbWeight::get().writes(4))
 	}
 	fn claim(i: u32) -> Weight {
-		(33_718_000 as Weight)
+		Weight::from_parts(33_718_000, 0)
 // Standard Error: 3_000
-			.saturating_add((71_000 as Weight).saturating_mul(i as Weight))
-			.saturating_add(T::DbWeight::get().reads(3 as Weight))
-			.saturating_add(T::DbWeight::get().writes(3 as Weight))
+			.saturating_add(Weight::from_parts(71_000, 0).saturating_mul(i.into()))
+			.saturating_add(T::DbWeight::get().reads(3))
+			.saturating_add(T::DbWeight::get().writes(3))
 	}
 	fn update_vesting_schedules(i: u32) -> Weight {
-		(31_075_000 as Weight)
+		Weight::from_parts(31_075_000, 0)
 // Standard Error: 5_000
-			.saturating_add((75_000 as Weight).saturating_mul(i as Weight))
-			.saturating_add(T::DbWeight::get().reads(2 as Weight))
-			.saturating_add(T::DbWeight::get().writes(3 as Weight))
+			.saturating_add(Weight::from_parts(75_000, 0).saturating_mul(i.into()))
+			.saturating_add(T::DbWeight::get().reads(2))
+			.saturating_add(T::DbWeight::get().writes(3))
 	}
 }

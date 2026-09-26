@@ -18,7 +18,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-use parity_scale_codec::{Decode, Encode};
+use parity_scale_codec::{Decode, DecodeWithMemTracking, Encode};
 use scale_info::TypeInfo;
 #[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};
@@ -30,14 +30,11 @@ pub use sp_runtime::{
     BoundedVec, ConsensusEngineId, OpaqueExtrinsic as UncheckedExtrinsic, Perbill,
     traits::OpaqueKeys,
 };
-use sp_runtime::{
-    traits::{IdentifyAccount, Verify},
-    MultiSignature, Perquintill,
-};
+use sp_runtime::Perquintill;
 pub use sp_staking::{EraIndex, SessionIndex};
 use sp_std::vec::Vec;
 
-use crate::{AccountId, Balance, BlockNumber, SessionCount, Version};
+use crate::{AccountId, Balance, SessionCount, Version};
 
 pub const KEY_TYPE: KeyTypeId = KeyTypeId(*b"seth");
 
@@ -60,6 +57,49 @@ pub type AuthoritySignature = app::Signature;
 
 /// Authority ID
 pub type AuthorityId = app::Public;
+
+/// Key type id of the Aura session key.
+pub const AURA_KEY_TYPE: KeyTypeId = KeyTypeId(*b"aura");
+/// Key type id of the im-online session key.
+pub const IM_ONLINE_KEY_TYPE: KeyTypeId = KeyTypeId(*b"imon");
+/// Key type id of the authority-discovery session key.
+pub const AUTHORITY_DISCOVERY_KEY_TYPE: KeyTypeId = KeyTypeId(*b"audi");
+
+/// The session keys of a Setheum node.
+///
+/// This mirrors the layout (and therefore the SCALE encoding) of the runtime's `SessionKeys`,
+/// so that `Session::QueuedKeys` can be decoded outside of the runtime (e.g. by the finality
+/// integration). All session keys are fixed-size 32-byte public keys.
+#[derive(Clone, Encode, Decode, DecodeWithMemTracking, PartialEq, Eq, TypeInfo)]
+pub struct SetBFTNodeSessionKeys {
+    pub aura: [u8; 32],
+    pub setbft: [u8; 32],
+    pub im_online: [u8; 32],
+    pub authority_discovery: [u8; 32],
+}
+
+impl OpaqueKeys for SetBFTNodeSessionKeys {
+    type KeyTypeIdProviders = ();
+
+    fn key_ids() -> &'static [KeyTypeId] {
+        &[
+            AURA_KEY_TYPE,
+            KEY_TYPE,
+            IM_ONLINE_KEY_TYPE,
+            AUTHORITY_DISCOVERY_KEY_TYPE,
+        ]
+    }
+
+    fn get_raw(&self, i: KeyTypeId) -> &[u8] {
+        match i {
+            AURA_KEY_TYPE => &self.aura,
+            KEY_TYPE => &self.setbft,
+            IM_ONLINE_KEY_TYPE => &self.im_online,
+            AUTHORITY_DISCOVERY_KEY_TYPE => &self.authority_discovery,
+            _ => panic!("unknown session key type id"),
+        }
+    }
+}
 
 // Default number of heap pages that gives limit of 256MB for a runtime instance since each page is 64KB
 pub const HEAP_PAGES: u64 = 4096;
@@ -106,6 +146,9 @@ pub const LEGACY_FINALITY_VERSION: u16 = 2;
 pub const LENIENT_THRESHOLD: Perquintill = Perquintill::from_percent(90);
 
 pub const DEFAULT_MAX_NON_FINALIZED_BLOCKS: u32 = 20;
+
+/// The number of SBFT batches between score submissions.
+pub const SCORE_SUBMISSION_PERIOD: u32 = 10;
 
 /// Hold set of validators that produce blocks and set of validators that participate in finality
 /// during session.
@@ -295,7 +338,7 @@ impl SessionAuthorityData {
     }
 }
 
-#[derive(Clone, Debug, Decode, Encode, PartialEq, Eq, TypeInfo)]
+#[derive(Clone, Debug, Decode, DecodeWithMemTracking, Encode, PartialEq, Eq, TypeInfo)]
 pub struct VersionChange {
     pub version_incoming: Version,
     pub session: SessionIndex,
@@ -311,6 +354,8 @@ sp_api::decl_runtime_apis! {
         fn millisecs_per_block() -> u64;
         fn finality_version() -> Version;
         fn next_session_finality_version() -> Version;
+        /// The number of SBFT batches between score submissions.
+        fn score_submission_period() -> u32;
 /// Predict finality committee and block producers for the given session. `session` must be
 /// within the current era (current, in the staking context).
 ///
@@ -326,6 +371,8 @@ sp_api::decl_runtime_apis! {
 /// also as `setbft_key` - consensus engine's part of session keys) in the current session
 /// of SetBFT (finalisation committee).
         fn key_owner(key: AuthorityId) -> Option<AccountId>;
+        /// Submits score for a nonce in a session of performance of finality committee members.
+        fn submit_sbft_score(score: Score, signature: crypto::SignatureSet<AuthoritySignature>) -> Option<()>;
     }
 }
 
@@ -425,7 +472,7 @@ pub mod staking {
      * );
      * ```
      *
-     * @var		mixed	#[macro_export]
+     * @var mixed #[macro_export]
      */
     #[macro_export]
     macro_rules! wrap_methods {
@@ -459,7 +506,7 @@ where
 pub type ScoreNonce = u32;
 pub type RawScore = sp_std::vec::Vec<u16>;
 
-#[derive(PartialEq, parity_scale_codec::Decode, parity_scale_codec::Encode, scale_info::TypeInfo, Debug, Clone)]
+#[derive(PartialEq, parity_scale_codec::Decode, DecodeWithMemTracking, parity_scale_codec::Encode, scale_info::TypeInfo, Debug, Clone)]
 pub struct Score {
     pub session_id: SessionIndex,
     pub nonce: ScoreNonce,
@@ -469,20 +516,20 @@ pub struct Score {
 pub mod crypto {
     use core::marker::PhantomData;
 
-    use parity_scale_codec::{Decode, Encode};
+    use parity_scale_codec::{Decode, DecodeWithMemTracking, Encode};
     use scale_info::TypeInfo;
     use sp_runtime::RuntimeAppPublic;
     use sp_std::vec::Vec;
 
     use super::AuthoritySignature;
 
-    #[derive(PartialEq, Decode, Encode, TypeInfo, Debug, Clone)]
+    #[derive(PartialEq, Decode, DecodeWithMemTracking, Encode, TypeInfo, Debug, Clone)]
     pub struct IndexedSignature<S> {
         pub index: u64,
         pub signature: S,
     }
 
-    #[derive(PartialEq, Decode, Encode, TypeInfo, Debug, Clone)]
+    #[derive(PartialEq, Decode, DecodeWithMemTracking, Encode, TypeInfo, Debug, Clone)]
     pub struct SignatureSet<S>(pub Vec<IndexedSignature<S>>);
 
     #[cfg_attr(feature = "std", derive(Hash))]

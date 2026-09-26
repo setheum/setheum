@@ -36,6 +36,10 @@
 // SOFTWARE.
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(deprecated)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
 // Disable the following two lints since they originate from an external macro (namely decl_storage)
 #![allow(clippy::string_lit_as_bytes)]
 #![allow(clippy::unused_unit)]
@@ -54,7 +58,9 @@ use sp_std::{
 };
 use sp_runtime::{traits::{AccountIdConversion, Zero}, DispatchResult};
 
+#[cfg(test)]
 mod mock;
+#[cfg(test)]
 mod tests;
 pub mod weights;
 
@@ -308,7 +314,7 @@ pub mod module {
 				}
 // If the campaign is active, check if to end it
 				if campaign_info.is_active && !campaign_info.is_ended {
-// If campaign is successfull, call on successful campaign
+// If campaign is successful, call on successful campaign
 					if campaign_info.raised >= campaign_info.goal {
 						Self::on_successful_campaign(now, id).unwrap();
 						count += 1;

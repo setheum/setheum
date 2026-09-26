@@ -36,13 +36,17 @@
 // SOFTWARE.
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(deprecated)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
 #![allow(clippy::unused_unit)]
 
 use frame_support::pallet_prelude::*;
 use frame_system::pallet_prelude::*;
-use module_support::{Erc20InfoMapping, ExchangeRateProvider, LockablePrice, Price, PriceProvider, Rate, SwapManager};
+use module_support::{swap_legacy::SwapManager, ExchangeRateProvider, LockablePrice, Price, PriceProvider, Rate};
 use module_traits::{DataFeeder, DataProvider, GetByKey, MultiCurrency};
-use primitives::{Balance, CurrencyId, Lease};
+use primitives::{currency::TokenInfo, Balance, CurrencyId};
 use sp_core::U256;
 use sp_runtime::{
 	traits::{CheckedMul, One, Saturating, UniqueSaturatedInto},
@@ -50,7 +54,9 @@ use sp_runtime::{
 };
 use sp_std::marker::PhantomData;
 
+#[cfg(test)]
 mod mock;
+#[cfg(test)]
 mod tests;
 pub mod weights;
 
@@ -80,8 +86,6 @@ pub mod module {
 		#[pallet::constant]
 		type GetSEECurrencyId: Get<CurrencyId>;
 
-		#[pallet::constant]
-
 		/// The origin which may lock and unlock prices feed to system.
 		type LockOrigin: EnsureOrigin<Self::RuntimeOrigin>;
 
@@ -90,9 +94,6 @@ pub mod module {
 
 		/// Currency provide the total insurance of LPToken.
 		type Currency: MultiCurrency<Self::AccountId, CurrencyId = CurrencyId, Balance = Balance>;
-
-		/// Mapping between CurrencyId and ERC20 address so user can use Erc20.
-		type Erc20InfoMapping: Erc20InfoMapping;
 
 		/// If a currency is pegged to another currency in price, price of this currency is
 		/// equal to the price of another.
@@ -197,7 +198,7 @@ impl<T: Config> Pallet<T> {
 			T::Source::get(&currency_id)
 		};
 
-		let maybe_adjustment_multiplier = 10u128.checked_pow(T::Erc20InfoMapping::decimals(currency_id)?.into());
+		let maybe_adjustment_multiplier = 10u128.checked_pow(currency_id.decimals()?.into());
 
 		if let (Some(price), Some(adjustment_multiplier)) = (maybe_price, maybe_adjustment_multiplier) {
 			// return the price for 1 basic unit

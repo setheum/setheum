@@ -28,12 +28,12 @@
 use std::{collections::HashMap, sync::Arc};
 
 use finality_setbft::{
-	BlockId, Justification, JustificationTranslator, SetheumJustification, ValidatorAddressCache,
-	ValidatorAddressingInfo,
+	BlockId, Justification, JustificationTranslator, SetBFTJustification as SetheumJustification,
+	ValidatorAddressCache, ValidatorAddressingInfo,
 };
 use futures::channel::mpsc;
 use jsonrpsee::{
-	core::{error::Error as JsonRpseeError, RpcResult},
+	core::RpcResult,
 	proc_macros::rpc,
 	types::error::{CallError, ErrorObject},
 	RpcModule,
@@ -68,8 +68,6 @@ pub struct FullDeps<C, P, SO> {
 	pub justification_translator: JustificationTranslator,
 	pub sync_oracle: SO,
 	pub validator_address_cache: Option<ValidatorAddressCache>,
-	/// Graph pool.
-	pub graph: Arc<P::Analyzer>,
 	/// Maximum number of logs in a filter.
 	pub max_past_logs: u32,
 }
@@ -92,7 +90,7 @@ where
 	P: TransactionPool + 'static,
 	SO: SyncOracle + Send + Sync + 'static,
 {
-	use module_oracle_rpc::{Oracle, OracleApiServer};
+	use module_oracle_rpc::Oracle;
 	use pallet_transaction_payment_rpc::{TransactionPayment, TransactionPaymentApiServer};
 	use substrate_frame_rpc_system::{System, SystemApiServer};
 
@@ -105,7 +103,6 @@ where
 		justification_translator,
 		sync_oracle,
 		validator_address_cache,
-		graph,
 		max_past_logs,
 	} = deps;
 

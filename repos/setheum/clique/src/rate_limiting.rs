@@ -35,7 +35,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use crate::{ConnectionInfo, Data, Dialer, Listener, PeerAddressInfo, Splittable, Splitted};
+use crate::{ConnectionInfo, Data, Dialer, Listener, PeerAddressInfo, Splittable, Split};
 use rate_limiter::{RateLimitedAsyncRead, SharedRateLimiter};
 use tokio::io::AsyncRead;
 
@@ -75,13 +75,13 @@ where
 	<D::Connection as Splittable>::Receiver: Unpin,
 {
 	type Connection =
-		Splitted<RateLimitedAsyncRead<<D::Connection as Splittable>::Receiver>, <D::Connection as Splittable>::Sender>;
+		Split<RateLimitedAsyncRead<<D::Connection as Splittable>::Receiver>, <D::Connection as Splittable>::Sender>;
 	type Error = D::Error;
 
 	async fn connect(&mut self, address: A) -> Result<Self::Connection, Self::Error> {
 		let connection = self.dialer.connect(address).await?;
 		let (sender, receiver) = connection.split();
-		Ok(Splitted(RateLimitedAsyncRead::new(receiver, self.rate_limiter.share()), sender))
+		Ok(Split(RateLimitedAsyncRead::new(receiver, self.rate_limiter.share()), sender))
 	}
 }
 
@@ -100,12 +100,12 @@ impl<L> RateLimitingListener<L> {
 #[async_trait::async_trait]
 impl<L: Listener + Send> Listener for RateLimitingListener<L> {
 	type Connection =
-		Splitted<RateLimitedAsyncRead<<L::Connection as Splittable>::Receiver>, <L::Connection as Splittable>::Sender>;
+		Split<RateLimitedAsyncRead<<L::Connection as Splittable>::Receiver>, <L::Connection as Splittable>::Sender>;
 	type Error = L::Error;
 
 	async fn accept(&mut self) -> Result<Self::Connection, Self::Error> {
 		let connection = self.listener.accept().await?;
 		let (sender, receiver) = connection.split();
-		Ok(Splitted(RateLimitedAsyncRead::new(receiver, self.rate_limiter.share()), sender))
+		Ok(Split(RateLimitedAsyncRead::new(receiver, self.rate_limiter.share()), sender))
 	}
 }

@@ -26,7 +26,7 @@ def format_balance(chain_connection, amount):
     """
     Helper method to display underlying U128 Balance type in human-readable form
     :param chain_connection: WS connection handler (for retrieving token symbol metadata)
-    :param amount: ammount to be formatted
+    :param amount: amount to be formatted
     :return: balance in human-readable form
     """
     decimals = chain_connection.token_decimals or 12

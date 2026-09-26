@@ -80,6 +80,12 @@ pub enum OffChainError {
     UninitializedExecutionContext,
     #[from(ignore)]
     UnregisteredChainExtension,
+    #[from(ignore)]
+    KeyNotFound,
+    #[from(ignore)]
+    EcdsaRecoveryFailed,
+    #[from(ignore)]
+    TransferFailed,
 }
 
 /// Errors encountered upon interacting with the accounts database.

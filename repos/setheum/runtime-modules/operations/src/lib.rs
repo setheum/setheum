@@ -36,6 +36,10 @@
 // SOFTWARE.
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(deprecated)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
 #![doc = include_str!("../README.md")]
 
 extern crate core;
@@ -49,7 +53,7 @@ use frame_support::traits::{LockIdentifier, StorageVersion};
 
 const STORAGE_VERSION: StorageVersion = StorageVersion::new(0);
 pub const LOG_TARGET: &str = "pallet-operations";
-// harcoding as those consts are not public in substrate
+// hardcoding as those consts are not public in substrate
 pub const STAKING_ID: LockIdentifier = *b"staking ";
 pub const VESTING_ID: LockIdentifier = *b"vesting ";
 

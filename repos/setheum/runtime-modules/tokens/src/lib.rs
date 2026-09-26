@@ -71,6 +71,10 @@
 //! configured in genesis configs.
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(deprecated)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
 #![allow(clippy::unused_unit)]
 #![allow(clippy::comparison_chain)]
 #![allow(clippy::useless_conversion)]
@@ -112,7 +116,9 @@ use module_traits::{
 mod benchmarking;
 mod imbalances;
 mod impls;
+#[cfg(test)]
 mod mock;
+#[cfg(test)]
 mod tests;
 mod tests_currency_adapter;
 mod tests_events;

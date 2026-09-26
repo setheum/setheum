@@ -134,7 +134,7 @@ impl module_currencies::Config for Runtime {
 }
 
 parameter_types! {
-	pub const LoansPalletId: PalletId = PalletId(*b"set/seusdloan");
+	pub const LoansPalletId: PalletId = PalletId(*b"set/seul");
 }
 
 impl module_loans::Config for Runtime {
@@ -206,8 +206,8 @@ ord_parameter_types! {
 
 parameter_types! {
 	pub const GetSEUSDCurrencyId: CurrencyId = SEUSD;
-	pub const UssdTreasuryPalletId: PalletId = PalletId(*b"set/seusdtrsymod");
-	pub TreasuryAccount: AccountId = PalletId(*b"set/seusdtrsyacc").into_account_truncating();
+	pub const UssdTreasuryPalletId: PalletId = PalletId(*b"set/seum");
+	pub TreasuryAccount: AccountId = PalletId(*b"set/seua").into_account_truncating();
 	pub AlternativeSwapPathJointList: Vec<Vec<CurrencyId>> = vec![
 		vec![SEUSD],
 	];
@@ -294,7 +294,7 @@ parameter_types! {
 	pub DefaultLiquidationPenalty: FractionalRate = FractionalRate::try_from(Rate::saturating_from_rational(10, 100)).unwrap();
 	pub MaxSwapSlippageCompareToOracle: Ratio = Ratio::saturating_from_rational(50, 100);
 	pub MaxLiquidationContractSlippage: Ratio = Ratio::saturating_from_rational(80, 100);
-	pub const UssdEnginePalletId: PalletId = PalletId(*b"set/seusde");
+	pub const UssdEnginePalletId: PalletId = PalletId(*b"set/seue");
 	pub const SettleErc20EvmOrigin: AccountId = AccountId32::new([255u8; 32]);
 }
 

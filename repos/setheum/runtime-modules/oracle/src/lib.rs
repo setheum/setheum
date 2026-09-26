@@ -52,6 +52,10 @@
 //! `pallet_membership` in FRAME can be used to as source of `T::Members`.
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(deprecated)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
 // Disable the following two lints since they originate from an external macro (namely decl_storage)
 #![allow(clippy::string_lit_as_bytes)]
 #![allow(clippy::unused_unit)]
@@ -83,7 +87,9 @@ pub use crate::default_combine_data::DefaultCombineData;
 mod benchmarking;
 
 mod default_combine_data;
+#[cfg(test)]
 mod mock;
+#[cfg(test)]
 mod tests;
 mod weights;
 

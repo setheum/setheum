@@ -89,7 +89,7 @@ where
     /// already completed when starting rmc, no tasks are scheduled. Otherwise the signed hash
     /// is scheduled for the broadcasts.
     pub fn start_rmc(&mut self, hash: H) -> Option<Multisigned<H, MK>> {
-        debug!(target: LOG_TARGET, "starting rmc for {:?}", hash);
+        debug!(target: LOG_TARGET, "starting rmc for {hash:?}");
         match self.handler.on_start_rmc(hash) {
             OnStartRmcResponse::SignedHash(signed_hash) => {
                 self.scheduler
@@ -124,7 +124,7 @@ where
                 }
                 Ok(None) => {}
                 Err(error) => {
-                    warn!(target: LOG_TARGET, "failed handling multisigned hash: {}", error);
+                    warn!(target: LOG_TARGET, "failed handling multisigned hash: {error}");
                 }
             },
             Message::MultisignedHash(unchecked) => {
@@ -137,7 +137,7 @@ where
                     }
                     Ok(None) => {}
                     Err(error) => {
-                        warn!(target: LOG_TARGET, "failed handling signed hash: {}", error);
+                        warn!(target: LOG_TARGET, "failed handling signed hash: {error}");
                     }
                 }
             }

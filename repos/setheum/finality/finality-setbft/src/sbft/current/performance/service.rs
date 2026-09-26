@@ -35,7 +35,7 @@ use crate::{
         LOG_TARGET,
     },
     setbft_primitives::{
-        crypto::SignatureSet, AuthoritySignature, Hash, Hashing, RawScore, Score, ScoreNonce,
+        crypto::SignatureSet, AuthoritySignature, Hash, RawScore, Score, ScoreNonce,
     },
     data_io::SetBFTData,
     metrics::ScoreMetrics,
@@ -43,6 +43,8 @@ use crate::{
     runtime_api::RuntimeApi,
     Hasher, SessionId, UnverifiedHeader,
 };
+
+use sp_runtime::traits::BlakeTwo256 as Hashing;
 
 struct FinalizationWrapper<UH, FH>
 where

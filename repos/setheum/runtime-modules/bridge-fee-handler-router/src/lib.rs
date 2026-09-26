@@ -36,6 +36,10 @@
 // SOFTWARE.
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(deprecated)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
 
 pub use self::pallet::*;
 
@@ -57,7 +61,7 @@ pub mod pallet {
 	use sp_std::boxed::Box;
 	use xcm::latest::{Asset, AssetId};
 
-	#[derive(PartialEq, Eq, Clone, Encode, Decode, TypeInfo, RuntimeDebug, MaxEncodedLen)]
+	#[derive(PartialEq, Eq, Clone, Encode, Decode, DecodeWithMemTracking, TypeInfo, RuntimeDebug, MaxEncodedLen)]
 	pub enum FeeHandlerType {
 		BasicFeeHandler,
 		PercentageFeeHandler,
@@ -145,7 +149,8 @@ pub mod pallet {
 
 	impl<T: Config> FeeHandler for Pallet<T> {
 		fn get_fee(domain: DomainID, asset: Asset) -> Option<u128> {
-			if let Some(handler_type) = HandlerType::<T>::get((&domain, asset.id)) {
+			let asset_id = asset.id.clone();
+			if let Some(handler_type) = HandlerType::<T>::get((&domain, asset_id)) {
 				match handler_type {
 					FeeHandlerType::BasicFeeHandler => {
 						module_bridge_basic_fee_handler::Pallet::<T>::get_fee(domain, asset)

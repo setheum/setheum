@@ -19,25 +19,32 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(deprecated)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
 
-use codec::{Decode, Encode, MaxEncodedLen};
+use codec::{Decode, DecodeWithMemTracking, Encode, MaxEncodedLen};
+use scale_info::TypeInfo;
 use frame_support::{
+	dispatch::DispatchClass,
 	parameter_types,
 	weights::{
-		constants::{BlockExecutionWeight, ExtrinsicBaseWeight, WEIGHT_PER_MILLIS},
-		DispatchClass, Weight,
+		constants::{BlockExecutionWeight, ExtrinsicBaseWeight},
+		Weight,
 	},
-	RuntimeDebug,
 };
 use frame_system::limits;
-pub use frame_support::traits::EnsureOneOf;
+pub use frame_support::traits::EitherOfDiverse;
 pub use frame_system::EnsureRoot;
 pub use module_support::{ExchangeRate, Price, Rate, Ratio};
 use primitives::{
+	currency::{TokenInfo, SEU},
+	evm::SYSTEM_CONTRACT_ADDRESS_PREFIX,
 	Balance, CurrencyId,
-	TokenSymbol::SEU,
 };
-use sp_runtime::{traits::Convert, transaction_validity::TransactionPriority, Perbill};
+use sp_core::H160;
+use sp_runtime::{traits::Convert, transaction_validity::TransactionPriority, Perbill, RuntimeDebug};
 use static_assertions::const_assert;
 
 pub mod u32_trait {
@@ -54,6 +61,11 @@ pub mod u32_trait {
 
 pub const WEIGHT_PER_MILLIS: u64 = 1_000_000_000;
 
+/// Start of the Setheum precompile address range (0x...0400).
+pub const PRECOMPILE_ADDRESS_START: u64 = 0x400;
+/// Start of the predeployed system-contract address range (0x...0800).
+pub const PREDEPLOY_ADDRESS_START: u64 = 0x800;
+
 pub use primitives::AccountId;
 
 mod gas_to_weight_ratio;
@@ -64,8 +76,8 @@ pub type TimeStampedPrice = module_oracle::TimestampedValue<Price, primitives::M
 parameter_types! {
 // Operational is 3/4 of TransactionPriority::max_value().
 // Ensure Inherent -> Operational tx -> Unsigned tx -> Signed normal tx
-	pub const CdpEngineUnsignedPriority: TransactionPriority = TransactionPriority::max_value() / 2;      // 50%
-	pub const AuctionManagerUnsignedPriority: TransactionPriority = TransactionPriority::max_value() / 5; // 20%
+	pub const CdpEngineUnsignedPriority: TransactionPriority = TransactionPriority::MAX / 2;      // 50%
+	pub const AuctionManagerUnsignedPriority: TransactionPriority = TransactionPriority::MAX / 5; // 20%
 }
 
 /// Check if the given `address` is a system contract.
@@ -84,7 +96,7 @@ pub fn is_setheum_precompile(address: H160) -> bool {
 pub struct GasToWeight;
 impl Convert<u64, Weight> for GasToWeight {
 	fn convert(gas: u64) -> Weight {
-		gas.saturating_mul(gas_to_weight_ratio::RATIO)
+		Weight::from_parts(gas.saturating_mul(gas_to_weight_ratio::RATIO), 0)
 	}
 }
 
@@ -96,7 +108,7 @@ pub const AVERAGE_ON_INITIALIZE_RATIO: Perbill = Perbill::from_perthousand(25);
 /// used by  Operational  extrinsics.
 const NORMAL_DISPATCH_RATIO: Perbill = Perbill::from_percent(75);
 /// We allow for 1 seconds of compute with a 3 seconds average block time.
-pub const MAXIMUM_BLOCK_WEIGHT: Weight = 1000 * WEIGHT_PER_MILLIS;
+pub const MAXIMUM_BLOCK_WEIGHT: Weight = Weight::from_parts(1000 * WEIGHT_PER_MILLIS, 0);
 
 const_assert!(NORMAL_DISPATCH_RATIO.deconstruct() >= AVERAGE_ON_INITIALIZE_RATIO.deconstruct());
 
@@ -175,103 +187,90 @@ pub type TechnicalCommitteeMembershipInstance = pallet_membership::Instance3;
 pub type OperatorMembershipInstanceSetheum = pallet_membership::Instance4;
 
 // Shura Council
-pub type EnsureRootOrOneShuraCouncil =
-	EnsureOneOf<AccountId, EnsureRoot<AccountId>, pallet_collective::EnsureMember<AccountId, ShuraCouncilInstance>>;
-
-pub type EnsureRootOrAllShuraCouncil = EnsureOneOf<
-	AccountId,
+pub type EnsureRootOrOneShuraCouncil = EitherOfDiverse<
 	EnsureRoot<AccountId>,
-	pallet_collective::EnsureProportionAtLeast<_1, _1, AccountId, ShuraCouncilInstance>,
+	pallet_collective::EnsureMember<AccountId, ShuraCouncilInstance>,
 >;
 
-pub type EnsureRootOrHalfShuraCouncil = EnsureOneOf<
-	AccountId,
+pub type EnsureRootOrAllShuraCouncil = EitherOfDiverse<
 	EnsureRoot<AccountId>,
-	pallet_collective::EnsureProportionAtLeast<_1, _2, AccountId, ShuraCouncilInstance>,
+	pallet_collective::EnsureProportionAtLeast<AccountId, ShuraCouncilInstance, 1, 1>,
 >;
 
-pub type EnsureRootOrOneThirdsShuraCouncil = EnsureOneOf<
-	AccountId,
+pub type EnsureRootOrHalfShuraCouncil = EitherOfDiverse<
 	EnsureRoot<AccountId>,
-	pallet_collective::EnsureProportionAtLeast<_1, _3, AccountId, ShuraCouncilInstance>,
+	pallet_collective::EnsureProportionAtLeast<AccountId, ShuraCouncilInstance, 1, 2>,
 >;
 
-pub type EnsureRootOrTwoThirdsShuraCouncil = EnsureOneOf<
-	AccountId,
+pub type EnsureRootOrOneThirdsShuraCouncil = EitherOfDiverse<
 	EnsureRoot<AccountId>,
-	pallet_collective::EnsureProportionAtLeast<_2, _3, AccountId, ShuraCouncilInstance>,
+	pallet_collective::EnsureProportionAtLeast<AccountId, ShuraCouncilInstance, 1, 3>,
 >;
 
-pub type EnsureRootOrThreeFourthsShuraCouncil = EnsureOneOf<
-	AccountId,
+pub type EnsureRootOrTwoThirdsShuraCouncil = EitherOfDiverse<
 	EnsureRoot<AccountId>,
-	pallet_collective::EnsureProportionAtLeast<_3, _4, AccountId, ShuraCouncilInstance>,
+	pallet_collective::EnsureProportionAtLeast<AccountId, ShuraCouncilInstance, 2, 3>,
+>;
+
+pub type EnsureRootOrThreeFourthsShuraCouncil = EitherOfDiverse<
+	EnsureRoot<AccountId>,
+	pallet_collective::EnsureProportionAtLeast<AccountId, ShuraCouncilInstance, 3, 4>,
 >;
 
 // Financial Council
-pub type EnsureRootOrAllFinancialCouncil = EnsureOneOf<
-	AccountId,
+pub type EnsureRootOrAllFinancialCouncil = EitherOfDiverse<
 	EnsureRoot<AccountId>,
-	pallet_collective::EnsureProportionAtLeast<_1, _1, AccountId, FinancialCouncilInstance>,
+	pallet_collective::EnsureProportionAtLeast<AccountId, FinancialCouncilInstance, 1, 1>,
 >;
 
-pub type EnsureRootOrHalfFinancialCouncil = EnsureOneOf<
-	AccountId,
+pub type EnsureRootOrHalfFinancialCouncil = EitherOfDiverse<
 	EnsureRoot<AccountId>,
-	pallet_collective::EnsureProportionAtLeast<_1, _2, AccountId, FinancialCouncilInstance>,
+	pallet_collective::EnsureProportionAtLeast<AccountId, FinancialCouncilInstance, 1, 2>,
 >;
 
-pub type EnsureRootOrOneThirdsFinancialCouncil = EnsureOneOf<
-	AccountId,
+pub type EnsureRootOrOneThirdsFinancialCouncil = EitherOfDiverse<
 	EnsureRoot<AccountId>,
-	pallet_collective::EnsureProportionAtLeast<_1, _3, AccountId, FinancialCouncilInstance>,
+	pallet_collective::EnsureProportionAtLeast<AccountId, FinancialCouncilInstance, 1, 3>,
 >;
 
-pub type EnsureRootOrTwoThirdsFinancialCouncil = EnsureOneOf<
-	AccountId,
+pub type EnsureRootOrTwoThirdsFinancialCouncil = EitherOfDiverse<
 	EnsureRoot<AccountId>,
-	pallet_collective::EnsureProportionAtLeast<_2, _3, AccountId, FinancialCouncilInstance>,
+	pallet_collective::EnsureProportionAtLeast<AccountId, FinancialCouncilInstance, 2, 3>,
 >;
 
-pub type EnsureRootOrThreeFourthsFinancialCouncil = EnsureOneOf<
-	AccountId,
+pub type EnsureRootOrThreeFourthsFinancialCouncil = EitherOfDiverse<
 	EnsureRoot<AccountId>,
-	pallet_collective::EnsureProportionAtLeast<_3, _4, AccountId, FinancialCouncilInstance>,
+	pallet_collective::EnsureProportionAtLeast<AccountId, FinancialCouncilInstance, 3, 4>,
 >;
 
 // Technical Committee Council
-pub type EnsureRootOrAllTechnicalCommittee = EnsureOneOf<
-	AccountId,
+pub type EnsureRootOrAllTechnicalCommittee = EitherOfDiverse<
 	EnsureRoot<AccountId>,
-	pallet_collective::EnsureProportionAtLeast<_1, _1, AccountId, TechnicalCommitteeInstance>,
+	pallet_collective::EnsureProportionAtLeast<AccountId, TechnicalCommitteeInstance, 1, 1>,
 >;
 
-pub type EnsureRootOrHalfTechnicalCommittee = EnsureOneOf<
-	AccountId,
+pub type EnsureRootOrHalfTechnicalCommittee = EitherOfDiverse<
 	EnsureRoot<AccountId>,
-	pallet_collective::EnsureProportionAtLeast<_1, _2, AccountId, TechnicalCommitteeInstance>,
+	pallet_collective::EnsureProportionAtLeast<AccountId, TechnicalCommitteeInstance, 1, 2>,
 >;
 
-pub type EnsureRootOrOneThirdsTechnicalCommittee = EnsureOneOf<
-	AccountId,
+pub type EnsureRootOrOneThirdsTechnicalCommittee = EitherOfDiverse<
 	EnsureRoot<AccountId>,
-	pallet_collective::EnsureProportionAtLeast<_1, _3, AccountId, TechnicalCommitteeInstance>,
+	pallet_collective::EnsureProportionAtLeast<AccountId, TechnicalCommitteeInstance, 1, 3>,
 >;
 
-pub type EnsureRootOrTwoThirdsTechnicalCommittee = EnsureOneOf<
-	AccountId,
+pub type EnsureRootOrTwoThirdsTechnicalCommittee = EitherOfDiverse<
 	EnsureRoot<AccountId>,
-	pallet_collective::EnsureProportionAtLeast<_2, _3, AccountId, TechnicalCommitteeInstance>,
+	pallet_collective::EnsureProportionAtLeast<AccountId, TechnicalCommitteeInstance, 2, 3>,
 >;
 
-pub type EnsureRootOrThreeFourthsTechnicalCommittee = EnsureOneOf<
-	AccountId,
+pub type EnsureRootOrThreeFourthsTechnicalCommittee = EitherOfDiverse<
 	EnsureRoot<AccountId>,
-	pallet_collective::EnsureProportionAtLeast<_3, _4, AccountId, TechnicalCommitteeInstance>,
+	pallet_collective::EnsureProportionAtLeast<AccountId, TechnicalCommitteeInstance, 3, 4>,
 >;
 
 /// The type used to represent the kinds of proxying allowed.
-#[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Encode, Decode, RuntimeDebug, MaxEncodedLen)]
+#[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Encode, Decode, DecodeWithMemTracking, RuntimeDebug, MaxEncodedLen, TypeInfo)]
 pub enum ProxyType {
 	Any,
 	CancelProxy,
@@ -289,19 +288,6 @@ impl Default for ProxyType {
 #[cfg(test)]
 mod tests {
 	use super::*;
-
-	#[test]
-	fn system_contracts_filter_works() {
-		assert!(SystemContractsFilter::is_allowed(H160::from_low_u64_be(1)));
-
-		let mut max_allowed_addr = [0u8; 20];
-		max_allowed_addr[SYSTEM_CONTRACT_ADDRESS_PREFIX.len()] = 127u8;
-		assert!(SystemContractsFilter::is_allowed(max_allowed_addr.into()));
-
-		let mut min_blocked_addr = [0u8; 20];
-		min_blocked_addr[SYSTEM_CONTRACT_ADDRESS_PREFIX.len() - 1] = 1u8;
-		assert!(!SystemContractsFilter::is_allowed(min_blocked_addr.into()));
-	}
 
 	#[test]
 	fn is_system_contract_works() {

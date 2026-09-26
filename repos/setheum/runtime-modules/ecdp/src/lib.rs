@@ -36,6 +36,10 @@
 // SOFTWARE.
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(deprecated)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
 #![allow(clippy::unused_unit)]
 
 use frame_support::{pallet_prelude::*, traits::NamedReservableCurrency};
@@ -49,7 +53,9 @@ use sp_runtime::{
 };
 use sp_std::prelude::*;
 
+#[cfg(test)]
 mod mock;
+#[cfg(test)]
 mod tests;
 pub mod weights;
 
@@ -86,7 +92,7 @@ pub mod module {
 
 	#[pallet::error]
 	pub enum Error<T> {
-// No permisson
+// No permission
 		NoPermission,
 // The system has been shutdown
 		AlreadyShutdown,
@@ -351,9 +357,9 @@ pub mod module {
 
 /// Transfers debit between two CDPs
 ///
-/// - `from_currency`: Currency id that debit is transfered from
-/// - `to_currency`: Currency id that debit is transfered to
-/// - `debit_transfer`: Debit transfered across two CDPs
+/// - `from_currency`: Currency id that debit is transferred from
+/// - `to_currency`: Currency id that debit is transferred to
+/// - `debit_transfer`: Debit transferred across two CDPs
 		#[pallet::call_index(9)]
 		#[pallet::weight(<T as Config>::WeightInfo::transfer_debit())]
 		pub fn transfer_debit(

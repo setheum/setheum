@@ -24,8 +24,10 @@ use sc_client_api::Backend;
 use sc_network::{
     config::{FullNetworkConfiguration, ProtocolId},
     error::Error as NetworkError,
-    NetworkService,
+    service::traits::NetworkService as NetworkServiceT,
+    NetworkBackend, NetworkService, NotificationMetrics,
 };
+use sc_network_common::ExHashT;
 use sc_network_sync::SyncingService;
 use sc_network_transactions::{TransactionsHandlerController, TransactionsHandlerPrototype};
 use sc_service::{SpawnTaskHandle, TransactionPoolAdapter};
@@ -37,13 +39,23 @@ use crate::{network::build::SPAWN_CATEGORY, BlockHash, ClientForSetBFT};
 
 /// Build a transaction prototype, that can later be used to build the transaction handler,
 /// and update the network config with the appropriate protocol.
-pub fn build_transactions_prototype(
-    full_network_config: &mut FullNetworkConfiguration,
+pub fn build_transactions_prototype<
+    B: Block + 'static,
+    Net: NetworkBackend<B, <B as Block>::Hash>,
+>(
+    full_network_config: &mut FullNetworkConfiguration<B, <B as Block>::Hash, Net>,
     protocol_id: &ProtocolId,
     genesis_hash: BlockHash,
+    metrics: NotificationMetrics,
 ) -> TransactionsHandlerPrototype {
-    let (prototype, protocol_config) =
-        TransactionsHandlerPrototype::new(protocol_id.clone(), genesis_hash, None);
+    let peer_store_handle = full_network_config.peer_store_handle();
+    let (prototype, protocol_config) = TransactionsHandlerPrototype::new::<_, B, Net>(
+        protocol_id.clone(),
+        genesis_hash,
+        None,
+        metrics,
+        peer_store_handle,
+    );
     full_network_config.add_notification_protocol(protocol_config);
     prototype
 }
