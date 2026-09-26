@@ -239,7 +239,7 @@ type Block = frame_system::mocking::MockBlock<Runtime>;
 construct_runtime!(
 	pub enum Runtime {
 		System: frame_system,
-		ModuleNFT: nft,
+		NFTModule: nft,
 		Balances: pallet_balances,
 		Proxy: pallet_proxy,
 		Utility: pallet_utility,
@@ -254,6 +254,8 @@ pub const CLASS_ID: <Runtime as module_nft::Config>::ClassId = 0;
 pub const CLASS_ID_NOT_EXIST: <Runtime as module_nft::Config>::ClassId = 1;
 pub const TOKEN_ID: <Runtime as module_nft::Config>::TokenId = 0;
 pub const TOKEN_ID_NOT_EXIST: <Runtime as module_nft::Config>::TokenId = 1;
+
+pub type RuntimeOrigin = <Runtime as frame_system::Config>::RuntimeOrigin;
 
 pub struct ExtBuilder;
 impl Default for ExtBuilder {
