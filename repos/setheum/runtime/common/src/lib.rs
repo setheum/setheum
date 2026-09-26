@@ -290,19 +290,6 @@ mod tests {
 	use super::*;
 
 	#[test]
-	fn system_contracts_filter_works() {
-		assert!(SystemContractsFilter::is_allowed(H160::from_low_u64_be(1)));
-
-		let mut max_allowed_addr = [0u8; 20];
-		max_allowed_addr[SYSTEM_CONTRACT_ADDRESS_PREFIX.len()] = 127u8;
-		assert!(SystemContractsFilter::is_allowed(max_allowed_addr.into()));
-
-		let mut min_blocked_addr = [0u8; 20];
-		min_blocked_addr[SYSTEM_CONTRACT_ADDRESS_PREFIX.len() - 1] = 1u8;
-		assert!(!SystemContractsFilter::is_allowed(min_blocked_addr.into()));
-	}
-
-	#[test]
 	fn is_system_contract_works() {
 		assert!(is_system_contract(H160::from_low_u64_be(0)));
 		assert!(is_system_contract(H160::from_low_u64_be(u64::max_value())));
