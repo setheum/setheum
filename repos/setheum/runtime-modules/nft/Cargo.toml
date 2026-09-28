@@ -27,9 +27,9 @@ sp-core = { workspace = true, features = ["std"] }
 sp-io = { workspace = true, features = ["std"] }
 pallet-balances = { workspace = true, features = ["std"] }
 pallet-utility = { workspace = true, features = ["std"] }
-module-tokens = { workspace = true, features = ["std"] , default-features = false }
-# module-currencies = { workspace = true, features = ["std"] , default-features = false }
-module-support = { workspace = true, features = ["std"] , default-features = false }
+  module-tokens = { workspace = true, features = ["std"] , default-features = false }
+  module-currencies = { workspace = true, features = ["std"] , default-features = false }
+  module-support = { workspace = true, features = ["std"] , default-features = false }
 
 [features]
 default = ["std"]

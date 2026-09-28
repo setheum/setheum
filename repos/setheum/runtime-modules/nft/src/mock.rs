@@ -96,8 +96,8 @@ impl pallet_balances::Config for Runtime {
 	type RuntimeHoldReason = RuntimeHoldReason;
 	type RuntimeFreezeReason = RuntimeFreezeReason;
 	type FreezeIdentifier = ();
-	type MaxHolds = ();
-	type MaxFreezes = ();
+	type MaxFreezes = ConstU32<0>;
+	type DoneSlashHandler = ();
 }
 impl pallet_utility::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
@@ -171,7 +171,6 @@ ord_parameter_types! {
 }
 
 impl module_tokens::Config for Runtime {
-	type RuntimeEvent = RuntimeEvent;
 	type Balance = Balance;
 	type Amount = Amount;
 	type CurrencyId = CurrencyId;
@@ -179,7 +178,7 @@ impl module_tokens::Config for Runtime {
 	type ExistentialDeposits = ExistentialDeposits;
 	type CurrencyHooks = ();
 	type MaxLocks = ();
-	type MaxReserves = ();
+	type MaxReserves = ConstU32<0>;
 	type ReserveIdentifier = [u8; 8];
 	type DustRemovalWhitelist = Nothing;
 }
@@ -196,11 +195,7 @@ impl module_currencies::Config for Runtime {
 	type MultiCurrency = Tokens;
 	type NativeCurrency = NativeCurrency;
 	type GetNativeCurrencyId = GetNativeCurrencyId;
-	type Erc20HoldingAccount = Erc20HoldingAccount;
 	type WeightInfo = ();
-	type AddressMapping = MockAddressMapping;
-	type EVMBridge = ();
-	type GasToWeight = ();
 	type SweepOrigin = EnsureSignedBy<One, AccountId>;
 	type OnDust = ();
 }
@@ -221,13 +216,8 @@ impl Config for Runtime {
 	type PalletId = ModuleNFTPalletId;
 	type MaxAttributesBytes = ConstU32<MAX_ATTRIBUTES_BYTES>;
 	type WeightInfo = ();
-}
-
-impl crate::Config for Runtime {
 	type ClassId = u32;
 	type TokenId = u64;
-	type ClassData = ClassData<Balance>;
-	type TokenData = TokenData<Balance>;
 	type MaxClassMetadata = ConstU32<1024>;
 	type MaxTokenMetadata = ConstU32<1024>;
 }
