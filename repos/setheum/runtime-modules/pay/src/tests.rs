@@ -107,7 +107,7 @@ fn test_pay_works() {
 			creator_initial_balance - payment_amount
 		);
 		assert_eq!(Tokens::free_balance(CURRENCY_ID, &PAYMENT_RECIPENT), 0);
-// the transferred amount should be reserved in the recipent account
+// the transferred amount should be reserved in the recipient account
 		assert_eq!(Tokens::total_balance(CURRENCY_ID, &PAYMENT_RECIPENT), payment_amount);
 
 // the payment should not be overwritten
@@ -170,7 +170,7 @@ fn test_cancel_works() {
 		);
 		assert_eq!(Tokens::free_balance(CURRENCY_ID, &PAYMENT_RECIPENT), 0);
 
-// cancel should succeed when caller is the recipent
+// cancel should succeed when caller is the recipient
 		assert_ok!(Payment::cancel(
 			RuntimeOrigin::signed(PAYMENT_RECIPENT),
 			PAYMENT_CREATOR
@@ -505,7 +505,7 @@ fn test_pay_with_remark_works() {
 			creator_initial_balance - payment_amount
 		);
 		assert_eq!(Tokens::free_balance(CURRENCY_ID, &PAYMENT_RECIPENT), 0);
-// the transferred amount should be reserved in the recipent account
+// the transferred amount should be reserved in the recipient account
 		assert_eq!(Tokens::total_balance(CURRENCY_ID, &PAYMENT_RECIPENT), payment_amount);
 
 // the payment should not be overwritten
@@ -1056,7 +1056,7 @@ fn test_reserve_payment_amount_works() {
 			creator_initial_balance - payment_amount
 		);
 		assert_eq!(Tokens::free_balance(CURRENCY_ID, &PAYMENT_RECIPENT), 0);
-// the transferred amount should be reserved in the recipent account
+// the transferred amount should be reserved in the recipient account
 		assert_eq!(Tokens::total_balance(CURRENCY_ID, &PAYMENT_RECIPENT), payment_amount);
 
 // the payment should not be overwritten

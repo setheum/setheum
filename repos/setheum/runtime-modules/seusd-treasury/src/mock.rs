@@ -185,7 +185,7 @@ ord_parameter_types! {
 }
 
 parameter_types! {
-	pub const UssdTreasuryPalletId: PalletId = PalletId(*b"set/seusdtrsymod");
+	pub const UssdTreasuryPalletId: PalletId = PalletId(*b"set/seum");
 	pub const TreasuryAccount: AccountId = 10;
 	pub AlternativeSwapPathJointList: Vec<Vec<CurrencyId>> = vec![
 	];

@@ -51,6 +51,30 @@ pub enum Recipient {
     Node(NodeIndex),
 }
 
+impl From<set_bft::NodeIndex> for NodeIndex {
+    fn from(index: set_bft::NodeIndex) -> Self {
+        NodeIndex(index.0)
+    }
+}
+
+impl From<NodeIndex> for set_bft::NodeIndex {
+    fn from(index: NodeIndex) -> Self {
+        set_bft::NodeIndex(index.0)
+    }
+}
+
+impl From<set_bft::NodeCount> for NodeCount {
+    fn from(count: set_bft::NodeCount) -> Self {
+        NodeCount(count.0)
+    }
+}
+
+impl From<NodeCount> for set_bft::NodeCount {
+    fn from(count: NodeCount) -> Self {
+        set_bft::NodeCount(count.0)
+    }
+}
+
 impl From<set_bft::Recipient> for Recipient {
     fn from(recipient: set_bft::Recipient) -> Self {
         match recipient {

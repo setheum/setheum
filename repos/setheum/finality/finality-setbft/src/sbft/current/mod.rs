@@ -22,7 +22,7 @@ use std::time::Duration;
 
 use set_bft::{create_config, default_delay_config, Config, LocalIO, Terminator};
 use log::debug;
-use network_clique::SpawnHandleExt;
+use network_clique::SpawnHandleT;
 
 mod network;
 mod performance;
@@ -46,7 +46,7 @@ use crate::{
         backup::SBFTBackup,
         manager::{Task, TaskCommon},
     },
-    CurrentNetworkData, Hasher, Keychain, NodeIndex, SessionId, SignatureSet, UnitCreationDelay,
+    Hasher, Keychain, NodeIndex, SessionId, SignatureSet, UnitCreationDelay,
 };
 
 type WrappedNetwork<H, ADN> = NetworkWrapper<
@@ -68,7 +68,7 @@ pub fn run_member<UH, ADN>(
 ) -> Task
 where
     UH: UnverifiedHeader,
-    ADN: Network<CurrentNetworkData<UH>> + 'static,
+    ADN: Network<NetworkData<UH>> + 'static,
 {
     let TaskCommon {
         spawn_handle,

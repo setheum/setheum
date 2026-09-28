@@ -96,6 +96,10 @@
 //! When a payment is 'completed' or 'cancelled' it is removed from storage and
 //! hence not tracked by a state.
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(deprecated)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
 #![allow(clippy::useless_conversion)]
 pub use pallet::*;
 

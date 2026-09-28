@@ -37,7 +37,6 @@
 
 use frame_support::traits::StoredMap;
 use sp_runtime::traits::Zero;
-use sp_staking::StakingAccount;
 
 pub trait AccountInfoProvider {
 	/// Account id type used by runtime

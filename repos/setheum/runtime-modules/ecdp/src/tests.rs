@@ -276,7 +276,7 @@ fn transfer_debit_works() {
 		assert_noop!(
 			ArithmeticError::Underflow
 		);
-// Won't work when transfering more debit than is present
+// Won't work when transferring more debit than is present
 		assert_noop!(
 			ArithmeticError::Underflow
 		);

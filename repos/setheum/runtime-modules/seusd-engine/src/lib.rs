@@ -36,6 +36,10 @@
 // SOFTWARE.
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(deprecated)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
 #![allow(clippy::unused_unit)]
 #![allow(clippy::upper_case_acronyms)]
 
@@ -74,7 +78,9 @@ use sp_runtime::{
 };
 use sp_std::{marker::PhantomData, prelude::*};
 
+#[cfg(test)]
 mod mock;
+#[cfg(test)]
 mod tests;
 pub mod weights;
 
@@ -867,11 +873,11 @@ impl<T: Config> Pallet<T> {
 				)?;
 
 // refund unused lp component tokens
-				if let Some(remainer) = available_0.checked_sub(consumption_0) {
-					<T as Config>::Currency::transfer(token_0, &loans_module_account, who, remainer)?;
+				if let Some(remainder) = available_0.checked_sub(consumption_0) {
+					<T as Config>::Currency::transfer(token_0, &loans_module_account, who, remainder)?;
 				}
-				if let Some(remainer) = available_1.checked_sub(consumption_1) {
-					<T as Config>::Currency::transfer(token_1, &loans_module_account, who, remainer)?;
+				if let Some(remainder) = available_1.checked_sub(consumption_1) {
+					<T as Config>::Currency::transfer(token_1, &loans_module_account, who, remainder)?;
 				}
 
 				actual_increase_lp

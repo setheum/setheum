@@ -19,7 +19,7 @@ name = "ink_ir"
 
 [dependencies]
 quote = { workspace = true }
-syn = { workspace = true, features = ["parsing", "full", "visit", "extra-traits"] }
+syn = { version = "2", features = ["parsing", "full", "visit", "extra-traits"] }
 proc-macro2 = { workspace = true }
 itertools = { workspace = true }
 either = { workspace = true }

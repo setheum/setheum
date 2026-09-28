@@ -155,7 +155,7 @@ impl<D: Data> SessionManager<D> for ManagerInterface<D> {
 }
 
 /// Configuration for the session manager. Controls how often the maintenance and
-/// rebroadcasts are triggerred. Also controls when maintenance starts.
+/// rebroadcasts are triggered. Also controls when maintenance starts.
 pub struct Config {
     discovery_cooldown: Duration,
     maintenance_period: Duration,
@@ -414,7 +414,7 @@ where
                     }
                 },
                 _ = maintenance.tick() => {
-                    debug!(target: "setbft-network", "Manager starts maintenence");
+                    debug!(target: "setbft-network", "Manager starts maintenance");
                     for to_send in self.manager.discovery() {
                         self.send_authentications(to_send.into())?;
                     }

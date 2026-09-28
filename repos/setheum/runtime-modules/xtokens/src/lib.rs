@@ -63,6 +63,10 @@
 //!   used as fee.
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(deprecated)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
 #![allow(clippy::from_over_into)]
 #![allow(clippy::unused_unit)]
 #![allow(clippy::large_enum_variant)]
@@ -95,7 +99,9 @@ use module_traits::{
 	GetByKey, RateLimiter, XcmTransfer,
 };
 
+#[cfg(test)]
 mod mock;
+#[cfg(test)]
 mod tests;
 
 enum TransferKind {

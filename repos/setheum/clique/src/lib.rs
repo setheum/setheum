@@ -1,3 +1,4 @@
+#![allow(warnings)]
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
@@ -226,9 +227,9 @@ impl Listener for TcpListener {
 	}
 }
 
-pub struct Splitted<I, O>(I, O);
+pub struct Split<I, O>(I, O);
 
-impl<I: AsyncRead + Unpin, O: Unpin> AsyncRead for Splitted<I, O> {
+impl<I: AsyncRead + Unpin, O: Unpin> AsyncRead for Split<I, O> {
 	fn poll_read(
 		mut self: Pin<&mut Self>,
 		cx: &mut std::task::Context<'_>,
@@ -238,7 +239,7 @@ impl<I: AsyncRead + Unpin, O: Unpin> AsyncRead for Splitted<I, O> {
 	}
 }
 
-impl<I: Unpin, O: AsyncWrite + Unpin> AsyncWrite for Splitted<I, O> {
+impl<I: Unpin, O: AsyncWrite + Unpin> AsyncWrite for Split<I, O> {
 	fn poll_write(
 		mut self: Pin<&mut Self>,
 		cx: &mut std::task::Context<'_>,
@@ -262,14 +263,14 @@ impl<I: Unpin, O: AsyncWrite + Unpin> AsyncWrite for Splitted<I, O> {
 	}
 }
 
-impl<I, O: ConnectionInfo> ConnectionInfo for Splitted<I, O> {
+impl<I, O: ConnectionInfo> ConnectionInfo for Split<I, O> {
 	fn peer_address_info(&self) -> PeerAddressInfo {
 		self.1.peer_address_info()
 	}
 }
 
 impl<I: AsyncRead + ConnectionInfo + Unpin + Send, O: AsyncWrite + ConnectionInfo + Unpin + Send> Splittable
-	for Splitted<I, O>
+	for Split<I, O>
 {
 	type Sender = O;
 	type Receiver = I;

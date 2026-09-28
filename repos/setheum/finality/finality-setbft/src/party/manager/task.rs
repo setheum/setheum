@@ -22,7 +22,7 @@ use std::{boxed::Box, pin::Pin};
 
 use futures::channel::oneshot;
 use log::{debug, warn};
-use network_clique::SpawnHandleExt;
+use network_clique::SpawnHandleT;
 
 use crate::{Future, SpawnHandle};
 

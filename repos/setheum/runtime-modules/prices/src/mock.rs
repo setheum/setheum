@@ -43,7 +43,7 @@ use frame_support::{
 	traits::{ConstU64, Everything, Nothing},
 };
 use frame_system::EnsureSignedBy;
-use module_support::{mocks::MockErc20InfoMapping, ExchangeRate, SwapLimit};
+use module_support::{ExchangeRate, SwapLimit};
 use module_traits::{parameter_type_with_key, DataFeeder};
 use primitives::{currency::DexShare, Amount, TokenSymbol};
 use sp_core::{H160, H256};
@@ -222,7 +222,6 @@ impl Config for Runtime {
 	type LockOrigin = EnsureSignedBy<One, AccountId>;
 	type SwapManager = MockSwapManager;
 	type Currency = Tokens;
-	type Erc20InfoMapping = MockErc20InfoMapping;
 	type PricingPegged = PricingPegged;
 	type WeightInfo = ();
 }

@@ -37,10 +37,7 @@
 
 use primitives::{launchpad::CampaignInfo, Balance, CurrencyId};
 use sp_runtime::{DispatchError, DispatchResult};
-use sp_std::{
-	cmp::{Eq, PartialEq},
-	prelude::*,
-};
+use sp_std::prelude::*;
 
 /// Abstraction over th Launchpad Proposal system.
 pub trait Proposal<AccountId, BlockNumber> {

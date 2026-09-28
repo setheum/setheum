@@ -126,14 +126,6 @@ where
                     );
                 }
             }
-            BestSeenBlock(response) => {
-                if response.send(None).is_err() {
-                    debug!(
-                        target: LOG_TARGET,
-                        "Failed to send response to best block request."
-                    );
-                }
-            }
             Status(_) => {
                 // We are explicitly dropping the response channel to cause an `Err(())` to be returned in the interface, as this produces the desired results for us.
                 trace!(target: LOG_TARGET, "Got status request, ignoring.");

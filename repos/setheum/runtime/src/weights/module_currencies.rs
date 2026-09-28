@@ -29,37 +29,47 @@ use sp_std::marker::PhantomData;
 pub struct WeightInfo<T>(PhantomData<T>);
 impl<T: frame_system::Config> module_currencies::WeightInfo for WeightInfo<T> {
 	fn transfer_non_native_currency() -> Weight {
-		(118_970_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(5 as Weight))
-			.saturating_add(T::DbWeight::get().writes(4 as Weight))
+		Weight::from_parts(118_970_000, 0)
+			.saturating_add(T::DbWeight::get().reads(4))
+			.saturating_add(T::DbWeight::get().writes(3))
 	}
 	fn transfer_native_currency() -> Weight {
-		(118_406_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(3 as Weight))
-			.saturating_add(T::DbWeight::get().writes(2 as Weight))
+		Weight::from_parts(118_406_000, 0)
+			.saturating_add(T::DbWeight::get().reads(3))
+			.saturating_add(T::DbWeight::get().writes(2))
 	}
 	fn update_balance_non_native_currency() -> Weight {
-		(67_290_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(3 as Weight))
-			.saturating_add(T::DbWeight::get().writes(3 as Weight))
+		Weight::from_parts(67_290_000, 0)
+			.saturating_add(T::DbWeight::get().reads(3))
+			.saturating_add(T::DbWeight::get().writes(3))
 	}
 	fn update_balance_native_currency_creating() -> Weight {
-		(62_901_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(1 as Weight))
-			.saturating_add(T::DbWeight::get().writes(1 as Weight))
+		Weight::from_parts(62_901_000, 0)
+			.saturating_add(T::DbWeight::get().reads(1))
+			.saturating_add(T::DbWeight::get().writes(1))
 	}
 	fn update_balance_native_currency_killing() -> Weight {
-		(73_159_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(3 as Weight))
-			.saturating_add(T::DbWeight::get().writes(2 as Weight))
+		Weight::from_parts(73_159_000, 0)
+			.saturating_add(T::DbWeight::get().reads(3))
+			.saturating_add(T::DbWeight::get().writes(2))
 	}
 	fn sweep_dust(c: u32, ) -> Weight {
-		(7_400_000 as Weight)
+		Weight::from_parts(7_400_000, 0)
 // Standard Error: 111_000
-			.saturating_add((25_100_000 as Weight).saturating_mul(c as Weight))
-			.saturating_add(T::DbWeight::get().reads(1 as Weight))
-			.saturating_add(T::DbWeight::get().reads((2 as Weight).saturating_mul(c as Weight)))
-			.saturating_add(T::DbWeight::get().writes(1 as Weight))
-			.saturating_add(T::DbWeight::get().writes((2 as Weight).saturating_mul(c as Weight)))
+			.saturating_add(Weight::from_parts(25_100_000, 0).saturating_mul(c.into()))
+			.saturating_add(T::DbWeight::get().reads(1))
+			.saturating_add(T::DbWeight::get().reads(2_u64.saturating_mul(c.into())))
+			.saturating_add(T::DbWeight::get().writes(1))
+			.saturating_add(T::DbWeight::get().writes(2_u64.saturating_mul(c.into())))
+	}
+	fn force_set_lock() -> Weight {
+		Weight::from_parts(67_290_000, 0)
+			.saturating_add(T::DbWeight::get().reads(3))
+			.saturating_add(T::DbWeight::get().writes(3))
+	}
+	fn force_remove_lock() -> Weight {
+		Weight::from_parts(67_290_000, 0)
+			.saturating_add(T::DbWeight::get().reads(3))
+			.saturating_add(T::DbWeight::get().writes(3))
 	}
 }

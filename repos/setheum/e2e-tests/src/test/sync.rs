@@ -259,7 +259,7 @@ pub async fn into_two_groups_one_with_quorum() -> anyhow::Result<()> {
 }
 
 /// Checks if nodes are able to proceed after a large finalization stall.
-/// Main motiviation of this test is to check whether database pruning does not remove too much of the state data
+/// Main motivation of this test is to check whether database pruning does not remove too much of the state data
 /// so the finalization can continue in case of a big best-finalized gap.
 #[tokio::test]
 pub async fn large_finalization_stall() -> anyhow::Result<()> {

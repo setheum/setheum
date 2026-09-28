@@ -36,7 +36,7 @@ pub fn generate_function_selector(_attr: TokenStream, item: TokenStream) -> Toke
 				let selector = keccak_256(func_sig.as_bytes());
 				let selector_u32 = u32::from_be_bytes([selector[0], selector[1], selector[2], selector[3]]);
 
-				let new_discriminant = syn::parse_str::<Expr>(&format!("0x{:08x}", selector_u32)).unwrap();
+				let new_discriminant = syn::parse_str::<Expr>(&format!("0x{selector_u32:08x}")).unwrap();
 				variant.discriminant = Some((Default::default(), new_discriminant));
 			}
 		}

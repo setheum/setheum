@@ -43,7 +43,7 @@ package = "aggregator"
 path = "../aggregator"
 default-features = false
 
-[dependencies.finality-rate-limiter]
+[dependencies.rate-limiter]
 workspace = true
 default-features = false
 
@@ -204,6 +204,12 @@ workspace = true
 [dev-dependencies.substrate-test-client]
 workspace = true
 default-features = false
+
+[dev-dependencies.substrate-test-runtime]
+workspace = true
+
+[dev-dependencies.substrate-test-runtime-client]
+workspace = true
 
 [dev-dependencies.sc-block-builder]
 workspace = true

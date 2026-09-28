@@ -1,0 +1,36 @@
+[package]
+name = "sheyth-vm-common"
+version.workspace = true
+authors.workspace = true
+license.workspace = true
+edition.workspace = true
+repository.workspace = true
+description = "The common crate for SheythVM"
+
+[dependencies]
+arbitrary = { workspace = true, optional = true }
+log = { workspace = true, optional = true }
+sheyth-vm-assembler = { workspace = true, optional = true }
+blake3 = { workspace = true, optional = true }
+picosimd = { workspace = true }
+
+[features]
+default = []
+alloc = []
+arbitrary = ["std", "dep:arbitrary"]
+std = ["alloc", "blake3/std"]
+logging = ["dep:log"]
+regmap = ["dep:sheyth-vm-assembler"]
+blake3 = ["dep:blake3"]
+unique-id = []
+export-internals-for-testing = []
+simd = []
+paranoid = []
+
+[dev-dependencies]
+env_logger = { workspace = true }
+proptest = { workspace = true }
+
+[lints.rust.unexpected_cfgs]
+level = "warn"
+check-cfg = ["cfg(kani)"]

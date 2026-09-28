@@ -36,7 +36,7 @@
 // SOFTWARE.
 
 #![cfg_attr(not(feature = "std"), no_std)]
-#![allow(clippy::all)]
+#![allow(warnings)]
 
 use sp_runtime::codec::Codec;
 

@@ -125,56 +125,6 @@ pub mod host_fn_name {
 	pub const SCHEDULE_CALL: &str = "sheyth_schedule_call";
 }
 
-/// Bind all precompile host functions to a SheythVM linker.
-///
-/// This registers both Solidity-compatible crypto precompiles and
-/// Sheyth-native precompiles (tokens, DEX, oracle, NFT, schedule).
-#[cfg(feature = "std")]
-pub fn bind_precompiles(linker: &mut sheyth_vm::Linker) {
-	use sheyth_vm::Linker;
-
-	// --- Solidity-compatible crypto precompiles ---
-	linker.bind(host_fn_name::ECRECOVER, ecrecover).expect("bind ecrecover");
-	linker.bind(host_fn_name::SHA256, sha256).expect("bind sha256");
-	linker.bind(host_fn_name::RIPEMD160, ripemd160).expect("bind ripemd160");
-	linker.bind(host_fn_name::IDENTITY, identity).expect("bind identity");
-	linker.bind(host_fn_name::MODEXP, modexp).expect("bind modexp");
-	linker.bind(host_fn_name::BN128_ADD, bn128_add).expect("bind bn128_add");
-	linker.bind(host_fn_name::BN128_MUL, bn128_mul).expect("bind bn128_mul");
-	linker.bind(host_fn_name::BN128_PAIRING, bn128_pairing).expect("bind bn128_pairing");
-
-	// --- Sheyth-native token precompiles ---
-	linker.bind(host_fn_name::TOKEN_BALANCE_OF, token_balance_of).expect("bind token_balance_of");
-	linker.bind(host_fn_name::TOKEN_TRANSFER, token_transfer).expect("bind token_transfer");
-	linker.bind(host_fn_name::TOKEN_TOTAL_SUPPLY, token_total_supply).expect("bind token_total_supply");
-	linker.bind(host_fn_name::TOKEN_NAME, token_name).expect("bind token_name");
-	linker.bind(host_fn_name::TOKEN_SYMBOL, token_symbol).expect("bind token_symbol");
-	linker.bind(host_fn_name::TOKEN_DECIMALS, token_decimals).expect("bind token_decimals");
-
-	// --- Currency precompiles ---
-	linker.bind(host_fn_name::CURRENCY_BALANCE, currency_balance).expect("bind currency_balance");
-	linker.bind(host_fn_name::CURRENCY_TRANSFER, currency_transfer).expect("bind currency_transfer");
-	linker.bind(host_fn_name::CURRENCY_TOTAL_ISSUANCE, currency_total_issuance).expect("bind currency_total_issuance");
-
-	// --- DEX precompiles ---
-	linker.bind(host_fn_name::DEX_SWAP, dex_swap).expect("bind dex_swap");
-	linker.bind(host_fn_name::DEX_GET_RESERVES, dex_get_reserves).expect("bind dex_get_reserves");
-	linker.bind(host_fn_name::DEX_ADD_LIQUIDITY, dex_add_liquidity).expect("bind dex_add_liquidity");
-	linker.bind(host_fn_name::DEX_REMOVE_LIQUIDITY, dex_remove_liquidity).expect("bind dex_remove_liquidity");
-
-	// --- Oracle precompiles ---
-	linker.bind(host_fn_name::ORACLE_GET_PRICE, oracle_get_price).expect("bind oracle_get_price");
-	linker.bind(host_fn_name::ORACLE_FEED_PRICE, oracle_feed_price).expect("bind oracle_feed_price");
-
-	// --- NFT precompiles ---
-	linker.bind(host_fn_name::NFT_BALANCE, nft_balance).expect("bind nft_balance");
-	linker.bind(host_fn_name::NFT_OWNER, nft_owner).expect("bind nft_owner");
-	linker.bind(host_fn_name::NFT_TRANSFER, nft_transfer).expect("bind nft_transfer");
-
-	// --- Schedule precompile ---
-	linker.bind(host_fn_name::SCHEDULE_CALL, schedule_call).expect("bind schedule_call");
-}
-
 // ============================================================================
 // Solidity-compatible Crypto Precompiles
 // ============================================================================
@@ -197,6 +147,10 @@ pub fn ecrecover(input: &[u8]) -> Vec<u8> {
 		None => return Vec::new(),
 	};
 
+	let msg_hash: &[u8; 32] = match msg_hash.try_into() {
+		Ok(hash) => hash,
+		Err(_) => return Vec::new(),
+	};
 	let pubkey = match sp_io::crypto::secp256k1_ecdsa_recover(&signature, msg_hash) {
 		Ok(pk) => pk,
 		Err(_) => return Vec::new(),
@@ -216,7 +170,11 @@ pub fn sha256(input: &[u8]) -> [u8; 32] {
 
 /// RIPEMD-160 hash (Ethereum precompile at 0x03).
 pub fn ripemd160(input: &[u8]) -> [u8; 32] {
-	let hash = sp_io::hashing::ripemd_160(input);
+	use ripemd::{Digest, Ripemd160};
+
+	let mut hasher = Ripemd160::new();
+	hasher.update(input);
+	let hash = hasher.finalize();
 	let mut output = [0u8; 32];
 	output[12..32].copy_from_slice(&hash);
 	output
@@ -253,13 +211,15 @@ pub fn bn128_pairing(_input: &[u8]) -> [u8; 32] {
 }
 
 /// Recover an ECDSA signature from r, s, v values.
-fn recover_ecdsa_signature(r: &[u8], s: &[u8], v: u64) -> Option<[u8; 64]> {
-	let mut sig = [0u8; 64];
+fn recover_ecdsa_signature(r: &[u8], s: &[u8], v: u64) -> Option<[u8; 65]> {
+	let mut sig = [0u8; 65];
 	if r.len() < 32 || s.len() < 32 {
 		return None;
 	}
 	sig[0..32].copy_from_slice(&r[0..32]);
 	sig[32..64].copy_from_slice(&s[0..32]);
+	// Ethereum exposes `v` as 27/28; secp256k1 expects a recovery id of 0/1.
+	sig[64] = if v >= 27 { (v - 27) as u8 } else { v as u8 };
 	Some(sig)
 }
 

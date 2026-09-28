@@ -689,7 +689,7 @@ where
     ) {
         let mut equivocation_proofs = vec![];
         let mut new_highest = false;
-// Lets us import descendands of importable blocks, useful for favourite blocks.
+// Lets us import descendants of importable blocks, useful for favourite blocks.
         let mut last_imported_block: Option<BlockId> = None;
         for item in response_items {
             match item {

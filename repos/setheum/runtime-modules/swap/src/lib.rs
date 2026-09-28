@@ -36,6 +36,10 @@
 // SOFTWARE.
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(deprecated)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
 #![allow(clippy::too_many_arguments)]
 #![allow(clippy::type_complexity)]
 #![allow(clippy::unused_unit)]
@@ -55,7 +59,9 @@ use sp_runtime::{
 };
 use sp_std::{prelude::*, vec};
 
+#[cfg(test)]
 mod mock;
+#[cfg(test)]
 mod tests;
 pub mod weights;
 
@@ -179,7 +185,7 @@ pub mod module {
 		UnacceptableShareIncrement,
 /// The liquidity withdrawn is unacceptable
 		UnacceptableLiquidityWithdrawn,
-/// The swap dosen't meet the invariant check
+/// The swap doesn't meet the invariant check
 		InvariantCheckFailed,
 /// The Provision is unqualified to be converted to `Enabled`
 		UnqualifiedProvision,

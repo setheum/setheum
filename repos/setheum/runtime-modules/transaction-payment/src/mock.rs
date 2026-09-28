@@ -48,6 +48,7 @@ use frame_support::{
 use frame_system::EnsureSignedBy;
 use module_support::{mocks::MockAddressMapping, Price, SpecificJointsSwap};
 use module_traits::parameter_type_with_key;
+use module_swap_legacy as swap_legacy_module;
 use primitives::{Amount, ReserveIdentifier, TokenSymbol, TradingPair};
 use smallvec::smallvec;
 use sp_core::{crypto::AccountId32, H160};
@@ -238,7 +239,7 @@ parameter_types! {
 	pub const MiddSwapThreshold: Balance = 5000;
 	pub const HigerSwapThreshold: Balance = 9500;
 	pub const TransactionPaymentPalletId: PalletId = PalletId(*b"set/fees");
-	pub const TreasuryPalletId: PalletId = PalletId(*b"set/trsry");
+	pub const TreasuryPalletId: PalletId = PalletId(*b"set/trsy");
 	pub TreasuryAccount: AccountId = TreasuryPalletId::get().into_account_truncating();
 	pub AlternativeSwapPathJointList: Vec<Vec<CurrencyId>> = vec![
 	];

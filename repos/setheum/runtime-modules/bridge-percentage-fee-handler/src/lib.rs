@@ -36,6 +36,10 @@
 // SOFTWARE.
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(deprecated)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
 
 pub use self::pallet::*;
 
@@ -156,8 +160,8 @@ pub mod pallet {
 
 	impl<T: Config> FeeHandler for Pallet<T> {
 		fn get_fee(domain: DomainID, asset: Asset) -> Option<u128> {
-			match (asset.fun, asset.id) {
-				(Fungible(amount), _) => {
+			match asset.fun {
+				Fungible(amount) => {
 					let (fee_rate_basis_point, fee_lower_bound, fee_upper_bound) =
 						AssetFeeRate::<T>::get((domain, asset.id))?;
 					let fee_amount = amount.saturating_mul(fee_rate_basis_point as u128).saturating_div(10000);

@@ -102,7 +102,6 @@ pub type SignatureSet<S> = NodeMap<S>;
 impl<S: Signature> PartialMultisignature for SignatureSet<S> {
     type Signature = S;
 
-    #[must_use = "consumes the original and returns the aggregated signature which should be used"]
     fn add_signature(mut self, signature: &Self::Signature, index: NodeIndex) -> Self {
         self.insert(index, signature.clone());
         self

@@ -1,0 +1,18 @@
+[package]
+name = "sheyth-vm-assembler"
+version.workspace = true
+authors.workspace = true
+license.workspace = true
+edition.workspace = true
+repository.workspace = true
+description = "Runtime assembler for SheythVM"
+
+[dependencies]
+log = { workspace = true }
+
+[dev-dependencies]
+iced-x86 = { workspace = true, features = ["code_asm"] }
+
+[features]
+default = []
+alloc = []

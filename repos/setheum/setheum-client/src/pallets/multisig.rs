@@ -64,7 +64,7 @@ pub type Multisig = runtime_types::pallet_multisig::Multisig<BlockNumber, Balanc
 /// threshold is reached, you will be charged for execution process. By setting `max_weight`
 /// low enough, you can avoid paying and left it for another member.
 ///
-/// However, passing such parameter everytime is cumbersome and introduces the need of either
+/// However, passing such parameter every time is cumbersome and introduces the need of either
 /// estimating call weight or setting very high universal bound at every caller side.
 /// Thus, we keep a fairly high limit, which should cover almost any call (0.05 token).
 pub const DEFAULT_MAX_WEIGHT: Weight = Weight::new(500_000_000, 0);

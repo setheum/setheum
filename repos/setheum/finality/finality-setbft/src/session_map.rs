@@ -55,7 +55,7 @@ pub trait AuthorityProvider: Clone + Send + Sync + 'static {
     fn next_aura_authorities(&self, block_number: BlockNumber) -> Option<Vec<(AccountId, AuraId)>>;
 }
 
-/// Returns number of some available (i.e. we are should be able to read its state) finalized block withing a given session.
+/// Returns number of some available (i.e. we are should be able to read its state) finalized block within a given session.
 pub trait FinalizedBlocksProvider: Clone + Sync + Send + 'static {
     fn available_finalized_block(&self, session_id: SessionId) -> Option<BlockNumber>;
 }

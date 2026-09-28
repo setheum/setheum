@@ -46,7 +46,8 @@ workspace = true
 workspace = true
 
 [dependencies.syn]
-workspace = true
+version = "2"
+features = [ "full", "extra-traits",]
 
 [dependencies.synstructure]
 workspace = true

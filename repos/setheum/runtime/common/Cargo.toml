@@ -7,8 +7,9 @@ edition = "2021"
 
 [features]
 default = ["std"]
-std = [
+	std = [
 	"codec/std",
+	"scale-info/std",
 	"ethabi/std",
 	"frame-support/std",
 	"frame-system/std",
@@ -42,6 +43,10 @@ optional = true
 default-features = false
 
 [dependencies.codec]
+workspace = true
+default-features = false
+
+[dependencies.scale-info]
 workspace = true
 default-features = false
 

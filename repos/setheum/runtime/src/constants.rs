@@ -23,7 +23,7 @@ pub mod time {
 // use runtime_common::{dollar, millicent, SEU};
 
 // These time units are defined in number of blocks.
-	pub const MINUTES: BlockNumber = 60 // (MILLISECS_PER_BLOCK as BlockNumber);
+	pub const MINUTES: BlockNumber = 60 * 1000 / (MILLISECS_PER_BLOCK as BlockNumber);
 	pub const HOURS: BlockNumber = MINUTES * 60;
 	pub const DAYS: BlockNumber = HOURS * 24;
 
@@ -39,8 +39,8 @@ pub mod fee {
 		constants::ExtrinsicBaseWeight,
 		WeightToFeeCoefficient, WeightToFeeCoefficients, WeightToFeePolynomial,
 	};
-	use primitives::Balance;
-	use runtime_common::{cent, SEU};
+	use primitives::{currency::SEU, Balance};
+	use runtime_common::cent;
 	use smallvec::smallvec;
 	use sp_runtime::Perbill;
 
@@ -69,7 +69,7 @@ pub mod fee {
 // in Setheum, extrinsic base weight (smallest non-zero weight) is mapped to 1/10
 // CENT:
 			let p = base_tx_in_setm(); // 10_000_000_000_000_000;
-			let q = Balance::from(ExtrinsicBaseWeight::get()); // 125_000_000
+			let q = Balance::from(ExtrinsicBaseWeight::get().ref_time()); // 125_000_000
 			smallvec![WeightToFeeCoefficient {
 				degree: 1,
 				negative: false,

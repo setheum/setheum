@@ -29,43 +29,43 @@ use sp_std::marker::PhantomData;
 pub struct WeightInfo<T>(PhantomData<T>);
 impl<T: frame_system::Config> module_nft::WeightInfo for WeightInfo<T> {
 	fn create_class() -> Weight {
-		(168_026_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(4 as Weight))
-			.saturating_add(T::DbWeight::get().writes(5 as Weight))
+		Weight::from_parts(168_026_000, 0)
+			.saturating_add(T::DbWeight::get().reads(4))
+			.saturating_add(T::DbWeight::get().writes(5))
 	}
 	fn mint(i: u32, ) -> Weight {
-		(123_482_000 as Weight)
+		Weight::from_parts(123_482_000, 0)
 // Standard Error: 19_000
-			.saturating_add((16_056_000 as Weight).saturating_mul(i as Weight))
-			.saturating_add(T::DbWeight::get().reads(5 as Weight))
-			.saturating_add(T::DbWeight::get().writes(5 as Weight))
-			.saturating_add(T::DbWeight::get().writes((2 as Weight).saturating_mul(i as Weight)))
+			.saturating_add(Weight::from_parts(16_056_000, 0).saturating_mul(i.into()))
+			.saturating_add(T::DbWeight::get().reads(5))
+			.saturating_add(T::DbWeight::get().writes(5))
+			.saturating_add(T::DbWeight::get().writes(2 * i as u64))
 	}
 	fn transfer() -> Weight {
-		(189_939_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(7 as Weight))
-			.saturating_add(T::DbWeight::get().writes(7 as Weight))
+		Weight::from_parts(189_939_000, 0)
+			.saturating_add(T::DbWeight::get().reads(7))
+			.saturating_add(T::DbWeight::get().writes(7))
 	}
 	fn burn() -> Weight {
-		(87_989_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(4 as Weight))
-			.saturating_add(T::DbWeight::get().writes(5 as Weight))
+		Weight::from_parts(87_989_000, 0)
+			.saturating_add(T::DbWeight::get().reads(4))
+			.saturating_add(T::DbWeight::get().writes(5))
 	}
 	fn burn_with_remark(b: u32, ) -> Weight {
-		(105_235_000 as Weight)
+		Weight::from_parts(105_235_000, 0)
 // Standard Error: 0
-			.saturating_add((2_000 as Weight).saturating_mul(b as Weight))
-			.saturating_add(T::DbWeight::get().reads(4 as Weight))
-			.saturating_add(T::DbWeight::get().writes(5 as Weight))
+			.saturating_add(Weight::from_parts(2_000, 0).saturating_mul(b.into()))
+			.saturating_add(T::DbWeight::get().reads(4))
+			.saturating_add(T::DbWeight::get().writes(5))
 	}
 	fn destroy_class() -> Weight {
-		(175_231_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(6 as Weight))
-			.saturating_add(T::DbWeight::get().writes(6 as Weight))
+		Weight::from_parts(175_231_000, 0)
+			.saturating_add(T::DbWeight::get().reads(6))
+			.saturating_add(T::DbWeight::get().writes(6))
 	}
 	fn update_class_properties() -> Weight {
-		(21_000_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(1 as Weight))
-			.saturating_add(T::DbWeight::get().writes(1 as Weight))
+		Weight::from_parts(21_000_000, 0)
+			.saturating_add(T::DbWeight::get().reads(1))
+			.saturating_add(T::DbWeight::get().writes(1))
 	}
 }

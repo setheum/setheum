@@ -242,7 +242,7 @@ mod tests {
         fn try_from(value: FromType) -> Result<Self, Self::Error> {
             match value {
                 FromType::A => Ok(IntoType {}),
-                FromType::B => Err("we support only convertion from the FromType::A"),
+                FromType::B => Err("we support only conversion from the FromType::A"),
             }
         }
     }

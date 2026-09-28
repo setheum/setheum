@@ -185,7 +185,7 @@ impl<A: AddressingInformation> Handler<A> {
         self.peers_by_node.get(node_id).cloned()
     }
 
-    /// Returns maping from NodeIndex to PeerId
+    /// Returns mapping from NodeIndex to PeerId
     pub fn peers(&self) -> HashMap<NodeIndex, A::PeerId> {
         self.peers_by_node.clone()
     }

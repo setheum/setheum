@@ -1,0 +1,111 @@
+use alloc::string::{String, ToString};
+use sheyth_vm_common::program::ProgramParseError;
+
+macro_rules! bail {
+    ($($arg:expr),* $(,)?) => {
+        return Err(Error::from_display(format_args!($($arg),*)))
+    }
+}
+
+pub(crate) use bail;
+
+#[derive(Debug)]
+enum ErrorKind {
+    Owned(String),
+    Static(&'static str),
+    ProgramParseError(ProgramParseError),
+}
+
+#[derive(Debug)]
+#[repr(transparent)]
+pub struct Error(ErrorKind);
+
+impl From<&'static str> for Error {
+    #[cold]
+    fn from(message: &'static str) -> Self {
+        Error(ErrorKind::Static(message))
+    }
+}
+
+impl From<String> for Error {
+    #[cold]
+    fn from(string: String) -> Self {
+        Error(ErrorKind::Owned(string))
+    }
+}
+
+impl From<ProgramParseError> for Error {
+    #[cold]
+    fn from(error: ProgramParseError) -> Self {
+        Self(ErrorKind::ProgramParseError(error))
+    }
+}
+
+if_compiler_is_supported! {
+    #[cfg(target_os = "linux")]
+    impl From<sheyth_vm_linux_raw::Error> for Error {
+        #[cold]
+        fn from(error: sheyth_vm_linux_raw::Error) -> Self {
+            Self(ErrorKind::Owned(error.to_string()))
+        }
+    }
+
+    #[cfg(feature = "generic-sandbox")]
+    use crate::sandbox::generic;
+
+    #[cfg(feature = "generic-sandbox")]
+    impl From<generic::Error> for Error {
+        #[cold]
+        fn from(error: generic::Error) -> Self {
+            Self(ErrorKind::Owned(error.to_string()))
+        }
+    }
+}
+
+impl Error {
+    #[cold]
+    pub(crate) fn from_display(message: impl core::fmt::Display) -> Self {
+        Error(ErrorKind::Owned(message.to_string()))
+    }
+
+    #[cold]
+    pub(crate) fn from_static_str(message: &'static str) -> Self {
+        Error(ErrorKind::Static(message))
+    }
+}
+
+if_compiler_is_supported! {
+    impl Error {
+        #[cold]
+        pub(crate) fn context(self, message: impl core::fmt::Display) -> Self {
+            use alloc::format;
+
+            let string = match self.0 {
+                ErrorKind::Owned(buffer) => format!("{}: {}", message, buffer),
+                error => format!("{}: {}", message, Error(error)),
+            };
+
+            Error(ErrorKind::Owned(string))
+        }
+    }
+}
+
+impl core::fmt::Display for Error {
+    fn fmt(&self, fmt: &mut core::fmt::Formatter) -> core::fmt::Result {
+        let message = match &self.0 {
+            ErrorKind::Owned(message) => message.as_str(),
+            ErrorKind::Static(message) => message,
+            ErrorKind::ProgramParseError(error) => return error.fmt(fmt),
+        };
+
+        fmt.write_str(message)
+    }
+}
+
+impl core::error::Error for Error {}
+
+impl From<Error> for String {
+    fn from(error: Error) -> String {
+        error.to_string()
+    }
+}

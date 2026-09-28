@@ -398,7 +398,7 @@ mod tests {
         DataProvider<THeader>,
     ) {
         let (client, select_chain) = TestClientBuilder::new().build_with_longest_chain();
-        let client = Arc::new(client);
+        let client: Arc<substrate_test_runtime_client::client::Client<_, _, _, _>> = Arc::new(client);
 
         let chain_builder =
             ClientChainBuilder::new(client.clone(), Arc::new(TestClientBuilder::new().build()));

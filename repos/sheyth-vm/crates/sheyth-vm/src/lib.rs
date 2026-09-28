@@ -1,0 +1,187 @@
+#![allow(warnings)]
+#![cfg_attr(not(feature = "std"), no_std)]
+#![cfg_attr(feature = "interpreter-musttail-dispatch", feature(explicit_tail_calls))]
+#![cfg_attr(feature = "interpreter-musttail-dispatch", allow(incomplete_features))]
+#![forbid(unused_must_use)]
+#![forbid(clippy::missing_safety_doc)]
+#![deny(clippy::undocumented_unsafe_blocks)]
+#![deny(clippy::exhaustive_structs)]
+// TODO: Uncomment this once we get rid of all of the `as` casts:
+// #![deny(clippy::as_conversions)]
+
+#[cfg(all(
+    not(miri),
+    target_arch = "x86_64",
+    any(
+        target_os = "linux",
+        all(feature = "generic-sandbox", any(target_os = "macos", target_os = "freebsd"))
+    ),
+    feature = "std",
+))]
+macro_rules! if_compiler_is_supported {
+    ({
+        $($if_true:tt)*
+    } else {
+        $($if_false:tt)*
+    }) => {
+        $($if_true)*
+    };
+
+    ($($if_true:tt)*) => {
+        $($if_true)*
+    }
+}
+
+#[cfg(not(all(
+    not(miri),
+    target_arch = "x86_64",
+    any(
+        target_os = "linux",
+        all(feature = "generic-sandbox", any(target_os = "macos", target_os = "freebsd"))
+    ),
+    feature = "std",
+)))]
+macro_rules! if_compiler_is_supported {
+    ({
+        $($if_true:tt)*
+    } else {
+        $($if_false:tt)*
+    }) => {
+        $($if_false)*
+    };
+
+    ($($if_true:tt)*) => {}
+}
+
+extern crate alloc;
+
+mod error;
+
+mod api;
+mod config;
+#[cfg(target_arch = "x86_64")]
+mod cpuid;
+mod gas;
+mod interpreter;
+mod linker;
+#[cfg(feature = "std")]
+mod source_cache;
+mod utils;
+
+#[cfg(feature = "std")]
+mod mutex_std;
+
+#[cfg(feature = "std")]
+pub(crate) use mutex_std as mutex;
+
+#[cfg(not(feature = "std"))]
+mod mutex_no_std;
+
+#[cfg(not(feature = "std"))]
+pub(crate) use mutex_no_std as mutex;
+
+impl<T> Default for crate::mutex::Mutex<T>
+where
+    T: Default,
+{
+    fn default() -> Self {
+        Self::new(Default::default())
+    }
+}
+
+#[cfg(feature = "module-cache")]
+mod module_cache;
+
+if_compiler_is_supported! {
+    mod compiler;
+    mod page_set;
+    mod sandbox;
+
+    #[cfg(all(target_os = "linux", not(feature = "export-internals-for-testing")))]
+    mod generic_allocator;
+
+    #[cfg(all(target_os = "linux", not(feature = "export-internals-for-testing")))]
+    mod bit_mask;
+
+    #[cfg(target_os = "linux")]
+    mod shm_allocator;
+}
+
+// These are needed due to: https://github.com/rust-lang/rustfmt/issues/3253
+#[cfg(rustfmt)]
+mod bit_mask;
+#[cfg(rustfmt)]
+mod compiler;
+#[cfg(rustfmt)]
+mod generic_allocator;
+#[cfg(rustfmt)]
+mod page_set;
+#[cfg(rustfmt)]
+mod sandbox;
+#[cfg(rustfmt)]
+mod shm_allocator;
+
+pub use sheyth_vm_common::{
+    abi::{MemoryMap, MemoryMapBuilder},
+    program::{ProgramBlob, ProgramCounter, ProgramParts, Reg},
+    utils::{ArcBytes, AsUninitSliceMut},
+};
+
+/// Miscellaneous types related to debug info.
+pub mod debug_info {
+    pub use sheyth_vm_common::program::{FrameInfo, FrameKind, LineProgram, LineProgramConfig, RegionInfo, SourceLocation};
+
+    #[cfg(feature = "std")]
+    pub use crate::source_cache::SourceCache;
+}
+
+/// Miscellaneous types related to program blobs.
+pub mod program {
+    pub use sheyth_vm_common::program::{
+        EstimateInterpreterMemoryUsageArgs, ISA_JamV1, ISA_Latest32, ISA_Latest64, ISA_ReviveV1, Imports, ImportsIter, Instruction,
+        InstructionSet, InstructionSetKind, Instructions, JumpTable, JumpTableIter, Opcode, ParsedInstruction, ProgramExport,
+        ProgramMemoryInfo, ProgramParseError, ProgramSymbol, RawReg,
+    };
+
+    // This is meant to be public *eventually*, but since it's still a work-in-progress
+    // let's hide it for now so that only those who know what they're doing use it.
+    #[doc(hidden)]
+    pub use sheyth_vm_common::assembler::assemble;
+}
+
+pub type Gas = i64;
+
+pub use crate::api::{CompileError, Engine, MemoryAccessError, MemoryProtection, Module, RawInstance, RegValue, SetCacheSizeLimitArgs};
+pub use crate::config::{BackendKind, Config, CorePinning, CustomCodegen, GasMeteringKind, ModuleConfig, SandboxKind};
+pub use crate::error::Error;
+pub use crate::gas::{Cost, CostModel, CostModelKind, CostModelRef};
+pub use crate::linker::{CallError, Caller, Instance, InstancePre, Linker};
+pub use crate::utils::{InterruptKind, Segfault};
+pub use sheyth_vm_common::simulator::CacheModel;
+
+pub const RETURN_TO_HOST: u64 = sheyth_vm_common::abi::VM_ADDR_RETURN_TO_HOST as u64;
+
+#[cfg(test)]
+mod tests;
+
+// These need to be toplevel for the macros to work.
+#[cfg(feature = "export-internals-for-testing")]
+pub mod generic_allocator;
+
+#[cfg(feature = "export-internals-for-testing")]
+pub mod bit_mask;
+
+#[cfg(feature = "export-internals-for-testing")]
+#[doc(hidden)]
+pub mod _for_testing {
+    #[cfg(target_os = "linux")]
+    if_compiler_is_supported! {
+        pub use crate::shm_allocator::{ShmAllocation, ShmAllocator};
+        pub fn create_shm_allocator() -> Result<crate::shm_allocator::ShmAllocator, sheyth_vm_linux_raw::Error> {
+            crate::sandbox::init_native_page_size();
+            crate::shm_allocator::ShmAllocator::new()
+        }
+
+        pub use crate::page_set::PageSet;
+    }
+}

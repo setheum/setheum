@@ -65,6 +65,14 @@ pub const TREASURY_ACCOUNT: AccountId =
 
 use crate as rate_limit;
 
+frame_support::construct_runtime!(
+	pub enum Runtime {
+		System: frame_system,
+		Timestamp: pallet_timestamp,
+		RateLimit: rate_limit,
+	}
+);
+
 #[derive_impl(frame_system::config_preludes::TestDefaultConfig as frame_system::DefaultConfig)]
 impl frame_system::Config for Runtime {
 	type AccountId = AccountId;
@@ -87,14 +95,6 @@ impl Config for Runtime {
 	type BlockNumberProvider = System;
 	type WeightInfo = ();
 }
-
-frame_support::construct_runtime!(
-	pub enum Runtime {
-		System: frame_system,
-		Timestamp: pallet_timestamp,
-		RateLimit: rate_limit,
-	}
-);
 
 pub struct ExtBuilder;
 

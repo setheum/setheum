@@ -158,7 +158,7 @@ pub trait UssdTreasuryExtended<AccountId>: SlickUsdTreasury<AccountId> {
 		amount: Self::Balance,
 		target: Self::Balance,
 		refund_receiver: AccountId,
-		splited: bool,
+		split: bool,
 	) -> sp_std::result::Result<u32, DispatchError>;
 
 	fn remove_liquidity_for_lp_collateral(

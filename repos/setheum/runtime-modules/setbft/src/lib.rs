@@ -36,6 +36,10 @@
 // SOFTWARE.
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(deprecated)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
 #![doc = include_str!("../README.md")]
 
 #[cfg(test)]
@@ -62,21 +66,31 @@ pub(crate) const LOG_TARGET: &str = "module-setbft";
 pub mod pallet {
 	use frame_support::{pallet_prelude::*, sp_runtime::RuntimeAppPublic};
 	use frame_system::{
-		ensure_root,
+		ensure_none, ensure_root,
 		pallet_prelude::{BlockNumberFor, OriginFor},
 	};
 	use pallet_session::SessionManager;
-	use primitives::SessionInfoProvider;
+	use primitives::{
+		crypto::{IndexedSignature, SignatureSet},
+		AuthoritySignature, SbftScoresProvider, Score, ScoreNonce, SessionInfoProvider,
+	};
+	use sp_runtime::transaction_validity::{
+		InvalidTransaction, TransactionPriority, TransactionSource, TransactionValidity,
+		ValidTransaction,
+	};
 	use sp_std::collections::btree_map::BTreeMap;
 	#[cfg(feature = "std")]
 	use sp_std::marker::PhantomData;
 
 	use super::*;
-	use module_traits::NextSessionAuthorityProvider;
+	use primitives::module_traits::NextSessionAuthorityProvider;
 
 	#[pallet::config]
 	pub trait Config: frame_system::Config {
-		type AuthorityId: Member + Parameter + RuntimeAppPublic + MaybeSerializeDeserialize;
+		type AuthorityId: Member
+			+ Parameter
+			+ RuntimeAppPublic<Signature = AuthoritySignature>
+			+ MaybeSerializeDeserialize;
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 		type SessionInfoProvider: SessionInfoProvider<BlockNumberFor<Self>>;
 		type SessionManager: SessionManager<<Self as frame_system::Config>::AccountId>;
@@ -89,6 +103,19 @@ pub mod pallet {
 		ChangeEmergencyFinalizer(T::AuthorityId),
 		ScheduleFinalityVersionChange(VersionChange),
 		FinalityVersionChange(VersionChange),
+		ScoreSubmitted(Score),
+	}
+
+	#[pallet::error]
+	pub enum Error<T> {
+		/// A score was submitted for a session that is not the current one.
+		IncorrectSession,
+		/// A score was submitted with a nonce that does not match the expected one.
+		IncorrectNonce,
+		/// The score signature set is invalid or has too few valid signatures.
+		IncorrectSignature,
+		/// There are no authorities in the current session, so the score cannot be verified.
+		NoAuthorities,
 	}
 
 	#[pallet::pallet]
@@ -141,6 +168,18 @@ pub mod pallet {
 	#[pallet::storage]
 	#[pallet::getter(fn finality_version_change)]
 	pub(super) type FinalityScheduledVersionChange<T: Config> = StorageValue<_, VersionChange, OptionQuery>;
+
+	/// The nonce expected for the next score submission in the current session.
+	#[pallet::storage]
+	pub type Nonce<T: Config> = StorageValue<_, ScoreNonce, ValueQuery>;
+
+	/// The most recently submitted score.
+	#[pallet::storage]
+	pub type Scores<T: Config> = StorageValue<_, Score, OptionQuery>;
+
+	/// The session for which the current nonce was submitted.
+	#[pallet::storage]
+	pub type SessionForNonce<T: Config> = StorageValue<_, SessionIndex, ValueQuery>;
 
 	impl<T: Config> Pallet<T> {
 		pub(crate) fn initialize_authorities(authorities: &[T::AuthorityId], next_authorities: &[T::AuthorityId]) {
@@ -237,6 +276,32 @@ pub mod pallet {
 
 			Self::finality_version()
 		}
+
+		/// The nonce expected for the next score submission in the current session.
+		pub fn nonce() -> ScoreNonce {
+			Nonce::<T>::get()
+		}
+
+		/// Verifies that the given score was signed by more than 2/3 of the current authorities.
+		fn verify_score_signature(score: &Score, signature: &SignatureSet<AuthoritySignature>) -> bool {
+			let authorities = Self::authorities();
+			if authorities.is_empty() {
+				return false;
+			}
+			let encoded = score.encode();
+			let valid_signatures = signature
+				.0
+				.iter()
+				.filter(|IndexedSignature { index, signature }| {
+					authorities
+						.get(*index as usize)
+						.map(|authority| authority.verify(&encoded, signature))
+						.unwrap_or(false)
+				})
+				.count();
+
+			valid_signatures * 3 > authorities.len() * 2
+		}
 	}
 
 	#[pallet::call]
@@ -276,10 +341,92 @@ pub mod pallet {
 			Self::deposit_event(Event::ScheduleFinalityVersionChange(version_change));
 			Ok(())
 		}
+
+		/// Submits a score for the given session of finality committee performance. The score
+		/// must be signed by more than 2/3 of the current finality committee and is only valid
+		/// for the session and nonce it was produced for.
+		///
+		/// This is an unsigned (offchain) call, validated by [`ValidateUnsigned`].
+		#[pallet::call_index(2)]
+		#[pallet::weight((T::BlockWeights::get().max_block, DispatchClass::Operational))]
+		pub fn submit_sbft_score(
+			origin: OriginFor<T>,
+			score: Score,
+			signature: SignatureSet<AuthoritySignature>,
+		) -> DispatchResultWithPostInfo {
+			let _ = ensure_none(origin)?;
+
+			let current_session = Self::current_session();
+			ensure!(score.session_id == current_session, Error::<T>::IncorrectSession);
+			ensure!(score.nonce == Self::nonce(), Error::<T>::IncorrectNonce);
+			ensure!(!Self::authorities().is_empty(), Error::<T>::NoAuthorities);
+			ensure!(
+				Self::verify_score_signature(&score, &signature),
+				Error::<T>::IncorrectSignature
+			);
+
+			log::debug!(
+				target: LOG_TARGET,
+				"Submitting score for session {:?} with nonce {:?}.",
+				score.session_id,
+				score.nonce
+			);
+
+			SessionForNonce::<T>::put(current_session);
+			Nonce::<T>::mutate(|nonce| *nonce = nonce.saturating_add(1));
+			Scores::<T>::put(score.clone());
+			Self::deposit_event(Event::ScoreSubmitted(score));
+
+			Ok(().into())
+		}
+	}
+
+	impl<T: Config> frame_support::unsigned::ValidateUnsigned for Pallet<T> {
+		type Call = Call<T>;
+
+		fn validate_unsigned(_source: TransactionSource, call: &Self::Call) -> TransactionValidity {
+			if let Call::submit_sbft_score { score, .. } = call {
+				if score.session_id != Self::current_session() {
+					return InvalidTransaction::Stale.into();
+				}
+				if score.nonce != Self::nonce() {
+					return InvalidTransaction::Stale.into();
+				}
+
+				return ValidTransaction::with_tag_prefix("SetBFTScore")
+					.and_provides((score.session_id, score.nonce))
+					.priority(TransactionPriority::MAX)
+					.longevity(1)
+					.propagate(true)
+					.build();
+			}
+
+			InvalidTransaction::Call.into()
+		}
 	}
 
 	impl<T: Config> BoundToRuntimeAppPublic for Pallet<T> {
 		type Public = T::AuthorityId;
+	}
+
+	impl<T: Config> SbftScoresProvider for Pallet<T> {
+		fn scores_for_session(session_id: SessionIndex) -> Option<Score> {
+			let current_session = Self::current_session();
+			if session_id != current_session {
+				None
+			} else {
+				Scores::<T>::get()
+			}
+		}
+
+		fn clear_scores() {
+			Scores::<T>::kill();
+		}
+
+		fn clear_nonce() {
+			Nonce::<T>::kill();
+			SessionForNonce::<T>::kill();
+		}
 	}
 
 	impl<T: Config> OneSessionHandler<T::AccountId> for Pallet<T> {

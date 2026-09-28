@@ -67,10 +67,6 @@ impl SubstrateCli for Cli {
 		2021
 	}
 
-	fn native_runtime_version(_: &Box<dyn sc_service::ChainSpec>) -> &'static sc_cli::RuntimeVersion {
-		&setheum_runtime::VERSION
-	}
-
 	fn load_spec(&self, id: &str) -> Result<Box<dyn sc_service::ChainSpec>, String> {
 		let default_chain = "testnet";
 		let id = id.trim();

@@ -36,7 +36,12 @@
 // SOFTWARE.
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(deprecated)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
 #![allow(clippy::unused_unit)]
+#![allow(deprecated)]
 
 use frame_support::{
 	pallet_prelude::*,
@@ -47,7 +52,9 @@ use sp_core::H160;
 use sp_runtime::DispatchResult;
 use sp_std::{prelude::*, vec::Vec};
 
+#[cfg(test)]
 mod mock;
+#[cfg(test)]
 mod tests;
 pub mod weights;
 

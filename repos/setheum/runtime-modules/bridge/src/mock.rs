@@ -368,12 +368,12 @@ impl ConcrateSygmaAsset {
 						// relative to current chain.
 						Some(Location::new(0, X1(slice_to_generalkey(b"sygma"))))
 					} else {
-						// Other parachain assets should be treat as reserve asset when transfered
+						// Other parachain assets should be treat as reserve asset when transferred
 						// to outside EVM chains
 						Some(Location::here())
 					}
 				},
-				// Parent assets should be treat as reserve asset when transfered to outside EVM
+				// Parent assets should be treat as reserve asset when transferred to outside EVM
 				// chains
 				(1, _) => Some(Location::here()),
 				// Children parachain

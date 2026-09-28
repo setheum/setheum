@@ -133,7 +133,7 @@ pub trait CommitteeManagementSudoApi {
 
     /// Schedule a non-reserved node to be banned out from the committee at the end of the era.
     /// * `account` - account to be banned,
-    /// * `ben_reason` - reaons for ban, expressed as raw bytes
+    /// * `ben_reason` - reasons for ban, expressed as raw bytes
     /// * `status` - a [`TxStatus`] for a tx to wait for
     async fn ban_from_committee(
         &self,

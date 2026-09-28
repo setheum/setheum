@@ -24,7 +24,7 @@ use bip39::{Language, Mnemonic, MnemonicType};
 use futures::channel::oneshot;
 use log::{debug, error};
 use network_clique::{RateLimitingDialer, RateLimitingListener, Service, SpawnHandleT};
-use primitives::{setbft::SetBFTSessionApi, TransactionHash};
+use primitives::{setbft::SetBFTSessionApi, BlockHash};
 use rate_limiter::SharedRateLimiter;
 use sc_client_api::Backend;
 use sc_keystore::{Keystore, LocalKeystore};
@@ -80,7 +80,7 @@ where
     C::Api: SetBFTSessionApi<Block> + AuraApi<Block, AuraId>,
     BE: Backend<Block> + 'static,
     TP: LocalTransactionPool<Block = Block>
-        + TransactionPool<Block = Block, Hash = TransactionHash>
+        + TransactionPool<Block = Block, Hash = BlockHash>
         + 'static,
 {
     let SetBFTConfig {

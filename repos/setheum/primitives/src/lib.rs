@@ -25,17 +25,18 @@
 pub mod setbft;
 pub mod bonding;
 pub mod currency;
-pub mod launchpad;
 pub mod evm;
+pub mod launchpad;
 pub mod nft;
 pub mod signature;
 pub mod task;
 pub mod testing;
+pub mod vesting;
 // pub mod unchecked_extrinsic;
 
 pub use testing::*;
 
-use parity_scale_codec::{Decode, Encode, MaxEncodedLen};
+use parity_scale_codec::{Decode, DecodeWithMemTracking, Encode, MaxEncodedLen};
 use scale_info::TypeInfo;
 #[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};
@@ -47,11 +48,8 @@ use sp_runtime::{
 use sp_std::prelude::*;
 
 pub use currency::{CurrencyId, DexShare, TokenSymbol};
-pub use evm::{
-	convert_decimals_from_evm, convert_decimals_to_evm, PRECOMPILE_ADDRESS_START,
-	PREDEPLOY_ADDRESS_START, SYSTEM_CONTRACT_ADDRESS_PREFIX,
-};
 pub use nft::NFTBalance;
+pub use vesting::VestingSchedule;
 
 #[cfg(test)]
 mod tests;
@@ -136,7 +134,7 @@ pub use sp_runtime::OpaqueExtrinsic as UncheckedExtrinsic;
 pub type Multiplier = FixedU128;
 
 #[derive(
-	Encode, Decode, Eq, PartialEq, Copy, Clone, RuntimeDebug, PartialOrd, Ord, TypeInfo,
+	Encode, Decode, DecodeWithMemTracking, Eq, PartialEq, Copy, Clone, RuntimeDebug, PartialOrd, Ord, TypeInfo,
 )]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub enum AuthoritysOriginId {
@@ -159,7 +157,7 @@ pub enum DataProviderId {
 }
 
 #[derive(
-	Encode, Eq, PartialEq, Copy, Clone, RuntimeDebug, PartialOrd, Ord, TypeInfo, MaxEncodedLen,
+	Encode, DecodeWithMemTracking, Eq, PartialEq, Copy, Clone, RuntimeDebug, PartialOrd, Ord, TypeInfo, MaxEncodedLen,
 )]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub struct TradingPair(CurrencyId, CurrencyId);
@@ -210,7 +208,7 @@ pub struct Position {
 	pub debit: Balance,
 }
 
-#[derive(Encode, Decode, Eq, PartialEq, Copy, Clone, RuntimeDebug, PartialOrd, Ord, MaxEncodedLen, TypeInfo)]
+#[derive(Encode, Decode, DecodeWithMemTracking, Eq, PartialEq, Copy, Clone, RuntimeDebug, PartialOrd, Ord, MaxEncodedLen, TypeInfo)]
 #[repr(u8)]
 pub enum ReserveIdentifier {
 	CollatorSelection,

@@ -41,6 +41,7 @@ default-features = false
 
 [dependencies.futures]
 workspace = true
+features = [ "std", "async-await", "executor",]
 
 [dependencies.futures-timer]
 workspace = true
@@ -56,6 +57,7 @@ workspace = true
 
 [dependencies.rand]
 workspace = true
+features = [ "std", "std_rng",]
 
 [dependencies.thiserror]
 workspace = true

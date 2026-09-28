@@ -10,7 +10,7 @@ homepage = "https:/setheum.com"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 name = "setheum-node"
 repository = "https:/github.com/setheum/setheum"
-version = "1.0.0"
+version = "0.9.81+dev"
 
 [dependencies]
 structopt = "0.3.8"
@@ -60,7 +60,7 @@ features = [ "std",]
 
 [dependencies.jsonrpsee]
 workspace = true
-features = [ "server",]
+features = [ "server", "macros" ]
 
 [dependencies.frame-benchmarking]
 workspace = true
@@ -184,7 +184,10 @@ path = "../runtime-modules/oracle/rpc"
 [dependencies.module-nft]
 path = "../runtime-modules/nft"
 
-[dependencies.setheum-primitives]
+[dependencies.primitives]
+workspace = true
+
+[dependencies.sp-io]
 workspace = true
 
 [dependencies.finality-setbft]

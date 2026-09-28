@@ -40,6 +40,7 @@
 use super::*;
 
 use crate as nft;
+use crate as module_nft;
 use frame_support::{
 	construct_runtime, ord_parameter_types, parameter_types,
 	traits::{ConstU128, ConstU32, ConstU64, Contains, InstanceFilter, Nothing},
@@ -55,32 +56,27 @@ use sp_runtime::{
 	BuildStorage, RuntimeDebug,
 };
 
+type Block = frame_system::mocking::MockBlock<Runtime>;
+
+construct_runtime!(
+	pub enum Runtime {
+		System: frame_system,
+		NFTModule: nft,
+		Balances: pallet_balances,
+		Proxy: pallet_proxy,
+		Utility: pallet_utility,
+		Tokens: module_tokens,
+		Currency: module_currencies,
+	}
+);
+
 pub type AccountId = AccountId32;
 
+#[frame_support::derive_impl(frame_system::config_preludes::TestDefaultConfig as frame_system::DefaultConfig)]
 impl frame_system::Config for Runtime {
-	type BaseCallFilter = BaseFilter;
-	type RuntimeOrigin = RuntimeOrigin;
-	type Nonce = u64;
-	type Hash = H256;
-	type RuntimeCall = RuntimeCall;
-	type Hashing = BlakeTwo256;
-	type AccountId = AccountId;
-	type Lookup = IdentityLookup<Self::AccountId>;
+	type BaseCallFilter = frame_support::traits::Everything;
 	type Block = Block;
-	type RuntimeEvent = RuntimeEvent;
-	type BlockHashCount = ConstU64<250>;
-	type DbWeight = ();
-	type BlockWeights = ();
-	type BlockLength = ();
-	type Version = ();
-	type PalletInfo = PalletInfo;
 	type AccountData = pallet_balances::AccountData<Balance>;
-	type OnNewAccount = ();
-	type OnKilledAccount = ();
-	type SystemWeightInfo = ();
-	type SS58Prefix = ();
-	type OnSetCode = ();
-	type MaxConsumers = ConstU32<16>;
 }
 
 impl pallet_balances::Config for Runtime {
@@ -96,8 +92,8 @@ impl pallet_balances::Config for Runtime {
 	type RuntimeHoldReason = RuntimeHoldReason;
 	type RuntimeFreezeReason = RuntimeFreezeReason;
 	type FreezeIdentifier = ();
-	type MaxHolds = ();
-	type MaxFreezes = ();
+	type MaxFreezes = ConstU32<0>;
+	type DoneSlashHandler = ();
 }
 impl pallet_utility::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
@@ -106,7 +102,7 @@ impl pallet_utility::Config for Runtime {
 	type WeightInfo = ();
 }
 
-#[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Encode, Decode, RuntimeDebug, MaxEncodedLen, TypeInfo)]
+#[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Encode, Decode, DecodeWithMemTracking, RuntimeDebug, MaxEncodedLen, TypeInfo)]
 pub enum ProxyType {
 	Any,
 	JustTransfer,
@@ -131,17 +127,6 @@ impl InstanceFilter<RuntimeCall> for ProxyType {
 		self == &ProxyType::Any || self == o
 	}
 }
-pub struct BaseFilter;
-impl Contains<RuntimeCall> for BaseFilter {
-	fn contains(c: &RuntimeCall) -> bool {
-		match *c {
-			// Remark is used as a no-op call in the benchmarking
-			RuntimeCall::System(SystemCall::remark { .. }) => true,
-			RuntimeCall::System(_) => false,
-			_ => true,
-		}
-	}
-}
 
 impl pallet_proxy::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
@@ -156,6 +141,7 @@ impl pallet_proxy::Config for Runtime {
 	type MaxPending = ConstU32<2>;
 	type AnnouncementDepositBase = ConstU128<1>;
 	type AnnouncementDepositFactor = ConstU128<1>;
+	type BlockNumberProvider = frame_system::Pallet<Runtime>;
 }
 
 pub type NativeCurrency = module_currencies::BasicCurrencyAdapter<Runtime, Balances, Amount, u64>;
@@ -171,7 +157,6 @@ ord_parameter_types! {
 }
 
 impl module_tokens::Config for Runtime {
-	type RuntimeEvent = RuntimeEvent;
 	type Balance = Balance;
 	type Amount = Amount;
 	type CurrencyId = CurrencyId;
@@ -179,8 +164,8 @@ impl module_tokens::Config for Runtime {
 	type ExistentialDeposits = ExistentialDeposits;
 	type CurrencyHooks = ();
 	type MaxLocks = ();
-	type MaxReserves = ();
-	type ReserveIdentifier = [u8; 8];
+	type MaxReserves = ConstU32<0>;
+	type ReserveIdentifier = ReserveIdentifier;
 	type DustRemovalWhitelist = Nothing;
 }
 
@@ -196,11 +181,7 @@ impl module_currencies::Config for Runtime {
 	type MultiCurrency = Tokens;
 	type NativeCurrency = NativeCurrency;
 	type GetNativeCurrencyId = GetNativeCurrencyId;
-	type Erc20HoldingAccount = Erc20HoldingAccount;
 	type WeightInfo = ();
-	type AddressMapping = MockAddressMapping;
-	type EVMBridge = ();
-	type GasToWeight = ();
 	type SweepOrigin = EnsureSignedBy<One, AccountId>;
 	type OnDust = ();
 }
@@ -221,32 +202,15 @@ impl Config for Runtime {
 	type PalletId = ModuleNFTPalletId;
 	type MaxAttributesBytes = ConstU32<MAX_ATTRIBUTES_BYTES>;
 	type WeightInfo = ();
-}
-
-impl crate::Config for Runtime {
 	type ClassId = u32;
 	type TokenId = u64;
-	type ClassData = ClassData<Balance>;
-	type TokenData = TokenData<Balance>;
 	type MaxClassMetadata = ConstU32<1024>;
 	type MaxTokenMetadata = ConstU32<1024>;
 }
 
 use frame_system::Call as SystemCall;
 
-type Block = frame_system::mocking::MockBlock<Runtime>;
-
-construct_runtime!(
-	pub enum Runtime {
-		System: frame_system,
-		ModuleNFT: nft,
-		Balances: pallet_balances,
-		Proxy: pallet_proxy,
-		Utility: pallet_utility,
-		Tokens: module_tokens,
-		Currency: module_currencies,
-	}
-);
+pub use crate as module_nft;
 
 pub const ALICE: AccountId = AccountId::new([1u8; 32]);
 pub const BOB: AccountId = AccountId::new([2u8; 32]);
@@ -266,9 +230,12 @@ impl ExtBuilder {
 	pub fn build(self) -> sp_io::TestExternalities {
 		let mut t = frame_system::GenesisConfig::<Runtime>::default().build_storage().unwrap();
 
-		pallet_balances::GenesisConfig::<Runtime> { balances: vec![(ALICE, 100000)] }
-			.assimilate_storage(&mut t)
-			.unwrap();
+		pallet_balances::GenesisConfig::<Runtime> {
+			balances: vec![(ALICE, 100000)],
+			..Default::default()
+		}
+		.assimilate_storage(&mut t)
+		.unwrap();
 
 		let mut ext = sp_io::TestExternalities::new(t);
 		ext.execute_with(|| System::set_block_number(1));

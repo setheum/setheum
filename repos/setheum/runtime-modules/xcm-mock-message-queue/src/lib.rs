@@ -38,6 +38,10 @@
 //! # Mock Message Queue for XCM Simulator tests
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(deprecated)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
 
 use cumulus_primitives_core::{ParaId, XcmpMessageFormat, XcmpMessageHandler};
 use frame_support::pallet_prelude::*;

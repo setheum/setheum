@@ -36,6 +36,9 @@
 // SOFTWARE.
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(unused_variables)]
+#![allow(deprecated)]
 #![allow(clippy::unused_unit)]
 #![allow(clippy::boxed_local)]
 #![allow(clippy::type_complexity)]
@@ -52,7 +55,7 @@ use frame_support::{
 	BoundedVec, PalletId,
 };
 use frame_system::pallet_prelude::*;
-use module_support::{BuyWeightRate, PriceProvider, Ratio, Swap, SwapLimit, TransactionPayment};
+use module_support::{swap_legacy::{Swap, SwapLimit}, BuyWeightRate, PriceProvider, Ratio, TransactionPayment};
 use module_traits::MultiCurrency;
 use pallet_transaction_payment_rpc_runtime_api::RuntimeDispatchInfo;
 use pallet_transaction_payment_rpc_runtime_api::{FeeDetails, InclusionFee};
@@ -69,9 +72,10 @@ use sp_runtime::{
 	FixedPointNumber, FixedPointOperand, Percent, Perquintill,
 };
 use sp_std::prelude::*;
-use xcm::v3::prelude::MultiLocation;
 
+#[cfg(all(test, feature = "tx-payment-tests"))]
 mod mock;
+#[cfg(all(test, feature = "tx-payment-tests"))]
 mod tests;
 pub mod weights;
 
@@ -309,10 +313,10 @@ pub mod module {
 		/// transaction fee paid, the second is the tip paid, if any.
 		type OnTransactionPayment: OnUnbalanced<NegativeImbalanceOf<Self>>;
 
-		/// A fee mulitplier for `Operational` extrinsics to compute "virtual tip" to boost their
+		/// A fee multiplier for `Operational` extrinsics to compute "virtual tip" to boost their
 		/// `priority`
 		///
-		/// This value is multipled by the `final_fee` to obtain a "virtual tip" that is later
+		/// This value is multiplied by the `final_fee` to obtain a "virtual tip" that is later
 		/// added to a tip component in regular `priority` calculations.
 		/// It means that a `Normal` transaction can front-run a similarly-sized `Operational`
 		/// extrinsic (with no tip), by including a tip value greater than the virtual tip.

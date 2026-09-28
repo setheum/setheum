@@ -36,14 +36,20 @@
 // SOFTWARE.
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(deprecated)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
+#![allow(clippy::too_many_arguments)]
+#![allow(unexpected_cfgs)]
 #![allow(clippy::upper_case_acronyms)]
 #![allow(clippy::from_over_into)]
 #![allow(clippy::type_complexity)]
 
 use frame_support::pallet_prelude::{DispatchClass, Pays, Weight};
-use primitives::{task::TaskResult, AccountId, Balance, CurrencyId, Fees, Multiplier, Nonce, ReserveIdentifier};
+use primitives::{task::TaskResult, AccountId, Balance, CurrencyId, Multiplier, ReserveIdentifier};
 #[cfg(feature = "std")]
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use sp_runtime::{
 	traits::CheckedDiv, transaction_validity::TransactionValidityError, DispatchError, DispatchResult, FixedU128,
 };

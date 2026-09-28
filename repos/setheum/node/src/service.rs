@@ -27,9 +27,10 @@ use std::{
 
 use fake_runtime_api::fake_runtime::RuntimeApi;
 use finality_setbft::{
-	build_network, get_setheum_block_import, run_validator_node, BlockImporter, BuildNetworkOutput, ChannelProvider,
+	build_network, get_setbft_block_import, run_validator_node, BlockImporter, BuildNetworkOutput, ChannelProvider,
 	FavouriteSelectChainProvider, Justification, JustificationTranslator, MillisecsPerBlock, RateLimiterConfig,
-	RedirectingBlockImport, SessionPeriod, SetheumNodeConfig, SubstrateChainStatus, SyncOracle, ValidatorAddressCache,
+	RedirectingBlockImport, SessionPeriod, SetBFTConfig as SetheumNodeConfig, SubstrateChainStatus, SyncOracle,
+	ValidatorAddressCache,
 };
 use log::warn;
 use primitives::{Block, DEFAULT_BACKUP_FOLDER, MAX_BLOCK_SIZE};
@@ -49,13 +50,13 @@ use futures::StreamExt;
 use crate::{
 	executor::executor,
 	rpc::{create_full as create_full_rpc, FullDeps as RpcFullDeps},
-	setheum_cli::SetheumCli,
+	cli::Cli as SetheumCli,
 };
 
 type Executor = executor::Executor;
 type FullClient = sc_service::TFullClient<Block, RuntimeApi, Executor>;
 type FullBackend = sc_service::TFullBackend<Block>;
-type FullPool = sc_transaction_pool::FullPool<Block, FullClient>;
+type FullPool = sc_transaction_pool::BasicPool<sc_transaction_pool::FullChainApi<FullClient, Block>, Block>;
 type FullImportQueue = sc_consensus::DefaultImportQueue<Block>;
 type FullProposerFactory = ProposerFactory<FullPool, FullClient, DisableProofRecording>;
 pub struct ServiceComponents {
@@ -148,11 +149,10 @@ pub fn new_partial(config: &Configuration) -> Result<ServiceComponents, ServiceE
 			.map_err(|e| ServiceError::Other(format!("failed to set up chain status: {e}")))?,
 	);
 	let justification_channel_provider = ChannelProvider::new();
-	let setheum_block_import = get_setheum_block_import(
+	let (setheum_block_import, redirecting_block_import) = get_setbft_block_import(
 		client.clone(),
-		justification_channel_provider.get_sender(),
-		justification_translator,
-		select_chain_provider.select_chain(),
+		client.clone(),
+		select_chain.clone(),
 	);
 
 	let slot_duration = sc_consensus_aura::slot_duration(&*client)?;
@@ -314,6 +314,8 @@ pub fn new_authority(config: Configuration, setheum_config: SetheumCli) -> Resul
 		.map_err(|e| ServiceError::Other(format!("failed to set up chain status: {e}")))?;
 	let validator_address_cache = get_validator_address_cache(&setheum_config);
 	let rpc_builder = {
+		let client = service_components.client.clone();
+		let pool = service_components.transaction_pool.clone();
 		let sync_oracle = sync_oracle.clone();
 		let validator_address_cache = validator_address_cache.clone();
 		let import_justification_tx = service_components.justification_channel_provider.get_sender();
@@ -328,7 +330,6 @@ pub fn new_authority(config: Configuration, setheum_config: SetheumCli) -> Resul
 				justification_translator: JustificationTranslator::new(chain_status.clone()),
 				sync_oracle: sync_oracle.clone(),
 				validator_address_cache: validator_address_cache.clone(),
-				graph: pool.pool().clone(),
 				max_past_logs: 10000,
 			};
 

@@ -162,7 +162,7 @@ impl NodeSessionManager for Arc<MockNodeSessionManager> {
 
         if let Some(id) = id {
             if let Some(idx) = authorities.iter().position(|x| x == id) {
-// doesnt mather for tests what nodeindex we are
+// doesn't mather for tests what nodeindex we are
                 return Some(NodeIndex(idx));
             }
 

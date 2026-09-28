@@ -47,7 +47,6 @@ use cargo_metadata::{
     Metadata as CargoMetadata,
     MetadataCommand,
     Package,
-    TargetKind,
 };
 use semver::Version;
 use serde_json::{
@@ -99,7 +98,7 @@ impl CrateMetadata {
         if let Some(lib_name) = &root_package
             .targets
             .iter()
-            .find(|target| target.kind.iter().any(|f| *f == TargetKind::Lib))
+            .find(|target| target.kind.iter().any(|f| f == "lib"))
         {
             if lib_name.name != root_package.name {
                 // warn user if they still specify a lib name different from the

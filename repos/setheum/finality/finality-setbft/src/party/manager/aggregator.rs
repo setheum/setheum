@@ -43,13 +43,9 @@ use crate::{
     justification::SetBFTJustification,
     metrics::{Checkpoint, TimingBlockMetrics},
     network::data::Network,
-    party::{
-        manager::aggregator::AggregatorVersion::{Current, Legacy},
-        AuthoritySubtaskCommon, Task, LOG_TARGET,
-    },
+    party::{AuthoritySubtaskCommon, Task, LOG_TARGET},
     sync::JustificationSubmissions,
-    BlockId, CurrentRmcNetworkData, Keychain, LegacyRmcNetworkData, SessionBoundaries,
-    STATUS_REPORT_INTERVAL,
+    BlockId, Keychain, RmcNetworkData, SessionBoundaries, STATUS_REPORT_INTERVAL,
 };
 
 #[derive(Debug)]
@@ -87,13 +83,12 @@ where
         mpsc::UnboundedSender<(Hash, PrimitivesSignatureSet<AuthoritySignature>)>,
 }
 
-async fn process_new_block_data<CN, LN>(
-    aggregator: &mut Aggregator<CN, LN>,
+async fn process_new_block_data<CN>(
+    aggregator: &mut Aggregator<CN>,
     block: BlockId,
     metrics: &mut TimingBlockMetrics,
 ) where
-    CN: Network<CurrentRmcNetworkData>,
-    LN: Network<LegacyRmcNetworkData>,
+    CN: Network<RmcNetworkData>,
 {
     trace!(target: LOG_TARGET, "Received unit {:?} in aggregator.", block);
     let hash = block.hash();
@@ -134,8 +129,8 @@ where
     Ok(())
 }
 
-async fn run_aggregator<H, C, CN, LN, JS>(
-    mut aggregator: Aggregator<CN, LN>,
+async fn run_aggregator<H, C, CN, JS>(
+    mut aggregator: Aggregator<CN>,
     io: IO<JS>,
     client: C,
     session_boundaries: &SessionBoundaries,
@@ -146,8 +141,7 @@ where
     H: Header,
     JS: JustificationSubmissions<Justification> + Send + Sync + Clone,
     C: HeaderBackend<H> + 'static,
-    LN: Network<LegacyRmcNetworkData>,
-    CN: Network<CurrentRmcNetworkData>,
+    CN: Network<RmcNetworkData>,
 {
     use SignableTypedHash::*;
     let IO {
@@ -181,7 +175,7 @@ where
             maybe_block = blocks_from_interpreter.next(), if !session_over => match maybe_block {
                 Some(block) => {
                     hash_of_last_block = Some(block.hash());
-                    process_new_block_data::<CN, LN>(
+                    process_new_block_data::<CN>(
                         &mut aggregator,
                         block,
                         &mut metrics
@@ -237,27 +231,21 @@ where
     Ok(())
 }
 
-pub enum AggregatorVersion<CN, LN> {
-    Current(CN),
-    Legacy(LN),
-}
-
 /// Runs the justification signature aggregator within a single session.
-pub fn task<H, C, CN, LN, JS>(
+pub fn task<H, C, CN, JS>(
     subtask_common: AuthoritySubtaskCommon,
     client: C,
     io: IO<JS>,
     session_boundaries: SessionBoundaries,
     metrics: TimingBlockMetrics,
     multikeychain: Keychain,
-    version: AggregatorVersion<CN, LN>,
+    rmc_network: CN,
 ) -> Task
 where
     H: Header,
     JS: JustificationSubmissions<Justification> + Send + Sync + Clone + 'static,
     C: HeaderBackend<H> + 'static,
-    LN: Network<LegacyRmcNetworkData> + 'static,
-    CN: Network<CurrentRmcNetworkData> + 'static,
+    CN: Network<RmcNetworkData> + 'static,
 {
     let AuthoritySubtaskCommon {
         spawn_handle,
@@ -266,10 +254,7 @@ where
     let (stop, exit) = oneshot::channel();
     let task = {
         async move {
-            let aggregator_io = match version {
-                Current(rmc_network) => Aggregator::new_current(&multikeychain, rmc_network),
-                Legacy(rmc_network) => Aggregator::new_legacy(&multikeychain, rmc_network),
-            };
+            let aggregator_io = Aggregator::new(&multikeychain, rmc_network);
             debug!(target: LOG_TARGET, "Running the aggregator task for {:?}", session_id);
             let result = run_aggregator(
                 aggregator_io,

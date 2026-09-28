@@ -59,7 +59,7 @@ runtime_benchmarks! {
 
 		let to: AccountId = account("to", 0, SEED);
 		let to_lookup = lookup_of_account(to.clone());
-	}: _(RawOrigin::Signed(from), NATIVE, to_lookup, schedule.clone())
+	}: _(RawOrigin::Root, NATIVE, to_lookup, schedule.clone())
 	verify {
 		assert_eq!(
 			<Currencies as MultiCurrency<_>>::total_balance(NATIVE, &to),

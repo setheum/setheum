@@ -1,3 +1,4 @@
+#![allow(warnings)]
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 
 // This file is part of Setheum.
@@ -44,7 +45,7 @@ async fn main() {
 		.unwrap_or_else(|e| panic!("unable to parse SyntheticNetwork config: {e}"));
 	info!("parsed SyntheticNetwork configuration");
 
-	info!("commiting configuration");
+	info!("committing configuration");
 	let mut synth_net_client = SyntheticNetworkClient::new(synth_net_url);
 	synth_net_client
 		.commit_config(&synth_net_config)

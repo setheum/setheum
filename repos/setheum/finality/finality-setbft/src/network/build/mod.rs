@@ -21,7 +21,6 @@
 use std::sync::{atomic::AtomicBool, Arc};
 
 use log::error;
-use rate_limiter::SharedRateLimiter;
 use sc_client_api::Backend;
 use sc_network::{
     config::{NetworkConfiguration, ProtocolId},
@@ -49,7 +48,6 @@ mod base;
 mod own_protocols;
 mod rpc;
 mod transactions;
-mod transport;
 
 use base::network as base_network;
 use own_protocols::Networks;
@@ -102,10 +100,6 @@ where
     let (base_protocol_config, events_from_network) =
         setup_base_protocol::<TP::Block>(genesis_hash);
 
-    let network_rate_limit = network_config.substrate_network_bit_rate;
-    let rate_limiter = SharedRateLimiter::new(network_rate_limit.into());
-    let transport_builder = |config| transport::build_transport(rate_limiter, config);
-
     let (
         network,
         Networks {
@@ -115,7 +109,6 @@ where
         transaction_prototype,
     ) = base_network(
         &network_config.network_config,
-        transport_builder,
         protocol_id,
         client.clone(),
         spawn_handle,

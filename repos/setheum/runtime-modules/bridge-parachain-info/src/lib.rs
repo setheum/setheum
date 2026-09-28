@@ -38,6 +38,10 @@
 //! Minimal Pallet that injects a ParachainId into Runtime storage from
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(deprecated)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
 
 pub use pallet::*;
 

@@ -29,12 +29,32 @@ use sp_std::marker::PhantomData;
 pub struct WeightInfo<T>(PhantomData<T>);
 impl<T: frame_system::Config> module_transaction_payment::WeightInfo for WeightInfo<T> {
 	fn set_alternative_fee_swap_path() -> Weight {
-		(4_730_000 as Weight)
-			.saturating_add(T::DbWeight::get().writes(1 as Weight))
+		Weight::from_parts(4_730_000, 0)
+			.saturating_add(T::DbWeight::get().writes(1))
 	}
 	fn on_finalize() -> Weight {
-		(15_104_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(2 as Weight))
-			.saturating_add(T::DbWeight::get().writes(1 as Weight))
+		Weight::from_parts(15_104_000, 0)
+			.saturating_add(T::DbWeight::get().reads(2))
+			.saturating_add(T::DbWeight::get().writes(1))
+	}
+	fn enable_charge_fee_pool() -> Weight {
+		Weight::from_parts(15_000_000, 0)
+			.saturating_add(T::DbWeight::get().writes(1))
+	}
+	fn disable_charge_fee_pool() -> Weight {
+		Weight::from_parts(15_000_000, 0)
+			.saturating_add(T::DbWeight::get().writes(1))
+	}
+	fn with_fee_path() -> Weight {
+		Weight::from_parts(15_000_000, 0)
+			.saturating_add(T::DbWeight::get().writes(1))
+	}
+	fn with_fee_aggregated_path() -> Weight {
+		Weight::from_parts(15_000_000, 0)
+			.saturating_add(T::DbWeight::get().writes(1))
+	}
+	fn with_fee_currency() -> Weight {
+		Weight::from_parts(15_000_000, 0)
+			.saturating_add(T::DbWeight::get().writes(1))
 	}
 }

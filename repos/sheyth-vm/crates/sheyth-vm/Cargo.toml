@@ -1,0 +1,41 @@
+[package]
+name = "sheyth-vm"
+version.workspace = true
+authors.workspace = true
+license.workspace = true
+edition.workspace = true
+repository.workspace = true
+readme = "../../README.md"
+description = "SheythVM - A fast and secure RISC-V based virtual machine"
+
+[dependencies]
+log = { workspace = true }
+picosimd = { workspace = true }
+sheyth-vm-assembler = { workspace = true, features = ["alloc"] }
+sheyth-vm-common = { workspace = true, features = ["alloc", "logging", "regmap", "unique-id", "simd"] }
+schnellru = { workspace = true, optional = true }
+
+[target.'cfg(all(not(miri), target_arch = "x86_64", target_os = "linux"))'.dependencies]
+libc = { workspace = true }
+sheyth_vm_linux_raw = { package = "polkavm-linux-raw", version = "0.36.0", features = ["std"] }
+
+[dev-dependencies]
+env_logger = { workspace = true }
+sheyth-vm-common = { workspace = true, features = ["export-internals-for-testing"] }
+sheyth-vm-linker = { workspace = true }
+image = { workspace = true, features = ["tga"] }
+ruzstd = { workspace = true }
+paste = { workspace = true }
+oorandom = { workspace = true }
+
+[features]
+default = ["std"]
+std = ["ruzstd/std"]
+module-cache = ["dep:schnellru", "sheyth-vm-common/blake3"]
+generic-sandbox = []
+export-internals-for-testing = []
+interpreter-musttail-dispatch = []
+
+[lints.rust.unexpected_cfgs]
+level = "warn"
+check-cfg = ["cfg(sheyth_vm_dev_debug_zygote)"]

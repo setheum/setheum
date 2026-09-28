@@ -36,31 +36,30 @@
 // SOFTWARE.
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(deprecated)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
 #![allow(clippy::unused_unit)]
 
 use frame_support::{
 	ensure,
 	pallet_prelude::*,
-	traits::{Currency, EnsureOrigin, ExistenceRequirement, Get, LockIdentifier, LockableCurrency, WithdrawReasons},
+	traits::{EnsureOrigin, ExistenceRequirement, Get, LockIdentifier},
 	BoundedVec,
 };
-use frame_system::{ensure_root, ensure_signed, pallet_prelude::*};
-use parity_scale_codec::{HasCompact, MaxEncodedLen};
-use scale_info::TypeInfo;
+use frame_system::{ensure_signed, pallet_prelude::*};
+use module_traits::{MultiCurrency, MultiLockableCurrency};
+pub use primitives::{CurrencyId, VestingSchedule};
 use sp_runtime::{
-	traits::{AtLeast32Bit, CheckedAdd, Saturating, StaticLookup, Zero},
-	ArithmeticError, DispatchResult, RuntimeDebug,
+	traits::{Saturating, StaticLookup, Zero},
+	ArithmeticError, DispatchResult,
 };
-use sp_std::{
-	cmp::{Eq, PartialEq},
-	vec::Vec,
-};
-use module_traits::{
-	LockIdentifier, MultiCurrency, MultiLockableCurrency,
-};
-use primitives::{ CurrencyId, VestingSchedule };
+use sp_std::vec::Vec;
 
+#[cfg(test)]
 mod mock;
+#[cfg(test)]
 mod tests;
 mod weights;
 
@@ -68,41 +67,6 @@ pub use module::*;
 pub use weights::WeightInfo;
 
 pub const VESTING_LOCK_ID: LockIdentifier = *b"set/vest";
-
-impl<BlockNumber: AtLeast32Bit + Copy, Balance: AtLeast32Bit + MaxEncodedLen + Copy>
-	VestingSchedule<BlockNumber, Balance>
-{
-/// Returns the end of all periods, `None` if calculation overflows.
-	pub fn end(&self) -> Option<BlockNumber> {
-// period * period_count + start
-		self.period
-			.checked_mul(&self.period_count.into())?
-			.checked_add(&self.start)
-	}
-
-/// Returns all locked amount, `None` if calculation overflows.
-	pub fn total_amount(&self) -> Option<Balance> {
-		self.per_period.checked_mul(&self.period_count.into())
-	}
-
-/// Returns locked amount for a given `time`.
-///
-/// Note this func assumes schedule is a valid one(non-zero period and
-/// non-overflow total amount), and it should be guaranteed by callers.
-	pub fn locked_amount(&self, time: BlockNumber) -> Balance {
-// full = (time - start) // period
-// unrealized = period_count - full
-// per_period * unrealized
-		let full = time
-			.saturating_sub(self.start)
-			.checked_div(&self.period)
-			.expect("ensured non-zero period; qed");
-		let unrealized = self.period_count.saturating_sub(full.unique_saturated_into());
-		self.per_period
-			.checked_mul(&unrealized.into())
-			.expect("ensured non-overflow total amount; qed")
-	}
-}
 
 #[frame_support::pallet]
 pub mod module {
@@ -126,66 +90,91 @@ pub mod module {
 	pub trait Config: frame_system::Config {
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 
-		type MultiCurrency: MultiLockableCurrency<Self::AccountId,  CurrencyId = CurrencyId, Moment = BlockNumberFor<Self>>;
-		
+		type MultiCurrency: MultiLockableCurrency<Self::AccountId, CurrencyId = CurrencyId, Moment = BlockNumberFor<Self>>;
+
+		/// Native Setheum (SEU) currency id.
 		#[pallet::constant]
-/// Native Setheum (SEU) currency id.
 		type GetNativeCurrencyId: Get<CurrencyId>;
 
+		/// The SetUSD currency id.
 		#[pallet::constant]
+		type GetSetUSDId: Get<CurrencyId>;
 
+		/// The minimum amount transferred to call `vested_transfer`.
 		#[pallet::constant]
-/// The minimum amount of SEU transferred to call `vested_transfer`.
-		type MinNativeVestedTransfer: Get<BalanceOf<Self>>;
+		type MinVestedTransfer: Get<BalanceOf<Self>>;
 
+		/// The account that funds vested transfers.
 		#[pallet::constant]
+		type TreasuryAccount: Get<Self::AccountId>;
 
-/// Required origin for vested transfer.
-		type VestedTransferOrigin: EnsureOrigin<Self::RuntimeOrigin, Success = Self::AccountId>;
+		/// Required origin for `vested_transfer` and `update_vesting_schedules`.
+		type UpdateOrigin: EnsureOrigin<Self::RuntimeOrigin>;
 
-/// Weight information for extrinsics in this module.
+		/// Weight information for extrinsics in this module.
 		type WeightInfo: WeightInfo;
 
-/// The maximum vesting schedules for SEU
+		/// The maximum number of vesting schedules for SEU.
+		#[pallet::constant]
 		type MaxNativeVestingSchedules: Get<u32>;
 
+		/// The maximum number of vesting schedules for SetUSD.
+		#[pallet::constant]
+		type MaxSetUSDVestingSchedules: Get<u32>;
 	}
 
 	#[pallet::error]
 	pub enum Error<T> {
-/// Vesting period is zero
+		/// Vesting period is zero
 		ZeroVestingPeriod,
-/// Number of vests is zero
+		/// Number of vests is zero
 		ZeroVestingPeriodCount,
-/// Insufficient amount of balance to lock
+		/// Insufficient amount of balance to lock
 		InsufficientBalanceToLock,
-/// This account have too many vesting schedules
+		/// This account have too many vesting schedules
 		TooManyVestingSchedules,
-/// The vested transfer amount is too low
+		/// The vested transfer amount is too low
 		AmountLow,
-/// Failed because the maximum vesting schedules for SEU was exceeded
+		/// Failed because the maximum vesting schedules for SEU was exceeded
 		MaxNativeVestingSchedulesExceeded,
+		/// Failed because the maximum vesting schedules for SetUSD was exceeded
+		MaxSetUSDVestingSchedulesExceeded,
+		/// Vesting is only supported for SEU and SetUSD
+		UnsupportedCurrency,
 	}
 
 	#[pallet::event]
-	#[pallet::generate_deposit(fn deposit_event)]
+	#[pallet::generate_deposit(pub(super) fn deposit_event)]
 	pub enum Event<T: Config> {
-/// Added new vesting schedule.
+		/// Added new vesting schedule.
 		VestingScheduleAdded {
 			currency_id: CurrencyIdOf<T>,
 			from: T::AccountId,
 			to: T::AccountId,
 			vesting_schedule: VestingScheduleOf<T>,
 		},
-/// Claimed vesting.
+		/// Claimed vesting.
 		Claimed { currency_id: CurrencyIdOf<T>, who: T::AccountId, amount: BalanceOf<T> },
-/// Updated vesting schedules.
-		VestingSchedulesUpdated {currency_id: CurrencyIdOf<T>, who: T::AccountId },
+		/// Updated vesting schedules.
+		VestingSchedulesUpdated { currency_id: CurrencyIdOf<T>, who: T::AccountId },
 	}
 
-/// Vesting schedules of an account under Native Currency (SEU).
-///
-/// NativeVestingSchedules: map AccountId => Vec<VestingSchedule>
+	/// Vesting schedules of an account under SetUSD.
+	///
+	/// VestingSchedules: map AccountId => Vec<VestingSchedule>
+	#[pallet::storage]
+	#[pallet::getter(fn vesting_schedules)]
+	pub type VestingSchedules<T: Config> = StorageMap<
+		_,
+		Blake2_128Concat,
+		T::AccountId,
+		BoundedVec<VestingScheduleOf<T>, T::MaxSetUSDVestingSchedules>,
+		ValueQuery,
+	>;
+
+	/// Vesting schedules of an account under Native Currency (SEU).
+	///
+	/// NativeVestingSchedules: map AccountId => Vec<VestingSchedule>
 	#[pallet::storage]
 	#[pallet::getter(fn native_vesting_schedules)]
 	pub type NativeVestingSchedules<T: Config> = StorageMap<
@@ -195,16 +184,6 @@ pub mod module {
 		BoundedVec<VestingScheduleOf<T>, T::MaxNativeVestingSchedules>,
 		ValueQuery,
 	>;
-	
-///
-	#[pallet::storage]
-	#[pallet::getter(fn edf_vesting_schedules)]
-		_,
-		Blake2_128Concat,
-		T::AccountId,
-		ValueQuery,
-	>;
-	
 
 	#[pallet::genesis_config]
 	pub struct GenesisConfig<T: Config> {
@@ -213,41 +192,42 @@ pub mod module {
 
 	impl<T: Config> Default for GenesisConfig<T> {
 		fn default() -> Self {
-			GenesisConfig {
-				vesting: Default::default(),
-			}
+			GenesisConfig { vesting: Default::default() }
 		}
 	}
 
 	#[pallet::genesis_build]
 	impl<T: Config> BuildGenesisConfig for GenesisConfig<T> {
 		fn build(&self) {
-			self.vesting
-				.iter()
-				.for_each(|(who, currency_id, start, period, period_count, per_period)| {
-					let schedule = VestingSchedule {
-						start: *start,
-						period: *period,
-						period_count: *period_count,
-						per_period: *per_period,
-					};
+			self.vesting.iter().for_each(|(who, currency_id, start, period, period_count, per_period)| {
+				let schedule = VestingSchedule {
+					start: *start,
+					period: *period,
+					period_count: *period_count,
+					per_period: *per_period,
+				};
 
-					if *currency_id == T::GetNativeCurrencyId::get() {
-						let _ = ensure_valid_vesting_schedule::<T>(*currency_id, &schedule).expect("Invalid vesting schedule");
-						let total = schedule.total_amount().unwrap();
-						assert!(
-							T::MultiCurrency::free_balance(*currency_id, who) >= total,
-							"Account does not have enough balance"
-						);
-						
-						if <NativeVestingSchedules<T>>::try_append(who, schedule).is_err() {
-							panic!("Max vesting schedules exceeded");
-						}
-						
-						let locked = Pallet::<T>::locked_balance(*currency_id, who);
-						let _ = T::MultiCurrency::set_lock(VESTING_LOCK_ID, *currency_id, who, locked);
-					}
-				});
+				let _ = ensure_valid_vesting_schedule::<T>(*currency_id, &schedule)
+					.expect("Invalid vesting schedule");
+				let total = schedule.total_amount().unwrap();
+				assert!(
+					T::MultiCurrency::free_balance(*currency_id, who) >= total,
+					"Account does not have enough balance"
+				);
+
+				if *currency_id == T::GetNativeCurrencyId::get() {
+					<NativeVestingSchedules<T>>::try_append(who, schedule)
+						.expect("Max native vesting schedules exceeded");
+				} else if *currency_id == T::GetSetUSDId::get() {
+					<VestingSchedules<T>>::try_append(who, schedule)
+						.expect("Max SetUSD vesting schedules exceeded");
+				} else {
+					panic!("Unsupported vesting currency");
+				}
+
+				let locked = Pallet::<T>::locked_balance(*currency_id, who);
+				let _ = T::MultiCurrency::set_lock(VESTING_LOCK_ID, *currency_id, who, locked);
+			});
 		}
 	}
 
@@ -259,20 +239,20 @@ pub mod module {
 
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
+		/// Claim a vested transfer for the caller.
 		#[pallet::call_index(0)]
-		#[pallet::weight(T::WeightInfo::claim(<T as Config>::MaxVestingSchedules::get() // 2))]
+		#[pallet::weight(T::WeightInfo::claim(<T as Config>::MaxNativeVestingSchedules::get() / 2))]
 		pub fn claim(origin: OriginFor<T>, currency_id: CurrencyIdOf<T>) -> DispatchResult {
 			let who = ensure_signed(origin)?;
 			let locked_amount = Self::do_claim(currency_id, &who);
 
-			Self::deposit_event(Event::Claimed {
-				currency_id,
-				who,
-				amount: locked_amount,
-			});
+			Self::deposit_event(Event::Claimed { currency_id, who, amount: locked_amount });
 			Ok(())
 		}
 
+		/// Create a vested transfer from the treasury account.
+		///
+		/// The dispatch origin of this call must be `UpdateOrigin`.
 		#[pallet::call_index(1)]
 		#[pallet::weight(T::WeightInfo::vested_transfer())]
 		pub fn vested_transfer(
@@ -281,12 +261,14 @@ pub mod module {
 			dest: <T::Lookup as StaticLookup>::Source,
 			schedule: VestingScheduleOf<T>,
 		) -> DispatchResult {
-			let from = T::VestedTransferOrigin::ensure_origin(origin)?;
+			T::UpdateOrigin::ensure_origin(origin)?;
+			let from = T::TreasuryAccount::get();
 			let to = T::Lookup::lookup(dest)?;
 
 			if to == from {
 				ensure!(
-					T::MultiCurrency::free_balance(currency_id, &from) >= schedule.total_amount().ok_or(ArithmeticError::Overflow)?,
+					T::MultiCurrency::free_balance(currency_id, &from)
+						>= schedule.total_amount().ok_or(ArithmeticError::Overflow)?,
 					Error::<T>::InsufficientBalanceToLock,
 				);
 			}
@@ -302,6 +284,9 @@ pub mod module {
 			Ok(())
 		}
 
+		/// Replace vesting schedules of an account.
+		///
+		/// The dispatch origin of this call must be `UpdateOrigin`.
 		#[pallet::call_index(2)]
 		#[pallet::weight(T::WeightInfo::update_vesting_schedules(vesting_schedules.len() as u32))]
 		pub fn update_vesting_schedules(
@@ -310,7 +295,7 @@ pub mod module {
 			who: <T::Lookup as StaticLookup>::Source,
 			vesting_schedules: Vec<VestingScheduleOf<T>>,
 		) -> DispatchResult {
-			ensure_root(origin)?;
+			T::UpdateOrigin::ensure_origin(origin)?;
 
 			let account = T::Lookup::lookup(who)?;
 			Self::do_update_vesting_schedules(currency_id, &account, vesting_schedules)?;
@@ -319,22 +304,19 @@ pub mod module {
 			Ok(())
 		}
 
+		/// Claim a vested transfer for another account.
 		#[pallet::call_index(3)]
-		#[pallet::weight(T::WeightInfo::claim(<T as Config>::MaxVestingSchedules::get() // 2))]
+		#[pallet::weight(T::WeightInfo::claim(<T as Config>::MaxNativeVestingSchedules::get() / 2))]
 		pub fn claim_for(
 			origin: OriginFor<T>,
 			currency_id: CurrencyIdOf<T>,
-			dest: <T::Lookup as StaticLookup>::Source
+			dest: <T::Lookup as StaticLookup>::Source,
 		) -> DispatchResult {
 			let _ = ensure_signed(origin)?;
 			let who = T::Lookup::lookup(dest)?;
 			let locked_amount = Self::do_claim(currency_id, &who);
 
-			Self::deposit_event(Event::Claimed {
-				currency_id,
-				who,
-				amount: locked_amount,
-			});
+			Self::deposit_event(Event::Claimed { currency_id, who, amount: locked_amount });
 			Ok(())
 		}
 	}
@@ -345,10 +327,10 @@ impl<T: Config> Pallet<T> {
 		let locked = Self::locked_balance(currency_id, who);
 		if locked.is_zero() {
 			if currency_id == T::GetNativeCurrencyId::get() {
-				// cleanup the storage and unlock the fund
 				<NativeVestingSchedules<T>>::remove(who);
 				let _ = T::MultiCurrency::remove_lock(VESTING_LOCK_ID, currency_id, who);
-				// cleanup the storage and unlock the fund
+			} else if currency_id == T::GetSetUSDId::get() {
+				<VestingSchedules<T>>::remove(who);
 				let _ = T::MultiCurrency::remove_lock(VESTING_LOCK_ID, currency_id, who);
 			}
 		} else {
@@ -357,11 +339,30 @@ impl<T: Config> Pallet<T> {
 		locked
 	}
 
-	/// Returns locked balance based on current block number.
+	/// Returns locked balance based on the current block number.
 	fn locked_balance(currency_id: CurrencyIdOf<T>, who: &T::AccountId) -> BalanceOf<T> {
 		let now = frame_system::Pallet::<T>::block_number();
-		if currency_id == T::GetNativeCurrencyId::get() {
-			<NativeVestingSchedules<T>>::mutate_exists(who, |maybe_schedules| {
+
+		let update = |maybe_schedules: &mut Option<BoundedVec<VestingScheduleOf<T>, T::MaxNativeVestingSchedules>>| {
+			let total = if let Some(schedules) = maybe_schedules.as_mut() {
+				let mut total: BalanceOf<T> = Zero::zero();
+				schedules.retain(|s| {
+					let amount = s.locked_amount(now);
+					total = total.saturating_add(amount);
+					!amount.is_zero()
+				});
+				total
+			} else {
+				Zero::zero()
+			};
+			if total.is_zero() {
+				*maybe_schedules = None;
+			}
+			total
+		};
+
+		let update_setusd =
+			|maybe_schedules: &mut Option<BoundedVec<VestingScheduleOf<T>, T::MaxSetUSDVestingSchedules>>| {
 				let total = if let Some(schedules) = maybe_schedules.as_mut() {
 					let mut total: BalanceOf<T> = Zero::zero();
 					schedules.retain(|s| {
@@ -377,7 +378,12 @@ impl<T: Config> Pallet<T> {
 					*maybe_schedules = None;
 				}
 				total
-			})
+			};
+
+		if currency_id == T::GetNativeCurrencyId::get() {
+			<NativeVestingSchedules<T>>::mutate_exists(who, update)
+		} else if currency_id == T::GetSetUSDId::get() {
+			<VestingSchedules<T>>::mutate_exists(who, update_setusd)
 		} else {
 			Zero::zero()
 		}
@@ -387,26 +393,36 @@ impl<T: Config> Pallet<T> {
 		currency_id: CurrencyIdOf<T>,
 		from: &T::AccountId,
 		to: &T::AccountId,
-		schedule: VestingScheduleOf<T>
+		schedule: VestingScheduleOf<T>,
 	) -> DispatchResult {
 		if currency_id == T::GetNativeCurrencyId::get() {
-			let schedule_amount = ensure_valid_vesting_schedule::<T>(T::GetNativeCurrencyId::get(), &schedule)?;
+			let schedule_amount = ensure_valid_vesting_schedule::<T>(currency_id, &schedule)?;
 
-			T::MultiCurrency::transfer(T::GetNativeCurrencyId::get(), from, to, schedule_amount)?;
-			<NativeVestingSchedules<T>>::try_append(to, schedule).map_err(|_| Error::<T>::MaxNativeVestingSchedulesExceeded)?;
-			
-			let total_amount = Self::locked_balance(T::GetNativeCurrencyId::get(), to);
-			T::MultiCurrency::set_lock(VESTING_LOCK_ID, T::GetNativeCurrencyId::get(), to, total_amount)?;
+			T::MultiCurrency::transfer(currency_id, from, to, schedule_amount, ExistenceRequirement::AllowDeath)?;
+			<NativeVestingSchedules<T>>::try_append(to, schedule)
+				.map_err(|_| Error::<T>::MaxNativeVestingSchedulesExceeded)?;
 
+			let total_amount = Self::locked_balance(currency_id, to);
+			T::MultiCurrency::set_lock(VESTING_LOCK_ID, currency_id, to, total_amount)?;
+		} else if currency_id == T::GetSetUSDId::get() {
+			let schedule_amount = ensure_valid_vesting_schedule::<T>(currency_id, &schedule)?;
 
+			T::MultiCurrency::transfer(currency_id, from, to, schedule_amount, ExistenceRequirement::AllowDeath)?;
+			<VestingSchedules<T>>::try_append(to, schedule)
+				.map_err(|_| Error::<T>::MaxSetUSDVestingSchedulesExceeded)?;
+
+			let total_amount = Self::locked_balance(currency_id, to);
+			T::MultiCurrency::set_lock(VESTING_LOCK_ID, currency_id, to, total_amount)?;
+		} else {
+			return Err(Error::<T>::UnsupportedCurrency.into());
 		}
 		Ok(())
 	}
 
 	fn do_update_vesting_schedules(
 		currency_id: CurrencyIdOf<T>,
-		who: &T::AccountId, 
-		schedules: Vec<VestingScheduleOf<T>>
+		who: &T::AccountId,
+		schedules: Vec<VestingScheduleOf<T>>,
 	) -> DispatchResult {
 		if currency_id == T::GetNativeCurrencyId::get() {
 			let bounded_schedules: BoundedVec<VestingScheduleOf<T>, T::MaxNativeVestingSchedules> = schedules
@@ -416,38 +432,58 @@ impl<T: Config> Pallet<T> {
 			// empty vesting schedules cleanup the storage and unlock the fund
 			if bounded_schedules.len().is_zero() {
 				<NativeVestingSchedules<T>>::remove(who);
-				let _ = T::MultiCurrency::remove_lock(VESTING_LOCK_ID,T::GetNativeCurrencyId::get(), who);
+				let _ = T::MultiCurrency::remove_lock(VESTING_LOCK_ID, currency_id, who);
 				return Ok(());
 			}
 
 			<NativeVestingSchedules<T>>::insert(who, bounded_schedules);
-			let total_amount = Self::locked_balance(T::GetNativeCurrencyId::get(), who);
-			
+			let total_amount = Self::locked_balance(currency_id, who);
+
 			ensure!(
-				T::MultiCurrency::free_balance(T::GetNativeCurrencyId::get(), who) >= total_amount,
+				T::MultiCurrency::free_balance(currency_id, who) >= total_amount,
 				Error::<T>::InsufficientBalanceToLock,
 			);
+			T::MultiCurrency::set_lock(VESTING_LOCK_ID, currency_id, who, total_amount)?;
+		} else if currency_id == T::GetSetUSDId::get() {
+			let bounded_schedules: BoundedVec<VestingScheduleOf<T>, T::MaxSetUSDVestingSchedules> = schedules
+				.try_into()
+				.map_err(|_| Error::<T>::MaxSetUSDVestingSchedulesExceeded)?;
 
-			T::MultiCurrency::set_lock(VESTING_LOCK_ID, T::GetNativeCurrencyId::get(), who, total_amount)?;
+			if bounded_schedules.len().is_zero() {
+				<VestingSchedules<T>>::remove(who);
+				let _ = T::MultiCurrency::remove_lock(VESTING_LOCK_ID, currency_id, who);
+				return Ok(());
+			}
+
+			<VestingSchedules<T>>::insert(who, bounded_schedules);
+			let total_amount = Self::locked_balance(currency_id, who);
+
+			ensure!(
+				T::MultiCurrency::free_balance(currency_id, who) >= total_amount,
+				Error::<T>::InsufficientBalanceToLock,
+			);
+			T::MultiCurrency::set_lock(VESTING_LOCK_ID, currency_id, who, total_amount)?;
+		} else {
+			return Err(Error::<T>::UnsupportedCurrency.into());
 		}
 		Ok(())
 	}
 }
 
-/// Returns `Ok(total_total)` if valid schedule, or error.
+/// Returns `Ok(total_amount)` if the schedule is valid, or an error.
 fn ensure_valid_vesting_schedule<T: Config>(
 	currency_id: CurrencyIdOf<T>,
-	schedule: &VestingScheduleOf<T>
+	schedule: &VestingScheduleOf<T>,
 ) -> Result<BalanceOf<T>, DispatchError> {
 	ensure!(!schedule.period.is_zero(), Error::<T>::ZeroVestingPeriod);
 	ensure!(!schedule.period_count.is_zero(), Error::<T>::ZeroVestingPeriodCount);
 	ensure!(schedule.end().is_some(), ArithmeticError::Overflow);
 
-	let total_total = schedule.total_amount().ok_or(ArithmeticError::Overflow)?;
+	let total_amount = schedule.total_amount().ok_or(ArithmeticError::Overflow)?;
 
-	if currency_id == T::GetNativeCurrencyId::get() {
-		ensure!(total_total >= T::MinNativeVestedTransfer::get(), Error::<T>::AmountLow);
+	if currency_id == T::GetNativeCurrencyId::get() || currency_id == T::GetSetUSDId::get() {
+		ensure!(total_amount >= T::MinVestedTransfer::get(), Error::<T>::AmountLow);
 	}
 
-	Ok(total_total)
+	Ok(total_amount)
 }

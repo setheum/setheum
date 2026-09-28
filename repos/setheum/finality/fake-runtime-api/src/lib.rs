@@ -1,3 +1,4 @@
+#![allow(warnings)]
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 
 // This file is part of Setheum.
@@ -161,12 +162,8 @@ pub mod fake_runtime {
 			}
 		}
 
-		 impl crate::SetBFTSessionApi<Block> for Runtime {
+		impl primitives::setbft::SetBFTSessionApi<Block> for Runtime {
 			fn millisecs_per_block() -> u64 {
-				unimplemented!()
-			}
-
-			fn score_submission_period() -> u32 {
 				unimplemented!()
 			}
 
@@ -212,15 +209,14 @@ pub mod fake_runtime {
 				unimplemented!()
 			}
 
-			fn yearly_inflation() -> Perbill {
+			fn score_submission_period() -> u32 {
 				unimplemented!()
 			}
 
-			fn current_era_payout() -> (Balance, Balance) {
-				unimplemented!()
-			}
-
-			fn submit_sbft_score(_score: Score, _signature: SignatureSet<AuthoritySignature>) -> Option<()>{
+			fn submit_sbft_score(
+				_score: Score,
+				_signature: SignatureSet<AuthoritySignature>,
+			) -> Option<()> {
 				unimplemented!()
 			}
 		}

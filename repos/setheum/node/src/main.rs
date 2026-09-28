@@ -106,7 +106,7 @@ fn main() -> sc_cli::Result<()> {
 						panic!("A non-validator node cannot be run with external addresses specified.");
 					}
 					// We ensure that external addresses for non-validator nodes are set, but to a
-					// value that is not routable. This will no longer be neccessary once we have
+					// value that is not routable. This will no longer be necessary once we have
 					// proper support for non-validator nodes, but this requires a major
 					// refactor.
 					info!("Running as a non-validator node, setting dummy addressing configuration.");

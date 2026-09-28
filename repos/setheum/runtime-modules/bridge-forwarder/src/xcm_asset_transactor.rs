@@ -58,7 +58,7 @@ impl<
 	// 1. recipient is on the local parachain
 	// 2. recipient is on non-substrate chain(evm, cosmos, etc.)
 	// 3. recipient is on the remote parachain
-	fn deposit_asset(what: &Asset, who: &Location, context: &XcmContext) -> XcmResult {
+	fn deposit_asset(what: &Asset, who: &Location, context: Option<&XcmContext>) -> XcmResult {
 		let interior = who.interior();
 		let parents = who.parent_count();
 		match (parents, interior.len()) {

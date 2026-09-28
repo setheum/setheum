@@ -18,7 +18,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-use sc_network::config::{FullNetworkConfiguration, NonDefaultSetConfig};
+use sc_network::{
+    config::FullNetworkConfiguration,
+    NetworkBackend,
+};
+use sc_network_common::ExHashT;
 
 use crate::{
     network::{
@@ -44,13 +48,13 @@ pub struct Networks {
 }
 
 impl Networks {
-    fn add_protocol(
+    fn add_protocol<B: sp_runtime::traits::Block + 'static, H: ExHashT, Net: NetworkBackend<B, H>>(
         genesis_hash: &BlockHash,
         protocol_name: &str,
         max_message_size: u64,
-        net_config: &mut FullNetworkConfiguration,
+        net_config: &mut FullNetworkConfiguration<B, H, Net>,
     ) -> ProtocolNetwork {
-        let (config, notifications) = NonDefaultSetConfig::new(
+        let (config, notifications) = Net::notification_config(
             // full protocol name
             format!("/{genesis_hash}{protocol_name}").into(),
             // no fallback names
@@ -59,13 +63,18 @@ impl Networks {
             // we do not use custom handshake
             None,
             sc_network::config::SetConfig::default(),
+            sc_network::NotificationMetrics::new(net_config.metrics_registry.as_ref()),
+            net_config.peer_store_handle(),
         );
         net_config.add_notification_protocol(config);
         ProtocolNetwork::new(notifications)
     }
 
     /// Create the full configuration and networks per protocol.
-    pub fn new(net_config: &mut FullNetworkConfiguration, genesis_hash: &BlockHash) -> Self {
+    pub fn new<B: sp_runtime::traits::Block + 'static, H: ExHashT, Net: NetworkBackend<B, H>>(
+        net_config: &mut FullNetworkConfiguration<B, H, Net>,
+        genesis_hash: &BlockHash,
+    ) -> Self {
         let authentication_network = Self::add_protocol(
             genesis_hash,
             AUTHENTICATION_PROTOCOL_NAME,

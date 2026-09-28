@@ -62,6 +62,9 @@ impl From<ink_engine::Error> for Error {
             ink_engine::Error::UnregisteredChainExtension => {
                 OffChainError::UnregisteredChainExtension
             }
+            ink_engine::Error::KeyNotFound => OffChainError::KeyNotFound,
+            ink_engine::Error::EcdsaRecoveryFailed => OffChainError::EcdsaRecoveryFailed,
+            ink_engine::Error::TransferFailed => OffChainError::TransferFailed,
         };
         Error::OffChain(e)
     }

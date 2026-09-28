@@ -13,4 +13,5 @@ bitflags = { workspace = true }
 
 [features]
 default = ["std"]
+scale = []
 std = ["parity-scale-codec/std", "scale-info/std", "bitflags/std"]

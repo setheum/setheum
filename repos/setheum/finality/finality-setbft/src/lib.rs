@@ -18,6 +18,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+#![allow(warnings)]
+#![allow(deprecated)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
+#![allow(dead_code)]
+
 extern crate set_bft;
 extern crate set_bft_rmc;
 
@@ -48,10 +54,8 @@ use tokio::time::Duration;
 
 use crate::{
     sbft::{
-        CurrentNetworkData, Keychain, LegacyNetworkData, NodeCount, NodeIndex, Recipient,
-        SignatureSet, SpawnHandle, CURRENT_VERSION, LEGACY_VERSION,
+        Keychain, NetworkData, NodeCount, NodeIndex, Recipient, SignatureSet, SpawnHandle, VERSION,
     },
-    aggregation::RmcNetworkData,
     block::UnverifiedHeader,
     network::data::split::Split,
     session::{SessionBoundaries, SessionBoundaryInfo, SessionId},
@@ -80,10 +84,12 @@ mod sync_oracle;
 pub mod testing;
 
 pub use crate::{
+    aggregation::RmcNetworkData,
     block::{
         substrate::{BlockImporter, Justification, JustificationTranslator, SubstrateChainStatus},
         BlockId,
     },
+    compatibility::{Version, Versioned},
     import::{get_setbft_block_import, SetBFTBlockImport, RedirectingBlockImport},
     justification::SetBFTJustification,
     network::{
@@ -93,6 +99,7 @@ pub use crate::{
     },
     nodes::run_validator_node,
     session::SessionPeriod,
+    sync::VersionedNetworkData as SyncNetworkData,
     sync::FavouriteSelectChainProvider,
     sync_oracle::SyncOracle,
 };
@@ -107,6 +114,7 @@ pub struct MillisecsPerBlock(pub u64);
 pub struct UnitCreationDelay(pub u64);
 
 pub type SplitData<UH> = Split<NetworkData<UH>, RmcNetworkData>;
+pub type VersionedNetworkData<UH> = SplitData<UH>;
 
 pub trait ClientForSetBFT<B, BE>:
     LockImportRun<B, BE>

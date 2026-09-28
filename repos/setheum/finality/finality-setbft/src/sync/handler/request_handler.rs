@@ -465,7 +465,7 @@ where
     }
 }
 
-/// Create a pseudo-response from a single block that assumes the recipent has the parent block.
+/// Create a pseudo-response from a single block that assumes the recipient has the parent block.
 /// Useful for broadcasting self-created blocks.
 pub fn block_to_response<J: Justification, B: Block<UnverifiedHeader = UnverifiedHeaderFor<J>>>(
     block: B,

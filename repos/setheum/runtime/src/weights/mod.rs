@@ -21,23 +21,14 @@
 #![allow(clippy::unnecessary_cast)]
 
 // pub mod dex_oracle;
-pub mod module_auction_manager;
-pub mod module_cdp_engine;
-pub mod module_cdp_treasury;
 pub mod module_currencies;
-pub mod swap_legacy_module;
-pub mod emergency_shutdown;
-pub mod module_evm;
-pub mod module_unified_accounts;
-pub mod serp_setmint;
-pub mod serp_treasury;
+pub mod module_dex;
 pub mod module_nft;
 pub mod module_prices;
 pub mod module_transaction_pause;
 pub mod module_transaction_payment;
 pub mod module_vesting;
 
-pub mod module_auction;
 pub mod module_authority;
 pub mod module_oracle;
 pub mod module_tokens;

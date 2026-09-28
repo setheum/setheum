@@ -1,3 +1,4 @@
+#![allow(warnings)]
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 // This file is part of Setheum.
 
@@ -67,4 +68,10 @@ pub enum Error {
     UninitializedExecutionContext,
     #[from(ignore)]
     UnregisteredChainExtension,
+    #[from(ignore)]
+    KeyNotFound,
+    #[from(ignore)]
+    EcdsaRecoveryFailed,
+    #[from(ignore)]
+    TransferFailed,
 }

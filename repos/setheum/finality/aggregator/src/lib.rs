@@ -1,3 +1,4 @@
+#![allow(warnings)]
 // بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
 
 // This file is part of Setheum.

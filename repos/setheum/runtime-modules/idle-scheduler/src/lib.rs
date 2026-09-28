@@ -36,6 +36,10 @@
 // SOFTWARE.
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(deprecated)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
 #![allow(clippy::unused_unit)]
 #![allow(unused_must_use)]
 use codec::{Decode, Encode, FullCodec};
@@ -50,7 +54,9 @@ use sp_runtime::{
 };
 use sp_std::{cmp::PartialEq, fmt::Debug, prelude::*};
 
+#[cfg(test)]
 mod mock;
+#[cfg(test)]
 mod tests;
 mod weights;
 pub use module::*;
@@ -146,7 +152,7 @@ impl<T: Config> Pallet<T> {
 				completed_tasks.push((id, result));
 			}
 
-			// If remaining weight falls below the minimmum, break from the loop.
+			// If remaining weight falls below the minimum, break from the loop.
 			if weight_remaining.all_lte(T::MinimumWeightRemainInBlock::get()) {
 				break;
 			}

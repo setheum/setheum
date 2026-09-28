@@ -36,6 +36,10 @@
 // SOFTWARE.
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(warnings)]
+#![allow(deprecated)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
 #![allow(clippy::unused_unit)]
 #![allow(clippy::needless_range_loop)]
 
@@ -50,7 +54,9 @@ use sp_runtime::{
 };
 use sp_std::prelude::*;
 
+#[cfg(test)]
 mod mock;
+#[cfg(test)]
 mod tests;
 pub mod weights;
 
@@ -199,10 +205,10 @@ pub mod module {
 		/// - `currency_id`: collateral type
 		/// - `amount`: collateral amount
 		/// - `target`: target amount
-		/// - `splited`: split collateral to multiple auction according to the config size
+		/// - `split`: split collateral to multiple auction according to the config size
 		#[pallet::call_index(1)]
 		#[pallet::weight(
-			if *splited {
+			if *split {
 				T::WeightInfo::auction_collateral(T::MaxAuctionsCount::get())
 			} else {
 				T::WeightInfo::auction_collateral(1)
@@ -213,7 +219,7 @@ pub mod module {
 			currency_id: CurrencyId,
 			#[pallet::compact] amount: Balance,
 			#[pallet::compact] target: Balance,
-			splited: bool,
+			split: bool,
 		) -> DispatchResultWithPostInfo {
 			T::UpdateOrigin::ensure_origin(origin)?;
 			let created_auctions = <Self as UssdTreasuryExtended<T::AccountId>>::create_collateral_auctions(
@@ -221,7 +227,7 @@ pub mod module {
 				amount,
 				target,
 				Self::account_id(),
-				splited,
+				split,
 			)?;
 			Ok(Some(T::WeightInfo::auction_collateral(created_auctions)).into())
 		}
@@ -438,7 +444,7 @@ impl<T: Config> UssdTreasuryExtended<T::AccountId> for Pallet<T> {
 		amount: Balance,
 		target: Balance,
 		refund_receiver: T::AccountId,
-		splited: bool,
+		split: bool,
 	) -> Result<u32, DispatchError> {
 		ensure!(Self::total_collaterals_not_in_auction(currency_id) >= amount, Error::<T>::CollateralNotEnough,);
 
@@ -446,7 +452,7 @@ impl<T: Config> UssdTreasuryExtended<T::AccountId> for Pallet<T> {
 		let mut unhandled_target = target;
 		let expected_collateral_auction_size = Self::expected_collateral_auction_size(currency_id);
 		let max_auctions_count: Balance = T::MaxAuctionsCount::get().into();
-		let lots_count = if !splited
+		let lots_count = if !split
 			|| max_auctions_count.is_zero()
 			|| expected_collateral_auction_size.is_zero()
 			|| amount <= expected_collateral_auction_size

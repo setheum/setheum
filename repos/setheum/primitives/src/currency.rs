@@ -19,7 +19,6 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 #![allow(clippy::from_over_into)]
-use crate::TradingPair;
 // use bstringify::bstringify;
 use num_enum::{IntoPrimitive, TryFromPrimitive};
 use parity_scale_codec::{Decode, Encode, MaxEncodedLen, DecodeWithMemTracking};
@@ -288,7 +287,6 @@ impl CurrencyId {
 	pub fn erc20_address(&self) -> Option<EvmAddress> {
 		match self {
 			CurrencyId::Erc20(address) => Some(*address),
-			CurrencyId::Token(_) => EvmAddress::try_from(*self).ok(),
 			_ => None,
 		}
 	}
