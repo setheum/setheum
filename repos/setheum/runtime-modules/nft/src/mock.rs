@@ -74,16 +74,8 @@ pub type AccountId = AccountId32;
 
 #[frame_support::derive_impl(frame_system::config_preludes::TestDefaultConfig as frame_system::DefaultConfig)]
 impl frame_system::Config for Runtime {
-	type BaseCallFilter = BaseFilter;
-	type RuntimeOrigin = RuntimeOrigin;
-	type Nonce = u64;
-	type Hash = H256;
-	type RuntimeCall = RuntimeCall;
-	type Hashing = BlakeTwo256;
-	type AccountId = AccountId;
-	type Lookup = IdentityLookup<Self::AccountId>;
+	type BaseCallFilter = frame_support::traits::Everything;
 	type Block = Block;
-	type RuntimeEvent = RuntimeEvent;
 	type AccountData = pallet_balances::AccountData<Balance>;
 }
 
@@ -133,17 +125,6 @@ impl InstanceFilter<RuntimeCall> for ProxyType {
 	}
 	fn is_superset(&self, o: &Self) -> bool {
 		self == &ProxyType::Any || self == o
-	}
-}
-pub struct BaseFilter;
-impl Contains<RuntimeCall> for BaseFilter {
-	fn contains(c: &RuntimeCall) -> bool {
-		match *c {
-			// Remark is used as a no-op call in the benchmarking
-			RuntimeCall::System(SystemCall::remark { .. }) => true,
-			RuntimeCall::System(_) => false,
-			_ => true,
-		}
 	}
 }
 
