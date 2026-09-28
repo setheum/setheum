@@ -72,6 +72,7 @@ construct_runtime!(
 
 pub type AccountId = AccountId32;
 
+#[frame_support::derive_impl(frame_system::config_preludes::TestDefaultConfig as frame_system::DefaultConfig)]
 impl frame_system::Config for Runtime {
 	type BaseCallFilter = BaseFilter;
 	type RuntimeOrigin = RuntimeOrigin;
@@ -83,19 +84,7 @@ impl frame_system::Config for Runtime {
 	type Lookup = IdentityLookup<Self::AccountId>;
 	type Block = Block;
 	type RuntimeEvent = RuntimeEvent;
-	type BlockHashCount = ConstU64<250>;
-	type DbWeight = ();
-	type BlockWeights = ();
-	type BlockLength = ();
-	type Version = ();
-	type PalletInfo = PalletInfo;
 	type AccountData = pallet_balances::AccountData<Balance>;
-	type OnNewAccount = ();
-	type OnKilledAccount = ();
-	type SystemWeightInfo = ();
-	type SS58Prefix = ();
-	type OnSetCode = ();
-	type MaxConsumers = ConstU32<16>;
 }
 
 impl pallet_balances::Config for Runtime {
@@ -121,7 +110,7 @@ impl pallet_utility::Config for Runtime {
 	type WeightInfo = ();
 }
 
-#[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Encode, Decode, RuntimeDebug, MaxEncodedLen, TypeInfo)]
+#[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Encode, Decode, DecodeWithMemTracking, RuntimeDebug, MaxEncodedLen, TypeInfo)]
 pub enum ProxyType {
 	Any,
 	JustTransfer,
@@ -171,6 +160,7 @@ impl pallet_proxy::Config for Runtime {
 	type MaxPending = ConstU32<2>;
 	type AnnouncementDepositBase = ConstU128<1>;
 	type AnnouncementDepositFactor = ConstU128<1>;
+	type BlockNumberProvider = frame_system::Pallet<Runtime>;
 }
 
 pub type NativeCurrency = module_currencies::BasicCurrencyAdapter<Runtime, Balances, Amount, u64>;
@@ -194,7 +184,7 @@ impl module_tokens::Config for Runtime {
 	type CurrencyHooks = ();
 	type MaxLocks = ();
 	type MaxReserves = ConstU32<0>;
-	type ReserveIdentifier = [u8; 8];
+	type ReserveIdentifier = ReserveIdentifier;
 	type DustRemovalWhitelist = Nothing;
 }
 
@@ -239,6 +229,8 @@ impl Config for Runtime {
 
 use frame_system::Call as SystemCall;
 
+pub use crate as module_nft;
+
 pub const ALICE: AccountId = AccountId::new([1u8; 32]);
 pub const BOB: AccountId = AccountId::new([2u8; 32]);
 pub const CLASS_ID: <Runtime as module_nft::Config>::ClassId = 0;
@@ -257,9 +249,12 @@ impl ExtBuilder {
 	pub fn build(self) -> sp_io::TestExternalities {
 		let mut t = frame_system::GenesisConfig::<Runtime>::default().build_storage().unwrap();
 
-		pallet_balances::GenesisConfig::<Runtime> { balances: vec![(ALICE, 100000)] }
-			.assimilate_storage(&mut t)
-			.unwrap();
+		pallet_balances::GenesisConfig::<Runtime> {
+			balances: vec![(ALICE, 100000)],
+			..Default::default()
+		}
+		.assimilate_storage(&mut t)
+		.unwrap();
 
 		let mut ext = sp_io::TestExternalities::new(t);
 		ext.execute_with(|| System::set_block_number(1));
