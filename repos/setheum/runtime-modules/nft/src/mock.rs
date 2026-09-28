@@ -40,6 +40,7 @@
 use super::*;
 
 use crate as nft;
+use crate as module_nft;
 use frame_support::{
 	construct_runtime, ord_parameter_types, parameter_types,
 	traits::{ConstU128, ConstU32, ConstU64, Contains, InstanceFilter, Nothing},
@@ -54,6 +55,20 @@ use sp_runtime::{
 	traits::{BlakeTwo256, IdentityLookup},
 	BuildStorage, RuntimeDebug,
 };
+
+type Block = frame_system::mocking::MockBlock<Runtime>;
+
+construct_runtime!(
+	pub enum Runtime {
+		System: frame_system,
+		NFTModule: nft,
+		Balances: pallet_balances,
+		Proxy: pallet_proxy,
+		Utility: pallet_utility,
+		Tokens: module_tokens,
+		Currency: module_currencies,
+	}
+);
 
 pub type AccountId = AccountId32;
 
@@ -224,28 +239,12 @@ impl Config for Runtime {
 
 use frame_system::Call as SystemCall;
 
-type Block = frame_system::mocking::MockBlock<Runtime>;
-
-construct_runtime!(
-	pub enum Runtime {
-		System: frame_system,
-		NFTModule: nft,
-		Balances: pallet_balances,
-		Proxy: pallet_proxy,
-		Utility: pallet_utility,
-		Tokens: module_tokens,
-		Currency: module_currencies,
-	}
-);
-
 pub const ALICE: AccountId = AccountId::new([1u8; 32]);
 pub const BOB: AccountId = AccountId::new([2u8; 32]);
 pub const CLASS_ID: <Runtime as module_nft::Config>::ClassId = 0;
 pub const CLASS_ID_NOT_EXIST: <Runtime as module_nft::Config>::ClassId = 1;
 pub const TOKEN_ID: <Runtime as module_nft::Config>::TokenId = 0;
 pub const TOKEN_ID_NOT_EXIST: <Runtime as module_nft::Config>::TokenId = 1;
-
-pub type RuntimeOrigin = <Runtime as frame_system::Config>::RuntimeOrigin;
 
 pub struct ExtBuilder;
 impl Default for ExtBuilder {
